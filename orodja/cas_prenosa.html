@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Čas prenosa datoteke</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Čas prenosa datoteke</h1>
+        <p>Vnesi velikost datoteke in hitrost povezave.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="velikost">Velikost datoteke</label>
+                <input
+                    type="number"
+                    id="velikost"
+                    min="0"
+                    step="any"
+                    placeholder="Na primer: 1"
+                    required
+                >
+
+                <label for="enota-velikosti">Enota velikosti</label>
+                <select id="enota-velikosti">
+                    <option value="B">Bajti (B)</option>
+                    <option value="kB">Kilobajti (kB)</option>
+                    <option value="MB">Megabajti (MB)</option>
+                    <option value="GB" selected>Gigabajti (GB)</option>
+                    <option value="TB">Terabajti (TB)</option>
+                    <option value="KiB">Kibibajti (KiB)</option>
+                    <option value="MiB">Mebibajti (MiB)</option>
+                    <option value="GiB">Gibibajti (GiB)</option>
+                </select>
+
+                <label for="hitrost">Hitrost prenosa</label>
+                <input
+                    type="number"
+                    id="hitrost"
+                    min="0"
+                    step="any"
+                    placeholder="Na primer: 100"
+                    required
+                >
+
+                <label for="enota-hitrosti">Enota hitrosti</label>
+                <select id="enota-hitrosti">
+                    <option value="Kbps">Kilobiti na sekundo (kb/s)</option>
+                    <option value="Mbps" selected>
+                        Megabiti na sekundo (Mb/s)
+                    </option>
+                    <option value="Gbps">Gigabiti na sekundo (Gb/s)</option>
+                    <option value="kBs">Kilobajti na sekundo (kB/s)</option>
+                    <option value="MBs">Megabajti na sekundo (MB/s)</option>
+                    <option value="GBs">Gigabajti na sekundo (GB/s)</option>
+                    <option value="MiBs">Mebibajti na sekundo (MiB/s)</option>
+                </select>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Čas prenosa = velikost datoteke v bajtih
+                ÷ hitrost v bajtih na sekundo.
+            </p>
+
+            <p>
+                <strong>1 bajt = 8 bitov.</strong>
+                Hitrost 100 Mb/s zato pomeni 12,5 MB/s.
+                Velika črka B označuje bajte, mala b pa bite.
+            </p>
+
+            <p>
+                Primer: prenos 1 GB pri 100 Mb/s teoretično
+                traja <strong>80 sekund</strong>.
+            </p>
+
+            <p>
+                Izračun predpostavlja stalno hitrost.
+                Čas povezovanja, omrežni režijski podatki
+                in omejitve strežnika niso vključeni.
+            </p>
+
+            <p>
+                Decimalne enote uporabljajo faktor 1.000,
+                binarne enote KiB, MiB in GiB pa faktor 1.024.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        // Velikost ene enote v bajtih.
+        const velikosti = {
+            B: 1,
+            kB: 1000,
+            MB: 1000 ** 2,
+            GB: 1000 ** 3,
+            TB: 1000 ** 4,
+            KiB: 1024,
+            MiB: 1024 ** 2,
+            GiB: 1024 ** 3
+        };
+
+        // Hitrost ene enote v bajtih na sekundo.
+        const hitrosti = {
+            Kbps: 1000 / 8,
+            Mbps: 1000 ** 2 / 8,
+            Gbps: 1000 ** 3 / 8,
+            kBs: 1000,
+            MBs: 1000 ** 2,
+            GBs: 1000 ** 3,
+            MiBs: 1024 ** 2
+        };
+
+        const oblikovanje = new Intl.NumberFormat("sl-SI", {
+            maximumSignificantDigits: 10
+        });
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function oblikujCas(sekunde) {
+            if (sekunde === 0) return "0 s";
+
+            if (sekunde < 1) {
+                return oblikovanje.format(sekunde) + " s";
+            }
+
+            const skupaj = Math.ceil(sekunde);
+
+            if (!Number.isSafeInteger(skupaj)) {
+                return oblikovanje.format(sekunde) + " s";
+            }
+
+            const dnevi = Math.floor(skupaj / 86400);
+            const ure = Math.floor((skupaj % 86400) / 3600);
+            const minute = Math.floor((skupaj % 3600) / 60);
+            const ostaleSekunde = skupaj % 60;
+
+            const deli = [];
+
+            if (dnevi > 0) {
+                deli.push(dnevi.toLocaleString("sl-SI") + " dni");
+            }
+
+            if (ure > 0) deli.push(ure + " h");
+            if (minute > 0) deli.push(minute + " min");
+            if (ostaleSekunde > 0) deli.push(ostaleSekunde + " s");
+
+            return deli.join(" ");
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const velikost =
+                document.getElementById("velikost").valueAsNumber;
+
+            const hitrost =
+                document.getElementById("hitrost").valueAsNumber;
+
+            const enotaVelikosti =
+                document.getElementById("enota-velikosti").value;
+
+            const enotaHitrosti =
+                document.getElementById("enota-hitrosti").value;
+
+            if (
+                !Number.isFinite(velikost) ||
+                velikost < 0 ||
+                !Number.isFinite(hitrost) ||
+                hitrost <= 0
+            ) {
+                napaka.textContent =
+                    "Velikost mora biti najmanj 0, hitrost pa večja od 0.";
+                return;
+            }
+
+            const bajti = velikost * velikosti[enotaVelikosti];
+            const bajtiNaSekundo = hitrost * hitrosti[enotaHitrosti];
+
+            const sekunde = bajti / bajtiNaSekundo;
+
+            if (
+                !Number.isFinite(bajti) ||
+                !Number.isFinite(bajtiNaSekundo) ||
+                bajtiNaSekundo <= 0 ||
+                !Number.isFinite(sekunde) ||
+                (velikost > 0 && (bajti === 0 || sekunde === 0))
+            ) {
+                napaka.textContent =
+                    "Izračun je zunaj podprtega številskega obsega. " +
+                    "Uporabi manj skrajne vrednosti.";
+                return;
+            }
+
+            dodajBesedilo(
+                "Čas prenosa: " + oblikujCas(sekunde),
+                "h2"
+            );
+
+            dodajBesedilo(
+                "V sekundah: približno " +
+                oblikovanje.format(sekunde) + " s."
+            );
+
+            dodajBesedilo(
+                "Hitrost v MB/s: " +
+                oblikovanje.format(bajtiNaSekundo / 1000000) + " MB/s."
+            );
+
+            dodajBesedilo(
+                "Pri času nad eno sekundo je prikaz trajanja " +
+                "zaokrožen navzgor na celo sekundo."
+            );
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ploščina in obseg likov</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Ploščina in obseg likov</h1>
+        <p>Izberi lik in vnesi njegove dimenzije.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="lik">Geometrijski lik</label>
+                <select id="lik">
+                    <option value="kvadrat">Kvadrat</option>
+                    <option value="pravokotnik">Pravokotnik</option>
+                    <option value="krog">Krog</option>
+                    <option value="trikotnik">Trikotnik</option>
+                </select>
+
+                <label for="enota">Merska enota</label>
+                <select id="enota">
+                    <option value="cm">Centimetri (cm)</option>
+                    <option value="m">Metri (m)</option>
+                    <option value="mm">Milimetri (mm)</option>
+                    <option value="km">Kilometri (km)</option>
+                </select>
+
+                <div id="dimenzije"></div>
+
+                <p id="navodilo">
+                    Vse dolžine vnesi v izbrani merski enoti.
+                    Dolžine morajo biti večje od 0.
+                </p>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Uporabljene formule</h2>
+
+            <p>
+                <strong>Kvadrat:</strong>
+                ploščina S = a², obseg o = 4a.
+            </p>
+
+            <p>
+                <strong>Pravokotnik:</strong>
+                ploščina S = ab, obseg o = 2(a + b).
+            </p>
+
+            <p>
+                <strong>Krog:</strong>
+                ploščina S = πr², obseg o = 2πr.
+                Vneseš polmer r, ne premera.
+            </p>
+
+            <p>
+                <strong>Trikotnik:</strong>
+                obseg o = a + b + c.
+                Ploščino izračunamo s Heronovo formulo:
+                S = √(s(s − a)(s − b)(s − c)),
+                kjer je s = (a + b + c) ÷ 2.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const lik = document.getElementById("lik");
+        const enota = document.getElementById("enota");
+        const dimenzije = document.getElementById("dimenzije");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const nastavitve = {
+            kvadrat: {
+                polja: [
+                    { id: "a", oznaka: "Stranica a" }
+                ],
+                formula: "S = a²; o = 4a"
+            },
+            pravokotnik: {
+                polja: [
+                    { id: "a", oznaka: "Stranica a" },
+                    { id: "b", oznaka: "Stranica b" }
+                ],
+                formula: "S = a × b; o = 2(a + b)"
+            },
+            krog: {
+                polja: [
+                    { id: "r", oznaka: "Polmer r" }
+                ],
+                formula: "S = πr²; o = 2πr"
+            },
+            trikotnik: {
+                polja: [
+                    { id: "a", oznaka: "Stranica a" },
+                    { id: "b", oznaka: "Stranica b" },
+                    { id: "c", oznaka: "Stranica c" }
+                ],
+                formula:
+                    "s = (a + b + c) ÷ 2; " +
+                    "S = √(s(s − a)(s − b)(s − c)); o = a + b + c"
+            }
+        };
+
+        const oblikovanje = new Intl.NumberFormat("sl-SI", {
+            maximumSignificantDigits: 12
+        });
+
+        function zapis(stevilo) {
+            return oblikovanje.format(stevilo);
+        }
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function prikaziPolja() {
+            dimenzije.replaceChildren();
+            dimenzije.style.display = "grid";
+            dimenzije.style.gap = "12px";
+
+            nastavitve[lik.value].polja.forEach(function (polje) {
+                const oznaka = document.createElement("label");
+                oznaka.htmlFor = polje.id;
+                oznaka.textContent = polje.oznaka;
+
+                const vnos = document.createElement("input");
+                vnos.type = "number";
+                vnos.id = polje.id;
+                vnos.min = "0";
+                vnos.step = "any";
+                vnos.required = true;
+                vnos.placeholder = "Na primer: 5";
+
+                dimenzije.append(oznaka, vnos);
+            });
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        lik.addEventListener("change", function () {
+            prikaziPolja();
+            pocistiRezultat();
+        });
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const vrednosti = {};
+
+            for (const polje of nastavitve[lik.value].polja) {
+                const vrednost =
+                    document.getElementById(polje.id).valueAsNumber;
+
+                if (!Number.isFinite(vrednost) || vrednost <= 0) {
+                    napaka.textContent =
+                        "Vse dolžine morajo biti veljavna števila, večja od 0.";
+                    return;
+                }
+
+                vrednosti[polje.id] = vrednost;
+            }
+
+            const { a, b, c, r } = vrednosti;
+            let ploscina;
+            let obseg;
+
+            switch (lik.value) {
+                case "kvadrat":
+                    ploscina = a * a;
+                    obseg = 4 * a;
+                    break;
+
+                case "pravokotnik":
+                    ploscina = a * b;
+                    obseg = 2 * (a + b);
+                    break;
+
+                case "krog":
+                    ploscina = Math.PI * r * r;
+                    obseg = 2 * Math.PI * r;
+                    break;
+
+                case "trikotnik": {
+                    // Stranice uredimo od najdaljše do najkrajše.
+                    const [x, y, z] = [a, b, c].sort((a, b) => b - a);
+
+                    if (z <= x - y) {
+                        napaka.textContent =
+                            "Te stranice ne tvorijo trikotnika. " +
+                            "Vsota krajših stranic mora biti večja od najdaljše.";
+                        return;
+                    }
+
+                    // Stabilnejša oblika Heronove formule.
+                    const Y = y / x;
+                    const Z = z / x;
+                    const razlika = (x - y) / x;
+
+                    const produkt =
+                        (1 + Y + Z) *
+                        ((z - (x - y)) / x) *
+                        (Z + razlika) *
+                        (1 + Y - Z);
+
+                    ploscina = (x * (Math.sqrt(produkt) / 4)) * x;
+                    obseg = x + y + z;
+                    break;
+                }
+            }
+
+            if (
+                !Number.isFinite(ploscina) ||
+                !Number.isFinite(obseg) ||
+                ploscina <= 0 ||
+                obseg <= 0
+            ) {
+                napaka.textContent =
+                    "Rezultat je zunaj podprtega številskega obsega. " +
+                    "Uporabi manj skrajne dolžine.";
+                return;
+            }
+
+            dodajBesedilo("Rezultat", "h2");
+
+            dodajBesedilo(
+                "Ploščina: " + zapis(ploscina) + " " + enota.value + "²"
+            );
+
+            dodajBesedilo(
+                "Obseg: " + zapis(obseg) + " " + enota.value
+            );
+
+            dodajBesedilo("Formula", "h3");
+            dodajBesedilo(nastavitve[lik.value].formula);
+
+            dodajBesedilo(
+                "Prikazane vrednosti so zaokrožene na največ " +
+                "12 pomembnih števk."
+            );
+        });
+
+        obrazec.addEventListener("reset", function () {
+            pocistiRezultat();
+            setTimeout(prikaziPolja, 0);
+        });
+
+        prikaziPolja();
+    </script>
+</body>
+</html>

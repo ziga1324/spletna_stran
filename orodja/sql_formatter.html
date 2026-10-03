@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Oblikovalnik SQL</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Oblikovalnik SQL</h1>
+        <p>Uredi zapis svoje SQL-poizvedbe.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="sql">SQL-poizvedba</label>
+                <textarea
+                    id="sql"
+                    rows="10"
+                    maxlength="100000"
+                    placeholder="select ime, priimek from osebe where starost > 18 order by priimek;"
+                    required
+                    spellcheck="false"
+                ></textarea>
+
+                <div class="gumbi">
+                    <button type="submit">Oblikuj SQL</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div class="rezultat">
+                <label for="rezultat">Oblikovana poizvedba</label>
+                <textarea
+                    id="rezultat"
+                    rows="14"
+                    readonly
+                    spellcheck="false"
+                    style="font-family: monospace;"
+                ></textarea>
+
+                <button type="button" id="kopiraj" disabled>
+                    Kopiraj rezultat
+                </button>
+            </div>
+
+            <p id="status" role="status"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Glavne dele poizvedbe, kot so SELECT, FROM,
+                WHERE in ORDER BY, razporedi v ločene vrstice.
+                Prepoznane ključne besede spremeni v velike črke.
+            </p>
+
+            <p>
+                Besedilo v narekovajih in komentarji se ohranijo.
+                Orodje ne preverja pravilnosti SQL in poizvedbe ne izvaja.
+            </p>
+
+            <p>
+                Oblikovalnik je namenjen osnovnim poizvedbam.
+                Posebne sintakse posameznih podatkovnih baz
+                morda ne oblikuje pravilno. Pred uporabo preveri rezultat.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const sql = document.getElementById("sql");
+        const rezultat = document.getElementById("rezultat");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+        const kopiraj = document.getElementById("kopiraj");
+
+        const kljucneBesede = new Set(`
+            SELECT DISTINCT FROM WHERE GROUP BY ORDER HAVING
+            LIMIT OFFSET INSERT INTO VALUES UPDATE SET DELETE
+            JOIN LEFT RIGHT INNER OUTER FULL CROSS ON AS
+            AND OR NOT NULL IS IN EXISTS BETWEEN LIKE
+            ASC DESC UNION ALL WITH CASE WHEN THEN ELSE END
+            CREATE TABLE ALTER DROP PRIMARY KEY FOREIGN
+            REFERENCES DEFAULT UNIQUE CHECK RETURNING
+            TRUE FALSE
+        `.trim().split(/\s+/));
+
+        const noveVrstice = new Set([
+            "SELECT", "FROM", "WHERE", "HAVING",
+            "LIMIT", "OFFSET", "VALUES", "SET",
+            "RETURNING", "UNION"
+        ]);
+
+        function pocistiRezultat() {
+            rezultat.value = "";
+            napaka.textContent = "";
+            status.textContent = "";
+            kopiraj.disabled = true;
+        }
+
+        function razcleni(besedilo) {
+            const tokeni = [];
+            let i = 0;
+
+            while (i < besedilo.length) {
+                const znak = besedilo[i];
+
+                if (/\s/.test(znak)) {
+                    i++;
+                    continue;
+                }
+
+                // Vrstični komentar.
+                if (besedilo.startsWith("--", i) || znak === "#") {
+                    const zacetek = i;
+
+                    while (i < besedilo.length && besedilo[i] !== "\n") {
+                        i++;
+                    }
+
+                    tokeni.push({
+                        tip: "komentar",
+                        zapis: besedilo.slice(zacetek, i)
+                    });
+                    continue;
+                }
+
+                // Blokovni komentar.
+                if (besedilo.startsWith("/*", i)) {
+                    const konec = besedilo.indexOf("*/", i + 2);
+
+                    if (konec === -1) {
+                        throw new Error("Blokovni komentar ni zaključen.");
+                    }
+
+                    tokeni.push({
+                        tip: "komentar",
+                        zapis: besedilo.slice(i, konec + 2)
+                    });
+
+                    i = konec + 2;
+                    continue;
+                }
+
+                // Nizi in imena v narekovajih.
+                if (["'", '"', "`", "["].includes(znak)) {
+                    const zacetek = i;
+                    const zakljucek = znak === "[" ? "]" : znak;
+                    let zakljuceno = false;
+                    i++;
+
+                    while (i < besedilo.length) {
+                        if (besedilo[i] === "\\"
+                            && znak !== "["
+                            && i + 1 < besedilo.length) {
+                            i += 2;
+                            continue;
+                        }
+
+                        if (besedilo[i] === zakljucek) {
+                            if (besedilo[i + 1] === zakljucek) {
+                                i += 2;
+                                continue;
+                            }
+
+                            i++;
+                            zakljuceno = true;
+                            break;
+                        }
+
+                        i++;
+                    }
+
+                    if (!zakljuceno) {
+                        throw new Error(
+                            "Preveri nezaključene narekovaje."
+                        );
+                    }
+
+                    tokeni.push({
+                        tip: "zasciten",
+                        zapis: besedilo.slice(zacetek, i)
+                    });
+                    continue;
+                }
+
+                // PostgreSQL nizi z oznako $...$.
+                const dolar = /^\$(?:[A-Za-z_][A-Za-z0-9_]*)?\$/
+                    .exec(besedilo.slice(i));
+
+                if (dolar) {
+                    const oznaka = dolar[0];
+                    const konec = besedilo.indexOf(
+                        oznaka,
+                        i + oznaka.length
+                    );
+
+                    if (konec === -1) {
+                        throw new Error("Niz z oznako $ ni zaključen.");
+                    }
+
+                    const konecNiza = konec + oznaka.length;
+
+                    tokeni.push({
+                        tip: "zasciten",
+                        zapis: besedilo.slice(i, konecNiza)
+                    });
+
+                    i = konecNiza;
+                    continue;
+                }
+
+                const beseda = /^[\p{L}_][\p{L}\p{N}_$]*/u
+                    .exec(besedilo.slice(i));
+
+                if (beseda) {
+                    tokeni.push({ tip: "beseda", zapis: beseda[0] });
+                    i += beseda[0].length;
+                    continue;
+                }
+
+                const stevilo = /^(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?/
+                    .exec(besedilo.slice(i));
+
+                if (stevilo) {
+                    tokeni.push({ tip: "stevilo", zapis: stevilo[0] });
+                    i += stevilo[0].length;
+                    continue;
+                }
+
+                const operator = /^(?:->>|->|::|<=|>=|<>|!=|\|\||:=|=>)/
+                    .exec(besedilo.slice(i));
+
+                if (operator) {
+                    tokeni.push({ tip: "znak", zapis: operator[0] });
+                    i += operator[0].length;
+                    continue;
+                }
+
+                tokeni.push({ tip: "znak", zapis: znak });
+                i++;
+            }
+
+            return tokeni;
+        }
+
+        function oblikuj(tokeni) {
+            let izhod = "";
+            let globina = 0;
+            let prejsnji = "";
+
+            function novaVrstica() {
+                izhod = izhod.replace(/[ \t]+$/, "");
+
+                if (izhod && !izhod.endsWith("\n")) {
+                    izhod += "\n";
+                }
+            }
+
+            function dodaj(zapis, brezPresledka = false) {
+                if (!izhod || izhod.endsWith("\n")) {
+                    izhod += "    ".repeat(globina);
+                } else if (
+                    !brezPresledka &&
+                    !izhod.endsWith(" ") &&
+                    !["(", ".", "::"].includes(prejsnji)
+                ) {
+                    izhod += " ";
+                }
+
+                izhod += zapis;
+            }
+
+            tokeni.forEach(function (token, i) {
+                const original = token.zapis;
+                const velika = original.toUpperCase();
+
+                const zapis =
+                    token.tip === "beseda" && kljucneBesede.has(velika)
+                        ? velika
+                        : original;
+
+                const naslednji = tokeni[i + 1];
+                const naslednjaBeseda = naslednji?.tip === "beseda"
+                    ? naslednji.zapis.toUpperCase()
+                    : "";
+
+                if (token.tip === "komentar") {
+                    novaVrstica();
+                    dodaj(original);
+                    novaVrstica();
+                } else if (zapis === "(") {
+                    const funkcija =
+                        tokeni[i - 1]?.tip === "beseda" &&
+                        !kljucneBesede.has(prejsnji);
+
+                    dodaj("(", funkcija);
+                    globina++;
+                } else if (zapis === ")") {
+                    globina = Math.max(0, globina - 1);
+                    dodaj(")", true);
+                } else if (zapis === ",") {
+                    dodaj(",", true);
+                    izhod += " ";
+                } else if (zapis === ";") {
+                    dodaj(";", true);
+                    novaVrstica();
+                } else if (zapis === "." || zapis === "::") {
+                    dodaj(zapis, true);
+                } else {
+                    const sestavljenaKlavzula =
+                        (["GROUP", "ORDER"].includes(zapis)
+                            && naslednjaBeseda === "BY") ||
+                        (["LEFT", "RIGHT", "INNER", "OUTER", "FULL", "CROSS"]
+                            .includes(zapis)
+                            && ["JOIN", "OUTER"].includes(naslednjaBeseda));
+
+                    const samostojniJoin =
+                        zapis === "JOIN" &&
+                        !["LEFT", "RIGHT", "INNER", "OUTER", "FULL", "CROSS"]
+                            .includes(prejsnji);
+
+                    if (
+                        token.tip === "beseda" &&
+                        (
+                            noveVrstice.has(zapis) ||
+                            sestavljenaKlavzula ||
+                            samostojniJoin ||
+                            ["AND", "OR"].includes(zapis)
+                        )
+                    ) {
+                        novaVrstica();
+                    }
+
+                    dodaj(zapis);
+                }
+
+                prejsnji = zapis;
+            });
+
+            return izhod.trim();
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            if (!sql.value.trim()) {
+                napaka.textContent = "Najprej vnesi SQL-poizvedbo.";
+                return;
+            }
+
+            try {
+                rezultat.value = oblikuj(razcleni(sql.value));
+                kopiraj.disabled = rezultat.value === "";
+                status.textContent = "Poizvedba je oblikovana.";
+            } catch (napakaOblikovanja) {
+                napaka.textContent = napakaOblikovanja.message;
+            }
+        });
+
+        kopiraj.addEventListener("click", async function () {
+            try {
+                await navigator.clipboard.writeText(rezultat.value);
+                status.textContent = "Rezultat je kopiran.";
+            } catch {
+                rezultat.focus();
+                rezultat.select();
+
+                status.textContent =
+                    "Rezultat je označen. Uporabi Ctrl+C oziroma Cmd+C.";
+            }
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

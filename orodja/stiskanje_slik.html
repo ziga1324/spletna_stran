@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Stiskanje slik</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Stiskanje slik</h1>
+        <p>Zmanjšaj velikost slikovne datoteke in prenesi rezultat.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="slika">Izberi sliko PNG, JPEG ali WebP</label>
+                <input
+                    type="file"
+                    id="slika"
+                    accept="image/png,image/jpeg,image/webp"
+                    required
+                >
+
+                <label for="format">Izhodni format</label>
+                <select id="format">
+                    <option value="image/jpeg">JPEG</option>
+                    <option value="image/webp">WebP</option>
+                </select>
+
+                <label for="kakovost">
+                    Kakovost: <span id="kakovost-prikaz">80</span> %
+                </label>
+                <input
+                    type="range"
+                    id="kakovost"
+                    min="10"
+                    max="100"
+                    step="1"
+                    value="80"
+                >
+
+                <p>
+                    Nižja kakovost običajno pomeni manjšo datoteko
+                    in večjo izgubo podrobnosti.
+                </p>
+
+                <div class="gumbi">
+                    <button type="submit" id="stisni">Stisni sliko</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div id="izhod" class="rezultat" hidden>
+                <h2>Rezultat</h2>
+                <p id="primerjava"></p>
+                <p id="sprememba"></p>
+                <p id="dimenzije"></p>
+
+                <img
+                    id="predogled"
+                    alt="Predogled stisnjene slike"
+                    style="display: block; max-width: 100%;
+                           height: auto; margin: 16px auto;"
+                >
+
+                <button type="button" id="prenesi">Prenesi sliko</button>
+            </div>
+
+            <p id="status" role="status"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Slika se ponovno zapiše v izbranem formatu in kakovosti.
+                Število slikovnih pik ostane enako.
+                Obdelava poteka v tvojem brskalniku.
+            </p>
+
+            <p>
+                JPEG ne podpira prosojnosti, zato prosojne dele
+                zapolnimo z belo barvo. WebP omogoča prosojnost.
+            </p>
+
+            <p>
+                Rezultat ni vedno manjši od izvirnika.
+                Ponovno zapisovanje lahko odstrani metapodatke
+                in spremeni barvni prikaz.
+            </p>
+
+            <p>
+                Orodje je namenjeno statičnim slikam do 20 MB
+                in največ 16 milijonov slikovnih pik.
+                Animacije se ne ohranijo.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const slikaVnos = document.getElementById("slika");
+        const format = document.getElementById("format");
+        const kakovost = document.getElementById("kakovost");
+        const kakovostPrikaz = document.getElementById("kakovost-prikaz");
+        const stisni = document.getElementById("stisni");
+
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+        const izhod = document.getElementById("izhod");
+        const predogled = document.getElementById("predogled");
+
+        let rezultatUrl = null;
+        let rezultatDatoteka = null;
+        let imePrenosa = "";
+        let razlicica = 0;
+
+        function velikostDatoteke(bajti) {
+            if (bajti < 1024) return bajti + " B";
+
+            if (bajti < 1024 ** 2) {
+                return (bajti / 1024).toLocaleString("sl-SI", {
+                    maximumFractionDigits: 2
+                }) + " KiB";
+            }
+
+            return (bajti / 1024 ** 2).toLocaleString("sl-SI", {
+                maximumFractionDigits: 2
+            }) + " MiB";
+        }
+
+        function pocistiRezultat() {
+            razlicica++;
+
+            if (rezultatUrl) {
+                URL.revokeObjectURL(rezultatUrl);
+            }
+
+            rezultatUrl = null;
+            rezultatDatoteka = null;
+            predogled.removeAttribute("src");
+            izhod.hidden = true;
+            napaka.textContent = "";
+            status.textContent = "";
+            stisni.disabled = false;
+        }
+
+        function naloziSliko(datoteka) {
+            return new Promise(function (resolve, reject) {
+                const url = URL.createObjectURL(datoteka);
+                const slika = new Image();
+
+                slika.onload = function () {
+                    URL.revokeObjectURL(url);
+                    resolve(slika);
+                };
+
+                slika.onerror = function () {
+                    URL.revokeObjectURL(url);
+                    reject(new Error("Slike ni mogoče odpreti."));
+                };
+
+                slika.src = url;
+            });
+        }
+
+        function zapisiSliko(canvas, tip, kakovost) {
+            return new Promise(function (resolve, reject) {
+                canvas.toBlob(function (datoteka) {
+                    if (datoteka) {
+                        resolve(datoteka);
+                    } else {
+                        reject(new Error("Zapis slike ni uspel."));
+                    }
+                }, tip, kakovost);
+            });
+        }
+
+        obrazec.addEventListener("input", function () {
+            kakovostPrikaz.textContent = kakovost.value;
+            pocistiRezultat();
+        });
+
+        obrazec.addEventListener("submit", async function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const trenutnaRazlicica = razlicica;
+            const datoteka = slikaVnos.files[0];
+            const izbraniFormat = format.value;
+            const izbranaKakovost = Number(kakovost.value) / 100;
+
+            if (
+                !datoteka ||
+                !["image/png", "image/jpeg", "image/webp"]
+                    .includes(datoteka.type)
+            ) {
+                napaka.textContent = "Izberi sliko PNG, JPEG ali WebP.";
+                return;
+            }
+
+            if (datoteka.size > 20 * 1024 * 1024) {
+                napaka.textContent = "Slika je lahko velika največ 20 MB.";
+                return;
+            }
+
+            stisni.disabled = true;
+            status.textContent = "Obdelujem sliko ...";
+
+            try {
+                const slika = await naloziSliko(datoteka);
+
+                if (trenutnaRazlicica !== razlicica) return;
+
+                const sirina = slika.naturalWidth;
+                const visina = slika.naturalHeight;
+
+                if (
+                    sirina <= 0 ||
+                    visina <= 0 ||
+                    sirina * visina > 16000000 ||
+                    sirina > 8192 ||
+                    visina > 8192
+                ) {
+                    throw new Error(
+                        "Slika lahko vsebuje največ 16 milijonov pik, " +
+                        "posamezna stranica pa največ 8192 pik."
+                    );
+                }
+
+                const canvas = document.createElement("canvas");
+                canvas.width = sirina;
+                canvas.height = visina;
+
+                const kontekst = canvas.getContext("2d");
+
+                if (!kontekst) {
+                    throw new Error("Brskalnik ne omogoča obdelave slike.");
+                }
+
+                if (izbraniFormat === "image/jpeg") {
+                    kontekst.fillStyle = "#ffffff";
+                    kontekst.fillRect(0, 0, sirina, visina);
+                }
+
+                kontekst.drawImage(slika, 0, 0);
+
+                const stisnjena = await zapisiSliko(
+                    canvas,
+                    izbraniFormat,
+                    izbranaKakovost
+                );
+
+                if (trenutnaRazlicica !== razlicica) return;
+
+                if (stisnjena.type !== izbraniFormat) {
+                    throw new Error(
+                        "Brskalnik ne podpira izbranega izhodnega formata."
+                    );
+                }
+
+                rezultatDatoteka = stisnjena;
+                rezultatUrl = URL.createObjectURL(stisnjena);
+                predogled.src = rezultatUrl;
+
+                const osnovaImena =
+                    datoteka.name.replace(/\.[^.]+$/, "") || "slika";
+
+                imePrenosa = osnovaImena + "_stisnjena" +
+                    (izbraniFormat === "image/jpeg" ? ".jpg" : ".webp");
+
+                document.getElementById("primerjava").textContent =
+                    "Izvirnik: " + velikostDatoteke(datoteka.size) +
+                    " | Rezultat: " + velikostDatoteke(stisnjena.size);
+
+                const razlika = datoteka.size - stisnjena.size;
+                const odstotek = datoteka.size > 0
+                    ? Math.abs(razlika) / datoteka.size * 100
+                    : 0;
+
+                const zapisOdstotka = odstotek.toLocaleString("sl-SI", {
+                    maximumFractionDigits: 2
+                });
+
+                document.getElementById("sprememba").textContent =
+                    razlika > 0
+                        ? "Datoteka je manjša za " + zapisOdstotka + " %."
+                        : razlika < 0
+                            ? "Datoteka je večja za " + zapisOdstotka + " %."
+                            : "Velikost datoteke se ni spremenila.";
+
+                document.getElementById("dimenzije").textContent =
+                    "Dimenzije: " + sirina + " × " + visina + " pik.";
+
+                izhod.hidden = false;
+                status.textContent = "Slika je pripravljena.";
+            } catch (napakaObdelave) {
+                if (trenutnaRazlicica === razlicica) {
+                    napaka.textContent = napakaObdelave.message;
+                    status.textContent = "";
+                }
+            } finally {
+                if (trenutnaRazlicica === razlicica) {
+                    stisni.disabled = false;
+                }
+            }
+        });
+
+        document.getElementById("prenesi").addEventListener(
+            "click",
+            function () {
+                if (!rezultatDatoteka || !rezultatUrl) return;
+
+                const povezava = document.createElement("a");
+                povezava.href = rezultatUrl;
+                povezava.download = imePrenosa;
+
+                document.body.appendChild(povezava);
+                povezava.click();
+                povezava.remove();
+            }
+        );
+
+        obrazec.addEventListener("reset", function () {
+            pocistiRezultat();
+
+            setTimeout(function () {
+                kakovostPrikaz.textContent = kakovost.value;
+            }, 0);
+        });
+    </script>
+</body>
+</html>

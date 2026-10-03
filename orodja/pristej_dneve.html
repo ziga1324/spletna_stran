@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Prištevanje dni datumu</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Prištevanje dni datumu</h1>
+        <p>Izračunaj datum čez določeno število dni ali pred njimi.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="datum">Začetni datum</label>
+                <input
+                    type="date"
+                    id="datum"
+                    min="0001-01-01"
+                    max="9999-12-31"
+                    required
+                >
+
+                <label for="dnevi">Število dni</label>
+                <input
+                    type="number"
+                    id="dnevi"
+                    min="0"
+                    max="100000"
+                    step="1"
+                    placeholder="Na primer: 30"
+                    required
+                >
+
+                <label for="smer">Kaj želiš narediti?</label>
+                <select id="smer">
+                    <option value="1">Prištej dneve</option>
+                    <option value="-1">Odštej dneve</option>
+                </select>
+
+                <label class="moznost">
+                    <input type="checkbox" id="brez-vikendov">
+                    Preskoči sobote in nedelje
+                </label>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj datum</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Začetni datum ni vključen v štetje.
+                Pri 0 dnevih ostane datum nespremenjen.
+            </p>
+
+            <p>
+                Če preskočiš vikende, štejejo samo dnevi
+                od ponedeljka do petka. Prazniki se ne izključijo.
+            </p>
+
+            <p>
+                Primer: če petku prišteješ 1 dan, dobiš soboto.
+                Če preskočiš vikende, dobiš ponedeljek.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const datumVnos = document.getElementById("datum");
+        const dneviVnos = document.getElementById("dnevi");
+        const smerVnos = document.getElementById("smer");
+        const brezVikendov = document.getElementById("brez-vikendov");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const imenaDni = [
+            "nedelja",
+            "ponedeljek",
+            "torek",
+            "sreda",
+            "četrtek",
+            "petek",
+            "sobota"
+        ];
+
+        function preberiDatum(vnos) {
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(vnos)) {
+                throw new Error("Izberi veljaven začetni datum.");
+            }
+
+            const [leto, mesec, dan] = vnos.split("-").map(Number);
+            const datum = new Date(0);
+
+            datum.setUTCFullYear(leto, mesec - 1, dan);
+            datum.setUTCHours(0, 0, 0, 0);
+
+            if (
+                leto < 1 ||
+                leto > 9999 ||
+                datum.getUTCFullYear() !== leto ||
+                datum.getUTCMonth() !== mesec - 1 ||
+                datum.getUTCDate() !== dan
+            ) {
+                throw new Error("Izberi veljaven datum med leti 1 in 9999.");
+            }
+
+            return datum;
+        }
+
+        function zapisDatuma(datum) {
+            return datum.getUTCDate() + ". " +
+                (datum.getUTCMonth() + 1) + ". " +
+                datum.getUTCFullYear();
+        }
+
+        function preveriObseg(datum) {
+            const leto = datum.getUTCFullYear();
+
+            if (leto < 1 || leto > 9999) {
+                throw new Error(
+                    "Končni datum mora biti med leti 1 in 9999."
+                );
+            }
+        }
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            try {
+                const zacetek = preberiDatum(datumVnos.value);
+                const steviloDni = dneviVnos.valueAsNumber;
+                const smer = Number(smerVnos.value);
+
+                if (
+                    !Number.isInteger(steviloDni) ||
+                    steviloDni < 0 ||
+                    steviloDni > 100000
+                ) {
+                    throw new Error(
+                        "Vnesi celo število dni od 0 do 100.000."
+                    );
+                }
+
+                const koncniDatum = new Date(zacetek);
+
+                if (!brezVikendov.checked) {
+                    koncniDatum.setUTCDate(
+                        koncniDatum.getUTCDate() + steviloDni * smer
+                    );
+
+                    preveriObseg(koncniDatum);
+                } else {
+                    let prestetiDnevi = 0;
+
+                    while (prestetiDnevi < steviloDni) {
+                        koncniDatum.setUTCDate(
+                            koncniDatum.getUTCDate() + smer
+                        );
+
+                        preveriObseg(koncniDatum);
+
+                        const danVTednu = koncniDatum.getUTCDay();
+
+                        if (danVTednu !== 0 && danVTednu !== 6) {
+                            prestetiDnevi++;
+                        }
+                    }
+                }
+
+                dodajBesedilo(
+                    "Končni datum: " + zapisDatuma(koncniDatum),
+                    "h2"
+                );
+
+                dodajBesedilo(
+                    "Dan v tednu: " + imenaDni[koncniDatum.getUTCDay()] + "."
+                );
+
+                dodajBesedilo(
+                    "Začetni datum: " + zapisDatuma(zacetek) + "."
+                );
+
+                dodajBesedilo(
+                    (smer === 1 ? "Prišteto" : "Odšteto") +
+                    " število dni: " +
+                    steviloDni.toLocaleString("sl-SI") + "."
+                );
+
+                dodajBesedilo(
+                    brezVikendov.checked
+                        ? "Sobote in nedelje so preskočene; prazniki niso."
+                        : "Upoštevani so vsi koledarski dnevi."
+                );
+            } catch (napakaIzracuna) {
+                napaka.textContent = napakaIzracuna.message;
+            }
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

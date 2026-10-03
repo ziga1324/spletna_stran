@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kalkulator prisotnosti</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Kalkulator prisotnosti</h1>
+        <p>Preveri svojo prisotnost in koliko ur lahko še manjkaš.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="opravljene">Število že izvedenih ur</label>
+                <input
+                    type="number"
+                    id="opravljene"
+                    min="0"
+                    step="1"
+                    placeholder="Na primer: 40"
+                    required
+                >
+
+                <label for="obiskane">Pri koliko teh urah si bil prisoten?</label>
+                <input
+                    type="number"
+                    id="obiskane"
+                    min="0"
+                    step="1"
+                    placeholder="Na primer: 35"
+                    required
+                >
+
+                <label for="preostale">Število preostalih ur</label>
+                <input
+                    type="number"
+                    id="preostale"
+                    min="0"
+                    step="1"
+                    placeholder="Na primer: 20"
+                    required
+                >
+
+                <label for="zahtevana">Zahtevana končna prisotnost (%)</label>
+                <input
+                    type="number"
+                    id="zahtevana"
+                    min="0"
+                    max="100"
+                    step="any"
+                    value="80"
+                    required
+                >
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Prisotnost izračunamo tako, da število obiskanih
+                ur delimo s številom izvedenih ur in pomnožimo s 100.
+            </p>
+
+            <p>
+                Za končni rezultat upoštevamo tudi preostale ure.
+                Potrebno število obiskanih ur zaokrožimo navzgor
+                na celo uro.
+            </p>
+
+            <p>
+                Primer: izvedenih je bilo 40 ur, obiskal si jih 35,
+                preostalih pa je še 20. Za 80 % končno prisotnost
+                moraš obiskati najmanj 48 od skupno 60 ur.
+                Obiskati moraš še 13 ur, zato lahko manjkaš še
+                <strong>7 ur</strong>.
+            </p>
+
+            <p>
+                Vse ure štejejo enako. Zahtevani odstotek prilagodi
+                pravilom šole oziroma predmeta.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const oblikovanje = new Intl.NumberFormat("sl-SI", {
+            maximumFractionDigits: 2
+        });
+
+        function preberiStevilo(id) {
+            return document.getElementById(id).valueAsNumber;
+        }
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.textContent = "";
+        }
+
+        function dodajBesedilo(besedilo, naslov = false) {
+            const element = document.createElement(naslov ? "h2" : "p");
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const opravljene = preberiStevilo("opravljene");
+            const obiskane = preberiStevilo("obiskane");
+            const preostale = preberiStevilo("preostale");
+            const zahtevana = preberiStevilo("zahtevana");
+
+            const ure = [opravljene, obiskane, preostale];
+
+            if (!ure.every(ura => Number.isSafeInteger(ura) && ura >= 0)) {
+                napaka.textContent =
+                    "Števila ur morajo biti nenegativna cela števila.";
+                return;
+            }
+
+            if (obiskane > opravljene) {
+                napaka.textContent =
+                    "Obiskanih ur ne more biti več kot izvedenih.";
+                return;
+            }
+
+            if (
+                !Number.isFinite(zahtevana) ||
+                zahtevana < 0 ||
+                zahtevana > 100
+            ) {
+                napaka.textContent =
+                    "Zahtevana prisotnost mora biti med 0 in 100 %.";
+                return;
+            }
+
+            const skupaj = opravljene + preostale;
+
+            if (!Number.isSafeInteger(skupaj) || skupaj === 0) {
+                napaka.textContent =
+                    "Skupno število ur mora biti večje od 0 in znotraj dovoljenega obsega.";
+                return;
+            }
+
+            // Odstranimo morebitno majhno napako pri decimalnem računanju.
+            const izracun = skupaj * (zahtevana / 100);
+            const najblizjeCelo = Math.round(izracun);
+            const toleranca =
+                Number.EPSILON * Math.max(1, Math.abs(izracun)) * 4;
+
+            const potrebneSkupaj = Math.abs(izracun - najblizjeCelo) <= toleranca
+                ? najblizjeCelo
+                : Math.ceil(izracun);
+
+            const potrebneDodatne = Math.max(0, potrebneSkupaj - obiskane);
+            const najvecObiskanih = obiskane + preostale;
+
+            if (potrebneDodatne > preostale) {
+                dodajBesedilo("Zahtevana prisotnost ni več dosegljiva.", true);
+
+                dodajBesedilo(
+                    "Če obiščeš vse preostale ure, bo tvoja končna prisotnost " +
+                    oblikovanje.format((najvecObiskanih / skupaj) * 100) +
+                    " %."
+                );
+            } else {
+                const dovoljeniIzostanki = preostale - potrebneDodatne;
+
+                dodajBesedilo(
+                    "Lahko manjkaš še " + dovoljeniIzostanki + " ur.",
+                    true
+                );
+
+                dodajBesedilo(
+                    "Od preostalih " + preostale +
+                    " ur moraš obiskati najmanj " + potrebneDodatne + "."
+                );
+
+                dodajBesedilo(
+                    "Če obiščeš toliko ur, bo končna prisotnost " +
+                    oblikovanje.format(
+                        ((obiskane + potrebneDodatne) / skupaj) * 100
+                    ) +
+                    " %."
+                );
+            }
+
+            if (opravljene > 0) {
+                dodajBesedilo(
+                    "Trenutna prisotnost: " +
+                    oblikovanje.format((obiskane / opravljene) * 100) +
+                    " %."
+                );
+            } else {
+                dodajBesedilo(
+                    "Trenutne prisotnosti še ni mogoče izračunati, ker ni bilo izvedenih ur."
+                );
+            }
+
+            dodajBesedilo(
+                "Za zahtevano prisotnost potrebuješ najmanj " +
+                potrebneSkupaj + " obiskanih ur od skupno " + skupaj + "."
+            );
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

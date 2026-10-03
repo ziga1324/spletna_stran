@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Katero oceno potrebujem?</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Katero oceno potrebujem?</h1>
+        <p>Izračunaj, katero naslednjo oceno potrebuješ za želeno povprečje.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="ocene">Trenutne ocene</label>
+
+                <input
+                    type="text"
+                    id="ocene"
+                    name="ocene"
+                    placeholder="Na primer: 3, 4, 4"
+                    aria-describedby="navodilo napaka"
+                    required
+                >
+
+                <p id="navodilo">
+                    Vnesi cele ocene od 1 do 5, ločene z vejico ali presledkom.
+                </p>
+
+                <label for="cilj">Želeno povprečje</label>
+
+                <input
+                    type="number"
+                    id="cilj"
+                    name="cilj"
+                    min="1"
+                    max="5"
+                    step="0.01"
+                    placeholder="Na primer: 4"
+                    required
+                >
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Kalkulator izračuna najnižjo celo oceno, s katero
+                po eni dodatni oceni dosežeš želeno povprečje.
+                Vse ocene imajo enako težo.
+            </p>
+
+            <p>
+                Primer: če imaš ocene 3, 4 in 4 ter želiš povprečje
+                4, potrebuješ oceno 5:
+                (3 + 4 + 4 + 5) ÷ 4 = <strong>4,00</strong>.
+            </p>
+
+            <p>
+                Želeno povprečje ne pomeni nujno enake zaključne ocene.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const vnos = document.getElementById("ocene");
+        const ciljVnos = document.getElementById("cilj");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const oblikovanje = new Intl.NumberFormat("sl-SI", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+
+            napaka.textContent = "";
+            rezultat.textContent = "";
+            vnos.removeAttribute("aria-invalid");
+
+            const besedilo = vnos.value.trim();
+            const dovoljeniVnos = /^[1-5](?:(?:\s*,\s*|\s+)[1-5])*$/;
+
+            if (!dovoljeniVnos.test(besedilo)) {
+                napaka.textContent =
+                    "Vnesi cele ocene od 1 do 5, ločene z vejico ali presledkom.";
+
+                vnos.setAttribute("aria-invalid", "true");
+                vnos.focus();
+                return;
+            }
+
+            const ocene = besedilo.split(/[\s,]+/).map(Number);
+            const cilj = ciljVnos.valueAsNumber;
+
+            if (!Number.isFinite(cilj) || cilj < 1 || cilj > 5) {
+                napaka.textContent =
+                    "Želeno povprečje mora biti med 1 in 5.";
+                return;
+            }
+
+            const vsota = ocene.reduce(
+                (skupaj, ocena) => skupaj + ocena,
+                0
+            );
+
+            // Preverimo ocene od 1 do 5 in poiščemo prvo ustrezno.
+            const potrebnaOcena = [1, 2, 3, 4, 5].find(function (ocena) {
+                const novoPovprecje = (vsota + ocena) / (ocene.length + 1);
+
+                return novoPovprecje >= cilj - 1e-10;
+            });
+
+            const naslov = document.createElement("h2");
+            const podatki = document.createElement("p");
+
+            if (potrebnaOcena === undefined) {
+                naslov.textContent =
+                    "Z eno dodatno oceno cilj ni dosegljiv.";
+
+                const najvisjePovprecje =
+                    (vsota + 5) / (ocene.length + 1);
+
+                podatki.textContent =
+                    "Z oceno 5 bi bilo tvoje povprečje " +
+                    oblikovanje.format(najvisjePovprecje) + ".";
+            } else {
+                naslov.textContent =
+                    "Potrebuješ najmanj oceno " + potrebnaOcena + ".";
+
+                const novoPovprecje =
+                    (vsota + potrebnaOcena) / (ocene.length + 1);
+
+                podatki.textContent =
+                    "S to oceno bi bilo tvoje povprečje " +
+                    oblikovanje.format(novoPovprecje) + ".";
+            }
+
+            rezultat.append(naslov, podatki);
+        });
+
+        obrazec.addEventListener("reset", function () {
+            napaka.textContent = "";
+            rezultat.textContent = "";
+            vnos.removeAttribute("aria-invalid");
+        });
+    </script>
+</body>
+</html>

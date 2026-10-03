@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kalkulator ulomkov</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Kalkulator ulomkov</h1>
+        <p>Seštevaj, odštevaj, množi in deli ulomke.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <fieldset>
+                    <legend>Prvi ulomek</legend>
+
+                    <label for="stevec1">Števec</label>
+                    <input
+                        type="text"
+                        id="stevec1"
+                        placeholder="Na primer: 2"
+                        maxlength="101"
+                        required
+                    >
+
+                    <label for="imenovalec1">Imenovalec</label>
+                    <input
+                        type="text"
+                        id="imenovalec1"
+                        placeholder="Na primer: 3"
+                        maxlength="101"
+                        required
+                    >
+                </fieldset>
+
+                <label for="operacija">Računska operacija</label>
+                <select id="operacija">
+                    <option value="+">Seštevanje (+)</option>
+                    <option value="-">Odštevanje (−)</option>
+                    <option value="*">Množenje (×)</option>
+                    <option value="/">Deljenje (÷)</option>
+                </select>
+
+                <fieldset>
+                    <legend>Drugi ulomek</legend>
+
+                    <label for="stevec2">Števec</label>
+                    <input
+                        type="text"
+                        id="stevec2"
+                        placeholder="Na primer: 1"
+                        maxlength="101"
+                        required
+                    >
+
+                    <label for="imenovalec2">Imenovalec</label>
+                    <input
+                        type="text"
+                        id="imenovalec2"
+                        placeholder="Na primer: 4"
+                        maxlength="101"
+                        required
+                    >
+                </fieldset>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+                style="overflow-wrap: anywhere;"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Pri seštevanju in odštevanju ulomka pretvorimo
+                na skupni imenovalec.
+            </p>
+
+            <p>
+                Pri množenju pomnožimo števca in imenovalca.
+                Pri deljenju prvi ulomek pomnožimo z obratnim
+                drugim ulomkom.
+            </p>
+
+            <p>
+                Rezultat skrajšamo z največjim skupnim deliteljem.
+                Vnašaj cela števila. Imenovalec ne sme biti 0,
+                prav tako ne moreš deliti z ulomkom, ki je enak 0.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function preberiCeloStevilo(id) {
+            const vnos = document.getElementById(id).value.trim();
+
+            if (!/^[+-]?\d{1,100}$/.test(vnos)) {
+                throw new Error(
+                    "Vnesi cela števila z največ 100 števkami."
+                );
+            }
+
+            return BigInt(vnos);
+        }
+
+        function absolutno(stevilo) {
+            return stevilo < 0n ? -stevilo : stevilo;
+        }
+
+        function nsd(a, b) {
+            a = absolutno(a);
+            b = absolutno(b);
+
+            while (b !== 0n) {
+                const ostanek = a % b;
+                a = b;
+                b = ostanek;
+            }
+
+            return a;
+        }
+
+        function zapisUlomka(stevec, imenovalec) {
+            return imenovalec === 1n
+                ? stevec.toString()
+                : stevec + "/" + imenovalec;
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            try {
+                let a = preberiCeloStevilo("stevec1");
+                let b = preberiCeloStevilo("imenovalec1");
+                let c = preberiCeloStevilo("stevec2");
+                let d = preberiCeloStevilo("imenovalec2");
+
+                const operacija =
+                    document.getElementById("operacija").value;
+
+                if (b === 0n || d === 0n) {
+                    throw new Error("Imenovalec ne sme biti 0.");
+                }
+
+                // Negativni predznak prestavimo v števec.
+                if (b < 0n) {
+                    a = -a;
+                    b = -b;
+                }
+
+                if (d < 0n) {
+                    c = -c;
+                    d = -d;
+                }
+
+                if (operacija === "/" && c === 0n) {
+                    throw new Error("Z ulomkom, ki je enak 0, ne moreš deliti.");
+                }
+
+                let stevec;
+                let imenovalec;
+                let postopek;
+                let znak;
+
+                switch (operacija) {
+                    case "+":
+                    case "-": {
+                        const skupniImenovalec = (b / nsd(b, d)) * d;
+                        const prviStevec = a * (skupniImenovalec / b);
+                        const drugiStevec = c * (skupniImenovalec / d);
+
+                        stevec = operacija === "+"
+                            ? prviStevec + drugiStevec
+                            : prviStevec - drugiStevec;
+
+                        imenovalec = skupniImenovalec;
+                        znak = operacija === "+" ? "+" : "−";
+
+                        postopek =
+                            "Skupni imenovalec je " + skupniImenovalec +
+                            ". (" + prviStevec + ") " + znak +
+                            " (" + drugiStevec + ") = " + stevec + ".";
+                        break;
+                    }
+
+                    case "*":
+                        stevec = a * c;
+                        imenovalec = b * d;
+                        znak = "×";
+
+                        postopek =
+                            "Pomnožimo števca in imenovalca: " +
+                            "((" + a + ") × (" + c + ")) / " +
+                            "(" + b + " × " + d + ") = " +
+                            stevec + "/" + imenovalec + ".";
+                        break;
+
+                    case "/":
+                        stevec = a * d;
+                        imenovalec = b * c;
+                        znak = "÷";
+
+                        postopek =
+                            "Pomnožimo z obratnim drugim ulomkom: " +
+                            "(" + zapisUlomka(a, b) + ") × " +
+                            "(" + d + "/" + c + ") = " +
+                            stevec + "/" + imenovalec + ".";
+                        break;
+
+                    default:
+                        throw new Error("Izberi veljavno operacijo.");
+                }
+
+                if (imenovalec < 0n) {
+                    stevec = -stevec;
+                    imenovalec = -imenovalec;
+                }
+
+                const delitelj = nsd(stevec, imenovalec);
+                const krajsaniStevec = stevec / delitelj;
+                const krajsaniImenovalec = imenovalec / delitelj;
+
+                dodajBesedilo(
+                    "Rezultat: " +
+                    zapisUlomka(krajsaniStevec, krajsaniImenovalec),
+                    "h2"
+                );
+
+                dodajBesedilo(
+                    "(" + zapisUlomka(a, b) + ") " + znak +
+                    " (" + zapisUlomka(c, d) + ")"
+                );
+
+                dodajBesedilo("Postopek", "h3");
+                dodajBesedilo(postopek);
+
+                dodajBesedilo(
+                    delitelj > 1n
+                        ? "Števec in imenovalec skrajšamo z " +
+                          delitelj + "."
+                        : "Ulomek je že okrajšan."
+                );
+
+                if (
+                    krajsaniImenovalec > 1n &&
+                    absolutno(krajsaniStevec) > krajsaniImenovalec
+                ) {
+                    const pozitivniStevec = absolutno(krajsaniStevec);
+                    const celiDel = pozitivniStevec / krajsaniImenovalec;
+                    const ostanek = pozitivniStevec % krajsaniImenovalec;
+                    const predznak = krajsaniStevec < 0n ? "−" : "";
+
+                    dodajBesedilo(
+                        "Mešano število: " + predznak +
+                        (krajsaniStevec < 0n ? "(" : "") +
+                        celiDel + " + " + ostanek + "/" +
+                        krajsaniImenovalec +
+                        (krajsaniStevec < 0n ? ")" : "")
+                    );
+                }
+            } catch (napakaIzracuna) {
+                napaka.textContent = napakaIzracuna.message;
+            }
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

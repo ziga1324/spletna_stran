@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Delitev računa</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Delitev računa</h1>
+        <p>Razdeli račun med več oseb in dodaj izbirno napitnino.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="znesek">Znesek računa (€)</label>
+                <input
+                    type="number"
+                    id="znesek"
+                    min="0"
+                    max="1000000"
+                    step="0.01"
+                    placeholder="Na primer: 60"
+                    required
+                >
+
+                <label for="napitnina">Napitnina (%)</label>
+                <input
+                    type="number"
+                    id="napitnina"
+                    min="0"
+                    max="100"
+                    step="any"
+                    value="0"
+                    required
+                >
+
+                <label for="nacin">Način delitve</label>
+                <select id="nacin">
+                    <option value="enako">Enaka delitev</option>
+                    <option value="delezi">Delitev glede na porabo</option>
+                </select>
+
+                <div id="enaka-delitev">
+                    <label for="osebe">Število oseb</label>
+                    <input
+                        type="number"
+                        id="osebe"
+                        min="1"
+                        max="100"
+                        step="1"
+                        value="3"
+                        required
+                    >
+                </div>
+
+                <div id="delitev-delezi" hidden>
+                    <label for="delezi">Poraba oziroma deleži oseb</label>
+                    <input
+                        type="text"
+                        id="delezi"
+                        placeholder="Na primer: 10; 20; 30"
+                        aria-describedby="navodilo"
+                        disabled
+                    >
+
+                    <p id="navodilo">
+                        Vnesi vrednost za vsako osebo, ločeno s podpičjem.
+                        Decimalke lahko zapišeš z vejico ali piko.
+                        Vrednosti se uporabijo kot razmerja.
+                    </p>
+                </div>
+
+                <div class="gumbi">
+                    <button type="submit">Razdeli račun</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Računu najprej prištejemo napitnino, nato skupni
+                znesek razdelimo med osebe.
+            </p>
+
+            <p>
+                Pri delitvi glede na porabo vrednosti 10; 20; 30
+                pomenijo, da druga oseba plača dvakrat, tretja pa
+                trikrat toliko kot prva. Tudi napitnina se deli
+                v istem razmerju.
+            </p>
+
+            <p>
+                Zneski so razdeljeni na cente tako, da njihova
+                vsota ustreza skupnemu računu. Zaradi zaokroževanja
+                se lahko enaki deleži razlikujejo za en cent.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const nacin = document.getElementById("nacin");
+        const osebe = document.getElementById("osebe");
+        const delezi = document.getElementById("delezi");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const denar = new Intl.NumberFormat("sl-SI", {
+            style: "currency",
+            currency: "EUR"
+        });
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function posodobiPolja() {
+            const enako = nacin.value === "enako";
+
+            document.getElementById("enaka-delitev").hidden = !enako;
+            document.getElementById("delitev-delezi").hidden = enako;
+
+            osebe.disabled = !enako;
+            delezi.disabled = enako;
+            delezi.required = !enako;
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        nacin.addEventListener("change", function () {
+            posodobiPolja();
+            pocistiRezultat();
+        });
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const znesek =
+                document.getElementById("znesek").valueAsNumber;
+
+            const napitnina =
+                document.getElementById("napitnina").valueAsNumber;
+
+            if (
+                !Number.isFinite(znesek) ||
+                znesek < 0 ||
+                znesek > 1000000 ||
+                !Number.isFinite(napitnina) ||
+                napitnina < 0 ||
+                napitnina > 100
+            ) {
+                napaka.textContent =
+                    "Vnesi znesek od 0 do 1.000.000 € " +
+                    "in napitnino od 0 do 100 %.";
+                return;
+            }
+
+            let utezi;
+
+            if (nacin.value === "enako") {
+                const stevilo = osebe.valueAsNumber;
+
+                if (
+                    !Number.isInteger(stevilo) ||
+                    stevilo < 1 ||
+                    stevilo > 100
+                ) {
+                    napaka.textContent =
+                        "Število oseb mora biti celo število od 1 do 100.";
+                    return;
+                }
+
+                utezi = Array(stevilo).fill(1);
+            } else {
+                const vnosi = delezi.value
+                    .split(";")
+                    .map(vnos => vnos.trim());
+
+                if (
+                    vnosi.length > 100 ||
+                    vnosi.some(vnos => !/^\d+(?:[.,]\d+)?$/.test(vnos))
+                ) {
+                    napaka.textContent =
+                        "Vnesi do 100 nenegativnih vrednosti, " +
+                        "ločenih s podpičjem.";
+                    return;
+                }
+
+                utezi = vnosi.map(vnos =>
+                    Number(vnos.replace(",", "."))
+                );
+
+                if (
+                    utezi.some(utez => !Number.isFinite(utez)) ||
+                    !utezi.some(utez => utez > 0)
+                ) {
+                    napaka.textContent =
+                        "Vrednosti morajo biti veljavna števila, " +
+                        "vsaj ena pa mora biti večja od 0.";
+                    return;
+                }
+            }
+
+            const osnovniCenti = Math.round(znesek * 100);
+            const napitninaCenti =
+                Math.round(osnovniCenti * napitnina / 100);
+            const skupajCenti = osnovniCenti + napitninaCenti;
+
+            // Normalizacija prepreči preveliko vsoto uteži.
+            const najvecjaUtez = Math.max(...utezi);
+            const normalizirane = utezi.map(utez => utez / najvecjaUtez);
+            const vsota = normalizirane.reduce((a, b) => a + b, 0);
+
+            const razdelitev = normalizirane.map(function (utez, indeks) {
+                const tocno = skupajCenti * (utez / vsota);
+                const centi = Math.floor(tocno);
+
+                return {
+                    indeks: indeks,
+                    centi: centi,
+                    ostanek: tocno - centi
+                };
+            });
+
+            let preostaliCenti = skupajCenti - razdelitev.reduce(
+                (vsota, oseba) => vsota + oseba.centi,
+                0
+            );
+
+            // Preostale cente dobijo največji decimalni ostanki.
+            const vrstniRed = [...razdelitev].sort(function (a, b) {
+                return b.ostanek - a.ostanek || a.indeks - b.indeks;
+            });
+
+            for (let i = 0; i < preostaliCenti; i++) {
+                vrstniRed[i % vrstniRed.length].centi++;
+            }
+
+            dodajBesedilo(
+                "Skupaj: " + denar.format(skupajCenti / 100),
+                "h2"
+            );
+
+            dodajBesedilo(
+                "Račun: " + denar.format(osnovniCenti / 100) +
+                " | Napitnina: " + denar.format(napitninaCenti / 100)
+            );
+
+            const seznam = document.createElement("ol");
+
+            razdelitev.forEach(function (oseba) {
+                const vrstica = document.createElement("li");
+
+                vrstica.textContent =
+                    "Oseba " + (oseba.indeks + 1) + ": " +
+                    denar.format(oseba.centi / 100);
+
+                seznam.appendChild(vrstica);
+            });
+
+            rezultat.appendChild(seznam);
+        });
+
+        obrazec.addEventListener("reset", function () {
+            pocistiRezultat();
+            setTimeout(posodobiPolja, 0);
+        });
+
+        posodobiPolja();
+    </script>
+</body>
+</html>

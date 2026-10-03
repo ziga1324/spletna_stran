@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Velike in male črke</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Velike in male črke</h1>
+        <p>Izberi način pretvorbe svojega besedila.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <label for="besedilo">Tvoje besedilo</label>
+            <textarea
+                id="besedilo"
+                rows="10"
+                placeholder="Tukaj napiši ali prilepi besedilo ..."
+            ></textarea>
+
+            <div class="gumbi">
+                <button type="button" data-nacin="velike">
+                    VELIKE ČRKE
+                </button>
+
+                <button type="button" data-nacin="male">
+                    male črke
+                </button>
+
+                <button type="button" data-nacin="zacetnice">
+                    Velike Začetnice Besed
+                </button>
+            </div>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div class="rezultat">
+                <label for="rezultat">Pretvorjeno besedilo</label>
+                <textarea
+                    id="rezultat"
+                    rows="10"
+                    placeholder="Tukaj bo prikazan rezultat."
+                    readonly
+                ></textarea>
+
+                <div class="gumbi">
+                    <button type="button" id="kopiraj" disabled>
+                        Kopiraj rezultat
+                    </button>
+
+                    <button type="button" id="pocisti">
+                        Počisti
+                    </button>
+                </div>
+            </div>
+
+            <p id="status" role="status"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                »VELIKE ČRKE« pretvori vse črke v velike,
+                »male črke« pa vse črke v male.
+            </p>
+
+            <p>
+                »Velike Začetnice Besed« vsako besedo začne
+                z veliko črko, preostale črke pa spremeni v male.
+                To ni samodejno pravopisno popravljanje.
+            </p>
+
+            <p>
+                Presledki, prelomi vrstic in ločila ostanejo ohranjeni.
+                Besedilo se obdeluje v tvojem brskalniku.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const besedilo = document.getElementById("besedilo");
+        const rezultat = document.getElementById("rezultat");
+        const kopiraj = document.getElementById("kopiraj");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+
+        function pretvori(nacin) {
+            napaka.textContent = "";
+            status.textContent = "";
+
+            const vnos = besedilo.value;
+
+            if (vnos.trim() === "") {
+                rezultat.value = "";
+                kopiraj.disabled = true;
+                napaka.textContent = "Najprej vnesi besedilo.";
+                besedilo.focus();
+                return;
+            }
+
+            if (nacin === "velike") {
+                rezultat.value = vnos.toLocaleUpperCase("sl-SI");
+            } else if (nacin === "male") {
+                rezultat.value = vnos.toLocaleLowerCase("sl-SI");
+            } else {
+                rezultat.value = vnos
+                    .toLocaleLowerCase("sl-SI")
+                    .replace(
+                        /\p{L}[\p{L}\p{M}]*(?:['’]\p{L}[\p{L}\p{M}]*)*/gu,
+                        function (beseda) {
+                            const crke = Array.from(beseda);
+
+                            return crke[0].toLocaleUpperCase("sl-SI") +
+                                crke.slice(1).join("");
+                        }
+                    );
+            }
+
+            kopiraj.disabled = false;
+            status.textContent = "Besedilo je pretvorjeno.";
+        }
+
+        document.querySelectorAll("[data-nacin]").forEach(function (gumb) {
+            gumb.addEventListener("click", function () {
+                pretvori(gumb.dataset.nacin);
+            });
+        });
+
+        besedilo.addEventListener("input", function () {
+            rezultat.value = "";
+            kopiraj.disabled = true;
+            napaka.textContent = "";
+            status.textContent = "";
+        });
+
+        kopiraj.addEventListener("click", async function () {
+            if (rezultat.value === "") return;
+
+            try {
+                await navigator.clipboard.writeText(rezultat.value);
+                status.textContent = "Rezultat je kopiran.";
+            } catch {
+                rezultat.focus();
+                rezultat.select();
+
+                status.textContent =
+                    "Samodejno kopiranje ni uspelo. " +
+                    "Rezultat je označen; uporabi Ctrl+C oziroma Cmd+C.";
+            }
+        });
+
+        document.getElementById("pocisti").addEventListener(
+            "click",
+            function () {
+                if (
+                    (besedilo.value !== "" || rezultat.value !== "") &&
+                    !window.confirm("Želiš izbrisati besedilo in rezultat?")
+                ) {
+                    return;
+                }
+
+                besedilo.value = "";
+                rezultat.value = "";
+                kopiraj.disabled = true;
+                napaka.textContent = "";
+                status.textContent = "Besedilo je počiščeno.";
+                besedilo.focus();
+            }
+        );
+    </script>
+</body>
+</html>

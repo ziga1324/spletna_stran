@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Razlika med datumoma</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Razlika med datumoma</h1>
+        <p>Preveri, koliko dni je med dvema datumoma.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="zacetek">Začetni datum</label>
+                <input
+                    type="date"
+                    id="zacetek"
+                    min="0001-01-01"
+                    max="9999-12-31"
+                    required
+                >
+
+                <label for="konec">Končni datum</label>
+                <input
+                    type="date"
+                    id="konec"
+                    min="0001-01-01"
+                    max="9999-12-31"
+                    required
+                >
+
+                <label class="moznost">
+                    <input type="checkbox" id="vkljuci">
+                    Štej oba datuma, vključno s končnim dnevom
+                </label>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="button" id="zamenjaj">
+                        Zamenjaj datuma
+                    </button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Običajna razlika od 1. do 3. oktobra je
+                <strong>2 dni</strong>.
+                Če šteješ oba datuma, so vključeni 1., 2. in
+                3. oktober, zato je rezultat <strong>3 dni</strong>.
+            </p>
+
+            <p>
+                Če izbereš enak datum, je razlika 0 dni oziroma
+                1 dan pri vključitvi obeh datumov.
+            </p>
+
+            <p>
+                Štejemo koledarske dni, vključno z vikendi in prazniki.
+                Premik ure ne vpliva na izračun.
+                Končni datum mora biti enak začetnemu ali poznejši.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const zacetek = document.getElementById("zacetek");
+        const konec = document.getElementById("konec");
+        const vkljuci = document.getElementById("vkljuci");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const danVMilisekundah = 24 * 60 * 60 * 1000;
+        const oblikovanje = new Intl.NumberFormat("sl-SI");
+
+        function preberiDatum(vnos) {
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(vnos)) {
+                throw new Error("Izberi dva veljavna datuma.");
+            }
+
+            const [leto, mesec, dan] = vnos.split("-").map(Number);
+
+            if (leto < 1 || leto > 9999) {
+                throw new Error("Leto mora biti med 1 in 9999.");
+            }
+
+            // setUTCFullYear pravilno obravnava tudi leta od 1 do 99.
+            const datum = new Date(0);
+            datum.setUTCFullYear(leto, mesec - 1, dan);
+            datum.setUTCHours(0, 0, 0, 0);
+
+            if (
+                datum.getUTCFullYear() !== leto ||
+                datum.getUTCMonth() !== mesec - 1 ||
+                datum.getUTCDate() !== dan
+            ) {
+                throw new Error("Izberi dva veljavna datuma.");
+            }
+
+            return datum;
+        }
+
+        function zapisDatuma(datum) {
+            return datum.getUTCDate() + ". " +
+                (datum.getUTCMonth() + 1) + ". " +
+                datum.getUTCFullYear();
+        }
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        document.getElementById("zamenjaj").addEventListener(
+            "click",
+            function () {
+                const prejsnjiDatum = zacetek.value;
+                zacetek.value = konec.value;
+                konec.value = prejsnjiDatum;
+                pocistiRezultat();
+            }
+        );
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            try {
+                const prviDatum = preberiDatum(zacetek.value);
+                const drugiDatum = preberiDatum(konec.value);
+
+                if (drugiDatum < prviDatum) {
+                    throw new Error(
+                        "Končni datum ne sme biti pred začetnim. " +
+                        "Po potrebi zamenjaj datuma."
+                    );
+                }
+
+                const razlika = Math.round(
+                    (drugiDatum - prviDatum) / danVMilisekundah
+                );
+
+                const dnevi = razlika + (vkljuci.checked ? 1 : 0);
+                const tedni = Math.floor(dnevi / 7);
+                const ostanek = dnevi % 7;
+
+                dodajBesedilo(
+                    "Število dni: " + oblikovanje.format(dnevi),
+                    "h2"
+                );
+
+                dodajBesedilo(
+                    "Polni tedni: " + oblikovanje.format(tedni) +
+                    " | Preostali dnevi: " + ostanek
+                );
+
+                dodajBesedilo(
+                    "Od " + zapisDatuma(prviDatum) +
+                    " do " + zapisDatuma(drugiDatum) + "."
+                );
+
+                dodajBesedilo(
+                    vkljuci.checked
+                        ? "V štetje sta vključena oba datuma."
+                        : "Prikazana je razlika med datumoma brez dodatnega končnega dne."
+                );
+            } catch (napakaIzracuna) {
+                napaka.textContent = napakaIzracuna.message;
+            }
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

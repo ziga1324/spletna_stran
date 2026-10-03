@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Naključna izbira imena</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Naključna izbira imena</h1>
+        <p>Vnesi seznam imen in naključno izberi eno.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="imena">Seznam imen</label>
+                <textarea
+                    id="imena"
+                    rows="10"
+                    maxlength="100000"
+                    placeholder="Jakob&#10;Ana&#10;Luka&#10;Nika"
+                    aria-describedby="navodilo"
+                    required
+                ></textarea>
+
+                <p id="navodilo">
+                    Vsako ime napiši v svojo vrstico.
+                    Prazne vrstice se preskočijo.
+                    Enaka imena štejejo kot ločeni vnosi.
+                </p>
+
+                <label class="moznost">
+                    <input type="checkbox" id="odstranjevanje" checked>
+                    Izbrani vnos odstrani iz nadaljnjega žrebanja
+                </label>
+
+                <div class="gumbi">
+                    <button type="submit" id="izberi">Izberi ime</button>
+                    <button type="button" id="ponovi">
+                        Ponastavi žrebanje
+                    </button>
+                    <button type="reset">Počisti vse</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div id="izhod" class="rezultat" hidden>
+                <h2>Izbrano ime</h2>
+                <p
+                    id="izbrano"
+                    style="font-size: 32px; font-weight: bold;
+                           overflow-wrap: anywhere;"
+                ></p>
+            </div>
+
+            <p id="status" role="status"></p>
+
+            <section id="zgodovina-blok" hidden>
+                <h3>Zgodovina izbire</h3>
+                <ol id="zgodovina"></ol>
+            </section>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Vsak vnos na seznamu ima enako možnost izbire.
+                Če isto ime vneseš večkrat, ima skupaj večjo možnost.
+                Osebe z enakim imenom lahko ločiš s priimkom.
+            </p>
+
+            <p>
+                Pri odstranjevanju izbranih vnosov se posamezni
+                vnos ne more ponoviti, dokler ne ponastaviš žrebanja.
+            </p>
+
+            <p>
+                Sprememba seznama ali načina žrebanja začne
+                novo žrebanje in počisti zgodovino.
+                Podatki se obdelujejo v brskalniku.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const imena = document.getElementById("imena");
+        const odstranjevanje =
+            document.getElementById("odstranjevanje");
+        const izberi = document.getElementById("izberi");
+
+        const napaka = document.getElementById("napaka");
+        const izhod = document.getElementById("izhod");
+        const izbrano = document.getElementById("izbrano");
+        const status = document.getElementById("status");
+        const zgodovina = document.getElementById("zgodovina");
+        const zgodovinaBlok = document.getElementById("zgodovina-blok");
+
+        let seznam = [];
+        let pripravljen = false;
+        let steviloIzbir = 0;
+
+        function ponastaviZrebanje() {
+            seznam = [];
+            pripravljen = false;
+            steviloIzbir = 0;
+
+            napaka.textContent = "";
+            status.textContent = "";
+            izbrano.textContent = "";
+            izhod.hidden = true;
+            zgodovina.replaceChildren();
+            zgodovinaBlok.hidden = true;
+            izberi.disabled = false;
+        }
+
+        function nakljucniIndeks(meja) {
+            const obseg = 2 ** 32;
+            const omejitev = obseg - (obseg % meja);
+            const podatki = new Uint32Array(1);
+
+            do {
+                crypto.getRandomValues(podatki);
+            } while (podatki[0] >= omejitev);
+
+            return podatki[0] % meja;
+        }
+
+        imena.addEventListener("input", ponastaviZrebanje);
+        odstranjevanje.addEventListener("change", ponastaviZrebanje);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            napaka.textContent = "";
+
+            if (!pripravljen) {
+                const vnosi = imena.value
+                    .split(/\r\n?|\n/)
+                    .map(ime => ime.trim())
+                    .filter(ime => ime !== "");
+
+                if (
+                    vnosi.length === 0 ||
+                    vnosi.length > 1000 ||
+                    vnosi.some(ime => ime.length > 200)
+                ) {
+                    napaka.textContent =
+                        "Vnesi od 1 do 1000 imen. " +
+                        "Posamezno ime ima lahko največ 200 znakov.";
+                    return;
+                }
+
+                seznam = vnosi;
+                pripravljen = true;
+            }
+
+            if (seznam.length === 0) {
+                napaka.textContent =
+                    "Vsa imena so že izbrana. Ponastavi žrebanje.";
+                return;
+            }
+
+            try {
+                const indeks = nakljucniIndeks(seznam.length);
+                const ime = seznam[indeks];
+
+                if (odstranjevanje.checked) {
+                    seznam.splice(indeks, 1);
+                }
+
+                steviloIzbir++;
+                izbrano.textContent = ime;
+                izhod.hidden = false;
+
+                const vrstica = document.createElement("li");
+                vrstica.textContent = ime;
+                zgodovina.appendChild(vrstica);
+                zgodovinaBlok.hidden = false;
+
+                // Omejimo dolžino prikazane zgodovine.
+                if (zgodovina.children.length > 1000) {
+                    zgodovina.firstElementChild.remove();
+                    zgodovina.start = steviloIzbir - 999;
+                }
+
+                if (odstranjevanje.checked) {
+                    status.textContent = seznam.length === 0
+                        ? "Vsa imena so izbrana. Za nov začetek ponastavi žrebanje."
+                        : "Preostalih vnosov: " + seznam.length + ".";
+
+                    izberi.disabled = seznam.length === 0;
+                } else {
+                    status.textContent =
+                        "Izbrano ime: " + ime +
+                        ". Vnosi ostajajo na seznamu.";
+                }
+            } catch {
+                napaka.textContent =
+                    "Brskalnik ne omogoča naključne izbire.";
+            }
+        });
+
+        document.getElementById("ponovi").addEventListener(
+            "click",
+            function () {
+                ponastaviZrebanje();
+                status.textContent =
+                    "Žrebanje je ponastavljeno. Vsa imena so spet na voljo.";
+            }
+        );
+
+        obrazec.addEventListener("reset", function (dogodek) {
+            if (
+                imena.value !== "" &&
+                !window.confirm("Želiš izbrisati seznam imen in zgodovino?")
+            ) {
+                dogodek.preventDefault();
+                return;
+            }
+
+            ponastaviZrebanje();
+        });
+    </script>
+</body>
+</html>

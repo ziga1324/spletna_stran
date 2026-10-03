@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pretvornik hitrosti</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Pretvornik hitrosti</h1>
+        <p>Pretvori hitrost med kilometri na uro, metri na sekundo in mph.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="hitrost">Hitrost</label>
+                <input
+                    type="number"
+                    id="hitrost"
+                    min="0"
+                    step="any"
+                    placeholder="Na primer: 90"
+                    required
+                >
+
+                <label for="iz">Iz enote</label>
+                <select id="iz">
+                    <option value="kmh">Kilometri na uro (km/h)</option>
+                    <option value="ms">Metri na sekundo (m/s)</option>
+                    <option value="mph">Milje na uro (mph)</option>
+                </select>
+
+                <label for="v">V enoto</label>
+                <select id="v">
+                    <option value="kmh">Kilometri na uro (km/h)</option>
+                    <option value="ms" selected>Metri na sekundo (m/s)</option>
+                    <option value="mph">Milje na uro (mph)</option>
+                </select>
+
+                <div class="gumbi">
+                    <button type="submit">Pretvori</button>
+                    <button type="button" id="zamenjaj">Zamenjaj enoti</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+                style="overflow-wrap: anywhere;"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <ul>
+                <li>Iz km/h v m/s: deliš s 3,6.</li>
+                <li>Iz m/s v km/h: pomnožiš s 3,6.</li>
+                <li>Iz mph v km/h: pomnožiš z 1,609344.</li>
+                <li>Iz km/h v mph: deliš z 1,609344.</li>
+            </ul>
+
+            <p>
+                Primer: 90 km/h = <strong>25 m/s</strong>.
+            </p>
+
+            <p>
+                Orodje sprejema nenegativne hitrosti.
+                Rezultati so prikazani z največ 12 pomembnimi števkami.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const hitrostVnos = document.getElementById("hitrost");
+        const iz = document.getElementById("iz");
+        const v = document.getElementById("v");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        // Hitrost ene enote v metrih na sekundo.
+        const enote = {
+            kmh: {
+                ime: "Kilometri na uro",
+                oznaka: "km/h",
+                faktor: 1 / 3.6
+            },
+            ms: {
+                ime: "Metri na sekundo",
+                oznaka: "m/s",
+                faktor: 1
+            },
+            mph: {
+                ime: "Milje na uro",
+                oznaka: "mph",
+                faktor: 0.44704
+            }
+        };
+
+        const oblikovanje = new Intl.NumberFormat("sl-SI", {
+            maximumSignificantDigits: 12
+        });
+
+        function zapis(stevilo) {
+            return oblikovanje.format(stevilo);
+        }
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function pretvori(hitrost, izEnote, vEnoto) {
+            if (izEnote === vEnoto) return hitrost;
+
+            const faktor =
+                enote[izEnote].faktor / enote[vEnoto].faktor;
+
+            const vrednost = hitrost * faktor;
+
+            if (
+                !Number.isFinite(vrednost) ||
+                (hitrost > 0 && vrednost === 0)
+            ) {
+                throw new Error(
+                    "Pretvorba je zunaj podprtega številskega obsega."
+                );
+            }
+
+            return vrednost;
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        document.getElementById("zamenjaj").addEventListener(
+            "click",
+            function () {
+                const prejsnjaEnota = iz.value;
+                iz.value = v.value;
+                v.value = prejsnjaEnota;
+
+                pocistiRezultat();
+            }
+        );
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const hitrost = hitrostVnos.valueAsNumber;
+
+            if (!Number.isFinite(hitrost) || hitrost < 0) {
+                napaka.textContent =
+                    "Vnesi veljavno nenegativno hitrost.";
+                return;
+            }
+
+            try {
+                const vrednost = pretvori(
+                    hitrost,
+                    iz.value,
+                    v.value
+                );
+
+                dodajBesedilo(
+                    "Rezultat: " + zapis(vrednost) +
+                    " " + enote[v.value].oznaka,
+                    "h2"
+                );
+
+                dodajBesedilo(
+                    zapis(hitrost) + " " + enote[iz.value].oznaka +
+                    " ≈ " + zapis(vrednost) + " " +
+                    enote[v.value].oznaka
+                );
+
+                dodajBesedilo("Vse pretvorbe", "h3");
+
+                const seznam = document.createElement("ul");
+
+                Object.entries(enote).forEach(function ([kljuc, enota]) {
+                    const vrstica = document.createElement("li");
+
+                    try {
+                        const pretvorjena = pretvori(
+                            hitrost,
+                            iz.value,
+                            kljuc
+                        );
+
+                        vrstica.textContent =
+                            enota.ime + ": " +
+                            zapis(pretvorjena) + " " + enota.oznaka;
+                    } catch {
+                        vrstica.textContent =
+                            enota.ime + ": zunaj podprtega obsega.";
+                    }
+
+                    seznam.appendChild(vrstica);
+                });
+
+                rezultat.appendChild(seznam);
+
+                dodajBesedilo(
+                    "Prikaz je zaokrožen na največ 12 pomembnih števk."
+                );
+            } catch (napakaIzracuna) {
+                napaka.textContent = napakaIzracuna.message;
+            }
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

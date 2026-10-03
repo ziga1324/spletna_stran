@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Koliko časa bom spal?</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Koliko časa bom spal?</h1>
+        <p>Izračunaj čas med odhodom v posteljo in vstajanjem.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="zacetek">Čas odhoda v posteljo</label>
+                <input
+                    type="time"
+                    id="zacetek"
+                    value="23:00"
+                    step="60"
+                    required
+                >
+
+                <label for="konec">Čas vstajanja</label>
+                <input
+                    type="time"
+                    id="konec"
+                    value="07:00"
+                    step="60"
+                    required
+                >
+
+                <label for="uspavanje">Čas do zaspanja (minute)</label>
+                <input
+                    type="number"
+                    id="uspavanje"
+                    min="0"
+                    max="1440"
+                    step="1"
+                    value="0"
+                    required
+                >
+
+                <label class="moznost">
+                    <input type="checkbox" id="naslednji-dan" checked>
+                    Vstajanje je naslednji dan
+                </label>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Izračunamo časovni razmik med vnesenima urama.
+                Od njega odštejemo izbrani čas do zaspanja.
+            </p>
+
+            <p>
+                Primer: od 23:40 do 6:20 naslednji dan je
+                <strong>6 ur in 40 minut</strong>.
+                Če potrebuješ 20 minut, da zaspiš, ostane
+                <strong>6 ur in 20 minut</strong>.
+            </p>
+
+            <p>
+                Za spanje čez dan odstrani kljukico
+                »Vstajanje je naslednji dan«.
+            </p>
+
+            <p>
+                Rezultat je časovni izračun. Nočna prebujanja
+                in premik ure niso upoštevani.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const zacetek = document.getElementById("zacetek");
+        const konec = document.getElementById("konec");
+        const uspavanje = document.getElementById("uspavanje");
+        const naslednjiDan = document.getElementById("naslednji-dan");
+
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        function preberiCas(vnos) {
+            if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(vnos)) {
+                throw new Error("Vnesi veljaven čas v urah in minutah.");
+            }
+
+            const [ure, minute] = vnos.split(":").map(Number);
+            return ure * 60 + minute;
+        }
+
+        function oblikujTrajanje(minute) {
+            const ure = Math.floor(minute / 60);
+            const ostanek = minute % 60;
+
+            return ure + " h " + ostanek + " min";
+        }
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            try {
+                const zacetneMinute = preberiCas(zacetek.value);
+                const koncneMinute = preberiCas(konec.value);
+                const minuteDoSpanja = uspavanje.valueAsNumber;
+
+                if (
+                    !Number.isInteger(minuteDoSpanja) ||
+                    minuteDoSpanja < 0 ||
+                    minuteDoSpanja > 1440
+                ) {
+                    throw new Error(
+                        "Čas do zaspanja mora biti celo število od 0 do 1440 minut."
+                    );
+                }
+
+                const razmik =
+                    koncneMinute - zacetneMinute +
+                    (naslednjiDan.checked ? 1440 : 0);
+
+                if (razmik < 0) {
+                    throw new Error(
+                        "Vstajanje je pred odhodom v posteljo. " +
+                        "Če vstaneš naslednji dan, označi ustrezno možnost."
+                    );
+                }
+
+                if (minuteDoSpanja > razmik) {
+                    throw new Error(
+                        "Čas do zaspanja ne sme presegati časa v postelji."
+                    );
+                }
+
+                const casSpanja = razmik - minuteDoSpanja;
+
+                dodajBesedilo(
+                    "Čas za spanje: " + oblikujTrajanje(casSpanja),
+                    "h2"
+                );
+
+                dodajBesedilo(
+                    "Čas v postelji: " + oblikujTrajanje(razmik)
+                );
+
+                dodajBesedilo(
+                    "Čas do zaspanja: " + minuteDoSpanja + " min."
+                );
+
+                dodajBesedilo(
+                    "Od " + zacetek.value + " do " + konec.value +
+                    (naslednjiDan.checked ? " naslednji dan." : " isti dan.")
+                );
+            } catch (napakaIzracuna) {
+                napaka.textContent = napakaIzracuna.message;
+            }
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

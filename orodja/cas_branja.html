@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Čas branja in govora</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Čas branja in govora</h1>
+        <p>Preveri, koliko časa potrebuješ za branje ali predstavitev besedila.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="besedilo">Tvoje besedilo</label>
+                <textarea
+                    id="besedilo"
+                    rows="12"
+                    placeholder="Tukaj napiši ali prilepi besedilo ..."
+                ></textarea>
+
+                <label for="hitrost-branja">
+                    Hitrost tihega branja (besede na minuto)
+                </label>
+                <input
+                    type="number"
+                    id="hitrost-branja"
+                    min="1"
+                    max="2000"
+                    step="1"
+                    value="200"
+                    required
+                >
+
+                <label for="hitrost-govora">
+                    Hitrost govora (besede na minuto)
+                </label>
+                <input
+                    type="number"
+                    id="hitrost-govora"
+                    min="1"
+                    max="2000"
+                    step="1"
+                    value="130"
+                    required
+                >
+
+                <label for="premori">
+                    Dodatni čas za premore med govorom (sekunde)
+                </label>
+                <input
+                    type="number"
+                    id="premori"
+                    min="0"
+                    max="86400"
+                    step="1"
+                    value="0"
+                    required
+                >
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Čas v minutah izračunamo tako, da število besed
+                delimo z izbrano hitrostjo.
+                Govoru prištejemo še vneseni čas za premore.
+            </p>
+
+            <p>
+                Primer: besedilo s 260 besedami pri hitrosti
+                130 besed na minuto traja približno
+                <strong>2 minuti</strong>, brez dodatnih premorov.
+            </p>
+
+            <p>
+                Prednastavljeni hitrosti sta izhodiščni vrednosti,
+                ki ju lahko prilagodiš. Dejanski čas je odvisen
+                tudi od zahtevnosti besedila in načina predstavitve.
+            </p>
+
+            <p>
+                Besedilo se obdeluje v tvojem brskalniku.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const besedilo = document.getElementById("besedilo");
+        const branjeVnos = document.getElementById("hitrost-branja");
+        const govorVnos = document.getElementById("hitrost-govora");
+        const premoriVnos = document.getElementById("premori");
+
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function oblikujCas(sekunde) {
+            const skupaj = Math.ceil(sekunde);
+            const ure = Math.floor(skupaj / 3600);
+            const minute = Math.floor((skupaj % 3600) / 60);
+            const ostaleSekunde = skupaj % 60;
+
+            const deli = [];
+
+            if (ure > 0) deli.push(ure + " h");
+            if (minute > 0) deli.push(minute + " min");
+            if (ostaleSekunde > 0 || deli.length === 0) {
+                deli.push(ostaleSekunde + " s");
+            }
+
+            return deli.join(" ");
+        }
+
+        function dodajRezultat(naslov, vrednost) {
+            const vrstica = document.createElement("p");
+            const poudarek = document.createElement("strong");
+
+            vrstica.appendChild(document.createTextNode(naslov + ": "));
+            poudarek.textContent = vrednost;
+            vrstica.appendChild(poudarek);
+
+            rezultat.appendChild(vrstica);
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const besede = besedilo.value.match(
+                /[\p{L}\p{N}][\p{L}\p{N}\p{M}]*(?:[-'’][\p{L}\p{N}][\p{L}\p{N}\p{M}]*)*/gu
+            ) || [];
+
+            if (besede.length === 0) {
+                napaka.textContent =
+                    "Vnesi besedilo z vsaj eno besedo.";
+                besedilo.focus();
+                return;
+            }
+
+            const hitrostBranja = branjeVnos.valueAsNumber;
+            const hitrostGovora = govorVnos.valueAsNumber;
+            const premori = premoriVnos.valueAsNumber;
+
+            const hitrosti = [hitrostBranja, hitrostGovora];
+
+            if (
+                !hitrosti.every(hitrost =>
+                    Number.isInteger(hitrost) &&
+                    hitrost >= 1 &&
+                    hitrost <= 2000
+                )
+            ) {
+                napaka.textContent =
+                    "Hitrosti morata biti celi števili od 1 do 2000.";
+                return;
+            }
+
+            if (
+                !Number.isInteger(premori) ||
+                premori < 0 ||
+                premori > 86400
+            ) {
+                napaka.textContent =
+                    "Čas premorov mora biti celo število od 0 do 86400 sekund.";
+                return;
+            }
+
+            const casBranja = (besede.length / hitrostBranja) * 60;
+            const casGovora =
+                (besede.length / hitrostGovora) * 60 + premori;
+
+            const naslov = document.createElement("h2");
+            naslov.textContent = "Ocenjeni čas";
+            rezultat.appendChild(naslov);
+
+            dodajRezultat(
+                "Število besed",
+                besede.length.toLocaleString("sl-SI")
+            );
+
+            dodajRezultat("Tiho branje", oblikujCas(casBranja));
+            dodajRezultat("Govor s premori", oblikujCas(casGovora));
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Seštevanje ur in minut</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Seštevanje ur in minut</h1>
+        <p>Seštej več časovnih trajanj in jih pretvori v decimalne ure.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="trajanja">Časovna trajanja</label>
+                <textarea
+                    id="trajanja"
+                    rows="8"
+                    placeholder="1:30&#10;2:45&#10;0:50"
+                    aria-describedby="navodilo"
+                    required
+                ></textarea>
+
+                <p id="navodilo">
+                    Vsako trajanje vnesi v svojo vrstico v obliki
+                    ure:minute. Minute morajo biti med 00 in 59.
+                    Primer: 1:30 pomeni 1 uro in 30 minut.
+                </p>
+
+                <div class="gumbi">
+                    <button type="submit">Seštej</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Vsako trajanje pretvorimo v minute, jih seštejemo
+                in rezultat pretvorimo nazaj v ure in minute.
+            </p>
+
+            <p>
+                Primer: 1:30 + 2:45 + 0:50 =
+                <strong>5 ur in 5 minut</strong>.
+            </p>
+
+            <p>
+                Decimalne ure izračunamo tako, da skupne minute
+                delimo s 60. Na primer: 1 ura in 30 minut
+                je <strong>1,5 ure</strong>, ne 1,30 ure.
+            </p>
+
+            <p>
+                Orodje sešteva trajanja, ne ur začetka in konca.
+                Prazne vrstice preskoči.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const trajanja = document.getElementById("trajanja");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const celaStevila = new Intl.NumberFormat("sl-SI");
+        const decimalnaStevila = new Intl.NumberFormat("sl-SI", {
+            maximumFractionDigits: 4
+        });
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const vrstice = trajanja.value.split(/\r\n?|\n/);
+            let skupneMinute = 0;
+            let steviloTrajanj = 0;
+
+            for (let i = 0; i < vrstice.length; i++) {
+                const vrstica = vrstice[i].trim();
+
+                if (vrstica === "") continue;
+
+                const ujemanje = /^(\d{1,9}):([0-5]\d)$/.exec(vrstica);
+
+                if (!ujemanje) {
+                    napaka.textContent =
+                        "Preveri vrstico " + (i + 1) +
+                        ". Uporabi obliko ure:minute, na primer 2:05. " +
+                        "Ure imajo lahko največ 9 števk.";
+                    return;
+                }
+
+                const ure = Number(ujemanje[1]);
+                const minute = Number(ujemanje[2]);
+
+                skupneMinute += ure * 60 + minute;
+                steviloTrajanj++;
+
+                if (
+                    !Number.isSafeInteger(skupneMinute) ||
+                    steviloTrajanj > 1000
+                ) {
+                    napaka.textContent =
+                        "Vnesi največ 1000 trajanj znotraj podprtega obsega.";
+                    return;
+                }
+            }
+
+            if (steviloTrajanj === 0) {
+                napaka.textContent = "Vnesi vsaj eno časovno trajanje.";
+                trajanja.focus();
+                return;
+            }
+
+            const skupneUre = Math.floor(skupneMinute / 60);
+            const preostaleMinute = skupneMinute % 60;
+
+            const dnevi = Math.floor(skupneMinute / 1440);
+            const ureVDnevu = Math.floor((skupneMinute % 1440) / 60);
+
+            dodajBesedilo(
+                "Skupaj: " + celaStevila.format(skupneUre) +
+                " h " + preostaleMinute + " min",
+                "h2"
+            );
+
+            dodajBesedilo(
+                "Zapis ure:minute: " + skupneUre + ":" +
+                String(preostaleMinute).padStart(2, "0")
+            );
+
+            dodajBesedilo(
+                "Decimalne ure: " +
+                decimalnaStevila.format(skupneMinute / 60)
+            );
+
+            dodajBesedilo(
+                "Skupno minut: " + celaStevila.format(skupneMinute)
+            );
+
+            if (dnevi > 0) {
+                dodajBesedilo(
+                    "V dnevih: " + celaStevila.format(dnevi) +
+                    " dni, " + ureVDnevu +
+                    " h in " + preostaleMinute + " min."
+                );
+            }
+
+            dodajBesedilo("Število trajanj: " + steviloTrajanj);
+
+            dodajBesedilo(
+                "Decimalne ure so zaokrožene na največ štiri decimalna mesta."
+            );
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

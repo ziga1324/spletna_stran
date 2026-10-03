@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pretvornik temperature</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Pretvornik temperature</h1>
+        <p>Pretvori temperaturo med °C, °F in K.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="temperatura">Temperatura</label>
+                <input
+                    type="number"
+                    id="temperatura"
+                    step="any"
+                    placeholder="Na primer: 20"
+                    required
+                >
+
+                <label for="iz">Iz enote</label>
+                <select id="iz">
+                    <option value="C">Celzij (°C)</option>
+                    <option value="F">Fahrenheit (°F)</option>
+                    <option value="K">Kelvin (K)</option>
+                </select>
+
+                <label for="v">V enoto</label>
+                <select id="v">
+                    <option value="C">Celzij (°C)</option>
+                    <option value="F" selected>Fahrenheit (°F)</option>
+                    <option value="K">Kelvin (K)</option>
+                </select>
+
+                <div class="gumbi">
+                    <button type="submit">Pretvori</button>
+                    <button type="button" id="zamenjaj">Zamenjaj enoti</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <ul>
+                <li>°F = °C × 1,8 + 32.</li>
+                <li>°C = (°F − 32) ÷ 1,8.</li>
+                <li>K = °C + 273,15.</li>
+                <li>°C = K − 273,15.</li>
+            </ul>
+
+            <p>
+                Primer: 20 °C = <strong>68 °F</strong>
+                = <strong>293,15 K</strong>.
+            </p>
+
+            <p>
+                Orodje ne sprejema temperatur pod absolutno ničlo:
+                −273,15 °C, −459,67 °F oziroma 0 K.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const temperaturaVnos = document.getElementById("temperatura");
+        const iz = document.getElementById("iz");
+        const v = document.getElementById("v");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const enote = {
+            C: { ime: "Celzij", oznaka: "°C", minimum: -273.15 },
+            F: { ime: "Fahrenheit", oznaka: "°F", minimum: -459.67 },
+            K: { ime: "Kelvin", oznaka: "K", minimum: 0 }
+        };
+
+        const formule = {
+            CC: "Temperatura ostane nespremenjena.",
+            CF: "°F = °C × 1,8 + 32",
+            CK: "K = °C + 273,15",
+            FC: "°C = (°F − 32) ÷ 1,8",
+            FF: "Temperatura ostane nespremenjena.",
+            FK: "K = (°F + 459,67) ÷ 1,8",
+            KC: "°C = K − 273,15",
+            KF: "°F = K × 1,8 − 459,67",
+            KK: "Temperatura ostane nespremenjena."
+        };
+
+        const oblikovanje = new Intl.NumberFormat("sl-SI", {
+            maximumSignificantDigits: 12
+        });
+
+        function zapis(stevilo) {
+            return oblikovanje.format(
+                Object.is(stevilo, -0) ? 0 : stevilo
+            );
+        }
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function posodobiMinimum() {
+            temperaturaVnos.min = enote[iz.value].minimum;
+        }
+
+        function pretvori(temperatura, izEnote, vEnoto) {
+            const kljuc = izEnote + vEnoto;
+            let vrednost;
+
+            switch (kljuc) {
+                case "CF":
+                    vrednost = temperatura * 1.8 + 32;
+                    break;
+                case "CK":
+                    vrednost = temperatura + 273.15;
+                    break;
+                case "FC":
+                    vrednost = (temperatura - 32) / 1.8;
+                    break;
+                case "FK":
+                    vrednost = (temperatura + 459.67) / 1.8;
+                    break;
+                case "KC":
+                    vrednost = temperatura - 273.15;
+                    break;
+                case "KF":
+                    vrednost = temperatura * 1.8 - 459.67;
+                    break;
+                default:
+                    vrednost = temperatura;
+            }
+
+            if (!Number.isFinite(vrednost)) {
+                throw new Error(
+                    "Pretvorba je zunaj podprtega številskega obsega."
+                );
+            }
+
+            return vrednost;
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        iz.addEventListener("change", function () {
+            posodobiMinimum();
+            pocistiRezultat();
+        });
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        document.getElementById("zamenjaj").addEventListener(
+            "click",
+            function () {
+                const prejsnjaEnota = iz.value;
+                iz.value = v.value;
+                v.value = prejsnjaEnota;
+
+                posodobiMinimum();
+                pocistiRezultat();
+            }
+        );
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const temperatura = temperaturaVnos.valueAsNumber;
+
+            if (!Number.isFinite(temperatura)) {
+                napaka.textContent = "Vnesi veljavno temperaturo.";
+                return;
+            }
+
+            if (temperatura < enote[iz.value].minimum) {
+                napaka.textContent =
+                    "Temperatura ne sme biti nižja od " +
+                    zapis(enote[iz.value].minimum) + " " +
+                    enote[iz.value].oznaka + ".";
+                return;
+            }
+
+            try {
+                const vrednost = pretvori(
+                    temperatura,
+                    iz.value,
+                    v.value
+                );
+
+                dodajBesedilo(
+                    "Rezultat: " + zapis(vrednost) +
+                    " " + enote[v.value].oznaka,
+                    "h2"
+                );
+
+                dodajBesedilo(
+                    zapis(temperatura) + " " + enote[iz.value].oznaka +
+                    " ≈ " + zapis(vrednost) + " " +
+                    enote[v.value].oznaka
+                );
+
+                dodajBesedilo("Formula", "h3");
+                dodajBesedilo(formule[iz.value + v.value]);
+
+                dodajBesedilo("Vse pretvorbe", "h3");
+
+                const seznam = document.createElement("ul");
+
+                Object.entries(enote).forEach(function ([kljuc, enota]) {
+                    const vrstica = document.createElement("li");
+
+                    try {
+                        const pretvorjena = pretvori(
+                            temperatura,
+                            iz.value,
+                            kljuc
+                        );
+
+                        vrstica.textContent =
+                            enota.ime + ": " +
+                            zapis(pretvorjena) + " " + enota.oznaka;
+                    } catch {
+                        vrstica.textContent =
+                            enota.ime + ": zunaj podprtega obsega.";
+                    }
+
+                    seznam.appendChild(vrstica);
+                });
+
+                rezultat.appendChild(seznam);
+
+                dodajBesedilo(
+                    "Prikaz je zaokrožen na največ 12 pomembnih števk."
+                );
+            } catch (napakaIzracuna) {
+                napaka.textContent = napakaIzracuna.message;
+            }
+        });
+
+        obrazec.addEventListener("reset", function () {
+            pocistiRezultat();
+            setTimeout(posodobiMinimum, 0);
+        });
+
+        posodobiMinimum();
+    </script>
+</body>
+</html>

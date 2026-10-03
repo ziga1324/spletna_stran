@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Izdelovalnik učnih kartic</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Izdelovalnik učnih kartic</h1>
+        <p>Dodaj vprašanja in odgovore ter preveri svoje znanje.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="vprasanje">Vprašanje</label>
+                <input
+                    type="text"
+                    id="vprasanje"
+                    maxlength="1000"
+                    placeholder="Na primer: Kaj je RAM?"
+                    required
+                >
+
+                <label for="odgovor">Odgovor</label>
+                <input
+                    type="text"
+                    id="odgovor"
+                    maxlength="3000"
+                    placeholder="Na primer: Delovni pomnilnik računalnika."
+                    required
+                >
+
+                <div class="gumbi">
+                    <button type="submit">Dodaj kartico</button>
+                    <button type="reset">Počisti vnos</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <p id="status" role="status"></p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Tvoje kartice</h2>
+
+            <p id="stevec">Nimaš še nobene kartice.</p>
+
+            <div class="rezultat">
+                <h3 id="stran">Vprašanje</h3>
+                <p
+                    id="vsebina"
+                    style="white-space: pre-wrap; overflow-wrap: anywhere;"
+                >Dodaj prvo kartico zgoraj.</p>
+            </div>
+
+            <div class="gumbi">
+                <button type="button" id="obrni" disabled>
+                    Pokaži odgovor
+                </button>
+                <button type="button" id="prejsnja" disabled>
+                    ← Prejšnja
+                </button>
+                <button type="button" id="naslednja" disabled>
+                    Naslednja →
+                </button>
+            </div>
+
+            <div class="gumbi">
+                <button type="button" id="premesaj" disabled>
+                    Premešaj
+                </button>
+                <button type="button" id="odstrani" disabled>
+                    Odstrani trenutno kartico
+                </button>
+            </div>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Shranjevanje kartic</h2>
+
+            <p>
+                Izvozi kartice v datoteko JSON in jih naslednjič
+                ponovno uvozi. Uvoz zamenja trenutne kartice.
+            </p>
+
+            <div class="gumbi">
+                <button type="button" id="izvozi" disabled>
+                    Izvozi kartice
+                </button>
+            </div>
+
+            <label for="uvozi">Uvozi datoteko s karticami</label>
+            <input
+                type="file"
+                id="uvozi"
+                accept=".json,application/json"
+            >
+
+            <p>
+                Pred zapiranjem strani izvozi kartice, če jih želiš obdržati.
+            </p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako se učiti?</h2>
+            <p>
+                Preberi vprašanje in poskusi odgovoriti.
+                Nato klikni »Pokaži odgovor« in preveri odgovor.
+                Kartice lahko premešaš za drugačen vrstni red.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const vprasanjeVnos = document.getElementById("vprasanje");
+        const odgovorVnos = document.getElementById("odgovor");
+
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+
+        const stevec = document.getElementById("stevec");
+        const stran = document.getElementById("stran");
+        const vsebina = document.getElementById("vsebina");
+
+        const obrni = document.getElementById("obrni");
+        const prejsnja = document.getElementById("prejsnja");
+        const naslednja = document.getElementById("naslednja");
+        const premesaj = document.getElementById("premesaj");
+        const odstrani = document.getElementById("odstrani");
+        const izvozi = document.getElementById("izvozi");
+        const uvozi = document.getElementById("uvozi");
+
+        let kartice = [];
+        let indeks = 0;
+        let prikazanOdgovor = false;
+
+        function obvestilo(besedilo = "", jeNapaka = false) {
+            napaka.textContent = jeNapaka ? besedilo : "";
+            status.textContent = jeNapaka ? "" : besedilo;
+        }
+
+        function prikaziKartico() {
+            const prazno = kartice.length === 0;
+
+            obrni.disabled = prazno;
+            odstrani.disabled = prazno;
+            izvozi.disabled = prazno;
+
+            prejsnja.disabled = kartice.length < 2;
+            naslednja.disabled = kartice.length < 2;
+            premesaj.disabled = kartice.length < 2;
+
+            stran.textContent = prikazanOdgovor
+                ? "Odgovor"
+                : "Vprašanje";
+
+            obrni.textContent = prikazanOdgovor
+                ? "Pokaži vprašanje"
+                : "Pokaži odgovor";
+
+            if (prazno) {
+                stevec.textContent = "Nimaš še nobene kartice.";
+                vsebina.textContent = "Dodaj prvo kartico zgoraj.";
+                return;
+            }
+
+            stevec.textContent =
+                "Kartica " + (indeks + 1) + " od " + kartice.length;
+
+            vsebina.textContent = prikazanOdgovor
+                ? kartice[indeks].odgovor
+                : kartice[indeks].vprasanje;
+        }
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+
+            const vprasanje = vprasanjeVnos.value.trim();
+            const odgovor = odgovorVnos.value.trim();
+
+            if (!vprasanje || !odgovor) {
+                obvestilo("Vnesi vprašanje in odgovor.", true);
+                return;
+            }
+
+            if (kartice.length >= 1000) {
+                obvestilo("Dodajaš lahko največ 1000 kartic.", true);
+                return;
+            }
+
+            kartice.push({ vprasanje, odgovor });
+
+            indeks = kartice.length - 1;
+            prikazanOdgovor = false;
+
+            obrazec.reset();
+            prikaziKartico();
+            obvestilo("Kartica je dodana.");
+            vprasanjeVnos.focus();
+        });
+
+        obrazec.addEventListener("reset", function () {
+            obvestilo();
+        });
+
+        obrni.addEventListener("click", function () {
+            prikazanOdgovor = !prikazanOdgovor;
+            prikaziKartico();
+        });
+
+        prejsnja.addEventListener("click", function () {
+            indeks = (indeks - 1 + kartice.length) % kartice.length;
+            prikazanOdgovor = false;
+            prikaziKartico();
+        });
+
+        naslednja.addEventListener("click", function () {
+            indeks = (indeks + 1) % kartice.length;
+            prikazanOdgovor = false;
+            prikaziKartico();
+        });
+
+        premesaj.addEventListener("click", function () {
+            for (let i = kartice.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+
+                [kartice[i], kartice[j]] = [kartice[j], kartice[i]];
+            }
+
+            indeks = 0;
+            prikazanOdgovor = false;
+
+            prikaziKartico();
+            obvestilo("Kartice so premešane.");
+        });
+
+        odstrani.addEventListener("click", function () {
+            kartice.splice(indeks, 1);
+            indeks = Math.max(0, Math.min(indeks, kartice.length - 1));
+            prikazanOdgovor = false;
+
+            prikaziKartico();
+            obvestilo("Kartica je odstranjena.");
+        });
+
+        izvozi.addEventListener("click", function () {
+            const podatki = JSON.stringify(kartice, null, 2);
+            const datoteka = new Blob([podatki], {
+                type: "application/json"
+            });
+
+            const povezava = document.createElement("a");
+            const url = URL.createObjectURL(datoteka);
+
+            povezava.href = url;
+            povezava.download = "ucne_kartice.json";
+
+            document.body.appendChild(povezava);
+            povezava.click();
+            povezava.remove();
+
+            setTimeout(function () {
+                URL.revokeObjectURL(url);
+            }, 1000);
+
+            obvestilo("Izvoz kartic je pripravljen.");
+        });
+
+        uvozi.addEventListener("change", async function () {
+            const datoteka = uvozi.files[0];
+
+            if (!datoteka) return;
+
+            try {
+                if (datoteka.size > 5 * 1024 * 1024) {
+                    throw new Error("Datoteka je prevelika.");
+                }
+
+                const podatki = JSON.parse(await datoteka.text());
+
+                if (
+                    !Array.isArray(podatki) ||
+                    podatki.length === 0 ||
+                    podatki.length > 1000
+                ) {
+                    throw new Error("Neveljaven seznam kartic.");
+                }
+
+                const veljavno = podatki.every(function (kartica) {
+                    return (
+                        kartica !== null &&
+                        typeof kartica === "object" &&
+                        typeof kartica.vprasanje === "string" &&
+                        typeof kartica.odgovor === "string" &&
+                        kartica.vprasanje.trim().length > 0 &&
+                        kartica.odgovor.trim().length > 0 &&
+                        kartica.vprasanje.length <= 1000 &&
+                        kartica.odgovor.length <= 3000
+                    );
+                });
+
+                if (!veljavno) {
+                    throw new Error("Neveljavna vsebina kartic.");
+                }
+
+                if (
+                    kartice.length > 0 &&
+                    !window.confirm(
+                        "Uvoz bo zamenjal trenutne kartice. Nadaljujem?"
+                    )
+                ) {
+                    return;
+                }
+
+                kartice = podatki.map(function (kartica) {
+                    return {
+                        vprasanje: kartica.vprasanje.trim(),
+                        odgovor: kartica.odgovor.trim()
+                    };
+                });
+
+                indeks = 0;
+                prikazanOdgovor = false;
+
+                prikaziKartico();
+                obvestilo("Uvoženih kartic: " + kartice.length + ".");
+            } catch {
+                obvestilo(
+                    "Uvoz ni uspel. Izberi veljavno datoteko JSON " +
+                    "z največ 1000 karticami in velikostjo do 5 MB.",
+                    true
+                );
+            } finally {
+                uvozi.value = "";
+            }
+        });
+
+        prikaziKartico();
+    </script>
+</body>
+</html>

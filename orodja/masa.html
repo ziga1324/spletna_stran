@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pretvornik mase</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Pretvornik mase</h1>
+        <p>Pretvori maso v izbrano enoto in preveri vse pretvorbe.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="masa">Masa</label>
+                <input
+                    type="number"
+                    id="masa"
+                    min="0"
+                    step="any"
+                    placeholder="Na primer: 1000"
+                    required
+                >
+
+                <label for="iz">Iz enote</label>
+                <select id="iz">
+                    <option value="mg">Miligrami (mg)</option>
+                    <option value="g" selected>Grami (g)</option>
+                    <option value="kg">Kilogrami (kg)</option>
+                    <option value="t">Tone (t)</option>
+                    <option value="lb">Funti (lb)</option>
+                </select>
+
+                <label for="v">V enoto</label>
+                <select id="v">
+                    <option value="mg">Miligrami (mg)</option>
+                    <option value="g">Grami (g)</option>
+                    <option value="kg" selected>Kilogrami (kg)</option>
+                    <option value="t">Tone (t)</option>
+                    <option value="lb">Funti (lb)</option>
+                </select>
+
+                <div class="gumbi">
+                    <button type="submit">Pretvori</button>
+                    <button type="button" id="zamenjaj">Zamenjaj enoti</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+                style="overflow-wrap: anywhere;"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Pretvorba uporablja razmerje med začetno in ciljno enoto.
+                Tone pomenijo metrične tone, funti pa mednarodne funte.
+            </p>
+
+            <ul>
+                <li>1 g = 1.000 mg.</li>
+                <li>1 kg = 1.000 g.</li>
+                <li>1 t = 1.000 kg.</li>
+                <li>1 lb = 0,45359237 kg.</li>
+            </ul>
+
+            <p>
+                Primer: 1.000 g = <strong>1 kg</strong>.
+                Rezultati so prikazani z največ 12 pomembnimi števkami.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const masaVnos = document.getElementById("masa");
+        const iz = document.getElementById("iz");
+        const v = document.getElementById("v");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        // Masa ene enote v kilogramih.
+        const enote = {
+            mg: { ime: "Miligrami", oznaka: "mg", faktor: 0.000001 },
+            g:  { ime: "Grami", oznaka: "g", faktor: 0.001 },
+            kg: { ime: "Kilogrami", oznaka: "kg", faktor: 1 },
+            t:  { ime: "Tone", oznaka: "t", faktor: 1000 },
+            lb: { ime: "Funti", oznaka: "lb", faktor: 0.45359237 }
+        };
+
+        const oblikovanje = new Intl.NumberFormat("sl-SI", {
+            maximumSignificantDigits: 12
+        });
+
+        function zapis(stevilo) {
+            return oblikovanje.format(stevilo);
+        }
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function pretvori(masa, izEnote, vEnoto) {
+            if (izEnote === vEnoto) return masa;
+
+            const faktor =
+                enote[izEnote].faktor / enote[vEnoto].faktor;
+
+            const vrednost = masa * faktor;
+
+            if (
+                !Number.isFinite(vrednost) ||
+                (masa > 0 && vrednost === 0)
+            ) {
+                throw new Error(
+                    "Pretvorba je zunaj podprtega številskega obsega."
+                );
+            }
+
+            return vrednost;
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        document.getElementById("zamenjaj").addEventListener(
+            "click",
+            function () {
+                const prejsnjaEnota = iz.value;
+                iz.value = v.value;
+                v.value = prejsnjaEnota;
+                pocistiRezultat();
+            }
+        );
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const masa = masaVnos.valueAsNumber;
+
+            if (!Number.isFinite(masa) || masa < 0) {
+                napaka.textContent =
+                    "Vnesi veljavno nenegativno maso.";
+                return;
+            }
+
+            try {
+                const vrednost = pretvori(masa, iz.value, v.value);
+
+                dodajBesedilo(
+                    "Rezultat: " + zapis(vrednost) +
+                    " " + enote[v.value].oznaka,
+                    "h2"
+                );
+
+                dodajBesedilo(
+                    zapis(masa) + " " + enote[iz.value].oznaka +
+                    " ≈ " + zapis(vrednost) + " " +
+                    enote[v.value].oznaka
+                );
+
+                dodajBesedilo("Vse pretvorbe", "h3");
+
+                const seznam = document.createElement("ul");
+
+                Object.entries(enote).forEach(function ([kljuc, enota]) {
+                    const vrstica = document.createElement("li");
+
+                    try {
+                        const pretvorjena = pretvori(
+                            masa,
+                            iz.value,
+                            kljuc
+                        );
+
+                        vrstica.textContent =
+                            enota.ime + ": " +
+                            zapis(pretvorjena) + " " + enota.oznaka;
+                    } catch {
+                        vrstica.textContent =
+                            enota.ime + ": zunaj podprtega obsega.";
+                    }
+
+                    seznam.appendChild(vrstica);
+                });
+
+                rezultat.appendChild(seznam);
+
+                dodajBesedilo(
+                    "Prikaz je zaokrožen na največ 12 pomembnih števk."
+                );
+            } catch (napakaIzracuna) {
+                napaka.textContent = napakaIzracuna.message;
+            }
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

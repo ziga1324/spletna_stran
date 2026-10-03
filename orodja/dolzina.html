@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pretvornik dolžine</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Pretvornik dolžine</h1>
+        <p>Pretvori dolžino v izbrano enoto ali preveri vse pretvorbe.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="dolzina">Dolžina</label>
+                <input
+                    type="number"
+                    id="dolzina"
+                    min="0"
+                    step="any"
+                    placeholder="Na primer: 100"
+                    required
+                >
+
+                <label for="iz">Iz enote</label>
+                <select id="iz">
+                    <option value="mm">Milimetri (mm)</option>
+                    <option value="cm" selected>Centimetri (cm)</option>
+                    <option value="m">Metri (m)</option>
+                    <option value="km">Kilometri (km)</option>
+                    <option value="in">Palci (in)</option>
+                    <option value="ft">Čevlji (ft)</option>
+                </select>
+
+                <label for="v">V enoto</label>
+                <select id="v">
+                    <option value="mm">Milimetri (mm)</option>
+                    <option value="cm">Centimetri (cm)</option>
+                    <option value="m" selected>Metri (m)</option>
+                    <option value="km">Kilometri (km)</option>
+                    <option value="in">Palci (in)</option>
+                    <option value="ft">Čevlji (ft)</option>
+                </select>
+
+                <div class="gumbi">
+                    <button type="submit">Pretvori</button>
+                    <button type="button" id="zamenjaj">Zamenjaj enoti</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+                style="overflow-wrap: anywhere;"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Vneseno dolžino pretvorimo v metre, nato v ciljno enoto.
+            </p>
+
+            <ul>
+                <li>1 m = 100 cm = 1.000 mm.</li>
+                <li>1 km = 1.000 m.</li>
+                <li>1 palec = 2,54 cm.</li>
+                <li>1 čevelj = 12 palcev = 0,3048 m.</li>
+            </ul>
+
+            <p>
+                Primer: 100 cm = <strong>1 m</strong>.
+                Rezultati so prikazani z največ 12 pomembnimi števkami.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const dolzinaVnos = document.getElementById("dolzina");
+        const iz = document.getElementById("iz");
+        const v = document.getElementById("v");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        // Faktorji določajo dolžino ene enote v metrih.
+        const enote = {
+            mm: { ime: "Milimetri", oznaka: "mm", faktor: 0.001 },
+            cm: { ime: "Centimetri", oznaka: "cm", faktor: 0.01 },
+            m:  { ime: "Metri", oznaka: "m", faktor: 1 },
+            km: { ime: "Kilometri", oznaka: "km", faktor: 1000 },
+            in: { ime: "Palci", oznaka: "in", faktor: 0.0254 },
+            ft: { ime: "Čevlji", oznaka: "ft", faktor: 0.3048 }
+        };
+
+        const oblikovanje = new Intl.NumberFormat("sl-SI", {
+            maximumSignificantDigits: 12
+        });
+
+        function zapis(stevilo) {
+            return oblikovanje.format(stevilo);
+        }
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function pretvori(dolzina, izEnote, vEnoto) {
+            if (izEnote === vEnoto) return dolzina;
+
+            const faktor =
+                enote[izEnote].faktor / enote[vEnoto].faktor;
+
+            const vrednost = dolzina * faktor;
+
+            if (
+                !Number.isFinite(vrednost) ||
+                (dolzina > 0 && vrednost === 0)
+            ) {
+                throw new Error(
+                    "Pretvorba je zunaj podprtega številskega obsega."
+                );
+            }
+
+            return vrednost;
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        document.getElementById("zamenjaj").addEventListener(
+            "click",
+            function () {
+                const prejsnjaEnota = iz.value;
+                iz.value = v.value;
+                v.value = prejsnjaEnota;
+                pocistiRezultat();
+            }
+        );
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const dolzina = dolzinaVnos.valueAsNumber;
+
+            if (!Number.isFinite(dolzina) || dolzina < 0) {
+                napaka.textContent =
+                    "Vnesi veljavno nenegativno dolžino.";
+                return;
+            }
+
+            try {
+                const vrednost = pretvori(dolzina, iz.value, v.value);
+
+                dodajBesedilo(
+                    "Rezultat: " + zapis(vrednost) +
+                    " " + enote[v.value].oznaka,
+                    "h2"
+                );
+
+                dodajBesedilo(
+                    zapis(dolzina) + " " + enote[iz.value].oznaka +
+                    " ≈ " + zapis(vrednost) + " " +
+                    enote[v.value].oznaka
+                );
+
+                dodajBesedilo("Vse pretvorbe", "h3");
+
+                const seznam = document.createElement("ul");
+
+                Object.entries(enote).forEach(function ([kljuc, enota]) {
+                    const vrstica = document.createElement("li");
+
+                    try {
+                        const pretvorjena = pretvori(
+                            dolzina,
+                            iz.value,
+                            kljuc
+                        );
+
+                        vrstica.textContent =
+                            enota.ime + ": " +
+                            zapis(pretvorjena) + " " + enota.oznaka;
+                    } catch {
+                        vrstica.textContent =
+                            enota.ime + ": zunaj podprtega obsega.";
+                    }
+
+                    seznam.appendChild(vrstica);
+                });
+
+                rezultat.appendChild(seznam);
+
+                dodajBesedilo(
+                    "Prikaz je zaokrožen na največ 12 pomembnih števk."
+                );
+            } catch (napakaIzracuna) {
+                napaka.textContent = napakaIzracuna.message;
+            }
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

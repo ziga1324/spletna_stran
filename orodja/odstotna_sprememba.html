@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kalkulator odstotne spremembe</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Odstotna sprememba</h1>
+        <p>Primerjaj začetno in končno vrednost.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="zacetna">Začetna vrednost</label>
+                <input
+                    type="number"
+                    id="zacetna"
+                    min="0"
+                    step="any"
+                    placeholder="Na primer: 100"
+                    required
+                >
+
+                <label for="koncna">Končna vrednost</label>
+                <input
+                    type="number"
+                    id="koncna"
+                    min="0"
+                    step="any"
+                    placeholder="Na primer: 120"
+                    required
+                >
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Odstotna sprememba =
+                ((končna vrednost − začetna vrednost)
+                ÷ začetna vrednost) × 100.
+            </p>
+
+            <p>
+                Primer: sprememba s 100 na 120 pomeni
+                <strong>20 % rast</strong>.
+                Sprememba s 100 na 80 pomeni
+                <strong>20 % padec</strong>.
+            </p>
+
+            <p>
+                Ta kalkulator je namenjen nenegativnim vrednostim.
+                Če je začetna vrednost 0, odstotne spremembe
+                ni mogoče izračunati, razliko pa lahko.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const zacetnaVnos = document.getElementById("zacetna");
+        const koncnaVnos = document.getElementById("koncna");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const oblikovanje = new Intl.NumberFormat("sl-SI", {
+            maximumFractionDigits: 6
+        });
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const zacetna = zacetnaVnos.valueAsNumber;
+            const koncna = koncnaVnos.valueAsNumber;
+
+            if (
+                !Number.isFinite(zacetna) ||
+                !Number.isFinite(koncna) ||
+                zacetna < 0 ||
+                koncna < 0
+            ) {
+                napaka.textContent =
+                    "Vnesi dve veljavni nenegativni števili.";
+                return;
+            }
+
+            const razlika = koncna - zacetna;
+
+            if (zacetna === 0) {
+                dodajBesedilo(
+                    "Odstotna sprememba ni določena.",
+                    "h2"
+                );
+
+                dodajBesedilo(
+                    "Začetna vrednost je 0, zato bi formula delila z 0."
+                );
+            } else {
+                const sprememba = (razlika / zacetna) * 100;
+
+                if (!Number.isFinite(sprememba)) {
+                    napaka.textContent =
+                        "Rezultat je zunaj podprtega obsega. " +
+                        "Uporabi manj skrajne vrednosti.";
+                    return;
+                }
+
+                if (razlika > 0) {
+                    dodajBesedilo(
+                        "Rast: " +
+                        oblikovanje.format(sprememba) + " %",
+                        "h2"
+                    );
+                } else if (razlika < 0) {
+                    dodajBesedilo(
+                        "Padec: " +
+                        oblikovanje.format(Math.abs(sprememba)) + " %",
+                        "h2"
+                    );
+                } else {
+                    dodajBesedilo("Brez spremembe: 0 %", "h2");
+                }
+            }
+
+            dodajBesedilo(
+                "Razlika (končna − začetna): " +
+                (razlika > 0 ? "+" : "") +
+                oblikovanje.format(razlika)
+            );
+
+            dodajBesedilo(
+                "Velikost razlike: " +
+                oblikovanje.format(Math.abs(razlika))
+            );
+
+            dodajBesedilo(
+                "Začetna vrednost: " + oblikovanje.format(zacetna) +
+                " | Končna vrednost: " + oblikovanje.format(koncna)
+            );
+
+            dodajBesedilo(
+                "Rezultati so prikazani z največ šestimi decimalnimi mesti."
+            );
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

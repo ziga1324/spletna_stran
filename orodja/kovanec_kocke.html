@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Met kovanca in kock</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Met kovanca in kock</h1>
+        <p>Vrzi kovanec ali izberi število kock in njihovih stranic.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="nacin">Kaj želiš vreči?</label>
+                <select id="nacin">
+                    <option value="kovanec">Kovanec</option>
+                    <option value="kocke">Kocke</option>
+                </select>
+
+                <div id="nastavitve-kock" hidden>
+                    <label for="stevilo">Število kock</label>
+                    <input
+                        type="number"
+                        id="stevilo"
+                        min="1"
+                        max="100"
+                        step="1"
+                        value="2"
+                        required
+                        disabled
+                    >
+
+                    <label for="stranice">Število stranic posamezne kocke</label>
+                    <input
+                        type="number"
+                        id="stranice"
+                        min="2"
+                        max="1000"
+                        step="1"
+                        value="6"
+                        required
+                        disabled
+                    >
+                </div>
+
+                <div class="gumbi">
+                    <button type="submit">Vrzi</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div id="izhod" class="rezultat" hidden>
+                <h2>Rezultat meta</h2>
+                <p
+                    id="rezultat"
+                    style="font-size: 28px; font-weight: bold;
+                           overflow-wrap: anywhere;"
+                ></p>
+                <p id="vsota"></p>
+            </div>
+
+            <p id="status" role="status"></p>
+
+            <section id="zgodovina-blok" hidden>
+                <h3>Zgodovina metov</h3>
+                <p>Prikazanih je največ 50 zadnjih metov, najnovejši prvi.</p>
+                <ol id="zgodovina"></ol>
+            </section>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Kovanec ima dva enako verjetna izida:
+                <strong>glava</strong> in <strong>cifra</strong>.
+            </p>
+
+            <p>
+                Kocka s šestimi stranicami vrne število od 1 do 6.
+                Pri več kockah se vsaka vrže neodvisno,
+                prikazana pa je tudi vsota.
+            </p>
+
+            <p>
+                Sprememba nastavitev počisti trenutni rezultat.
+                Zgodovina ostane do klika na »Počisti«
+                ali osvežitve strani.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const nacin = document.getElementById("nacin");
+        const stevilo = document.getElementById("stevilo");
+        const stranice = document.getElementById("stranice");
+        const nastavitveKock = document.getElementById("nastavitve-kock");
+
+        const napaka = document.getElementById("napaka");
+        const izhod = document.getElementById("izhod");
+        const rezultat = document.getElementById("rezultat");
+        const vsota = document.getElementById("vsota");
+        const status = document.getElementById("status");
+
+        const zgodovina = document.getElementById("zgodovina");
+        const zgodovinaBlok = document.getElementById("zgodovina-blok");
+
+        let steviloMetov = 0;
+
+        function posodobiPolja() {
+            const kocke = nacin.value === "kocke";
+
+            nastavitveKock.hidden = !kocke;
+            stevilo.disabled = !kocke;
+            stranice.disabled = !kocke;
+        }
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            status.textContent = "";
+            rezultat.textContent = "";
+            vsota.textContent = "";
+            izhod.hidden = true;
+        }
+
+        function nakljucnoPod(meja) {
+            const obseg = 2 ** 32;
+            const omejitev = obseg - (obseg % meja);
+            const podatki = new Uint32Array(1);
+
+            do {
+                crypto.getRandomValues(podatki);
+            } while (podatki[0] >= omejitev);
+
+            return podatki[0] % meja;
+        }
+
+        function dodajVZgodovino(besedilo) {
+            steviloMetov++;
+
+            const vrstica = document.createElement("li");
+            vrstica.textContent =
+                "Met " + steviloMetov + ": " + besedilo;
+
+            zgodovina.prepend(vrstica);
+
+            if (zgodovina.children.length > 50) {
+                zgodovina.lastElementChild.remove();
+            }
+
+            zgodovinaBlok.hidden = false;
+        }
+
+        nacin.addEventListener("change", function () {
+            posodobiPolja();
+            pocistiRezultat();
+        });
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            try {
+                let zapis;
+
+                if (nacin.value === "kovanec") {
+                    zapis = nakljucnoPod(2) === 0 ? "Glava" : "Cifra";
+                    rezultat.textContent = zapis;
+                } else {
+                    const koliko = stevilo.valueAsNumber;
+                    const kolikoStranic = stranice.valueAsNumber;
+
+                    if (
+                        !Number.isInteger(koliko) ||
+                        koliko < 1 ||
+                        koliko > 100 ||
+                        !Number.isInteger(kolikoStranic) ||
+                        kolikoStranic < 2 ||
+                        kolikoStranic > 1000
+                    ) {
+                        napaka.textContent =
+                            "Vnesi od 1 do 100 kock in od 2 do 1000 " +
+                            "stranic na kocko. Uporabi cela števila.";
+                        return;
+                    }
+
+                    const meti = Array.from(
+                        { length: koliko },
+                        () => nakljucnoPod(kolikoStranic) + 1
+                    );
+
+                    const skupaj = meti.reduce(
+                        (skupaj, vrednost) => skupaj + vrednost,
+                        0
+                    );
+
+                    rezultat.textContent = meti.join(" · ");
+                    vsota.textContent = "Vsota: " + skupaj;
+
+                    zapis =
+                        koliko + " kock s " + kolikoStranic +
+                        " stranicami: " + meti.join(", ") +
+                        " | Vsota: " + skupaj;
+                }
+
+                izhod.hidden = false;
+                dodajVZgodovino(zapis);
+                status.textContent = "Rezultat meta: " + zapis;
+            } catch {
+                napaka.textContent =
+                    "Brskalnik ne omogoča naključnega meta.";
+            }
+        });
+
+        obrazec.addEventListener("reset", function () {
+            pocistiRezultat();
+            zgodovina.replaceChildren();
+            zgodovinaBlok.hidden = true;
+            steviloMetov = 0;
+
+            setTimeout(posodobiPolja, 0);
+        });
+
+        posodobiPolja();
+    </script>
+</body>
+</html>

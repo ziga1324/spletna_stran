@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Načrt učenja do testa</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Načrt učenja do testa</h1>
+        <p>Vnesi teme, datum testa in čas, ki ga imaš vsak dan za učenje.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="datum">Datum testa</label>
+                <input
+                    type="date"
+                    id="datum"
+                    required
+                >
+
+                <label for="minute">Čas za učenje na dan (minute)</label>
+                <input
+                    type="number"
+                    id="minute"
+                    min="1"
+                    max="1440"
+                    step="1"
+                    value="60"
+                    required
+                >
+
+                <label for="teme">Učne teme</label>
+                <textarea
+                    id="teme"
+                    rows="7"
+                    placeholder="Ulomki&#10;Linearne enačbe&#10;Pitagorov izrek"
+                    aria-describedby="navodilo"
+                    required
+                    style="width: 100%; padding: 14px; font: inherit;
+                           border: 1px solid #a8b8c5; border-radius: 8px;
+                           resize: vertical;"
+                ></textarea>
+
+                <p id="navodilo">
+                    Vsako temo napiši v svojo vrstico.
+                    Teme bodo razporejene v vnesenem vrstnem redu.
+                </p>
+
+                <div class="gumbi">
+                    <button type="submit">Pripravi načrt</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Načrt vključuje današnji dan in vse dni do dneva
+                pred testom. Dan testa ni vključen.
+            </p>
+
+            <p>
+                Če imaš vsaj dva dneva, je zadnji dan namenjen
+                ponavljanju. Preostali dnevi so namenjeni učnim temam.
+                Če imaš samo en dan, je del časa namenjen ponavljanju.
+            </p>
+
+            <p>
+                Vsaki temi je namenjeno približno enako časa.
+                Daljše teme se lahko nadaljujejo naslednji dan.
+                Načrt ne ocenjuje zahtevnosti snovi.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const datumVnos = document.getElementById("datum");
+        const minuteVnos = document.getElementById("minute");
+        const temeVnos = document.getElementById("teme");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const danVMilisekundah = 24 * 60 * 60 * 1000;
+
+        const prikazDatuma = new Intl.DateTimeFormat("sl-SI", {
+            weekday: "long",
+            day: "numeric",
+            month: "numeric",
+            year: "numeric"
+        });
+
+        function danes() {
+            const zdaj = new Date();
+
+            return new Date(
+                zdaj.getFullYear(),
+                zdaj.getMonth(),
+                zdaj.getDate()
+            );
+        }
+
+        function datumZaVnos(datum) {
+            const leto = datum.getFullYear();
+            const mesec = String(datum.getMonth() + 1).padStart(2, "0");
+            const dan = String(datum.getDate()).padStart(2, "0");
+
+            return `${leto}-${mesec}-${dan}`;
+        }
+
+        function zaporedniDan(datum) {
+            // UTC uporabimo samo za štetje koledarskih dni.
+            // Tako premik ure ne spremeni števila dni.
+            return Date.UTC(
+                datum.getFullYear(),
+                datum.getMonth(),
+                datum.getDate()
+            ) / danVMilisekundah;
+        }
+
+        function nastaviNajmanjsiDatum() {
+            const jutri = danes();
+            jutri.setDate(jutri.getDate() + 1);
+            datumVnos.min = datumZaVnos(jutri);
+        }
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function dodajBesedilo(stars, besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            stars.appendChild(element);
+
+            return element;
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+            nastaviNajmanjsiDatum();
+
+            const deliDatuma = datumVnos.value.split("-").map(Number);
+
+            if (deliDatuma.length !== 3) {
+                napaka.textContent = "Izberi veljaven datum testa.";
+                return;
+            }
+
+            const [leto, mesec, dan] = deliDatuma;
+            const datumTesta = new Date(leto, mesec - 1, dan);
+
+            if (
+                datumTesta.getFullYear() !== leto ||
+                datumTesta.getMonth() !== mesec - 1 ||
+                datumTesta.getDate() !== dan
+            ) {
+                napaka.textContent = "Izberi veljaven datum testa.";
+                return;
+            }
+
+            const zacetek = danes();
+            const steviloDni =
+                zaporedniDan(datumTesta) - zaporedniDan(zacetek);
+
+            if (steviloDni < 1 || steviloDni > 365) {
+                napaka.textContent =
+                    "Izberi datum od jutri do največ 365 dni v prihodnosti.";
+                return;
+            }
+
+            const minute = minuteVnos.valueAsNumber;
+
+            if (!Number.isInteger(minute) || minute < 1 || minute > 1440) {
+                napaka.textContent =
+                    "Vnesi celo število minut od 1 do 1440.";
+                return;
+            }
+
+            const teme = temeVnos.value
+                .split(/\r?\n/)
+                .map(tema => tema.trim())
+                .filter(tema => tema !== "");
+
+            if (teme.length === 0) {
+                napaka.textContent = "Vnesi vsaj eno učno temo.";
+                return;
+            }
+
+            const dneviZaTeme = steviloDni > 1
+                ? steviloDni - 1
+                : 1;
+
+            const dnevnoPonavljanje = steviloDni === 1 && minute >= 2
+                ? Math.max(1, Math.round(minute * 0.2))
+                : 0;
+
+            const minuteZaTemeNaDan = minute - dnevnoPonavljanje;
+            const skupneMinuteZaTeme =
+                dneviZaTeme * minuteZaTemeNaDan;
+
+            if (teme.length > skupneMinuteZaTeme) {
+                napaka.textContent =
+                    "Za vsako temo mora ostati vsaj ena minuta. " +
+                    "Povečaj dnevni čas ali zmanjšaj število tem.";
+                return;
+            }
+
+            // Čas čim bolj enakomerno razdelimo med teme.
+            const osnova = Math.floor(skupneMinuteZaTeme / teme.length);
+            const ostanek = skupneMinuteZaTeme % teme.length;
+
+            const naloge = teme.map(function (tema, indeks) {
+                return {
+                    tema: tema,
+                    minute: osnova + (indeks < ostanek ? 1 : 0)
+                };
+            });
+
+            dodajBesedilo(rezultat, "Tvoj načrt učenja", "h2");
+
+            dodajBesedilo(
+                rezultat,
+                "Število dni: " + steviloDni +
+                " | Čas na dan: " + minute +
+                " minut | Skupaj: " + (steviloDni * minute) + " minut."
+            );
+
+            let indeksTeme = 0;
+
+            for (let i = 0; i < steviloDni; i++) {
+                const datum = new Date(zacetek);
+                datum.setDate(zacetek.getDate() + i);
+
+                const blok = document.createElement("section");
+                blok.style.marginTop = "20px";
+
+                dodajBesedilo(
+                    blok,
+                    prikazDatuma.format(datum),
+                    "h3"
+                );
+
+                const seznam = document.createElement("ul");
+
+                const samoPonavljanje =
+                    steviloDni > 1 && i === steviloDni - 1;
+
+                if (samoPonavljanje) {
+                    dodajBesedilo(
+                        seznam,
+                        "Ponavljanje vseh tem in preverjanje znanja: " +
+                        minute + " minut.",
+                        "li"
+                    );
+                } else {
+                    let prostiCas = minuteZaTemeNaDan;
+
+                    while (prostiCas > 0 && indeksTeme < naloge.length) {
+                        const naloga = naloge[indeksTeme];
+                        const dodeljeneMinute =
+                            Math.min(prostiCas, naloga.minute);
+
+                        dodajBesedilo(
+                            seznam,
+                            naloga.tema + ": " + dodeljeneMinute + " minut.",
+                            "li"
+                        );
+
+                        naloga.minute -= dodeljeneMinute;
+                        prostiCas -= dodeljeneMinute;
+
+                        if (naloga.minute === 0) {
+                            indeksTeme++;
+                        }
+                    }
+
+                    if (dnevnoPonavljanje > 0) {
+                        dodajBesedilo(
+                            seznam,
+                            "Ponavljanje: " + dnevnoPonavljanje + " minut.",
+                            "li"
+                        );
+                    }
+                }
+
+                blok.appendChild(seznam);
+                rezultat.appendChild(blok);
+            }
+        });
+
+        obrazec.addEventListener("reset", function () {
+            pocistiRezultat();
+            nastaviNajmanjsiDatum();
+        });
+
+        nastaviNajmanjsiDatum();
+    </script>
+</body>
+</html>

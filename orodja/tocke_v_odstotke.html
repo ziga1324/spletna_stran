@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Točke v odstotke in oceno</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Točke v odstotke in oceno</h1>
+        <p>Vnesi dosežene točke in prilagodi pragove ocenjevanja.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="dosezene">Dosežene točke</label>
+                <input
+                    type="number"
+                    id="dosezene"
+                    name="dosezene"
+                    min="0"
+                    step="any"
+                    placeholder="Na primer: 37"
+                    required
+                >
+
+                <label for="najvec">Največje možno število točk</label>
+                <input
+                    type="number"
+                    id="najvec"
+                    name="najvec"
+                    min="0"
+                    step="any"
+                    placeholder="Na primer: 45"
+                    required
+                >
+
+                <h2>Pragovi ocen</h2>
+                <p id="navodilo">
+                    Vnesi najmanjši odstotek za posamezno oceno.
+                    Spodnje vrednosti so primer in jih lahko spremeniš.
+                </p>
+
+                <label for="prag2">Za oceno 2 (%)</label>
+                <input
+                    type="number"
+                    id="prag2"
+                    min="0"
+                    max="100"
+                    step="any"
+                    value="50"
+                    required
+                >
+
+                <label for="prag3">Za oceno 3 (%)</label>
+                <input
+                    type="number"
+                    id="prag3"
+                    min="0"
+                    max="100"
+                    step="any"
+                    value="65"
+                    required
+                >
+
+                <label for="prag4">Za oceno 4 (%)</label>
+                <input
+                    type="number"
+                    id="prag4"
+                    min="0"
+                    max="100"
+                    step="any"
+                    value="80"
+                    required
+                >
+
+                <label for="prag5">Za oceno 5 (%)</label>
+                <input
+                    type="number"
+                    id="prag5"
+                    min="0"
+                    max="100"
+                    step="any"
+                    value="90"
+                    required
+                >
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Odstotek = (dosežene točke ÷ največje možno
+                število točk) × 100.
+            </p>
+
+            <p>
+                Primer: 37 od 45 točk pomeni približno
+                <strong>82,22 %</strong>. Pri zgornjih pragovih
+                je to ocena <strong>4</strong>.
+            </p>
+
+            <p>
+                Ocena se določi iz nezaokroženega odstotka.
+                Rezultat je odvisen od pragov, ki jih vneseš.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const oblikovanje = new Intl.NumberFormat("sl-SI", {
+            maximumFractionDigits: 2
+        });
+
+        function preberiStevilo(id) {
+            return document.getElementById(id).valueAsNumber;
+        }
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+
+            napaka.textContent = "";
+            rezultat.textContent = "";
+
+            const dosezene = preberiStevilo("dosezene");
+            const najvec = preberiStevilo("najvec");
+
+            const pragovi = [
+                preberiStevilo("prag2"),
+                preberiStevilo("prag3"),
+                preberiStevilo("prag4"),
+                preberiStevilo("prag5")
+            ];
+
+            if (
+                !Number.isFinite(dosezene) ||
+                !Number.isFinite(najvec) ||
+                dosezene < 0 ||
+                najvec <= 0
+            ) {
+                napaka.textContent =
+                    "Dosežene točke morajo biti najmanj 0, največje možno število točk pa večje od 0.";
+                return;
+            }
+
+            if (dosezene > najvec) {
+                napaka.textContent =
+                    "Dosežene točke ne smejo presegati največjega možnega števila točk.";
+                return;
+            }
+
+            const veljavniPragovi = pragovi.every(function (prag, indeks) {
+                return (
+                    Number.isFinite(prag) &&
+                    prag >= 0 &&
+                    prag <= 100 &&
+                    (indeks === 0 || prag > pragovi[indeks - 1])
+                );
+            });
+
+            if (!veljavniPragovi) {
+                napaka.textContent =
+                    "Pragovi morajo biti med 0 in 100 ter strogo naraščati od ocene 2 do ocene 5.";
+                return;
+            }
+
+            const odstotek = (dosezene / najvec) * 100;
+            let ocena = 1;
+
+            pragovi.forEach(function (prag, indeks) {
+                if (odstotek >= prag) {
+                    ocena = indeks + 2;
+                }
+            });
+
+            const naslov = document.createElement("h2");
+            naslov.textContent = "Ocena: " + ocena;
+
+            const odstotekPrikaz = document.createElement("p");
+            odstotekPrikaz.textContent =
+                "Dosežen odstotek: " +
+                oblikovanje.format(odstotek) + " %";
+
+            const tockePrikaz = document.createElement("p");
+            tockePrikaz.textContent =
+                "Točke: " + oblikovanje.format(dosezene) +
+                " od " + oblikovanje.format(najvec);
+
+            rezultat.append(naslov, odstotekPrikaz, tockePrikaz);
+        });
+
+        obrazec.addEventListener("reset", function () {
+            napaka.textContent = "";
+            rezultat.textContent = "";
+        });
+    </script>
+</body>
+</html>

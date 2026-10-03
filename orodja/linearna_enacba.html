@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reševalnik linearne enačbe</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Reševalnik linearne enačbe</h1>
+        <p>Vnesi koeficiente enačbe ax + b = c.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="a">Koeficient a</label>
+                <input
+                    type="number"
+                    id="a"
+                    step="any"
+                    placeholder="Na primer: 2"
+                    required
+                >
+
+                <label for="b">Koeficient b</label>
+                <input
+                    type="number"
+                    id="b"
+                    step="any"
+                    placeholder="Na primer: 3"
+                    required
+                >
+
+                <label for="c">Vrednost c</label>
+                <input
+                    type="number"
+                    id="c"
+                    step="any"
+                    placeholder="Na primer: 11"
+                    required
+                >
+
+                <div class="gumbi">
+                    <button type="submit">Reši enačbo</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+                style="overflow-wrap: anywhere;"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Od obeh strani odštejemo b:
+                ax = c − b.
+                Nato obe strani delimo z a:
+                <strong>x = (c − b) ÷ a</strong>.
+            </p>
+
+            <p>
+                Primer: 2x + 3 = 11 → 2x = 8 → x = 4.
+            </p>
+
+            <p>
+                Če je a = 0 in b = c, je rešitev vsako realno število.
+                Če je a = 0 in b ≠ c, enačba nima rešitve.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const oblikovanje = new Intl.NumberFormat("sl-SI", {
+            maximumSignificantDigits: 12
+        });
+
+        function zapis(stevilo) {
+            return oblikovanje.format(
+                Object.is(stevilo, -0) ? 0 : stevilo
+            );
+        }
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const a = document.getElementById("a").valueAsNumber;
+            const b = document.getElementById("b").valueAsNumber;
+            const c = document.getElementById("c").valueAsNumber;
+
+            if (![a, b, c].every(Number.isFinite)) {
+                napaka.textContent = "Vnesi tri veljavna števila.";
+                return;
+            }
+
+            if (a === 0) {
+                if (b === c) {
+                    dodajBesedilo("Enačba ima neskončno rešitev.", "h2");
+                    dodajBesedilo(
+                        "Ker je a = 0, dobimo " +
+                        zapis(b) + " = " + zapis(c) +
+                        ". Enakost velja za vsak realni x."
+                    );
+                } else {
+                    dodajBesedilo("Enačba nima rešitve.", "h2");
+                    dodajBesedilo(
+                        "Ker je a = 0, dobimo " +
+                        zapis(b) + " = " + zapis(c) +
+                        ". Ta enakost ne velja za noben x."
+                    );
+                }
+
+                return;
+            }
+
+            const razlika = c - b;
+            const x = razlika / a;
+
+            if (
+                !Number.isFinite(razlika) ||
+                !Number.isFinite(x) ||
+                (x === 0 && razlika !== 0)
+            ) {
+                napaka.textContent =
+                    "Rezultat je zunaj podprtega številskega obsega. " +
+                    "Uporabi manj skrajne vrednosti.";
+                return;
+            }
+
+            dodajBesedilo("Rešitev: x ≈ " + zapis(x), "h2");
+            dodajBesedilo("Postopek", "h3");
+
+            const koraki = document.createElement("ol");
+
+            const besedila = [
+                "Začetna enačba: (" + zapis(a) +
+                ") × x + (" + zapis(b) + ") = " + zapis(c),
+
+                "Odštejemo b na obeh straneh: (" + zapis(a) +
+                ") × x = (" + zapis(c) + ") − (" + zapis(b) +
+                ") ≈ " + zapis(razlika),
+
+                "Delimo z a: x = ((" + zapis(c) +
+                ") − (" + zapis(b) + ")) ÷ (" + zapis(a) +
+                ") ≈ " + zapis(x)
+            ];
+
+            besedila.forEach(function (besedilo) {
+                const korak = document.createElement("li");
+                korak.textContent = besedilo;
+                koraki.appendChild(korak);
+            });
+
+            rezultat.appendChild(koraki);
+
+            dodajBesedilo(
+                "Prikazane vrednosti so zaokrožene na največ " +
+                "12 pomembnih števk. Znak ≈ označuje približen zapis."
+            );
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

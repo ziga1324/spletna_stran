@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Generator ekip</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Generator ekip</h1>
+        <p>Vnesi udeležence in jih naključno razdeli v ekipe.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="udelezenci">Udeleženci</label>
+                <textarea
+                    id="udelezenci"
+                    rows="10"
+                    maxlength="100000"
+                    placeholder="Jakob&#10;Ana&#10;Luka&#10;Nika&#10;Tim&#10;Sara"
+                    aria-describedby="navodilo"
+                    required
+                ></textarea>
+
+                <p id="navodilo">
+                    Vsakega udeleženca napiši v svojo vrstico.
+                    Prazne vrstice se preskočijo. Osebe z enakim
+                    imenom loči s priimkom ali drugo oznako.
+                </p>
+
+                <label for="stevilo-ekip">Število ekip</label>
+                <input
+                    type="number"
+                    id="stevilo-ekip"
+                    min="1"
+                    max="100"
+                    step="1"
+                    value="2"
+                    required
+                >
+
+                <div class="gumbi">
+                    <button type="submit">Ustvari ekipe</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div id="izhod" class="rezultat" hidden>
+                <h2>Tvoje ekipe</h2>
+                <p id="povzetek"></p>
+
+                <div id="ekipe"></div>
+
+                <button type="button" id="kopiraj">
+                    Kopiraj ekipe
+                </button>
+            </div>
+
+            <p id="status" role="status"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Seznam udeležencev premešamo, nato jih razdelimo
+                med izbrano število ekip. Vsak vnos se pojavi
+                natanko enkrat.
+            </p>
+
+            <p>
+                Velikosti ekip se razlikujejo največ za eno osebo.
+                Na primer: 10 udeležencev v 3 ekipah pomeni
+                ekipe s 4, 3 in 3 člani.
+            </p>
+
+            <p>
+                Razdelitev je naključna in ne upošteva znanja
+                ali sposobnosti udeležencev.
+                Za novo razdelitev ponovno klikni »Ustvari ekipe«.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const udelezenci = document.getElementById("udelezenci");
+        const steviloEkip = document.getElementById("stevilo-ekip");
+
+        const napaka = document.getElementById("napaka");
+        const izhod = document.getElementById("izhod");
+        const ekipePrikaz = document.getElementById("ekipe");
+        const povzetek = document.getElementById("povzetek");
+        const status = document.getElementById("status");
+
+        let besediloZaKopiranje = "";
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            status.textContent = "";
+            ekipePrikaz.replaceChildren();
+            izhod.hidden = true;
+            besediloZaKopiranje = "";
+        }
+
+        function nakljucnoPod(meja) {
+            const obseg = 2 ** 32;
+            const omejitev = obseg - (obseg % meja);
+            const podatki = new Uint32Array(1);
+
+            do {
+                crypto.getRandomValues(podatki);
+            } while (podatki[0] >= omejitev);
+
+            return podatki[0] % meja;
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const imena = udelezenci.value
+                .split(/\r\n?|\n/)
+                .map(ime => ime.trim())
+                .filter(ime => ime !== "");
+
+            const kolikoEkip = steviloEkip.valueAsNumber;
+
+            if (
+                imena.length === 0 ||
+                imena.length > 1000 ||
+                imena.some(ime => ime.length > 200)
+            ) {
+                napaka.textContent =
+                    "Vnesi od 1 do 1000 udeležencev. " +
+                    "Posamezno ime ima lahko največ 200 znakov.";
+                return;
+            }
+
+            if (
+                !Number.isInteger(kolikoEkip) ||
+                kolikoEkip < 1 ||
+                kolikoEkip > 100 ||
+                kolikoEkip > imena.length
+            ) {
+                napaka.textContent =
+                    "Število ekip mora biti celo število od 1 do 100 " +
+                    "in ne sme presegati števila udeležencev.";
+                return;
+            }
+
+            try {
+                for (let i = imena.length - 1; i > 0; i--) {
+                    const j = nakljucnoPod(i + 1);
+                    [imena[i], imena[j]] = [imena[j], imena[i]];
+                }
+
+                const ekipe = Array.from(
+                    { length: kolikoEkip },
+                    () => []
+                );
+
+                imena.forEach(function (ime, indeks) {
+                    ekipe[indeks % kolikoEkip].push(ime);
+                });
+
+                const izvoz = [];
+
+                ekipe.forEach(function (clani, indeks) {
+                    const blok = document.createElement("section");
+                    const naslov = document.createElement("h3");
+                    const seznam = document.createElement("ul");
+
+                    naslov.textContent =
+                        "Ekipa " + (indeks + 1) +
+                        " – število članov: " + clani.length;
+
+                    clani.forEach(function (ime) {
+                        const vrstica = document.createElement("li");
+                        vrstica.textContent = ime;
+                        seznam.appendChild(vrstica);
+                    });
+
+                    blok.append(naslov, seznam);
+                    ekipePrikaz.appendChild(blok);
+
+                    izvoz.push(
+                        "Ekipa " + (indeks + 1) + "\n" +
+                        clani.map(ime => "- " + ime).join("\n")
+                    );
+                });
+
+                besediloZaKopiranje = izvoz.join("\n\n");
+
+                povzetek.textContent =
+                    "Udeleženci: " + imena.length +
+                    " | Ekipe: " + kolikoEkip;
+
+                izhod.hidden = false;
+                status.textContent = "Ekipe so pripravljene.";
+            } catch {
+                napaka.textContent =
+                    "Brskalnik ne omogoča naključne razdelitve.";
+            }
+        });
+
+        document.getElementById("kopiraj").addEventListener(
+            "click",
+            async function () {
+                if (!besediloZaKopiranje) return;
+
+                try {
+                    await navigator.clipboard.writeText(
+                        besediloZaKopiranje
+                    );
+
+                    status.textContent = "Ekipe so kopirane.";
+                } catch {
+                    status.replaceChildren();
+
+                    const oznaka = document.createElement("label");
+                    oznaka.htmlFor = "rocni-izvoz";
+                    oznaka.textContent =
+                        "Kopiraj ekipe s Ctrl+C oziroma Cmd+C:";
+
+                    const polje = document.createElement("textarea");
+                    polje.id = "rocni-izvoz";
+                    polje.rows = 8;
+                    polje.readOnly = true;
+                    polje.value = besediloZaKopiranje;
+
+                    status.append(oznaka, polje);
+                    polje.focus();
+                    polje.select();
+                }
+            }
+        );
+
+        obrazec.addEventListener("reset", function (dogodek) {
+            if (
+                udelezenci.value !== "" &&
+                !window.confirm("Želiš izbrisati seznam udeležencev in ekipe?")
+            ) {
+                dogodek.preventDefault();
+                return;
+            }
+
+            pocistiRezultat();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Čiščenje besedila</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Čiščenje besedila</h1>
+        <p>Odstrani odvečne presledke in nepotrebne vrstice.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="besedilo">Tvoje besedilo</label>
+                <textarea
+                    id="besedilo"
+                    rows="10"
+                    placeholder="Tukaj napiši ali prilepi besedilo ..."
+                    required
+                ></textarea>
+
+                <fieldset>
+                    <legend>Možnosti čiščenja</legend>
+
+                    <label class="moznost">
+                        <input type="checkbox" id="presledki" checked>
+                        Združi zaporedne presledke in tabulatorje
+                    </label>
+
+                    <label class="moznost">
+                        <input type="checkbox" id="robovi" checked>
+                        Odstrani presledke na začetku in koncu vrstic
+                    </label>
+
+                    <label class="moznost">
+                        <input type="checkbox" id="prazne">
+                        Odstrani prazne vrstice
+                    </label>
+
+                    <label class="moznost">
+                        <input type="checkbox" id="podvojene">
+                        Odstrani podvojene neprazne vrstice
+                    </label>
+                </fieldset>
+
+                <div class="gumbi">
+                    <button type="submit">Očisti besedilo</button>
+                    <button type="reset">Počisti vse</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div class="rezultat">
+                <label for="rezultat">Očiščeno besedilo</label>
+                <textarea
+                    id="rezultat"
+                    rows="10"
+                    placeholder="Tukaj bo prikazan rezultat."
+                    readonly
+                ></textarea>
+
+                <button type="button" id="kopiraj" disabled>
+                    Kopiraj rezultat
+                </button>
+            </div>
+
+            <p id="status" role="status"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Čiščenje najprej uredi presledke, nato po izbiri
+                odstrani prazne in podvojene vrstice.
+            </p>
+
+            <p>
+                Pri podvojenih vrsticah ostane prva pojavitev.
+                Velike in male črke se razlikujejo:
+                »Pozdrav« in »pozdrav« štejeta kot različni vrstici.
+            </p>
+
+            <p>
+                Združevanje presledkov lahko spremeni zamike
+                programske kode. Izberi samo možnosti, ki jih potrebuješ.
+                Besedilo se obdeluje v tvojem brskalniku.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const besedilo = document.getElementById("besedilo");
+        const rezultat = document.getElementById("rezultat");
+        const kopiraj = document.getElementById("kopiraj");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+
+        const presledki = document.getElementById("presledki");
+        const robovi = document.getElementById("robovi");
+        const prazne = document.getElementById("prazne");
+        const podvojene = document.getElementById("podvojene");
+
+        function pocistiRezultat() {
+            rezultat.value = "";
+            kopiraj.disabled = true;
+            napaka.textContent = "";
+            status.textContent = "";
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            if (besedilo.value === "") {
+                napaka.textContent = "Najprej vnesi besedilo.";
+                return;
+            }
+
+            if (
+                !presledki.checked &&
+                !robovi.checked &&
+                !prazne.checked &&
+                !podvojene.checked
+            ) {
+                napaka.textContent = "Izberi vsaj eno možnost čiščenja.";
+                return;
+            }
+
+            let vrstice = besedilo.value
+                .replace(/\r\n?/g, "\n")
+                .split("\n");
+
+            if (presledki.checked) {
+                vrstice = vrstice.map(function (vrstica) {
+                    return vrstica.replace(/[^\S\n]+/gu, " ");
+                });
+            }
+
+            if (robovi.checked) {
+                vrstice = vrstice.map(vrstica => vrstica.trim());
+            }
+
+            if (prazne.checked) {
+                vrstice = vrstice.filter(
+                    vrstica => vrstica.trim() !== ""
+                );
+            }
+
+            if (podvojene.checked) {
+                const videne = new Set();
+
+                vrstice = vrstice.filter(function (vrstica) {
+                    // Prazne vrstice obravnava ločena možnost.
+                    if (vrstica.trim() === "") return true;
+                    if (videne.has(vrstica)) return false;
+
+                    videne.add(vrstica);
+                    return true;
+                });
+            }
+
+            rezultat.value = vrstice.join("\n");
+            kopiraj.disabled = rezultat.value === "";
+
+            status.textContent = rezultat.value === ""
+                ? "Čiščenje je končano. Rezultat je prazen."
+                : "Besedilo je očiščeno.";
+        });
+
+        kopiraj.addEventListener("click", async function () {
+            if (rezultat.value === "") return;
+
+            try {
+                await navigator.clipboard.writeText(rezultat.value);
+                status.textContent = "Rezultat je kopiran.";
+            } catch {
+                rezultat.focus();
+                rezultat.select();
+
+                status.textContent =
+                    "Samodejno kopiranje ni uspelo. " +
+                    "Uporabi Ctrl+C oziroma Cmd+C.";
+            }
+        });
+
+        obrazec.addEventListener("reset", function (dogodek) {
+            if (
+                (besedilo.value !== "" || rezultat.value !== "") &&
+                !window.confirm("Želiš izbrisati besedilo in rezultat?")
+            ) {
+                dogodek.preventDefault();
+                return;
+            }
+
+            pocistiRezultat();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Števec besed in znakov</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Števec besed in znakov</h1>
+        <p>Prilepi ali napiši besedilo za sproten izračun.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <label for="besedilo">Tvoje besedilo</label>
+
+            <textarea
+                id="besedilo"
+                rows="12"
+                placeholder="Tukaj napiši ali prilepi besedilo ..."
+                aria-describedby="navodilo"
+            ></textarea>
+
+            <p id="navodilo">
+                Izračun se posodablja med pisanjem.
+                Besedilo se obdeluje v tvojem brskalniku.
+            </p>
+
+            <div class="gumbi">
+                <button type="button" id="kopiraj">Kopiraj besedilo</button>
+                <button type="button" id="pocisti">Počisti</button>
+            </div>
+
+            <p id="status" role="status"></p>
+
+            <div class="rezultat">
+                <h2>Rezultat</h2>
+
+                <p>Besede: <strong id="besede">0</strong></p>
+                <p>Znaki s presledki: <strong id="znaki">0</strong></p>
+                <p>
+                    Znaki brez presledkov:
+                    <strong id="znaki-brez-presledkov">0</strong>
+                </p>
+                <p>Odstavki: <strong id="odstavki">0</strong></p>
+            </div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Besede štejemo kot skupine črk ali številk.
+                Beseda z notranjim vezajem ali apostrofom šteje
+                kot ena beseda. Samostojna ločila ne štejejo kot besede.
+            </p>
+
+            <p>
+                Znaki s presledki vključujejo tudi prelome vrstic
+                in tabulatorje. Pri znakih brez presledkov odstranimo
+                vse prazne znake.
+            </p>
+
+            <p>
+                Odstavke ločuje ena ali več praznih vrstic.
+                Navaden prelom vrstice ne začne novega odstavka.
+            </p>
+
+            <p>
+                Različni urejevalniki besedil lahko uporabljajo
+                drugačna pravila štetja.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const besedilo = document.getElementById("besedilo");
+        const status = document.getElementById("status");
+
+        const besedePrikaz = document.getElementById("besede");
+        const znakiPrikaz = document.getElementById("znaki");
+        const znakiBrezPrikaz =
+            document.getElementById("znaki-brez-presledkov");
+        const odstavkiPrikaz = document.getElementById("odstavki");
+
+        const oblikovanje = new Intl.NumberFormat("sl-SI");
+
+        const segmenter = typeof Intl.Segmenter === "function"
+            ? new Intl.Segmenter("sl", { granularity: "grapheme" })
+            : null;
+
+        function prestejZnake(vnos) {
+            // Sestavljene znake, na primer emoji, štejemo kot en znak,
+            // če brskalnik podpira Intl.Segmenter.
+            return segmenter
+                ? Array.from(segmenter.segment(vnos)).length
+                : Array.from(vnos).length;
+        }
+
+        function posodobi() {
+            const vnos = besedilo.value.replace(/\r\n?/g, "\n");
+
+            const najdeneBesede = vnos.match(
+                /[\p{L}\p{N}][\p{L}\p{N}\p{M}]*(?:[-'’][\p{L}\p{N}][\p{L}\p{N}\p{M}]*)*/gu
+            ) || [];
+
+            const brezPresledkov = vnos.replace(/\s/gu, "");
+
+            const odstavki = vnos.trim() === ""
+                ? []
+                : vnos.trim()
+                    .split(/\n(?:[^\S\n]*\n)+/u)
+                    .filter(odstavek => odstavek.trim() !== "");
+
+            besedePrikaz.textContent =
+                oblikovanje.format(najdeneBesede.length);
+
+            znakiPrikaz.textContent =
+                oblikovanje.format(prestejZnake(vnos));
+
+            znakiBrezPrikaz.textContent =
+                oblikovanje.format(prestejZnake(brezPresledkov));
+
+            odstavkiPrikaz.textContent =
+                oblikovanje.format(odstavki.length);
+        }
+
+        besedilo.addEventListener("input", function () {
+            status.textContent = "";
+            posodobi();
+        });
+
+        document.getElementById("pocisti").addEventListener(
+            "click",
+            function () {
+                if (
+                    besedilo.value !== "" &&
+                    !window.confirm("Želiš izbrisati vneseno besedilo?")
+                ) {
+                    return;
+                }
+
+                besedilo.value = "";
+                posodobi();
+                status.textContent = "Besedilo je počiščeno.";
+                besedilo.focus();
+            }
+        );
+
+        document.getElementById("kopiraj").addEventListener(
+            "click",
+            async function () {
+                if (besedilo.value === "") {
+                    status.textContent = "Najprej vnesi besedilo.";
+                    return;
+                }
+
+                try {
+                    await navigator.clipboard.writeText(besedilo.value);
+                    status.textContent = "Besedilo je kopirano.";
+                } catch {
+                    besedilo.focus();
+                    besedilo.select();
+
+                    status.textContent =
+                        "Samodejno kopiranje ni uspelo. " +
+                        "Besedilo je označeno; kopiraj ga s Ctrl+C " +
+                        "oziroma Cmd+C.";
+                }
+            }
+        );
+
+        posodobi();
+    </script>
+</body>
+</html>

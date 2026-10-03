@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Oblikovalnik in preverjanje JSON</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Oblikovalnik in preverjanje JSON</h1>
+        <p>Preveri pravilnost zapisa in uredi svoje podatke JSON.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="json">Podatki JSON</label>
+                <textarea
+                    id="json"
+                    rows="12"
+                    maxlength="1000000"
+                    placeholder='{"ime":"Jakob","starost":18,"aktiven":true}'
+                    required
+                    spellcheck="false"
+                    style="font-family: monospace;"
+                ></textarea>
+
+                <label for="nacin">Način prikaza</label>
+                <select id="nacin">
+                    <option value="2">Oblikuj z 2 presledkoma</option>
+                    <option value="4">Oblikuj s 4 presledki</option>
+                    <option value="0">Stisni v eno vrstico</option>
+                </select>
+
+                <div class="gumbi">
+                    <button type="submit">Preveri in oblikuj</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div id="izhod" class="rezultat" hidden>
+                <h2>JSON je sintaktično veljaven</h2>
+                <p id="vrsta"></p>
+
+                <label for="rezultat">Rezultat</label>
+                <textarea
+                    id="rezultat"
+                    rows="14"
+                    readonly
+                    spellcheck="false"
+                    style="font-family: monospace;"
+                ></textarea>
+
+                <button type="button" id="kopiraj">
+                    Kopiraj rezultat
+                </button>
+            </div>
+
+            <p id="status" role="status"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Orodje preveri, ali je besedilo veljaven JSON.
+                Ne preverja, ali podatki ustrezajo določeni shemi
+                ali zahtevam aplikacije.
+            </p>
+
+            <p>
+                Imena lastnosti in besedilne vrednosti morajo biti
+                v dvojnih narekovajih. Komentarji in vejica za
+                zadnjim elementom niso dovoljeni.
+            </p>
+
+            <p>
+                Pri oblikovanju se podatki preberejo in ponovno
+                zapišejo. Podvojena imena lastnosti ohranijo zadnjo
+                vrednost, zelo velika ali natančna števila pa lahko
+                izgubijo natančnost zaradi omejitev JavaScripta.
+            </p>
+
+            <p>Podatki se obdelujejo v tvojem brskalniku.</p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const json = document.getElementById("json");
+        const nacin = document.getElementById("nacin");
+        const napaka = document.getElementById("napaka");
+        const izhod = document.getElementById("izhod");
+        const rezultat = document.getElementById("rezultat");
+        const vrsta = document.getElementById("vrsta");
+        const status = document.getElementById("status");
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            status.textContent = "";
+            rezultat.value = "";
+            izhod.hidden = true;
+        }
+
+        function opisVrste(podatki) {
+            if (podatki === null) return "Vrsta: null.";
+            if (Array.isArray(podatki)) {
+                return "Vrsta: seznam. Število elementov: " +
+                    podatki.length + ".";
+            }
+
+            if (typeof podatki === "object") {
+                return "Vrsta: objekt. Število lastnosti: " +
+                    Object.keys(podatki).length + ".";
+            }
+
+            const imena = {
+                string: "besedilo",
+                number: "število",
+                boolean: "logična vrednost"
+            };
+
+            return "Vrsta: " + imena[typeof podatki] + ".";
+        }
+
+        function opisNapake(napakaBranja, besedilo) {
+            const sporocilo = napakaBranja.message;
+
+            // Nekateri brskalniki v sporočilu navedejo položaj napake.
+            const polozaj = /position\s+(\d+)/i.exec(sporocilo);
+
+            if (polozaj) {
+                const indeks = Number(polozaj[1]);
+                const predNapako = besedilo.slice(0, indeks);
+                const vrstice = predNapako.split(/\r\n|\r|\n/);
+
+                return "Neveljaven JSON. Vrstica " + vrstice.length +
+                    ", stolpec " + (vrstice[vrstice.length - 1].length + 1) +
+                    ". " + sporocilo;
+            }
+
+            return "Neveljaven JSON. " + sporocilo;
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            if (!json.value.trim()) {
+                napaka.textContent = "Najprej vnesi podatke JSON.";
+                return;
+            }
+
+            let podatki;
+
+            try {
+                podatki = JSON.parse(json.value);
+            } catch (napakaBranja) {
+                napaka.textContent = opisNapake(napakaBranja, json.value);
+                return;
+            }
+
+            try {
+                const zamik = Number(nacin.value);
+
+                rezultat.value = JSON.stringify(
+                    podatki,
+                    function (kljuc, vrednost) {
+                        if (
+                            typeof vrednost === "number" &&
+                            !Number.isFinite(vrednost)
+                        ) {
+                            throw new Error(
+                                "JSON vsebuje število zunaj podprtega " +
+                                "obsega JavaScripta. Oblikovanje je ustavljeno."
+                            );
+                        }
+
+                        return vrednost;
+                    },
+                    zamik
+                );
+
+                vrsta.textContent = opisVrste(podatki);
+                izhod.hidden = false;
+                status.textContent = "Preverjanje je končano.";
+            } catch (napakaZapisa) {
+                napaka.textContent =
+                    "Zapis je sintaktično veljaven, vendar oblikovanje " +
+                    "ni uspelo. " + napakaZapisa.message;
+            }
+        });
+
+        document.getElementById("kopiraj").addEventListener(
+            "click",
+            async function () {
+                if (izhod.hidden) return;
+
+                try {
+                    await navigator.clipboard.writeText(rezultat.value);
+                    status.textContent = "Rezultat je kopiran.";
+                } catch {
+                    rezultat.focus();
+                    rezultat.select();
+
+                    status.textContent =
+                        "Rezultat je označen. Uporabi Ctrl+C oziroma Cmd+C.";
+                }
+            }
+        );
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

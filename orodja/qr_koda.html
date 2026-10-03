@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Generator QR kode</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+        defer
+    ></script>
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Generator QR kode</h1>
+        <p>Ustvari QR-kodo iz povezave ali besedila in prenesi sliko.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="besedilo">Povezava ali besedilo</label>
+                <textarea
+                    id="besedilo"
+                    rows="5"
+                    maxlength="500"
+                    placeholder="Na primer: https://example.com"
+                    aria-describedby="navodilo"
+                    required
+                ></textarea>
+
+                <p id="navodilo">
+                    Za spletno povezavo vnesi celoten naslov,
+                    vključno s https://. Vneseš lahko največ 500 znakov.
+                </p>
+
+                <label for="velikost">Velikost QR-kode</label>
+                <select id="velikost">
+                    <option value="256">256 × 256 pik</option>
+                    <option value="512" selected>512 × 512 pik</option>
+                    <option value="1024">1024 × 1024 pik</option>
+                </select>
+
+                <div class="gumbi">
+                    <button type="submit">Ustvari QR-kodo</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div id="izhod" class="rezultat" hidden>
+                <h2>Tvoja QR-koda</h2>
+
+                <canvas
+                    id="predogled"
+                    role="img"
+                    aria-label="Ustvarjena QR-koda"
+                    style="display: block; max-width: 100%;
+                           height: auto; margin: 16px auto;"
+                ></canvas>
+
+                <button type="button" id="prenesi">
+                    Prenesi PNG
+                </button>
+            </div>
+
+            <p id="status" role="status"></p>
+
+            <!-- Skriti prostor za izris zunanje knjižnice. -->
+            <div id="generator" hidden></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                QR-koda vsebuje vneseno besedilo ali povezavo.
+                Prebereš jo lahko s kamero telefona.
+            </p>
+
+            <p>
+                Slika vsebuje tudi bel rob, potreben za lažje
+                prepoznavanje. Prenesena slika je zato nekoliko
+                večja od izbrane velikosti same kode.
+            </p>
+
+            <p>
+                Pred uporabo preveri QR-kodo s telefonom.
+                Daljše besedilo ustvari gostejšo kodo, zato je
+                priporočljiva večja velikost.
+            </p>
+
+            <p>
+                Vsebina se kodira v brskalniku.
+                Povezava v QR-kodi ostane enaka; njeno delovanje
+                je odvisno od ciljne spletne strani.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const besedilo = document.getElementById("besedilo");
+        const velikost = document.getElementById("velikost");
+
+        const generator = document.getElementById("generator");
+        const predogled = document.getElementById("predogled");
+        const izhod = document.getElementById("izhod");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+
+        function pocistiRezultat() {
+            generator.replaceChildren();
+            izhod.hidden = true;
+            napaka.textContent = "";
+            status.textContent = "";
+
+            predogled.width = 0;
+            predogled.height = 0;
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const vsebina = besedilo.value.trim();
+
+            if (!vsebina) {
+                napaka.textContent = "Vnesi povezavo ali besedilo.";
+                besedilo.focus();
+                return;
+            }
+
+            if (vsebina.length > 500) {
+                napaka.textContent = "Vnesi največ 500 znakov.";
+                return;
+            }
+
+            if (typeof QRCode === "undefined") {
+                napaka.textContent =
+                    "Knjižnica za QR-kode se ni naložila. " +
+                    "Preveri internetno povezavo in osveži stran.";
+                return;
+            }
+
+            try {
+                const dimenzija = Number(velikost.value);
+
+                new QRCode(generator, {
+                    text: vsebina,
+                    width: dimenzija,
+                    height: dimenzija,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+
+                const izvor = generator.querySelector("canvas");
+
+                if (!izvor) {
+                    throw new Error("Izris kode ni uspel.");
+                }
+
+                // Širok bel rob okoli kode za lažje skeniranje.
+                const rob = Math.ceil(dimenzija * 0.2);
+
+                predogled.width = dimenzija + rob * 2;
+                predogled.height = dimenzija + rob * 2;
+
+                const kontekst = predogled.getContext("2d");
+
+                kontekst.fillStyle = "#ffffff";
+                kontekst.fillRect(
+                    0,
+                    0,
+                    predogled.width,
+                    predogled.height
+                );
+
+                kontekst.drawImage(izvor, rob, rob);
+
+                izhod.hidden = false;
+                status.textContent = "QR-koda je pripravljena.";
+            } catch {
+                pocistiRezultat();
+
+                napaka.textContent =
+                    "QR-kode ni bilo mogoče ustvariti. " +
+                    "Poskusi s krajšim besedilom.";
+            }
+        });
+
+        document.getElementById("prenesi").addEventListener(
+            "click",
+            function () {
+                if (izhod.hidden) return;
+
+                predogled.toBlob(function (datoteka) {
+                    if (!datoteka) {
+                        napaka.textContent = "Prenos slike ni uspel.";
+                        return;
+                    }
+
+                    const url = URL.createObjectURL(datoteka);
+                    const povezava = document.createElement("a");
+
+                    povezava.href = url;
+                    povezava.download = "qr_koda.png";
+
+                    document.body.appendChild(povezava);
+                    povezava.click();
+                    povezava.remove();
+
+                    setTimeout(function () {
+                        URL.revokeObjectURL(url);
+                    }, 1000);
+
+                    status.textContent = "Slika je pripravljena za prenos.";
+                }, "image/png");
+            }
+        );
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

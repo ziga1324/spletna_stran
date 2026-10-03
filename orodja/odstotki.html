@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kalkulator odstotkov</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Kalkulator odstotkov</h1>
+        <p>Izračunaj odstotek vrednosti ali delež v celoti.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="nacin">Vrsta izračuna</label>
+                <select id="nacin">
+                    <option value="odstotek">
+                        Koliko je X % od Y?
+                    </option>
+                    <option value="delez">
+                        Koliko odstotkov celote predstavlja X?
+                    </option>
+                </select>
+
+                <label for="prva" id="prva-oznaka">Odstotek (%)</label>
+                <input
+                    type="number"
+                    id="prva"
+                    step="any"
+                    placeholder="Na primer: 20"
+                    required
+                >
+
+                <label for="druga" id="druga-oznaka">Vrednost</label>
+                <input
+                    type="number"
+                    id="druga"
+                    step="any"
+                    placeholder="Na primer: 150"
+                    required
+                >
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                <strong>Odstotek vrednosti:</strong>
+                odstotek ÷ 100 × vrednost.
+                Na primer: 20 % od 150 je 30.
+            </p>
+
+            <p>
+                <strong>Delež v celoti:</strong>
+                del ÷ celota × 100.
+                Na primer: 30 od 150 predstavlja 20 %.
+            </p>
+
+            <p>
+                Pri izračunu deleža celota ne sme biti 0.
+                Vneseš lahko tudi decimalna števila in odstotke nad 100.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const nacin = document.getElementById("nacin");
+        const prva = document.getElementById("prva");
+        const druga = document.getElementById("druga");
+
+        const prvaOznaka = document.getElementById("prva-oznaka");
+        const drugaOznaka = document.getElementById("druga-oznaka");
+
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const oblikovanje = new Intl.NumberFormat("sl-SI", {
+            maximumFractionDigits: 6
+        });
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function posodobiOznake() {
+            const izracunOdstotka = nacin.value === "odstotek";
+
+            prvaOznaka.textContent = izracunOdstotka
+                ? "Odstotek (%)"
+                : "Del";
+
+            drugaOznaka.textContent = izracunOdstotka
+                ? "Vrednost"
+                : "Celota";
+
+            prva.placeholder = izracunOdstotka
+                ? "Na primer: 20"
+                : "Na primer: 30";
+
+            druga.placeholder = "Na primer: 150";
+        }
+
+        nacin.addEventListener("change", function () {
+            posodobiOznake();
+            pocistiRezultat();
+        });
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const x = prva.valueAsNumber;
+            const y = druga.valueAsNumber;
+
+            if (!Number.isFinite(x) || !Number.isFinite(y)) {
+                napaka.textContent = "Vnesi dve veljavni števili.";
+                return;
+            }
+
+            const izracunOdstotka = nacin.value === "odstotek";
+
+            if (!izracunOdstotka && y === 0) {
+                napaka.textContent = "Celota ne sme biti 0.";
+                druga.focus();
+                return;
+            }
+
+            const vrednost = izracunOdstotka
+                ? (x / 100) * y
+                : (x / y) * 100;
+
+            if (!Number.isFinite(vrednost)) {
+                napaka.textContent =
+                    "Rezultat je zunaj podprtega obsega. Vnesi manjše vrednosti.";
+                return;
+            }
+
+            const naslov = document.createElement("h2");
+            naslov.textContent =
+                "Rezultat: " + oblikovanje.format(vrednost) +
+                (izracunOdstotka ? "" : " %");
+
+            const razlaga = document.createElement("p");
+
+            razlaga.textContent = izracunOdstotka
+                ? oblikovanje.format(x) + " % od " +
+                  oblikovanje.format(y) + " je " +
+                  oblikovanje.format(vrednost) + "."
+                : oblikovanje.format(x) + " od " +
+                  oblikovanje.format(y) + " predstavlja " +
+                  oblikovanje.format(vrednost) + " %.";
+
+            const opomba = document.createElement("p");
+            opomba.textContent =
+                "Rezultat je prikazan z največ šestimi decimalnimi mesti.";
+
+            rezultat.append(naslov, razlaga, opomba);
+        });
+
+        obrazec.addEventListener("reset", function () {
+            pocistiRezultat();
+            setTimeout(posodobiOznake, 0);
+        });
+
+        posodobiOznake();
+    </script>
+</body>
+</html>

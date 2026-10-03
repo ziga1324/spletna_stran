@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Primerjava cene na enoto</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Cena na enoto</h1>
+        <p>Preveri, kateri izdelek je cenejši glede na količino.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="vrsta">Kaj primerjaš?</label>
+                <select id="vrsta">
+                    <option value="masa">Maso – cena na kilogram</option>
+                    <option value="prostornina">
+                        Prostornino – cena na liter
+                    </option>
+                    <option value="kosi">Kose – cena na kos</option>
+                </select>
+
+                <fieldset>
+                    <legend>Prvi izdelek</legend>
+
+                    <label for="ime1">Ime izdelka (neobvezno)</label>
+                    <input
+                        type="text"
+                        id="ime1"
+                        maxlength="100"
+                        placeholder="Prvi izdelek"
+                    >
+
+                    <label for="cena1">Cena (€)</label>
+                    <input
+                        type="number"
+                        id="cena1"
+                        min="0"
+                        max="1000000"
+                        step="0.01"
+                        placeholder="Na primer: 2.50"
+                        required
+                    >
+
+                    <label for="kolicina1">Količina</label>
+                    <input
+                        type="number"
+                        id="kolicina1"
+                        min="0"
+                        step="any"
+                        placeholder="Na primer: 500"
+                        required
+                    >
+
+                    <label for="enota1">Enota</label>
+                    <select id="enota1"></select>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Drugi izdelek</legend>
+
+                    <label for="ime2">Ime izdelka (neobvezno)</label>
+                    <input
+                        type="text"
+                        id="ime2"
+                        maxlength="100"
+                        placeholder="Drugi izdelek"
+                    >
+
+                    <label for="cena2">Cena (€)</label>
+                    <input
+                        type="number"
+                        id="cena2"
+                        min="0"
+                        max="1000000"
+                        step="0.01"
+                        placeholder="Na primer: 4"
+                        required
+                    >
+
+                    <label for="kolicina2">Količina</label>
+                    <input
+                        type="number"
+                        id="kolicina2"
+                        min="0"
+                        step="any"
+                        placeholder="Na primer: 1"
+                        required
+                    >
+
+                    <label for="enota2">Enota</label>
+                    <select id="enota2"></select>
+                </fieldset>
+
+                <div class="gumbi">
+                    <button type="submit">Primerjaj</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Ceno delimo s količino, pretvorjeno v kilograme,
+                litre ali kose.
+            </p>
+
+            <p>
+                Primer: 500 g izdelka za 2,50 € pomeni
+                <strong>5 €/kg</strong>.
+                Kilogram drugega izdelka za 4 € pomeni
+                <strong>4 €/kg</strong>, zato je drugi cenejši na enoto.
+            </p>
+
+            <p>
+                Primerjava upošteva ceno in količino.
+                Kakovosti izdelkov ne ocenjuje.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const vrsta = document.getElementById("vrsta");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const nastavitve = {
+            masa: {
+                oznaka: "kg",
+                enote: [
+                    { ime: "Grami (g)", faktor: 0.001 },
+                    { ime: "Kilogrami (kg)", faktor: 1 }
+                ]
+            },
+            prostornina: {
+                oznaka: "l",
+                enote: [
+                    { ime: "Mililitri (ml)", faktor: 0.001 },
+                    { ime: "Centilitri (cl)", faktor: 0.01 },
+                    { ime: "Litri (l)", faktor: 1 }
+                ]
+            },
+            kosi: {
+                oznaka: "kos",
+                enote: [
+                    { ime: "Kosi", faktor: 1 }
+                ]
+            }
+        };
+
+        const denar = new Intl.NumberFormat("sl-SI", {
+            style: "currency",
+            currency: "EUR",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 4
+        });
+
+        const odstotki = new Intl.NumberFormat("sl-SI", {
+            maximumFractionDigits: 2
+        });
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function posodobiEnote() {
+            const nastavitev = nastavitve[vrsta.value];
+
+            for (const stevilka of [1, 2]) {
+                const izbira = document.getElementById("enota" + stevilka);
+                const kolicina =
+                    document.getElementById("kolicina" + stevilka);
+
+                izbira.replaceChildren();
+
+                nastavitev.enote.forEach(function (enota) {
+                    const moznost = document.createElement("option");
+                    moznost.value = enota.faktor;
+                    moznost.textContent = enota.ime;
+                    izbira.appendChild(moznost);
+                });
+
+                kolicina.step = vrsta.value === "kosi" ? "1" : "any";
+            }
+        }
+
+        function preberiIzdelek(stevilka) {
+            const ime =
+                document.getElementById("ime" + stevilka).value.trim() ||
+                (stevilka === 1 ? "Prvi izdelek" : "Drugi izdelek");
+
+            const cena =
+                document.getElementById("cena" + stevilka).valueAsNumber;
+
+            const kolicina =
+                document.getElementById("kolicina" + stevilka).valueAsNumber;
+
+            const faktor =
+                Number(document.getElementById("enota" + stevilka).value);
+
+            if (
+                !Number.isFinite(cena) ||
+                cena < 0 ||
+                cena > 1000000 ||
+                !Number.isFinite(kolicina) ||
+                kolicina <= 0
+            ) {
+                throw new Error(
+                    "Pri obeh izdelkih vnesi ceno od 0 do 1.000.000 € " +
+                    "in količino, večjo od 0."
+                );
+            }
+
+            if (
+                vrsta.value === "kosi" &&
+                !Number.isSafeInteger(kolicina)
+            ) {
+                throw new Error(
+                    "Število kosov mora biti pozitivno celo število " +
+                    "znotraj podprtega obsega."
+                );
+            }
+
+            const osnovnaKolicina = kolicina * faktor;
+            const cenaNaEnoto = cena / osnovnaKolicina;
+
+            if (
+                osnovnaKolicina <= 0 ||
+                !Number.isFinite(cenaNaEnoto)
+            ) {
+                throw new Error(
+                    "Količina je premajhna za izračun. Vnesi večjo vrednost."
+                );
+            }
+
+            return { ime, cenaNaEnoto };
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        vrsta.addEventListener("change", function () {
+            posodobiEnote();
+            pocistiRezultat();
+        });
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            try {
+                const prvi = preberiIzdelek(1);
+                const drugi = preberiIzdelek(2);
+                const oznaka = nastavitve[vrsta.value].oznaka;
+
+                const najvisjaCena = Math.max(
+                    prvi.cenaNaEnoto,
+                    drugi.cenaNaEnoto
+                );
+
+                const toleranca =
+                    najvisjaCena * Number.EPSILON * 8;
+
+                const razlika = Math.abs(
+                    prvi.cenaNaEnoto - drugi.cenaNaEnoto
+                );
+
+                if (razlika <= toleranca) {
+                    dodajBesedilo(
+                        "Oba izdelka imata enako ceno na enoto.",
+                        "h2"
+                    );
+                } else {
+                    const cenejsi = prvi.cenaNaEnoto < drugi.cenaNaEnoto
+                        ? prvi
+                        : drugi;
+
+                    dodajBesedilo(
+                        "Cenejši na enoto: " + cenejsi.ime,
+                        "h2"
+                    );
+
+                    const prihranek =
+                        (razlika / najvisjaCena) * 100;
+
+                    dodajBesedilo(
+                        "Cena na enoto je za " +
+                        odstotki.format(prihranek) +
+                        " % nižja kot pri dražjem izdelku."
+                    );
+
+                    dodajBesedilo(
+                        "Razlika na enoto: " +
+                        denar.format(razlika) + "/" + oznaka
+                    );
+                }
+
+                dodajBesedilo(
+                    prvi.ime + ": " +
+                    denar.format(prvi.cenaNaEnoto) + "/" + oznaka
+                );
+
+                dodajBesedilo(
+                    drugi.ime + ": " +
+                    denar.format(drugi.cenaNaEnoto) + "/" + oznaka
+                );
+
+                dodajBesedilo(
+                    "Primerjava uporablja nezaokrožene vrednosti. " +
+                    "Prikazane cene imajo največ štiri decimalna mesta."
+                );
+            } catch (napakaIzracuna) {
+                napaka.textContent = napakaIzracuna.message;
+            }
+        });
+
+        obrazec.addEventListener("reset", function () {
+            pocistiRezultat();
+            setTimeout(posodobiEnote, 0);
+        });
+
+        posodobiEnote();
+    </script>
+</body>
+</html>

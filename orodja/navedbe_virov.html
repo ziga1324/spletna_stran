@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Oblikovalnik bibliografskih navedb</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Oblikovalnik bibliografskih navedb</h1>
+        <p>Vnesi podatke o viru in pripravi navedbo za seznam virov.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="vrsta">Vrsta vira</label>
+                <select id="vrsta">
+                    <option value="splet">Spletna stran</option>
+                    <option value="knjiga">Knjiga</option>
+                    <option value="clanek">Članek v reviji</option>
+                </select>
+
+                <label for="avtor">Avtor ali organizacija</label>
+                <input
+                    type="text"
+                    id="avtor"
+                    maxlength="500"
+                    placeholder="Na primer: Novak, Janez"
+                >
+
+                <label for="leto">Leto objave</label>
+                <input
+                    type="number"
+                    id="leto"
+                    min="1"
+                    max="9999"
+                    step="1"
+                    placeholder="Na primer: 2026"
+                >
+
+                <label for="naslov">Naslov vira</label>
+                <input
+                    type="text"
+                    id="naslov"
+                    maxlength="1000"
+                    placeholder="Naslov knjige, članka ali spletne strani"
+                    required
+                >
+
+                <div id="polja-knjiga" hidden>
+                    <label for="zalozba">Založba</label>
+                    <input
+                        type="text"
+                        id="zalozba"
+                        maxlength="300"
+                        placeholder="Ime založbe"
+                    >
+                </div>
+
+                <div id="polja-clanek" hidden>
+                    <label for="revija">Ime revije</label>
+                    <input type="text" id="revija" maxlength="300">
+
+                    <label for="letnik">Letnik</label>
+                    <input
+                        type="text"
+                        id="letnik"
+                        maxlength="30"
+                        placeholder="Na primer: 12"
+                    >
+
+                    <label for="stevilka">Številka revije</label>
+                    <input
+                        type="text"
+                        id="stevilka"
+                        maxlength="30"
+                        placeholder="Na primer: 2"
+                    >
+
+                    <label for="strani">Strani</label>
+                    <input
+                        type="text"
+                        id="strani"
+                        maxlength="50"
+                        placeholder="Na primer: 15–23"
+                    >
+                </div>
+
+                <div id="polja-splet">
+                    <label for="spletisce">Ime spletišča</label>
+                    <input
+                        type="text"
+                        id="spletisce"
+                        maxlength="300"
+                        placeholder="Ime spletnega portala"
+                    >
+
+                    <label for="url">Povezava do vira</label>
+                    <input
+                        type="url"
+                        id="url"
+                        placeholder="https://..."
+                    >
+
+                    <label for="dostop">Datum dostopa</label>
+                    <input type="date" id="dostop">
+                </div>
+
+                <div class="gumbi">
+                    <button type="submit">Oblikuj navedbo</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div id="izhod" class="rezultat" hidden>
+                <h2>Navedba vira</h2>
+
+                <p
+                    id="navedba"
+                    style="white-space: pre-wrap; overflow-wrap: anywhere;"
+                ></p>
+
+                <button type="button" id="kopiraj">
+                    Kopiraj navedbo
+                </button>
+            </div>
+
+            <p id="status" role="status"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Osnovni zapis:
+                Avtor. (Leto). Naslov. Podatki o publikaciji.
+            </p>
+
+            <p>
+                Če avtor ni naveden, se navedba začne z naslovom.
+                Če leto ni znano, se izpiše »brez datuma«.
+                Neznane dodatne podatke lahko pustiš prazne.
+            </p>
+
+            <p>
+                Orodje uporablja poenostavljen zapis, ne preverjenega
+                standarda APA, MLA ali ISO. Za oddajo upoštevaj
+                navodila učitelja oziroma ustanove.
+            </p>
+
+            <p>
+                Podatke vneseš ročno. Orodje jih ne pridobiva
+                s povezave in ne preverja njihove pravilnosti.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const vrsta = document.getElementById("vrsta");
+        const leto = document.getElementById("leto");
+        const napaka = document.getElementById("napaka");
+        const izhod = document.getElementById("izhod");
+        const navedba = document.getElementById("navedba");
+        const status = document.getElementById("status");
+
+        const skupine = {
+            knjiga: document.getElementById("polja-knjiga"),
+            clanek: document.getElementById("polja-clanek"),
+            splet: document.getElementById("polja-splet")
+        };
+
+        function vrednost(id) {
+            return document.getElementById(id).value.trim();
+        }
+
+        function zakljuci(besedilo) {
+            return /[.!?…]$/.test(besedilo)
+                ? besedilo
+                : besedilo + ".";
+        }
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            status.textContent = "";
+            navedba.textContent = "";
+            izhod.hidden = true;
+        }
+
+        function prikaziPolja() {
+            Object.entries(skupine).forEach(function ([ime, skupina]) {
+                const aktivna = ime === vrsta.value;
+                skupina.hidden = !aktivna;
+
+                skupina.querySelectorAll("input").forEach(function (vnos) {
+                    vnos.disabled = !aktivna;
+                });
+            });
+        }
+
+        function danasnjiDatum() {
+            const datum = new Date();
+            const mesec = String(datum.getMonth() + 1).padStart(2, "0");
+            const dan = String(datum.getDate()).padStart(2, "0");
+
+            return datum.getFullYear() + "-" + mesec + "-" + dan;
+        }
+
+        function oblikujDatum(vnos) {
+            const [leto, mesec, dan] = vnos.split("-").map(Number);
+            return dan + ". " + mesec + ". " + leto;
+        }
+
+        vrsta.addEventListener("change", function () {
+            prikaziPolja();
+            pocistiRezultat();
+        });
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const avtor = vrednost("avtor");
+            const naslov = vrednost("naslov");
+
+            if (!naslov) {
+                napaka.textContent = "Vnesi naslov vira.";
+                document.getElementById("naslov").focus();
+                return;
+            }
+
+            if (
+                leto.value !== "" &&
+                (
+                    !Number.isInteger(leto.valueAsNumber) ||
+                    leto.valueAsNumber < 1 ||
+                    leto.valueAsNumber > 9999
+                )
+            ) {
+                napaka.textContent = "Vnesi veljavno celo leto.";
+                return;
+            }
+
+            const zapisLeta = leto.value === ""
+                ? "brez datuma"
+                : String(leto.valueAsNumber);
+
+            const deli = [];
+
+            if (avtor) {
+                deli.push(zakljuci(avtor));
+                deli.push("(" + zapisLeta + ").");
+                deli.push(zakljuci(naslov));
+            } else {
+                deli.push(zakljuci(naslov));
+                deli.push("(" + zapisLeta + ").");
+            }
+
+            if (vrsta.value === "knjiga") {
+                const zalozba = vrednost("zalozba");
+
+                if (zalozba) deli.push(zakljuci(zalozba));
+            }
+
+            if (vrsta.value === "clanek") {
+                const revija = vrednost("revija");
+                const letnik = vrednost("letnik");
+                const stevilka = vrednost("stevilka");
+                const strani = vrednost("strani");
+
+                if (revija) deli.push(zakljuci(revija));
+                if (letnik) deli.push(zakljuci("Letnik " + letnik));
+                if (stevilka) deli.push(zakljuci("Št. " + stevilka));
+                if (strani) deli.push(zakljuci("Str. " + strani));
+            }
+
+            if (vrsta.value === "splet") {
+                const spletisce = vrednost("spletisce");
+                const povezava = vrednost("url");
+                const dostop = vrednost("dostop");
+
+                if (povezava) {
+                    try {
+                        const url = new URL(povezava);
+
+                        if (!["http:", "https:"].includes(url.protocol)) {
+                            throw new Error("Neveljaven protokol");
+                        }
+                    } catch {
+                        napaka.textContent =
+                            "Vnesi veljavno povezavo, ki se začne s http:// ali https://.";
+                        return;
+                    }
+                }
+
+                if (spletisce) deli.push(zakljuci(spletisce));
+                if (povezava) deli.push(povezava);
+
+                if (dostop) {
+                    deli.push(
+                        "(Dostop: " + oblikujDatum(dostop) + ")."
+                    );
+                }
+            }
+
+            navedba.textContent = deli.join(" ");
+            izhod.hidden = false;
+            status.textContent = "Navedba je pripravljena.";
+        });
+
+        document.getElementById("kopiraj").addEventListener(
+            "click",
+            async function () {
+                if (!navedba.textContent) return;
+
+                try {
+                    await navigator.clipboard.writeText(navedba.textContent);
+                    status.textContent = "Navedba je kopirana.";
+                } catch {
+                    const izbor = window.getSelection();
+                    const obseg = document.createRange();
+
+                    obseg.selectNodeContents(navedba);
+                    izbor.removeAllRanges();
+                    izbor.addRange(obseg);
+
+                    status.textContent =
+                        "Navedba je označena. Kopiraj jo s Ctrl+C oziroma Cmd+C.";
+                }
+            }
+        );
+
+        obrazec.addEventListener("reset", function () {
+            pocistiRezultat();
+
+            setTimeout(function () {
+                prikaziPolja();
+                document.getElementById("dostop").value = danasnjiDatum();
+            }, 0);
+        });
+
+        document.getElementById("dostop").value = danasnjiDatum();
+        prikaziPolja();
+    </script>
+</body>
+</html>

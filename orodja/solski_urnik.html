@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Izdelovalnik šolskega urnika</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Izdelovalnik šolskega urnika</h1>
+        <p>Vpiši predmete, določi barve in natisni svoj urnik.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="nastavitve">
+                <label for="naziv">Naslov urnika</label>
+                <input
+                    type="text"
+                    id="naziv"
+                    maxlength="100"
+                    value="Moj šolski urnik"
+                >
+
+                <label for="stevilo-ur">Število ur na dan</label>
+                <input
+                    type="number"
+                    id="stevilo-ur"
+                    min="1"
+                    max="12"
+                    step="1"
+                    value="8"
+                    required
+                >
+
+                <div class="gumbi">
+                    <button type="submit">Posodobi urnik</button>
+                    <button type="button" id="natisni">Natisni</button>
+                    <button type="button" id="pocisti">Počisti urnik</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <p id="status" role="status"></p>
+        </section>
+
+        <section class="kalkulator urnik-sekcija">
+            <h2 id="naslov-urnika">Moj šolski urnik</h2>
+
+            <div class="urnik-ovoj">
+                <table class="urnik">
+                    <caption class="samo-bralniki">
+                        Tedenski šolski urnik
+                    </caption>
+
+                    <thead>
+                        <tr>
+                            <th scope="col">Ura</th>
+                            <th scope="col">Ponedeljek</th>
+                            <th scope="col">Torek</th>
+                            <th scope="col">Sreda</th>
+                            <th scope="col">Četrtek</th>
+                            <th scope="col">Petek</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="urnik-vsebina"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                V vsako polje vpiši predmet. Pod njim lahko izbereš
+                barvo ozadja. V prvem stolpcu lahko vpišeš čas ure.
+            </p>
+            <p>
+                Gumb »Natisni« odpre tiskanje, kjer lahko urnik
+                tudi shraniš kot PDF. Za širši urnik izberi
+                ležečo postavitev.
+            </p>
+            <p>
+                Vnosi se ob osvežitvi ali zapiranju strani izgubijo.
+                Pred tem urnik natisni ali shrani kot PDF.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const nastavitve = document.getElementById("nastavitve");
+        const naziv = document.getElementById("naziv");
+        const steviloUr = document.getElementById("stevilo-ur");
+        const naslovUrnika = document.getElementById("naslov-urnika");
+        const vsebina = document.getElementById("urnik-vsebina");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+
+        const dnevi = [
+            "Ponedeljek",
+            "Torek",
+            "Sreda",
+            "Četrtek",
+            "Petek"
+        ];
+
+        let podatki = [];
+
+        function novaUra() {
+            return {
+                cas: "",
+                predmeti: dnevi.map(function () {
+                    return {
+                        naziv: "",
+                        barva: "#ffffff"
+                    };
+                })
+            };
+        }
+
+        function barvaBesedila(hex) {
+            const r = parseInt(hex.slice(1, 3), 16) / 255;
+            const g = parseInt(hex.slice(3, 5), 16) / 255;
+            const b = parseInt(hex.slice(5, 7), 16) / 255;
+
+            function linearno(vrednost) {
+                return vrednost <= 0.04045
+                    ? vrednost / 12.92
+                    : Math.pow((vrednost + 0.055) / 1.055, 2.4);
+            }
+
+            const svetlost =
+                0.2126 * linearno(r) +
+                0.7152 * linearno(g) +
+                0.0722 * linearno(b);
+
+            return svetlost > 0.179 ? "#000000" : "#ffffff";
+        }
+
+        function prikaziUrnik() {
+            vsebina.replaceChildren();
+
+            podatki.forEach(function (ura, indeksUre) {
+                const vrstica = document.createElement("tr");
+                const oznakaUre = document.createElement("th");
+                oznakaUre.scope = "row";
+
+                const stevilka = document.createElement("span");
+                stevilka.textContent = (indeksUre + 1) + ". ura";
+                oznakaUre.appendChild(stevilka);
+
+                const casVnos = document.createElement("input");
+                casVnos.type = "text";
+                casVnos.className = "cas-ure";
+                casVnos.placeholder = "8:00–8:45";
+                casVnos.maxLength = 30;
+                casVnos.value = ura.cas;
+                casVnos.setAttribute(
+                    "aria-label",
+                    "Čas za " + (indeksUre + 1) + ". uro"
+                );
+
+                const casTisk = document.createElement("span");
+                casTisk.className = "samo-tisk";
+                casTisk.textContent = ura.cas;
+
+                casVnos.addEventListener("input", function () {
+                    ura.cas = casVnos.value;
+                    casTisk.textContent = ura.cas;
+                });
+
+                oznakaUre.append(casVnos, casTisk);
+                vrstica.appendChild(oznakaUre);
+
+                ura.predmeti.forEach(function (predmet, indeksDneva) {
+                    const celica = document.createElement("td");
+
+                    const predmetVnos = document.createElement("input");
+                    predmetVnos.type = "text";
+                    predmetVnos.className = "predmet-vnos";
+                    predmetVnos.maxLength = 60;
+                    predmetVnos.placeholder = "Predmet";
+                    predmetVnos.value = predmet.naziv;
+                    predmetVnos.setAttribute(
+                        "aria-label",
+                        dnevi[indeksDneva] + ", " +
+                        (indeksUre + 1) + ". ura: predmet"
+                    );
+
+                    const predmetTisk = document.createElement("span");
+                    predmetTisk.className = "samo-tisk";
+                    predmetTisk.textContent = predmet.naziv;
+
+                    const barvaVnos = document.createElement("input");
+                    barvaVnos.type = "color";
+                    barvaVnos.className = "barva-vnos";
+                    barvaVnos.value = predmet.barva;
+                    barvaVnos.setAttribute(
+                        "aria-label",
+                        dnevi[indeksDneva] + ", " +
+                        (indeksUre + 1) + ". ura: barva"
+                    );
+
+                    function posodobiBarvo() {
+                        celica.style.backgroundColor = predmet.barva;
+                        celica.style.color = barvaBesedila(predmet.barva);
+                    }
+
+                    predmetVnos.addEventListener("input", function () {
+                        predmet.naziv = predmetVnos.value;
+                        predmetTisk.textContent = predmet.naziv;
+                    });
+
+                    barvaVnos.addEventListener("input", function () {
+                        predmet.barva = barvaVnos.value;
+                        posodobiBarvo();
+                    });
+
+                    posodobiBarvo();
+                    celica.append(predmetVnos, predmetTisk, barvaVnos);
+                    vrstica.appendChild(celica);
+                });
+
+                vsebina.appendChild(vrstica);
+            });
+        }
+
+        nastavitve.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+
+            napaka.textContent = "";
+            status.textContent = "";
+
+            const stevilo = steviloUr.valueAsNumber;
+
+            if (
+                !Number.isInteger(stevilo) ||
+                stevilo < 1 ||
+                stevilo > 12
+            ) {
+                napaka.textContent =
+                    "Število ur mora biti celo število od 1 do 12.";
+                return;
+            }
+
+            if (stevilo < podatki.length) {
+                const odvecneUre = podatki.slice(stevilo);
+
+                const imajoVnose = odvecneUre.some(function (ura) {
+                    return (
+                        ura.cas.trim() !== "" ||
+                        ura.predmeti.some(function (predmet) {
+                            return (
+                                predmet.naziv.trim() !== "" ||
+                                predmet.barva !== "#ffffff"
+                            );
+                        })
+                    );
+                });
+
+                if (
+                    imajoVnose &&
+                    !window.confirm(
+                        "Zmanjšanje števila ur bo odstranilo vnose " +
+                        "v zadnjih vrsticah. Nadaljujem?"
+                    )
+                ) {
+                    steviloUr.value = podatki.length;
+                    return;
+                }
+
+                podatki.length = stevilo;
+            }
+
+            while (podatki.length < stevilo) {
+                podatki.push(novaUra());
+            }
+
+            naslovUrnika.textContent =
+                naziv.value.trim() || "Moj šolski urnik";
+
+            prikaziUrnik();
+            status.textContent = "Urnik je posodobljen.";
+        });
+
+        document.getElementById("natisni").addEventListener(
+            "click",
+            function () {
+                naslovUrnika.textContent =
+                    naziv.value.trim() || "Moj šolski urnik";
+
+                window.print();
+            }
+        );
+
+        document.getElementById("pocisti").addEventListener(
+            "click",
+            function () {
+                if (!window.confirm("Želiš izbrisati vse vnose v urniku?")) {
+                    return;
+                }
+
+                podatki = podatki.map(novaUra);
+                prikaziUrnik();
+
+                napaka.textContent = "";
+                status.textContent = "Urnik je počiščen.";
+            }
+        );
+
+        podatki = Array.from({ length: 8 }, novaUra);
+        prikaziUrnik();
+    </script>
+</body>
+</html>

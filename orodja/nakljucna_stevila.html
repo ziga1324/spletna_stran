@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Generator naključnih števil</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Generator naključnih števil</h1>
+        <p>Izberi razpon in število rezultatov.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="minimum">Najmanjše število</label>
+                <input
+                    type="number"
+                    id="minimum"
+                    min="-1000000000"
+                    max="1000000000"
+                    step="1"
+                    value="1"
+                    required
+                >
+
+                <label for="maksimum">Največje število</label>
+                <input
+                    type="number"
+                    id="maksimum"
+                    min="-1000000000"
+                    max="1000000000"
+                    step="1"
+                    value="100"
+                    required
+                >
+
+                <label for="kolicina">Koliko števil želiš?</label>
+                <input
+                    type="number"
+                    id="kolicina"
+                    min="1"
+                    max="1000"
+                    step="1"
+                    value="5"
+                    required
+                >
+
+                <label class="moznost">
+                    <input type="checkbox" id="brez-ponovitev" checked>
+                    Brez ponovitev
+                </label>
+
+                <div class="gumbi">
+                    <button type="submit">Generiraj</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div id="izhod" class="rezultat" hidden>
+                <h2>Naključna števila</h2>
+
+                <textarea
+                    id="rezultat"
+                    rows="6"
+                    readonly
+                ></textarea>
+
+                <button type="button" id="kopiraj">
+                    Kopiraj rezultat
+                </button>
+            </div>
+
+            <p id="status" role="status"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Obe meji sta vključeni. Pri razponu od 1 do 10
+                lahko dobiš tudi 1 in 10.
+            </p>
+
+            <p>
+                Če izbereš možnost brez ponovitev, je vsako
+                ustvarjeno število drugačno. Razpon mora zato
+                vsebovati dovolj različnih števil.
+            </p>
+
+            <p>
+                Podprta so cela števila med −1.000.000.000
+                in 1.000.000.000 ter največ 1000 rezultatov.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const minimum = document.getElementById("minimum");
+        const maksimum = document.getElementById("maksimum");
+        const kolicina = document.getElementById("kolicina");
+        const brezPonovitev = document.getElementById("brez-ponovitev");
+
+        const napaka = document.getElementById("napaka");
+        const izhod = document.getElementById("izhod");
+        const rezultat = document.getElementById("rezultat");
+        const status = document.getElementById("status");
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            status.textContent = "";
+            rezultat.value = "";
+            izhod.hidden = true;
+        }
+
+        function nakljucnoPod(meja) {
+            // Zavrnemo vrednosti, ki bi povzročile neenakomerno
+            // porazdelitev pri računanju ostanka.
+            const obseg = 2 ** 32;
+            const omejitev = obseg - (obseg % meja);
+            const podatki = new Uint32Array(1);
+
+            do {
+                crypto.getRandomValues(podatki);
+            } while (podatki[0] >= omejitev);
+
+            return podatki[0] % meja;
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const min = minimum.valueAsNumber;
+            const max = maksimum.valueAsNumber;
+            const koliko = kolicina.valueAsNumber;
+
+            if (
+                ![min, max].every(stevilo =>
+                    Number.isInteger(stevilo) &&
+                    stevilo >= -1000000000 &&
+                    stevilo <= 1000000000
+                )
+            ) {
+                napaka.textContent =
+                    "Meji morata biti celi števili med " +
+                    "−1.000.000.000 in 1.000.000.000.";
+                return;
+            }
+
+            if (min > max) {
+                napaka.textContent =
+                    "Najmanjše število ne sme biti večje od največjega.";
+                return;
+            }
+
+            if (
+                !Number.isInteger(koliko) ||
+                koliko < 1 ||
+                koliko > 1000
+            ) {
+                napaka.textContent =
+                    "Število rezultatov mora biti med 1 in 1000.";
+                return;
+            }
+
+            const razpon = max - min + 1;
+
+            if (brezPonovitev.checked && koliko > razpon) {
+                napaka.textContent =
+                    "Razpon vsebuje samo " + razpon +
+                    " različnih števil. Zmanjšaj količino " +
+                    "ali omogoči ponovitve.";
+                return;
+            }
+
+            try {
+                const stevila = [];
+
+                if (brezPonovitev.checked) {
+                    // Delno mešanje razpona brez ustvarjanja
+                    // velikega seznama vseh možnih števil.
+                    const zamenjave = new Map();
+
+                    for (let i = 0; i < koliko; i++) {
+                        const preostalih = razpon - i;
+                        const indeks = nakljucnoPod(preostalih);
+
+                        const izbrano = zamenjave.get(indeks) ?? indeks;
+                        const zadnje =
+                            zamenjave.get(preostalih - 1) ??
+                            (preostalih - 1);
+
+                        zamenjave.set(indeks, zadnje);
+                        stevila.push(min + izbrano);
+                    }
+                } else {
+                    for (let i = 0; i < koliko; i++) {
+                        stevila.push(min + nakljucnoPod(razpon));
+                    }
+                }
+
+                rezultat.value = stevila.join("; ");
+                izhod.hidden = false;
+                status.textContent =
+                    "Ustvarjenih števil: " + stevila.length + ".";
+            } catch {
+                napaka.textContent =
+                    "Brskalnik ne omogoča generiranja naključnih števil.";
+            }
+        });
+
+        document.getElementById("kopiraj").addEventListener(
+            "click",
+            async function () {
+                if (izhod.hidden) return;
+
+                try {
+                    await navigator.clipboard.writeText(rezultat.value);
+                    status.textContent = "Rezultat je kopiran.";
+                } catch {
+                    rezultat.focus();
+                    rezultat.select();
+
+                    status.textContent =
+                        "Rezultat je označen. Uporabi Ctrl+C oziroma Cmd+C.";
+                }
+            }
+        );
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

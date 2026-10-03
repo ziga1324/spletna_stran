@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kalkulator popusta</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Kalkulator popusta</h1>
+        <p>Izračunaj končno ceno in prihranek po popustih.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="cena">Začetna cena (€)</label>
+                <input
+                    type="number"
+                    id="cena"
+                    min="0"
+                    step="0.01"
+                    placeholder="Na primer: 100"
+                    required
+                >
+
+                <label for="popusti">Popusti (%)</label>
+                <input
+                    type="text"
+                    id="popusti"
+                    placeholder="Na primer: 20 ali 20; 10"
+                    aria-describedby="navodilo"
+                    required
+                >
+
+                <p id="navodilo">
+                    Več popustov loči s podpičjem.
+                    Za decimalke uporabi vejico ali piko:
+                    na primer 12,5; 10.
+                </p>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Cena po popustu = cena × (1 − popust ÷ 100).
+                Vsak naslednji popust se obračuna od že znižane cene.
+            </p>
+
+            <p>
+                Primer: izdelek stane 100 €. Po 20 % popustu
+                stane 80 €, po dodatnih 10 % pa
+                <strong>72 €</strong>.
+                Skupni popust je 28 %.
+            </p>
+
+            <p>
+                Izračun poteka brez vmesnega zaokroževanja.
+                Prikazane cene so zaokrožene na dva decimalna mesta.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const cenaVnos = document.getElementById("cena");
+        const popustiVnos = document.getElementById("popusti");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const denar = new Intl.NumberFormat("sl-SI", {
+            style: "currency",
+            currency: "EUR"
+        });
+
+        const odstotki = new Intl.NumberFormat("sl-SI", {
+            maximumFractionDigits: 4
+        });
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const cena = cenaVnos.valueAsNumber;
+
+            if (!Number.isFinite(cena) || cena < 0) {
+                napaka.textContent = "Vnesi veljavno nenegativno ceno.";
+                return;
+            }
+
+            const vnosi = popustiVnos.value
+                .split(";")
+                .map(vnos => vnos.trim());
+
+            if (
+                vnosi.length > 100 ||
+                vnosi.some(vnos => !/^\d+(?:[.,]\d+)?$/.test(vnos))
+            ) {
+                napaka.textContent =
+                    "Vnesi največ 100 popustov, ločenih s podpičjem. " +
+                    "Primer: 20; 12,5.";
+                return;
+            }
+
+            const popusti = vnosi.map(vnos =>
+                Number(vnos.replace(",", "."))
+            );
+
+            if (
+                popusti.some(popust =>
+                    !Number.isFinite(popust) ||
+                    popust < 0 ||
+                    popust > 100
+                )
+            ) {
+                napaka.textContent =
+                    "Vsak popust mora biti med 0 in 100 %.";
+                return;
+            }
+
+            let delezCene = 1;
+
+            const koraki = popusti.map(function (popust) {
+                delezCene *= 1 - popust / 100;
+
+                return {
+                    popust: popust,
+                    cena: cena * delezCene
+                };
+            });
+
+            const koncnaCena = cena * delezCene;
+            const prihranek = cena - koncnaCena;
+            const skupniPopust = (1 - delezCene) * 100;
+
+            dodajBesedilo(
+                "Končna cena: " + denar.format(koncnaCena),
+                "h2"
+            );
+
+            dodajBesedilo("Prihranek: " + denar.format(prihranek));
+
+            if (cena > 0) {
+                dodajBesedilo(
+                    "Skupni popust: " +
+                    odstotki.format(skupniPopust) + " %."
+                );
+            }
+
+            dodajBesedilo("Začetna cena: " + denar.format(cena));
+
+            const seznam = document.createElement("ol");
+
+            koraki.forEach(function (korak) {
+                const vrstica = document.createElement("li");
+
+                vrstica.textContent =
+                    "Po " + odstotki.format(korak.popust) +
+                    " % popustu: " + denar.format(korak.cena);
+
+                seznam.appendChild(vrstica);
+            });
+
+            rezultat.appendChild(seznam);
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

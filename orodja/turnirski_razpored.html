@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Izdelovalnik turnirskega razporeda</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Izdelovalnik turnirskega razporeda</h1>
+        <p>Ustvari turnir in izberi zmagovalca vsake tekme.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="igralci">Igralci oziroma ekipe</label>
+                <textarea
+                    id="igralci"
+                    rows="10"
+                    maxlength="20000"
+                    placeholder="Jakob&#10;Ana&#10;Luka&#10;Nika"
+                    required
+                ></textarea>
+
+                <p>
+                    Vsakega udeleženca napiši v svojo vrstico.
+                    Vnesi od 2 do 64 različnih imen.
+                </p>
+
+                <label class="moznost">
+                    <input type="checkbox" id="premesaj" checked>
+                    Naključno premešaj udeležence
+                </label>
+
+                <div class="gumbi">
+                    <button type="submit">Ustvari turnir</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <p id="status" role="status"></p>
+        </section>
+
+        <section id="izhod" class="kalkulator" hidden>
+            <h2>Turnirski razpored</h2>
+            <p id="povzetek"></p>
+
+            <div id="prvak" class="rezultat" hidden></div>
+            <div id="krogi"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Turnir je izločilen: zmagovalec napreduje,
+                poraženec izpade. Zmagovalca izbereš z gumbom
+                ob njegovem imenu.
+            </p>
+
+            <p>
+                Če število udeležencev ni potenca števila 2,
+                nekateri v prvem krogu napredujejo brez tekme.
+            </p>
+
+            <p>
+                Če spremeniš zmagovalca, se rezultati naslednjih
+                tekem na njegovi poti izbrišejo.
+            </p>
+
+            <p>
+                Ponovna izdelava razporeda začne nov turnir.
+                Rezultati se ob osvežitvi ali zapiranju strani izgubijo.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const igralci = document.getElementById("igralci");
+        const premesaj = document.getElementById("premesaj");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+
+        const izhod = document.getElementById("izhod");
+        const krogiPrikaz = document.getElementById("krogi");
+        const prvak = document.getElementById("prvak");
+
+        let krogi = [];
+
+        function nakljucnoPod(meja) {
+            const obseg = 2 ** 32;
+            const omejitev = obseg - (obseg % meja);
+            const podatki = new Uint32Array(1);
+
+            do {
+                crypto.getRandomValues(podatki);
+            } while (podatki[0] >= omejitev);
+
+            return podatki[0] % meja;
+        }
+
+        function pocistiTurnir() {
+            krogi = [];
+            krogiPrikaz.replaceChildren();
+            prvak.replaceChildren();
+            prvak.hidden = true;
+            izhod.hidden = true;
+            napaka.textContent = "";
+            status.textContent = "";
+        }
+
+        function imeKroga(indeks) {
+            const preostalihKrogov = krogi.length - indeks;
+
+            if (preostalihKrogov === 1) return "Finale";
+            if (preostalihKrogov === 2) return "Polfinale";
+            if (preostalihKrogov === 3) return "Četrtfinale";
+
+            return "Krog " + (indeks + 1);
+        }
+
+        function posodobiNapredovanje() {
+            for (let k = 1; k < krogi.length; k++) {
+                krogi[k].forEach(function (tekma, indeks) {
+                    const levi = krogi[k - 1][indeks * 2].zmagovalec;
+                    const desni = krogi[k - 1][indeks * 2 + 1].zmagovalec;
+
+                    if (
+                        tekma.igralca[0] !== levi ||
+                        tekma.igralca[1] !== desni
+                    ) {
+                        tekma.igralca = [levi, desni];
+                        tekma.zmagovalec = null;
+                    }
+                });
+            }
+        }
+
+        function izberiZmagovalca(krog, indeks, ime) {
+            const tekma = krogi[krog][indeks];
+
+            if (tekma.zmagovalec === ime) return;
+
+            tekma.zmagovalec = ime;
+
+            // Po spremembi počistimo vse rezultate na poti do finala.
+            let naslednjiIndeks = indeks;
+
+            for (let k = krog + 1; k < krogi.length; k++) {
+                naslednjiIndeks = Math.floor(naslednjiIndeks / 2);
+                krogi[k][naslednjiIndeks].zmagovalec = null;
+            }
+
+            posodobiNapredovanje();
+            prikaziTurnir();
+
+            status.textContent =
+                ime + " napreduje. Rezultati na nadaljnji poti so posodobljeni.";
+        }
+
+        function prikaziTurnir() {
+            krogiPrikaz.replaceChildren();
+            prvak.replaceChildren();
+
+            krogi.forEach(function (tekme, indeksKroga) {
+                const blok = document.createElement("section");
+                const naslov = document.createElement("h3");
+                naslov.textContent = imeKroga(indeksKroga);
+                blok.appendChild(naslov);
+
+                tekme.forEach(function (tekma, indeksTekme) {
+                    const kartica = document.createElement("div");
+                    kartica.className = "rezultat";
+                    kartica.style.marginTop = "12px";
+
+                    const oznaka = document.createElement("p");
+                    oznaka.textContent = "Tekma " + (indeksTekme + 1);
+                    kartica.appendChild(oznaka);
+
+                    const gumbi = document.createElement("div");
+                    gumbi.className = "gumbi";
+
+                    tekma.igralca.forEach(function (ime) {
+                        if (ime === null) {
+                            const opis = document.createElement("p");
+
+                            opis.textContent = indeksKroga === 0
+                                ? "Prosto mesto"
+                                : "Čaka na zmagovalca prejšnje tekme";
+
+                            gumbi.appendChild(opis);
+                            return;
+                        }
+
+                        const gumb = document.createElement("button");
+                        gumb.type = "button";
+                        gumb.textContent = ime;
+
+                        const obaZnana = tekma.igralca.every(
+                            igralec => igralec !== null
+                        );
+
+                        gumb.disabled = !obaZnana;
+                        gumb.setAttribute(
+                            "aria-pressed",
+                            String(tekma.zmagovalec === ime)
+                        );
+
+                        if (tekma.zmagovalec === ime) {
+                            gumb.textContent = "✓ " + ime;
+                            gumb.style.backgroundColor = "#087f8c";
+                            gumb.style.color = "#ffffff";
+                        }
+
+                        gumb.addEventListener("click", function () {
+                            izberiZmagovalca(
+                                indeksKroga,
+                                indeksTekme,
+                                ime
+                            );
+                        });
+
+                        gumbi.appendChild(gumb);
+                    });
+
+                    kartica.appendChild(gumbi);
+
+                    if (tekma.zmagovalec !== null) {
+                        const opis = document.createElement("p");
+                        opis.style.marginTop = "12px";
+
+                        opis.textContent =
+                            indeksKroga === 0 &&
+                            tekma.igralca.includes(null)
+                                ? "Brez tekme napreduje: " + tekma.zmagovalec
+                                : "Zmagovalec: " + tekma.zmagovalec;
+
+                        kartica.appendChild(opis);
+                    }
+
+                    blok.appendChild(kartica);
+                });
+
+                krogiPrikaz.appendChild(blok);
+            });
+
+            const zmagovalec = krogi[krogi.length - 1][0].zmagovalec;
+            prvak.hidden = zmagovalec === null;
+
+            if (zmagovalec !== null) {
+                const naslov = document.createElement("h2");
+                naslov.textContent = "Zmagovalec turnirja: " + zmagovalec;
+                prvak.appendChild(naslov);
+            }
+        }
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            napaka.textContent = "";
+
+            const imena = igralci.value
+                .split(/\r\n?|\n/)
+                .map(ime => ime.trim())
+                .filter(ime => ime !== "");
+
+            if (
+                imena.length < 2 ||
+                imena.length > 64 ||
+                imena.some(ime => ime.length > 100)
+            ) {
+                napaka.textContent =
+                    "Vnesi od 2 do 64 udeležencev, " +
+                    "vsakega z imenom do 100 znakov.";
+                return;
+            }
+
+            const razlicnaImena = new Set(
+                imena.map(ime => ime.toLocaleLowerCase("sl-SI"))
+            );
+
+            if (razlicnaImena.size !== imena.length) {
+                napaka.textContent =
+                    "Imena morajo biti različna. " +
+                    "Po potrebi dodaj priimek ali oznako.";
+                return;
+            }
+
+            try {
+                if (premesaj.checked) {
+                    for (let i = imena.length - 1; i > 0; i--) {
+                        const j = nakljucnoPod(i + 1);
+                        [imena[i], imena[j]] = [imena[j], imena[i]];
+                    }
+                }
+
+                let mesta = 2;
+
+                while (mesta < imena.length) {
+                    mesta *= 2;
+                }
+
+                const prostaMesta = mesta - imena.length;
+                const prviKrog = [];
+                let naslednjiIgralec = 0;
+
+                // Vsako prosto mesto dobi svojega nasprotnika,
+                // zato nikoli ne nastane tekma dveh prostih mest.
+                for (let i = 0; i < mesta / 2; i++) {
+                    const prvi = imena[naslednjiIgralec++];
+                    const drugi = i < prostaMesta
+                        ? null
+                        : imena[naslednjiIgralec++];
+
+                    prviKrog.push({
+                        igralca: [prvi, drugi],
+                        zmagovalec: drugi === null ? prvi : null
+                    });
+                }
+
+                krogi = [prviKrog];
+
+                for (
+                    let steviloTekem = prviKrog.length / 2;
+                    steviloTekem >= 1;
+                    steviloTekem /= 2
+                ) {
+                    krogi.push(Array.from(
+                        { length: steviloTekem },
+                        () => ({
+                            igralca: [null, null],
+                            zmagovalec: null
+                        })
+                    ));
+                }
+
+                posodobiNapredovanje();
+                prikaziTurnir();
+
+                document.getElementById("povzetek").textContent =
+                    "Udeleženci: " + imena.length +
+                    " | Krogi: " + krogi.length +
+                    " | Prosta mesta: " + prostaMesta;
+
+                izhod.hidden = false;
+                status.textContent =
+                    "Turnir je pripravljen. Zmagovalce izberi z gumbi.";
+            } catch {
+                napaka.textContent =
+                    "Razporeda ni mogoče ustvariti. " +
+                    "Poskusi izključiti naključno mešanje.";
+            }
+        });
+
+        obrazec.addEventListener("reset", function (dogodek) {
+            if (
+                (igralci.value !== "" || krogi.length > 0) &&
+                !window.confirm("Želiš izbrisati seznam in turnir?")
+            ) {
+                dogodek.preventDefault();
+                return;
+            }
+
+            pocistiTurnir();
+        });
+    </script>
+</body>
+</html>

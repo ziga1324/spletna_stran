@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Odštevalnik do dogodka</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Odštevalnik do dogodka</h1>
+        <p>Preveri, koliko časa ostaja do izbranega dogodka.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="ime">Ime dogodka</label>
+                <input
+                    type="text"
+                    id="ime"
+                    maxlength="100"
+                    placeholder="Na primer: Počitnice"
+                    required
+                >
+
+                <label for="datum">Datum in ura dogodka</label>
+                <input
+                    type="datetime-local"
+                    id="datum"
+                    min="0001-01-01T00:00"
+                    max="9999-12-31T23:59"
+                    step="60"
+                    aria-describedby="navodilo"
+                    required
+                >
+
+                <p id="navodilo">
+                    Datum in ura se upoštevata v lokalnem časovnem
+                    pasu tvojega brskalnika.
+                </p>
+
+                <div class="gumbi">
+                    <button type="submit">Začni odštevanje</button>
+                    <button type="button" id="povezava" disabled>
+                        Kopiraj povezavo
+                    </button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div id="izhod" class="rezultat" hidden>
+                <h2 id="naslov"></h2>
+
+                <p
+                    id="cas"
+                    role="timer"
+                    aria-label="Preostali čas do dogodka"
+                    style="font-size: 28px; font-weight: bold;"
+                ></p>
+
+                <p id="cilj"></p>
+            </div>
+
+            <p id="status" role="status"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Odštevalnik prikazuje preostale dni, ure,
+                minute in sekunde. En prikazan dan pomeni 24 ur.
+            </p>
+
+            <p>
+                Povezava shrani ime dogodka in njegov trenutek.
+                Če jo odpre nekdo v drugem časovnem pasu,
+                odšteva do istega trenutka.
+            </p>
+
+            <p>
+                Za deljenje povezave mora biti stran objavljena
+                na spletu. Povezava do lokalne datoteke na tvojem
+                računalniku drugim ne omogoča dostopa.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const ime = document.getElementById("ime");
+        const datum = document.getElementById("datum");
+        const povezavaGumb = document.getElementById("povezava");
+
+        const napaka = document.getElementById("napaka");
+        const izhod = document.getElementById("izhod");
+        const naslov = document.getElementById("naslov");
+        const cas = document.getElementById("cas");
+        const cilj = document.getElementById("cilj");
+        const status = document.getElementById("status");
+
+        let interval = null;
+        let dogodek = null;
+
+        function lokalniZapis(d) {
+            const leto = String(d.getFullYear()).padStart(4, "0");
+            const mesec = String(d.getMonth() + 1).padStart(2, "0");
+            const dan = String(d.getDate()).padStart(2, "0");
+            const ure = String(d.getHours()).padStart(2, "0");
+            const minute = String(d.getMinutes()).padStart(2, "0");
+
+            return `${leto}-${mesec}-${dan}T${ure}:${minute}`;
+        }
+
+        function preberiDatum(vnos) {
+            const ujemanje =
+                /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(vnos);
+
+            if (!ujemanje) {
+                throw new Error("Izberi veljaven datum in uro.");
+            }
+
+            const [leto, mesec, dan, ure, minute] =
+                ujemanje.slice(1).map(Number);
+
+            const d = new Date(0);
+            d.setFullYear(leto, mesec - 1, dan);
+            d.setHours(ure, minute, 0, 0);
+
+            if (
+                leto < 1 ||
+                leto > 9999 ||
+                d.getFullYear() !== leto ||
+                d.getMonth() !== mesec - 1 ||
+                d.getDate() !== dan ||
+                d.getHours() !== ure ||
+                d.getMinutes() !== minute
+            ) {
+                throw new Error(
+                    "Datum ali ura ni veljavna. Izbrana ura lahko " +
+                    "ne obstaja zaradi premika ure."
+                );
+            }
+
+            return d;
+        }
+
+        function ustavi() {
+            clearInterval(interval);
+            interval = null;
+        }
+
+        function pocistiOdstevanje() {
+            ustavi();
+            dogodek = null;
+            izhod.hidden = true;
+            povezavaGumb.disabled = true;
+            napaka.textContent = "";
+            status.textContent = "";
+            document.title = "Odštevalnik do dogodka";
+        }
+
+        function posodobi() {
+            if (!dogodek) return;
+
+            const razlika = dogodek.trenutek - Date.now();
+
+            if (razlika <= 0) {
+                cas.textContent = "Dogodek je dosežen!";
+                status.textContent = "Čas za dogodek je nastopil.";
+                document.title = dogodek.ime + " – dogodek je dosežen";
+                ustavi();
+                return;
+            }
+
+            const sekunde = Math.ceil(razlika / 1000);
+            const dnevi = Math.floor(sekunde / 86400);
+            const ure = Math.floor((sekunde % 86400) / 3600);
+            const minute = Math.floor((sekunde % 3600) / 60);
+            const ostaleSekunde = sekunde % 60;
+
+            cas.textContent =
+                dnevi.toLocaleString("sl-SI") + " dni · " +
+                String(ure).padStart(2, "0") + " h · " +
+                String(minute).padStart(2, "0") + " min · " +
+                String(ostaleSekunde).padStart(2, "0") + " s";
+
+            document.title =
+                dogodek.ime + " – " + dnevi + " dni do dogodka";
+        }
+
+        function zacniOdstevanje(naziv, trenutek) {
+            ustavi();
+
+            dogodek = {
+                ime: naziv,
+                trenutek: trenutek
+            };
+
+            naslov.textContent = naziv;
+
+            cilj.textContent =
+                "Datum dogodka: " +
+                new Date(trenutek).toLocaleString("sl-SI", {
+                    dateStyle: "long",
+                    timeStyle: "short"
+                });
+
+            izhod.hidden = false;
+            povezavaGumb.disabled = false;
+            napaka.textContent = "";
+            status.textContent = "Odštevanje je pripravljeno.";
+
+            interval = setInterval(posodobi, 1000);
+            posodobi();
+        }
+
+        obrazec.addEventListener("input", pocistiOdstevanje);
+
+        obrazec.addEventListener("submit", function (dogodekObrazca) {
+            dogodekObrazca.preventDefault();
+            pocistiOdstevanje();
+
+            try {
+                const naziv = ime.value.trim();
+
+                if (!naziv) {
+                    throw new Error("Vnesi ime dogodka.");
+                }
+
+                const izbraniDatum = preberiDatum(datum.value);
+
+                if (izbraniDatum.getTime() <= Date.now()) {
+                    throw new Error("Izberi datum in uro v prihodnosti.");
+                }
+
+                zacniOdstevanje(naziv, izbraniDatum.getTime());
+            } catch (napakaIzracuna) {
+                napaka.textContent = napakaIzracuna.message;
+            }
+        });
+
+        povezavaGumb.addEventListener("click", async function () {
+            if (!dogodek) return;
+
+            const url = new URL(window.location.href);
+            const nastavitve = new URLSearchParams();
+
+            nastavitve.set("ime", dogodek.ime);
+            nastavitve.set("cas", String(dogodek.trenutek));
+
+            url.hash = nastavitve.toString();
+
+            try {
+                await navigator.clipboard.writeText(url.href);
+                status.textContent = "Povezava je kopirana.";
+            } catch {
+                status.replaceChildren();
+
+                const oznaka = document.createElement("label");
+                oznaka.htmlFor = "rocna-povezava";
+                oznaka.textContent = "Kopiraj povezavo ročno:";
+
+                const polje = document.createElement("input");
+                polje.id = "rocna-povezava";
+                polje.type = "text";
+                polje.readOnly = true;
+                polje.value = url.href;
+
+                status.append(oznaka, polje);
+                polje.focus();
+                polje.select();
+            }
+        });
+
+        obrazec.addEventListener("reset", pocistiOdstevanje);
+
+        document.addEventListener("visibilitychange", function () {
+            if (!document.hidden && dogodek) {
+                posodobi();
+            }
+        });
+
+        function naloziPovezavo() {
+            const nastavitve = new URLSearchParams(
+                window.location.hash.slice(1)
+            );
+
+            const naziv = nastavitve.get("ime");
+            const casVnos = nastavitve.get("cas");
+
+            if (naziv === null && casVnos === null) return;
+
+            const trenutek = Number(casVnos);
+            const d = new Date(trenutek);
+
+            if (
+                !naziv ||
+                !naziv.trim() ||
+                naziv.length > 100 ||
+                !casVnos ||
+                !Number.isSafeInteger(trenutek) ||
+                !Number.isFinite(d.getTime()) ||
+                d.getFullYear() < 1 ||
+                d.getFullYear() > 9999
+            ) {
+                napaka.textContent =
+                    "Povezava vsebuje neveljavne nastavitve.";
+                return;
+            }
+
+            ime.value = naziv.trim();
+            datum.value = lokalniZapis(d);
+
+            zacniOdstevanje(naziv.trim(), trenutek);
+        }
+
+        naloziPovezavo();
+    </script>
+</body>
+</html>

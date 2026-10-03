@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kalkulator IPv4 podomrežij</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Kalkulator IPv4 podomrežij</h1>
+        <p>Vnesi naslov IPv4 in dolžino omrežne predpone.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="ip">Naslov IPv4</label>
+                <input
+                    type="text"
+                    id="ip"
+                    placeholder="Na primer: 192.168.1.25"
+                    maxlength="15"
+                    autocomplete="off"
+                    spellcheck="false"
+                    required
+                >
+
+                <label for="cidr">Dolžina predpone CIDR</label>
+                <input
+                    type="number"
+                    id="cidr"
+                    min="0"
+                    max="32"
+                    step="1"
+                    value="24"
+                    required
+                >
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+                style="overflow-wrap: anywhere;"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                CIDR določa število omrežnih bitov.
+                Pri /24 je maska 255.255.255.0, v bloku pa je
+                256 naslovov.
+            </p>
+
+            <p>
+                Za običajna podomrežja od /0 do /30 iz razpona
+                gostiteljev izključimo omrežni in broadcast naslov.
+            </p>
+
+            <p>
+                Pri /31 orodje predpostavlja povezavo med dvema
+                točkama: oba naslova sta uporabna in ločenega
+                broadcast naslova ni. /32 predstavlja en naslov.
+            </p>
+
+            <p>
+                Število gostiteljev je izračun po strukturi podomrežja.
+                Ne preverja posebnih ali rezerviranih naslovov IPv4.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const ipVnos = document.getElementById("ip");
+        const cidrVnos = document.getElementById("cidr");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const oblikovanje = new Intl.NumberFormat("sl-SI");
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function preberiIP(vnos) {
+            const deli = vnos.trim().split(".");
+
+            if (
+                deli.length !== 4 ||
+                !deli.every(del =>
+                    /^(0|[1-9]\d{0,2})$/.test(del) &&
+                    Number(del) <= 255
+                )
+            ) {
+                throw new Error(
+                    "Vnesi veljaven IPv4 naslov, na primer 192.168.1.25. " +
+                    "Vsak del mora biti med 0 in 255, brez vodilnih ničel."
+                );
+            }
+
+            return deli.reduce(
+                (vrednost, del) => vrednost * 256 + Number(del),
+                0
+            );
+        }
+
+        function zapisIP(vrednost) {
+            return [
+                Math.floor(vrednost / 16777216) % 256,
+                Math.floor(vrednost / 65536) % 256,
+                Math.floor(vrednost / 256) % 256,
+                vrednost % 256
+            ].join(".");
+        }
+
+        function dodajPodatek(oznaka, vrednost) {
+            const vrstica = document.createElement("p");
+            const poudarek = document.createElement("strong");
+
+            poudarek.textContent = oznaka + ": ";
+            vrstica.append(
+                poudarek,
+                document.createTextNode(vrednost)
+            );
+
+            rezultat.appendChild(vrstica);
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            try {
+                const ip = preberiIP(ipVnos.value);
+                const cidr = cidrVnos.valueAsNumber;
+
+                if (
+                    !Number.isInteger(cidr) ||
+                    cidr < 0 ||
+                    cidr > 32
+                ) {
+                    throw new Error(
+                        "Dolžina predpone mora biti celo število od 0 do 32."
+                    );
+                }
+
+                const steviloNaslovov = 2 ** (32 - cidr);
+                const omrezje =
+                    Math.floor(ip / steviloNaslovov) * steviloNaslovov;
+                const zadnji = omrezje + steviloNaslovov - 1;
+
+                const maska = 2 ** 32 - steviloNaslovov;
+                const wildcard = steviloNaslovov - 1;
+
+                let prviGostitelj;
+                let zadnjiGostitelj;
+                let steviloGostiteljev;
+
+                if (cidr <= 30) {
+                    prviGostitelj = omrezje + 1;
+                    zadnjiGostitelj = zadnji - 1;
+                    steviloGostiteljev = steviloNaslovov - 2;
+                } else {
+                    prviGostitelj = omrezje;
+                    zadnjiGostitelj = zadnji;
+                    steviloGostiteljev = steviloNaslovov;
+                }
+
+                const naslov = document.createElement("h2");
+                naslov.textContent =
+                    "Podomrežje: " + zapisIP(omrezje) + "/" + cidr;
+                rezultat.appendChild(naslov);
+
+                dodajPodatek("Vneseni naslov", zapisIP(ip));
+                dodajPodatek("Maska podomrežja", zapisIP(maska));
+                dodajPodatek("Wildcard maska", zapisIP(wildcard));
+
+                dodajPodatek(
+                    "Omrežni naslov oziroma začetek bloka",
+                    zapisIP(omrezje)
+                );
+
+                dodajPodatek(
+                    "Celoten razpon",
+                    zapisIP(omrezje) + " – " + zapisIP(zadnji)
+                );
+
+                dodajPodatek(
+                    "Broadcast",
+                    cidr <= 30
+                        ? zapisIP(zadnji)
+                        : "Ni ločenega broadcast naslova."
+                );
+
+                dodajPodatek(
+                    "Razpon gostiteljev",
+                    prviGostitelj === zadnjiGostitelj
+                        ? zapisIP(prviGostitelj)
+                        : zapisIP(prviGostitelj) + " – " +
+                          zapisIP(zadnjiGostitelj)
+                );
+
+                dodajPodatek(
+                    "Število vseh naslovov",
+                    oblikovanje.format(steviloNaslovov)
+                );
+
+                dodajPodatek(
+                    "Število naslovov gostiteljev",
+                    oblikovanje.format(steviloGostiteljev)
+                );
+
+                if (cidr <= 30) {
+                    dodajPodatek(
+                        "Položaj vnesenega naslova",
+                        ip === omrezje
+                            ? "Omrežni naslov."
+                            : ip === zadnji
+                                ? "Broadcast naslov."
+                                : "Naslov znotraj razpona gostiteljev."
+                    );
+                } else if (cidr === 31) {
+                    dodajPodatek(
+                        "Opomba",
+                        "/31 je obravnavan kot povezava med dvema točkama."
+                    );
+                } else {
+                    dodajPodatek(
+                        "Opomba",
+                        "/32 predstavlja en sam naslov."
+                    );
+                }
+            } catch (napakaIzracuna) {
+                napaka.textContent = napakaIzracuna.message;
+            }
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kviz iz lastnih vprašanj</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Kviz iz lastnih vprašanj</h1>
+        <p>Pripravi vprašanja in preveri svoje znanje.</p>
+    </header>
+
+    <main>
+        <section id="urejanje" class="kalkulator">
+            <h2>Dodaj vprašanje</h2>
+
+            <form id="obrazec">
+                <label for="vprasanje">Vprašanje</label>
+                <input
+                    type="text"
+                    id="vprasanje"
+                    maxlength="1000"
+                    required
+                >
+
+                <label for="odgovor1">Odgovor 1</label>
+                <input type="text" id="odgovor1" maxlength="500" required>
+
+                <label for="odgovor2">Odgovor 2</label>
+                <input type="text" id="odgovor2" maxlength="500" required>
+
+                <label for="odgovor3">Odgovor 3</label>
+                <input type="text" id="odgovor3" maxlength="500" required>
+
+                <label for="odgovor4">Odgovor 4</label>
+                <input type="text" id="odgovor4" maxlength="500" required>
+
+                <label for="pravilen">Pravilni odgovor</label>
+                <select id="pravilen" required>
+                    <option value="">Izberi pravilni odgovor</option>
+                    <option value="0">Odgovor 1</option>
+                    <option value="1">Odgovor 2</option>
+                    <option value="2">Odgovor 3</option>
+                    <option value="3">Odgovor 4</option>
+                </select>
+
+                <div class="gumbi">
+                    <button type="submit">Dodaj vprašanje</button>
+                    <button type="reset">Počisti vnos</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <p id="status" role="status"></p>
+
+            <h3>Dodana vprašanja</h3>
+            <ol id="seznam"></ol>
+            <p id="stevec">Število vprašanj: 0</p>
+
+            <button type="button" id="zacni" disabled>
+                Začni kviz
+            </button>
+        </section>
+
+        <section id="kviz" class="kalkulator" hidden>
+            <p id="napredek"></p>
+            <h2 id="naslov-vprasanja"></h2>
+
+            <div id="moznosti" class="gumbi"></div>
+
+            <p id="povratna-informacija" role="status"></p>
+
+            <div class="gumbi">
+                <button type="button" id="naslednje" disabled>
+                    Naslednje vprašanje
+                </button>
+                <button type="button" id="prekini">
+                    Nazaj na urejanje
+                </button>
+            </div>
+        </section>
+
+        <section id="rezultati" class="kalkulator" hidden>
+            <h2>Rezultat kviza</h2>
+
+            <div id="povzetek" class="rezultat"></div>
+            <div id="pregled"></div>
+
+            <div class="gumbi">
+                <button type="button" id="ponovi">Ponovi kviz</button>
+                <button type="button" id="uredi">Uredi vprašanja</button>
+            </div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Vsako vprašanje ima štiri odgovore in en pravilni odgovor.
+                Vprašanja se ob začetku kviza premešajo.
+                Za vsak pravilni odgovor dobiš eno točko.
+            </p>
+            <p>
+                Na koncu vidiš rezultat in pregled napačnih odgovorov.
+                Vprašanja ostanejo na voljo, dokler ne zapreš ali osvežiš strani.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+        const seznam = document.getElementById("seznam");
+        const stevec = document.getElementById("stevec");
+        const zacni = document.getElementById("zacni");
+
+        const urejanje = document.getElementById("urejanje");
+        const kviz = document.getElementById("kviz");
+        const rezultati = document.getElementById("rezultati");
+
+        const napredek = document.getElementById("napredek");
+        const naslovVprasanja = document.getElementById("naslov-vprasanja");
+        const moznosti = document.getElementById("moznosti");
+        const povratna = document.getElementById("povratna-informacija");
+        const naslednje = document.getElementById("naslednje");
+
+        let vprasanja = [];
+        let vrstniRed = [];
+        let odgovori = [];
+        let trenutno = 0;
+        let odgovorjeno = false;
+
+        function dodajBesedilo(stars, besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            stars.appendChild(element);
+            return element;
+        }
+
+        function prikaziUrejanje() {
+            urejanje.hidden = false;
+            kviz.hidden = true;
+            rezultati.hidden = true;
+        }
+
+        function osveziSeznam() {
+            seznam.replaceChildren();
+
+            vprasanja.forEach(function (vprasanje, indeks) {
+                const vrstica = document.createElement("li");
+                vrstica.style.marginBottom = "12px";
+
+                dodajBesedilo(vrstica, vprasanje.besedilo, "span");
+
+                const odstrani = document.createElement("button");
+                odstrani.type = "button";
+                odstrani.textContent = "Odstrani";
+                odstrani.style.marginLeft = "12px";
+                odstrani.setAttribute(
+                    "aria-label",
+                    "Odstrani vprašanje " + (indeks + 1)
+                );
+
+                odstrani.addEventListener("click", function () {
+                    vprasanja.splice(indeks, 1);
+                    osveziSeznam();
+                    status.textContent = "Vprašanje je odstranjeno.";
+                });
+
+                vrstica.appendChild(odstrani);
+                seznam.appendChild(vrstica);
+            });
+
+            stevec.textContent = "Število vprašanj: " + vprasanja.length;
+            zacni.disabled = vprasanja.length === 0;
+        }
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            napaka.textContent = "";
+            status.textContent = "";
+
+            const besedilo =
+                document.getElementById("vprasanje").value.trim();
+
+            const moznostiOdgovorov = [1, 2, 3, 4].map(function (stevilka) {
+                return document.getElementById(
+                    "odgovor" + stevilka
+                ).value.trim();
+            });
+
+            const izbira = document.getElementById("pravilen").value;
+            const pravilen = Number(izbira);
+
+            if (
+                !besedilo ||
+                moznostiOdgovorov.some(odgovor => !odgovor) ||
+                izbira === "" ||
+                !Number.isInteger(pravilen) ||
+                pravilen < 0 ||
+                pravilen > 3
+            ) {
+                napaka.textContent =
+                    "Vnesi vprašanje, štiri odgovore in izberi pravilnega.";
+                return;
+            }
+
+            const razlicniOdgovori = new Set(
+                moznostiOdgovorov.map(odgovor =>
+                    odgovor.toLocaleLowerCase("sl-SI")
+                )
+            );
+
+            if (razlicniOdgovori.size !== 4) {
+                napaka.textContent = "Vsi štirje odgovori morajo biti različni.";
+                return;
+            }
+
+            if (vprasanja.length >= 100) {
+                napaka.textContent = "Dodajaš lahko največ 100 vprašanj.";
+                return;
+            }
+
+            vprasanja.push({
+                besedilo,
+                moznosti: moznostiOdgovorov,
+                pravilen
+            });
+
+            obrazec.reset();
+            osveziSeznam();
+            status.textContent = "Vprašanje je dodano.";
+            document.getElementById("vprasanje").focus();
+        });
+
+        obrazec.addEventListener("reset", function () {
+            napaka.textContent = "";
+            status.textContent = "";
+        });
+
+        function zacniKviz() {
+            if (vprasanja.length === 0) return;
+
+            vrstniRed = [...vprasanja];
+
+            for (let i = vrstniRed.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [vrstniRed[i], vrstniRed[j]] =
+                    [vrstniRed[j], vrstniRed[i]];
+            }
+
+            odgovori = [];
+            trenutno = 0;
+
+            urejanje.hidden = true;
+            rezultati.hidden = true;
+            kviz.hidden = false;
+
+            prikaziVprasanje();
+        }
+
+        function prikaziVprasanje() {
+            const vprasanje = vrstniRed[trenutno];
+
+            odgovorjeno = false;
+            moznosti.replaceChildren();
+            povratna.textContent = "";
+            naslednje.disabled = true;
+
+            napredek.textContent =
+                "Vprašanje " + (trenutno + 1) +
+                " od " + vrstniRed.length;
+
+            naslovVprasanja.textContent = vprasanje.besedilo;
+
+            naslednje.textContent =
+                trenutno === vrstniRed.length - 1
+                    ? "Pokaži rezultat"
+                    : "Naslednje vprašanje";
+
+            vprasanje.moznosti.forEach(function (besedilo, indeks) {
+                const gumb = document.createElement("button");
+                gumb.type = "button";
+                gumb.textContent = besedilo;
+
+                gumb.addEventListener("click", function () {
+                    if (odgovorjeno) return;
+                    odgovorjeno = true;
+
+                    odgovori.push(indeks);
+
+                    for (const odgovorGumb of moznosti.children) {
+                        odgovorGumb.disabled = true;
+                    }
+
+                    povratna.textContent = indeks === vprasanje.pravilen
+                        ? "Pravilno!"
+                        : "Napačno. Pravilni odgovor: " +
+                          vprasanje.moznosti[vprasanje.pravilen];
+
+                    naslednje.disabled = false;
+                    naslednje.focus();
+                });
+
+                moznosti.appendChild(gumb);
+            });
+
+            naslovVprasanja.tabIndex = -1;
+            naslovVprasanja.focus();
+        }
+
+        function prikaziRezultate() {
+            kviz.hidden = true;
+            rezultati.hidden = false;
+
+            const povzetek = document.getElementById("povzetek");
+            const pregled = document.getElementById("pregled");
+
+            povzetek.replaceChildren();
+            pregled.replaceChildren();
+
+            const pravilni = vrstniRed.reduce(function (vsota, vprasanje, i) {
+                return vsota + (odgovori[i] === vprasanje.pravilen ? 1 : 0);
+            }, 0);
+
+            const odstotek = (pravilni / vrstniRed.length) * 100;
+
+            dodajBesedilo(
+                povzetek,
+                pravilni + " od " + vrstniRed.length + " točk",
+                "h3"
+            );
+
+            dodajBesedilo(
+                povzetek,
+                "Uspešnost: " + odstotek.toLocaleString("sl-SI", {
+                    maximumFractionDigits: 2
+                }) + " %."
+            );
+
+            if (pravilni === vrstniRed.length) {
+                dodajBesedilo(pregled, "Vsi odgovori so pravilni!");
+            } else {
+                dodajBesedilo(pregled, "Pregled napak", "h3");
+
+                vrstniRed.forEach(function (vprasanje, i) {
+                    if (odgovori[i] === vprasanje.pravilen) return;
+
+                    const blok = document.createElement("section");
+
+                    dodajBesedilo(blok, vprasanje.besedilo, "h4");
+                    dodajBesedilo(
+                        blok,
+                        "Tvoj odgovor: " + vprasanje.moznosti[odgovori[i]]
+                    );
+                    dodajBesedilo(
+                        blok,
+                        "Pravilni odgovor: " +
+                        vprasanje.moznosti[vprasanje.pravilen]
+                    );
+
+                    pregled.appendChild(blok);
+                });
+            }
+
+            povzetek.tabIndex = -1;
+            povzetek.focus();
+        }
+
+        naslednje.addEventListener("click", function () {
+            if (!odgovorjeno) return;
+
+            trenutno++;
+
+            if (trenutno < vrstniRed.length) {
+                prikaziVprasanje();
+            } else {
+                prikaziRezultate();
+            }
+        });
+
+        zacni.addEventListener("click", zacniKviz);
+        document.getElementById("ponovi").addEventListener("click", zacniKviz);
+        document.getElementById("uredi").addEventListener(
+            "click",
+            prikaziUrejanje
+        );
+        document.getElementById("prekini").addEventListener(
+            "click",
+            prikaziUrejanje
+        );
+    </script>
+</body>
+</html>

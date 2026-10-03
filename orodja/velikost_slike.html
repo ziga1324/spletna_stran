@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Spreminjanje velikosti slike</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Spreminjanje velikosti slike</h1>
+        <p>Nastavi novo širino in višino slike ter prenesi rezultat.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="slika">Izberi sliko PNG, JPEG ali WebP</label>
+                <input
+                    type="file"
+                    id="slika"
+                    accept="image/png,image/jpeg,image/webp"
+                    required
+                >
+
+                <p id="izvirnik"></p>
+
+                <label for="sirina">Nova širina (pike)</label>
+                <input
+                    type="number"
+                    id="sirina"
+                    min="1"
+                    max="8192"
+                    step="1"
+                    required
+                >
+
+                <label for="visina">Nova višina (pike)</label>
+                <input
+                    type="number"
+                    id="visina"
+                    min="1"
+                    max="8192"
+                    step="1"
+                    required
+                >
+
+                <label class="moznost">
+                    <input type="checkbox" id="razmerje" checked>
+                    Ohrani razmerje stranic
+                </label>
+
+                <div class="gumbi">
+                    <button type="submit" id="spremeni" disabled>
+                        Spremeni velikost
+                    </button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div id="izhod" class="rezultat" hidden>
+                <h2>Rezultat</h2>
+                <p id="dimenzije"></p>
+
+                <img
+                    id="predogled"
+                    alt="Slika s spremenjenimi dimenzijami"
+                    style="display: block; max-width: 100%;
+                           height: auto; margin: 16px auto;"
+                >
+
+                <button type="button" id="prenesi">Prenesi PNG</button>
+            </div>
+
+            <p id="status" role="status"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Pri ohranitvi razmerja sprememba širine samodejno
+                prilagodi višino in obratno.
+                Dimenzije se zaokrožijo na cele slikovne pike.
+            </p>
+
+            <p>
+                Če razmerje izključiš, lahko sliko raztegneš
+                na poljubno širino in višino.
+                Povečanje slike ne ustvari novih podrobnosti.
+            </p>
+
+            <p>
+                Rezultat je statična slika PNG, ki podpira prosojnost.
+                Velikost datoteke se lahko poveča.
+                Animacije in izvirni metapodatki se ne ohranijo.
+            </p>
+
+            <p>
+                Obdelava poteka v brskalniku. Podprte so slike
+                do 20 MiB in 16 milijonov pik, s stranicama do 8192 pik.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const slikaVnos = document.getElementById("slika");
+        const sirina = document.getElementById("sirina");
+        const visina = document.getElementById("visina");
+        const razmerje = document.getElementById("razmerje");
+        const spremeni = document.getElementById("spremeni");
+
+        const izvirnik = document.getElementById("izvirnik");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+        const izhod = document.getElementById("izhod");
+        const predogled = document.getElementById("predogled");
+
+        let izvornaSlika = null;
+        let imeDatoteke = "slika";
+        let rezultatUrl = null;
+        let razlicica = 0;
+        let zadnjePolje = "sirina";
+
+        function pocistiRezultat() {
+            razlicica++;
+
+            if (rezultatUrl) {
+                URL.revokeObjectURL(rezultatUrl);
+            }
+
+            rezultatUrl = null;
+            predogled.removeAttribute("src");
+            izhod.hidden = true;
+            napaka.textContent = "";
+            status.textContent = "";
+            spremeni.disabled = !izvornaSlika;
+        }
+
+        function veljavneDimenzije(s, v) {
+            return (
+                Number.isInteger(s) &&
+                Number.isInteger(v) &&
+                s >= 1 &&
+                v >= 1 &&
+                s <= 8192 &&
+                v <= 8192 &&
+                s * v <= 16000000
+            );
+        }
+
+        function prilagodiRazmerje(polje) {
+            if (!izvornaSlika || !razmerje.checked) return;
+
+            const faktor =
+                izvornaSlika.naturalWidth / izvornaSlika.naturalHeight;
+
+            if (polje === "sirina") {
+                const vrednost = sirina.valueAsNumber;
+
+                if (Number.isFinite(vrednost) && vrednost > 0) {
+                    visina.value = Math.max(1, Math.round(vrednost / faktor));
+                }
+            } else {
+                const vrednost = visina.valueAsNumber;
+
+                if (Number.isFinite(vrednost) && vrednost > 0) {
+                    sirina.value = Math.max(1, Math.round(vrednost * faktor));
+                }
+            }
+        }
+
+        function naloziSliko(datoteka) {
+            return new Promise(function (resolve, reject) {
+                const url = URL.createObjectURL(datoteka);
+                const slika = new Image();
+
+                slika.onload = function () {
+                    URL.revokeObjectURL(url);
+                    resolve(slika);
+                };
+
+                slika.onerror = function () {
+                    URL.revokeObjectURL(url);
+                    reject(new Error("Slike ni mogoče odpreti."));
+                };
+
+                slika.src = url;
+            });
+        }
+
+        slikaVnos.addEventListener("change", async function () {
+            izvornaSlika = null;
+            pocistiRezultat();
+            izvirnik.textContent = "";
+            sirina.value = "";
+            visina.value = "";
+
+            const trenutnaRazlicica = razlicica;
+            const datoteka = slikaVnos.files[0];
+
+            if (!datoteka) return;
+
+            if (
+                !["image/png", "image/jpeg", "image/webp"]
+                    .includes(datoteka.type) ||
+                datoteka.size > 20 * 1024 * 1024
+            ) {
+                napaka.textContent =
+                    "Izberi sliko PNG, JPEG ali WebP do 20 MiB.";
+                return;
+            }
+
+            status.textContent = "Nalagam sliko ...";
+
+            try {
+                const slika = await naloziSliko(datoteka);
+
+                if (trenutnaRazlicica !== razlicica) return;
+
+                if (!veljavneDimenzije(
+                    slika.naturalWidth,
+                    slika.naturalHeight
+                )) {
+                    throw new Error(
+                        "Slika presega dovoljene dimenzije: " +
+                        "največ 8192 pik na stranico in 16 milijonov pik."
+                    );
+                }
+
+                izvornaSlika = slika;
+                imeDatoteke =
+                    datoteka.name.replace(/\.[^.]+$/, "") || "slika";
+
+                sirina.value = slika.naturalWidth;
+                visina.value = slika.naturalHeight;
+                zadnjePolje = "sirina";
+
+                izvirnik.textContent =
+                    "Izvirne dimenzije: " + slika.naturalWidth +
+                    " × " + slika.naturalHeight + " pik.";
+
+                spremeni.disabled = false;
+                status.textContent = "Slika je naložena.";
+            } catch (napakaBranja) {
+                if (trenutnaRazlicica === razlicica) {
+                    napaka.textContent = napakaBranja.message;
+                    status.textContent = "";
+                }
+            }
+        });
+
+        sirina.addEventListener("input", function () {
+            zadnjePolje = "sirina";
+            prilagodiRazmerje(zadnjePolje);
+            pocistiRezultat();
+        });
+
+        visina.addEventListener("input", function () {
+            zadnjePolje = "visina";
+            prilagodiRazmerje(zadnjePolje);
+            pocistiRezultat();
+        });
+
+        razmerje.addEventListener("change", function () {
+            prilagodiRazmerje(zadnjePolje);
+            pocistiRezultat();
+        });
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            if (!izvornaSlika) {
+                napaka.textContent = "Najprej izberi in naloži sliko.";
+                return;
+            }
+
+            const s = sirina.valueAsNumber;
+            const v = visina.valueAsNumber;
+
+            if (!veljavneDimenzije(s, v)) {
+                napaka.textContent =
+                    "Dimenziji morata biti celi števili od 1 do 8192. " +
+                    "Slika lahko vsebuje največ 16 milijonov pik.";
+                return;
+            }
+
+            const trenutnaRazlicica = razlicica;
+            spremeni.disabled = true;
+            status.textContent = "Spreminjam velikost ...";
+
+            try {
+                const canvas = document.createElement("canvas");
+                canvas.width = s;
+                canvas.height = v;
+
+                const kontekst = canvas.getContext("2d");
+
+                if (!kontekst) {
+                    throw new Error("Brskalnik ne omogoča obdelave slike.");
+                }
+
+                kontekst.imageSmoothingEnabled = true;
+                kontekst.imageSmoothingQuality = "high";
+                kontekst.drawImage(izvornaSlika, 0, 0, s, v);
+
+                canvas.toBlob(function (datoteka) {
+                    if (trenutnaRazlicica !== razlicica) return;
+
+                    spremeni.disabled = false;
+
+                    if (!datoteka) {
+                        napaka.textContent = "Zapis slike ni uspel.";
+                        status.textContent = "";
+                        return;
+                    }
+
+                    rezultatUrl = URL.createObjectURL(datoteka);
+                    predogled.src = rezultatUrl;
+
+                    document.getElementById("dimenzije").textContent =
+                        "Nove dimenzije: " + s + " × " + v + " pik.";
+
+                    izhod.hidden = false;
+                    status.textContent = "Slika je pripravljena.";
+                }, "image/png");
+            } catch (napakaObdelave) {
+                spremeni.disabled = false;
+                napaka.textContent = napakaObdelave.message;
+                status.textContent = "";
+            }
+        });
+
+        document.getElementById("prenesi").addEventListener(
+            "click",
+            function () {
+                if (!rezultatUrl) return;
+
+                const povezava = document.createElement("a");
+                povezava.href = rezultatUrl;
+                povezava.download = imeDatoteke + "_spremenjena.png";
+
+                document.body.appendChild(povezava);
+                povezava.click();
+                povezava.remove();
+            }
+        );
+
+        obrazec.addEventListener("reset", function () {
+            izvornaSlika = null;
+            pocistiRezultat();
+            izvirnik.textContent = "";
+        });
+    </script>
+</body>
+</html>

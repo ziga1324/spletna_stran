@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pretvornik formatov slik</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Pretvornik formatov slik</h1>
+        <p>Izberi sliko in jo prenesi v drugem formatu.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="slika">Izberi sliko PNG, JPEG ali WebP</label>
+                <input
+                    type="file"
+                    id="slika"
+                    accept="image/png,image/jpeg,image/webp"
+                    required
+                >
+
+                <label for="format">Izhodni format</label>
+                <select id="format">
+                    <option value="image/png">PNG</option>
+                    <option value="image/jpeg">JPEG</option>
+                    <option value="image/webp">WebP</option>
+                </select>
+
+                <div id="nastavitev-kakovosti" hidden>
+                    <label for="kakovost">
+                        Kakovost:
+                        <span id="kakovost-prikaz">90</span> %
+                    </label>
+                    <input
+                        type="range"
+                        id="kakovost"
+                        min="10"
+                        max="100"
+                        value="90"
+                    >
+                </div>
+
+                <p id="opomba-formata">
+                    PNG podpira prosojnost. Nastavitev kakovosti zanj ne velja.
+                </p>
+
+                <div class="gumbi">
+                    <button type="submit" id="pretvori">Pretvori sliko</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div id="izhod" class="rezultat" hidden>
+                <h2>Pretvorjena slika</h2>
+                <p id="podatki"></p>
+                <p id="velikost"></p>
+
+                <img
+                    id="predogled"
+                    alt="Predogled pretvorjene slike"
+                    style="display: block; max-width: 100%;
+                           height: auto; margin: 16px auto;"
+                >
+
+                <button type="button" id="prenesi">Prenesi sliko</button>
+            </div>
+
+            <p id="status" role="status"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p>
+                Slika se ponovno zapiše v izbranem formatu.
+                Dimenzije ostanejo enake, velikost datoteke pa se lahko spremeni.
+            </p>
+
+            <p>
+                PNG in WebP podpirata prosojnost.
+                Pri pretvorbi v JPEG se prosojni deli zapolnijo z belo barvo.
+            </p>
+
+            <p>
+                Pretvorba v PNG ne povrne podrobnosti, ki so bile
+                izgubljene pri predhodnem stiskanju slike.
+                Animacije in izvirni metapodatki se ne ohranijo.
+            </p>
+
+            <p>
+                Obdelava poteka v brskalniku.
+                Podprte so slike do 20 MiB in 16 milijonov pik,
+                s stranicama do 8192 pik.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const slikaVnos = document.getElementById("slika");
+        const format = document.getElementById("format");
+        const kakovost = document.getElementById("kakovost");
+        const pretvoriGumb = document.getElementById("pretvori");
+
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+        const izhod = document.getElementById("izhod");
+        const predogled = document.getElementById("predogled");
+
+        const formati = {
+            "image/png": { ime: "PNG", koncnica: ".png" },
+            "image/jpeg": { ime: "JPEG", koncnica: ".jpg" },
+            "image/webp": { ime: "WebP", koncnica: ".webp" }
+        };
+
+        let rezultatUrl = null;
+        let imePrenosa = "";
+        let razlicica = 0;
+
+        function prikaziNastavitve() {
+            const png = format.value === "image/png";
+
+            document.getElementById("nastavitev-kakovosti").hidden = png;
+            document.getElementById("kakovost-prikaz").textContent =
+                kakovost.value;
+
+            document.getElementById("opomba-formata").textContent =
+                png
+                    ? "PNG podpira prosojnost. Nastavitev kakovosti zanj ne velja."
+                    : format.value === "image/jpeg"
+                        ? "JPEG ne podpira prosojnosti. Prosojni deli bodo beli."
+                        : "WebP podpira prosojnost in nastavitev kakovosti.";
+        }
+
+        function pocistiRezultat() {
+            razlicica++;
+
+            if (rezultatUrl) URL.revokeObjectURL(rezultatUrl);
+
+            rezultatUrl = null;
+            predogled.removeAttribute("src");
+            izhod.hidden = true;
+            napaka.textContent = "";
+            status.textContent = "";
+            pretvoriGumb.disabled = false;
+        }
+
+        function zapisVelikosti(bajti) {
+            if (bajti < 1024) return bajti + " B";
+
+            const faktor = bajti < 1024 ** 2 ? 1024 : 1024 ** 2;
+            const enota = bajti < 1024 ** 2 ? " KiB" : " MiB";
+
+            return (bajti / faktor).toLocaleString("sl-SI", {
+                maximumFractionDigits: 2
+            }) + enota;
+        }
+
+        function naloziSliko(datoteka) {
+            return new Promise(function (resolve, reject) {
+                const url = URL.createObjectURL(datoteka);
+                const slika = new Image();
+
+                slika.onload = function () {
+                    URL.revokeObjectURL(url);
+                    resolve(slika);
+                };
+
+                slika.onerror = function () {
+                    URL.revokeObjectURL(url);
+                    reject(new Error("Slike ni mogoče odpreti."));
+                };
+
+                slika.src = url;
+            });
+        }
+
+        function zapisiSliko(canvas, tip, kakovost) {
+            return new Promise(function (resolve, reject) {
+                canvas.toBlob(function (datoteka) {
+                    if (datoteka) resolve(datoteka);
+                    else reject(new Error("Zapis slike ni uspel."));
+                }, tip, kakovost);
+            });
+        }
+
+        obrazec.addEventListener("input", function () {
+            prikaziNastavitve();
+            pocistiRezultat();
+        });
+
+        obrazec.addEventListener("submit", async function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const datoteka = slikaVnos.files[0];
+            const izbraniFormat = format.value;
+            const izbranaKakovost = Number(kakovost.value) / 100;
+            const trenutnaRazlicica = razlicica;
+
+            if (!datoteka || !formati[datoteka.type]) {
+                napaka.textContent = "Izberi sliko PNG, JPEG ali WebP.";
+                return;
+            }
+
+            if (datoteka.size > 20 * 1024 * 1024) {
+                napaka.textContent = "Slika je lahko velika največ 20 MiB.";
+                return;
+            }
+
+            pretvoriGumb.disabled = true;
+            status.textContent = "Pretvarjam sliko ...";
+
+            try {
+                const slika = await naloziSliko(datoteka);
+
+                if (trenutnaRazlicica !== razlicica) return;
+
+                const sirina = slika.naturalWidth;
+                const visina = slika.naturalHeight;
+
+                if (
+                    sirina <= 0 ||
+                    visina <= 0 ||
+                    sirina > 8192 ||
+                    visina > 8192 ||
+                    sirina * visina > 16000000
+                ) {
+                    throw new Error(
+                        "Največje dovoljene dimenzije so 8192 pik " +
+                        "na stranico in 16 milijonov pik skupaj."
+                    );
+                }
+
+                const canvas = document.createElement("canvas");
+                canvas.width = sirina;
+                canvas.height = visina;
+
+                const kontekst = canvas.getContext("2d");
+
+                if (!kontekst) {
+                    throw new Error("Brskalnik ne omogoča obdelave slike.");
+                }
+
+                if (izbraniFormat === "image/jpeg") {
+                    kontekst.fillStyle = "#ffffff";
+                    kontekst.fillRect(0, 0, sirina, visina);
+                }
+
+                kontekst.drawImage(slika, 0, 0);
+
+                const pretvorjena = await zapisiSliko(
+                    canvas,
+                    izbraniFormat,
+                    izbranaKakovost
+                );
+
+                if (trenutnaRazlicica !== razlicica) return;
+
+                if (pretvorjena.type !== izbraniFormat) {
+                    throw new Error(
+                        "Brskalnik ne podpira izbranega izhodnega formata."
+                    );
+                }
+
+                rezultatUrl = URL.createObjectURL(pretvorjena);
+                predogled.src = rezultatUrl;
+
+                const osnovnoIme =
+                    datoteka.name.replace(/\.[^.]+$/, "") || "slika";
+
+                imePrenosa = osnovnoIme + "_pretvorjena" +
+                    formati[izbraniFormat].koncnica;
+
+                document.getElementById("podatki").textContent =
+                    "Format: " + formati[izbraniFormat].ime +
+                    " | Dimenzije: " + sirina + " × " + visina + " pik.";
+
+                document.getElementById("velikost").textContent =
+                    "Izvirnik: " + zapisVelikosti(datoteka.size) +
+                    " | Rezultat: " + zapisVelikosti(pretvorjena.size);
+
+                izhod.hidden = false;
+                status.textContent = "Pretvorba je končana.";
+            } catch (napakaObdelave) {
+                if (trenutnaRazlicica === razlicica) {
+                    napaka.textContent = napakaObdelave.message;
+                    status.textContent = "";
+                }
+            } finally {
+                if (trenutnaRazlicica === razlicica) {
+                    pretvoriGumb.disabled = false;
+                }
+            }
+        });
+
+        document.getElementById("prenesi").addEventListener(
+            "click",
+            function () {
+                if (!rezultatUrl) return;
+
+                const povezava = document.createElement("a");
+                povezava.href = rezultatUrl;
+                povezava.download = imePrenosa;
+
+                document.body.appendChild(povezava);
+                povezava.click();
+                povezava.remove();
+            }
+        );
+
+        obrazec.addEventListener("reset", function () {
+            pocistiRezultat();
+            setTimeout(prikaziNastavitve, 0);
+        });
+
+        prikaziNastavitve();
+    </script>
+</body>
+</html>

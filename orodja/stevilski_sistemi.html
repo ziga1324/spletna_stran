@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pretvornik številskih sistemov</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Pretvornik številskih sistemov</h1>
+        <p>Pretvori celo število med različnimi številskimi sistemi.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="stevilo">Število</label>
+                <input
+                    type="text"
+                    id="stevilo"
+                    maxlength="1001"
+                    placeholder="Na primer: 101010"
+                    aria-describedby="navodilo"
+                    autocomplete="off"
+                    spellcheck="false"
+                    required
+                >
+
+                <label for="iz">Iz sistema</label>
+                <select id="iz">
+                    <option value="2">Dvojiški (osnova 2)</option>
+                    <option value="8">Osmiški (osnova 8)</option>
+                    <option value="10">Desetiški (osnova 10)</option>
+                    <option value="16">Šestnajstiški (osnova 16)</option>
+                </select>
+
+                <label for="v">V sistem</label>
+                <select id="v">
+                    <option value="2">Dvojiški (osnova 2)</option>
+                    <option value="8">Osmiški (osnova 8)</option>
+                    <option value="10" selected>Desetiški (osnova 10)</option>
+                    <option value="16">Šestnajstiški (osnova 16)</option>
+                </select>
+
+                <p id="navodilo">
+                    Vnesi celo število brez predpon 0b, 0o ali 0x.
+                    Dovoljen je začetni minus. Za šestnajstiški zapis
+                    lahko uporabiš velike ali male črke A–F.
+                </p>
+
+                <div class="gumbi">
+                    <button type="submit">Pretvori</button>
+                    <button type="button" id="zamenjaj">
+                        Zamenjaj sistema
+                    </button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div id="izhod" class="rezultat" hidden>
+                <h2>Rezultat</h2>
+
+                <label for="rezultat">Pretvorjeno število</label>
+                <textarea
+                    id="rezultat"
+                    rows="4"
+                    readonly
+                    spellcheck="false"
+                    style="font-family: monospace; overflow-wrap: anywhere;"
+                ></textarea>
+
+                <button type="button" id="kopiraj">
+                    Kopiraj rezultat
+                </button>
+
+                <h3>Vsi sistemi</h3>
+                <div id="vsi-sistemi" style="overflow-wrap: anywhere;"></div>
+            </div>
+
+            <p id="status" role="status"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <ul>
+                <li>Dvojiški sistem uporablja števki 0 in 1.</li>
+                <li>Osmiški sistem uporablja števke od 0 do 7.</li>
+                <li>Desetiški sistem uporablja števke od 0 do 9.</li>
+                <li>
+                    Šestnajstiški sistem uporablja števke 0–9
+                    in črke A–F.
+                </li>
+            </ul>
+
+            <p>
+                Primer: 101010 v dvojiškem sistemu je
+                <strong>42</strong> v desetiškem,
+                <strong>52</strong> v osmiškem in
+                <strong>2A</strong> v šestnajstiškem.
+            </p>
+
+            <p>
+                Negativna števila so zapisana z minusom.
+                Orodje ne uporablja dvojiškega komplementa.
+                Decimalni ulomki niso podprti.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const steviloVnos = document.getElementById("stevilo");
+        const iz = document.getElementById("iz");
+        const v = document.getElementById("v");
+
+        const napaka = document.getElementById("napaka");
+        const izhod = document.getElementById("izhod");
+        const rezultat = document.getElementById("rezultat");
+        const vsiSistemi = document.getElementById("vsi-sistemi");
+        const status = document.getElementById("status");
+
+        const sistemi = {
+            2: { ime: "Dvojiški", vzorec: /^[01]+$/ },
+            8: { ime: "Osmiški", vzorec: /^[0-7]+$/ },
+            10: { ime: "Desetiški", vzorec: /^[0-9]+$/ },
+            16: { ime: "Šestnajstiški", vzorec: /^[0-9A-F]+$/i }
+        };
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            status.textContent = "";
+            rezultat.value = "";
+            vsiSistemi.replaceChildren();
+            izhod.hidden = true;
+        }
+
+        function preberiStevilo(vnos, osnova) {
+            const besedilo = vnos.trim();
+            const negativno = besedilo.startsWith("-");
+            const stevke = negativno ? besedilo.slice(1) : besedilo;
+
+            if (
+                stevke.length === 0 ||
+                stevke.length > 1000 ||
+                !sistemi[osnova].vzorec.test(stevke)
+            ) {
+                throw new Error(
+                    "Vnesi veljavno celo število za izbrani sistem " +
+                    "z največ 1000 števkami in brez predpone."
+                );
+            }
+
+            const baza = BigInt(osnova);
+            let vrednost = 0n;
+
+            for (const znak of stevke.toUpperCase()) {
+                const stevka = "0123456789ABCDEF".indexOf(znak);
+                vrednost = vrednost * baza + BigInt(stevka);
+            }
+
+            return negativno ? -vrednost : vrednost;
+        }
+
+        function zapis(vrednost, osnova) {
+            return vrednost.toString(osnova).toUpperCase();
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        document.getElementById("zamenjaj").addEventListener(
+            "click",
+            function () {
+                const prejsnjiSistem = iz.value;
+                iz.value = v.value;
+                v.value = prejsnjiSistem;
+
+                pocistiRezultat();
+                status.textContent =
+                    "Sistema sta zamenjana. Preveri zapis vnesenega števila.";
+            }
+        );
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            try {
+                const vrednost = preberiStevilo(
+                    steviloVnos.value,
+                    Number(iz.value)
+                );
+
+                rezultat.value = zapis(vrednost, Number(v.value));
+
+                Object.entries(sistemi).forEach(function ([osnova, sistem]) {
+                    const vrstica = document.createElement("p");
+                    const oznaka = document.createElement("strong");
+                    const koda = document.createElement("code");
+
+                    oznaka.textContent =
+                        sistem.ime + " (osnova " + osnova + "): ";
+
+                    koda.textContent = zapis(vrednost, Number(osnova));
+
+                    vrstica.append(oznaka, koda);
+                    vsiSistemi.appendChild(vrstica);
+                });
+
+                izhod.hidden = false;
+                status.textContent = "Pretvorba je končana.";
+            } catch (napakaIzracuna) {
+                napaka.textContent = napakaIzracuna.message;
+            }
+        });
+
+        document.getElementById("kopiraj").addEventListener(
+            "click",
+            async function () {
+                if (izhod.hidden) return;
+
+                try {
+                    await navigator.clipboard.writeText(rezultat.value);
+                    status.textContent = "Rezultat je kopiran.";
+                } catch {
+                    rezultat.focus();
+                    rezultat.select();
+
+                    status.textContent =
+                        "Rezultat je označen. Uporabi Ctrl+C oziroma Cmd+C.";
+                }
+            }
+        );
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+    </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pretvornik podatkovnih enot</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <a href="index.html">← Vsa orodja</a>
+        <h1>Pretvornik podatkovnih enot</h1>
+        <p>Pretvori velikost podatkov med biti, bajti in večjimi enotami.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <form id="obrazec">
+                <label for="velikost">Velikost podatkov</label>
+                <input
+                    type="number"
+                    id="velikost"
+                    min="0"
+                    step="any"
+                    placeholder="Na primer: 1024"
+                    required
+                >
+
+                <label for="iz">Iz enote</label>
+                <select id="iz"></select>
+
+                <label for="v">V enoto</label>
+                <select id="v"></select>
+
+                <div class="gumbi">
+                    <button type="submit">Pretvori</button>
+                    <button type="button" id="zamenjaj">Zamenjaj enoti</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <div
+                id="rezultat"
+                class="rezultat"
+                aria-live="polite"
+                style="overflow-wrap: anywhere;"
+            ></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+
+            <p><strong>1 bajt (B) = 8 bitov (b).</strong></p>
+
+            <p>
+                Decimalne enote uporabljajo faktor 1.000:
+                1 kB = 1.000 B, 1 MB = 1.000.000 B,
+                1 GB = 1.000.000.000 B.
+            </p>
+
+            <p>
+                Binarne enote uporabljajo faktor 1.024:
+                1 KiB = 1.024 B, 1 MiB = 1.048.576 B,
+                1 GiB = 1.073.741.824 B.
+            </p>
+
+            <p>
+                Primer: 1.024 MiB = <strong>1 GiB</strong>,
+                medtem ko 1.000 MB = <strong>1 GB</strong>.
+                MB in MiB nista enaki enoti.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const obrazec = document.getElementById("obrazec");
+        const velikostVnos = document.getElementById("velikost");
+        const iz = document.getElementById("iz");
+        const v = document.getElementById("v");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        // Faktor pomeni število bajtov v eni enoti.
+        const enote = {
+            bit: { ime: "Bit", oznaka: "b", faktor: 1 / 8 },
+            B:   { ime: "Bajt", oznaka: "B", faktor: 1 },
+            kB:  { ime: "Kilobajt", oznaka: "kB", faktor: 1000 },
+            MB:  { ime: "Megabajt", oznaka: "MB", faktor: 1000 ** 2 },
+            GB:  { ime: "Gigabajt", oznaka: "GB", faktor: 1000 ** 3 },
+            TB:  { ime: "Terabajt", oznaka: "TB", faktor: 1000 ** 4 },
+            KiB: { ime: "Kibibajt", oznaka: "KiB", faktor: 1024 },
+            MiB: { ime: "Mebibajt", oznaka: "MiB", faktor: 1024 ** 2 },
+            GiB: { ime: "Gibibajt", oznaka: "GiB", faktor: 1024 ** 3 },
+            TiB: { ime: "Tebibajt", oznaka: "TiB", faktor: 1024 ** 4 }
+        };
+
+        const oblikovanje = new Intl.NumberFormat("sl-SI", {
+            maximumSignificantDigits: 12
+        });
+
+        function zapis(stevilo) {
+            return oblikovanje.format(stevilo);
+        }
+
+        function napolniEnote(izbira, privzeta) {
+            Object.entries(enote).forEach(function ([kljuc, enota]) {
+                const moznost = document.createElement("option");
+
+                moznost.value = kljuc;
+                moznost.textContent =
+                    enota.ime + " (" + enota.oznaka + ")";
+
+                moznost.defaultSelected = kljuc === privzeta;
+                izbira.appendChild(moznost);
+            });
+        }
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function pretvori(velikost, izEnote, vEnoto) {
+            if (izEnote === vEnoto) return velikost;
+
+            const faktor =
+                enote[izEnote].faktor / enote[vEnoto].faktor;
+
+            const vrednost = velikost * faktor;
+
+            if (
+                !Number.isFinite(vrednost) ||
+                (velikost > 0 && vrednost === 0)
+            ) {
+                throw new Error(
+                    "Pretvorba je zunaj podprtega številskega obsega."
+                );
+            }
+
+            return vrednost;
+        }
+
+        function dodajBesedilo(besedilo, oznaka = "p") {
+            const element = document.createElement(oznaka);
+            element.textContent = besedilo;
+            rezultat.appendChild(element);
+        }
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        document.getElementById("zamenjaj").addEventListener(
+            "click",
+            function () {
+                const prejsnjaEnota = iz.value;
+                iz.value = v.value;
+                v.value = prejsnjaEnota;
+                pocistiRezultat();
+            }
+        );
+
+        obrazec.addEventListener("submit", function (dogodek) {
+            dogodek.preventDefault();
+            pocistiRezultat();
+
+            const velikost = velikostVnos.valueAsNumber;
+
+            if (!Number.isFinite(velikost) || velikost < 0) {
+                napaka.textContent =
+                    "Vnesi veljavno nenegativno velikost podatkov.";
+                return;
+            }
+
+            try {
+                const vrednost = pretvori(
+                    velikost,
+                    iz.value,
+                    v.value
+                );
+
+                dodajBesedilo(
+                    "Rezultat: " + zapis(vrednost) +
+                    " " + enote[v.value].oznaka,
+                    "h2"
+                );
+
+                dodajBesedilo(
+                    zapis(velikost) + " " + enote[iz.value].oznaka +
+                    " ≈ " + zapis(vrednost) + " " +
+                    enote[v.value].oznaka
+                );
+
+                dodajBesedilo("Vse pretvorbe", "h3");
+
+                const seznam = document.createElement("ul");
+
+                Object.entries(enote).forEach(function ([kljuc, enota]) {
+                    const vrstica = document.createElement("li");
+
+                    try {
+                        const pretvorjena = pretvori(
+                            velikost,
+                            iz.value,
+                            kljuc
+                        );
+
+                        vrstica.textContent =
+                            enota.ime + ": " +
+                            zapis(pretvorjena) + " " + enota.oznaka;
+                    } catch {
+                        vrstica.textContent =
+                            enota.ime + ": zunaj podprtega obsega.";
+                    }
+
+                    seznam.appendChild(vrstica);
+                });
+
+                rezultat.appendChild(seznam);
+
+                dodajBesedilo(
+                    "Prikaz je zaokrožen na največ 12 pomembnih števk."
+                );
+            } catch (napakaIzracuna) {
+                napaka.textContent = napakaIzracuna.message;
+            }
+        });
+
+        obrazec.addEventListener("reset", pocistiRezultat);
+
+        napolniEnote(iz, "MiB");
+        napolniEnote(v, "GiB");
+    </script>
+</body>
+</html>
