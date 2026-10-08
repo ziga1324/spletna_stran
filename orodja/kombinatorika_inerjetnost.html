@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Kalkulator fakultete, permutacij, variacij, kombinacij in verjetnosti.">
+    <title>Kombinatorika in verjetnost</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Kombinatorika in verjetnost</h1>
+        <p>Izračunaj število možnih razporeditev ali verjetnost dogodka.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Kalkulator</h2>
+
+            <form id="obrazec">
+                <label for="operacija">Vrsta izračuna</label>
+                <select id="operacija">
+                    <option value="fakulteta">Fakulteta oziroma permutacije: n!</option>
+                    <option value="variacije">Variacije brez ponavljanja</option>
+                    <option value="variacije-ponavljanje">Variacije s ponavljanjem</option>
+                    <option value="kombinacije">Kombinacije brez ponavljanja</option>
+                    <option value="kombinacije-ponavljanje">Kombinacije s ponavljanjem</option>
+                    <option value="verjetnost">Verjetnost pri enako verjetnih izidih</option>
+                </select>
+
+                <p id="razlaga-operacije"></p>
+
+                <label id="oznaka-n" for="n">Število elementov n</label>
+                <input id="n" type="number" min="0" max="1000"
+                       step="1" value="5" required>
+
+                <div id="polje-k" hidden>
+                    <label id="oznaka-k" for="k">Število izbranih elementov k</label>
+                    <input id="k" type="number" min="0" max="1000"
+                           step="1" value="2" disabled>
+                </div>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Ponastavi</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <div id="rezultat" class="rezultat" aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Katero možnost izbrati?</h2>
+            <ul>
+                <li>
+                    <strong>Permutacije:</strong> razporejaš vseh n različnih
+                    elementov. Vrstni red je pomemben.
+                </li>
+                <li>
+                    <strong>Variacije:</strong> izbiraš k elementov in
+                    upoštevaš njihov vrstni red.
+                </li>
+                <li>
+                    <strong>Kombinacije:</strong> izbiraš k elementov,
+                    njihov vrstni red pa ni pomemben.
+                </li>
+                <li>
+                    <strong>S ponavljanjem:</strong> isti element lahko
+                    izbereš večkrat.
+                </li>
+                <li>
+                    <strong>Verjetnost:</strong> število ugodnih izidov
+                    deliš s številom vseh izidov, kadar so vsi enako verjetni.
+                </li>
+            </ul>
+
+            <p>
+                Primer: izbira dveh oseb iz skupine petih je kombinacija.
+                Izbira predsednika in namestnika iz iste skupine je variacija.
+            </p>
+            <p>
+                Vnosi so omejeni na cela števila od 0 do 1000.
+                Kombinatorični rezultati so izračunani natančno z BigInt.
+                Odstotek verjetnosti je zaokrožen na največ šest decimalnih mest.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Kombinatorika in verjetnost</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const operacija = document.getElementById("operacija");
+        const nVnos = document.getElementById("n");
+        const kVnos = document.getElementById("k");
+        const poljeK = document.getElementById("polje-k");
+        const oznakaN = document.getElementById("oznaka-n");
+        const oznakaK = document.getElementById("oznaka-k");
+        const razlaga = document.getElementById("razlaga-operacije");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const opisi = {
+            fakulteta:
+                "Razporeditve vseh n različnih elementov: n!.",
+            variacije:
+                "Vrstni red je pomemben, ponavljanje ni dovoljeno: n! / (n − k)!.",
+            "variacije-ponavljanje":
+                "Vrstni red je pomemben, ponavljanje je dovoljeno: n^k.",
+            kombinacije:
+                "Vrstni red ni pomemben, ponavljanje ni dovoljeno: n! / (k! × (n − k)!).",
+            "kombinacije-ponavljanje":
+                "Vrstni red ni pomemben, ponavljanje je dovoljeno: C(n + k − 1, k).",
+            verjetnost:
+                "Vsi izidi morajo biti enako verjetni: ugodni izidi / vsi izidi."
+        };
+
+        function pocisti() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function posodobi() {
+            const izbira = operacija.value;
+            const potrebujeK = izbira !== "fakulteta";
+            const verjetnost = izbira === "verjetnost";
+
+            poljeK.hidden = !potrebujeK;
+            kVnos.disabled = !potrebujeK;
+            kVnos.required = potrebujeK;
+            nVnos.min = verjetnost ? "1" : "0";
+
+            oznakaN.textContent = verjetnost
+                ? "Število vseh izidov"
+                : "Število elementov n";
+
+            oznakaK.textContent = verjetnost
+                ? "Število ugodnih izidov"
+                : "Število izbranih elementov k";
+
+            razlaga.textContent = opisi[izbira];
+            pocisti();
+        }
+
+        function preberi(vnos, ime) {
+            const vrednost = vnos.valueAsNumber;
+
+            if (!Number.isInteger(vrednost) ||
+                vrednost < 0 || vrednost > 1000) {
+                throw new Error(
+                    ime + " mora biti celo število od 0 do 1000."
+                );
+            }
+
+            return vrednost;
+        }
+
+        function fakulteta(n) {
+            let produkt = 1n;
+
+            for (let i = 2; i <= n; i++) {
+                produkt *= BigInt(i);
+            }
+
+            return produkt;
+        }
+
+        function variacije(n, k) {
+            let produkt = 1n;
+
+            for (let i = 0; i < k; i++) {
+                produkt *= BigInt(n - i);
+            }
+
+            return produkt;
+        }
+
+        function kombinacije(n, k) {
+            if (k > n) return 0n;
+
+            k = Math.min(k, n - k);
+            let vrednost = 1n;
+
+            for (let i = 1; i <= k; i++) {
+                vrednost =
+                    vrednost * BigInt(n - k + i) / BigInt(i);
+            }
+
+            return vrednost;
+        }
+
+        function najvecjiSkupniDelitelj(a, b) {
+            while (b !== 0n) {
+                [a, b] = [b, a % b];
+            }
+
+            return a;
+        }
+
+        function dodajOdstavek(besedilo, razred) {
+            const p = document.createElement("p");
+            p.textContent = besedilo;
+            if (razred) p.className = razred;
+            rezultat.appendChild(p);
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            try {
+                const izbira = operacija.value;
+                const n = preberi(nVnos, "n");
+                const k = izbira === "fakulteta"
+                    ? 0
+                    : preberi(kVnos, "k");
+
+                if (izbira === "verjetnost") {
+                    if (n === 0) {
+                        throw new Error(
+                            "Število vseh izidov mora biti večje od 0."
+                        );
+                    }
+
+                    if (k > n) {
+                        throw new Error(
+                            "Ugodnih izidov ne more biti več kot vseh izidov."
+                        );
+                    }
+
+                    const delitelj = najvecjiSkupniDelitelj(
+                        BigInt(k), BigInt(n)
+                    );
+                    const stevec = BigInt(k) / delitelj;
+                    const imenovalec = BigInt(n) / delitelj;
+                    const odstotek = k / n * 100;
+
+                    dodajOdstavek(
+                        `P = ${k}/${n} = ${stevec}/${imenovalec}`
+                    );
+
+                    dodajOdstavek(
+                        odstotek.toLocaleString("sl-SI", {
+                            maximumFractionDigits: 6
+                        }) + " %",
+                        "kombinatorika-stevilo"
+                    );
+
+                    return;
+                }
+
+                if (["variacije", "kombinacije"].includes(izbira) &&
+                    k > n) {
+                    throw new Error(
+                        "Pri izbiri brez ponavljanja mora biti k manjši ali enak n."
+                    );
+                }
+
+                let vrednost;
+                let formula;
+
+                switch (izbira) {
+                    case "fakulteta":
+                        vrednost = fakulteta(n);
+                        formula = `${n}!`;
+                        break;
+
+                    case "variacije":
+                        vrednost = variacije(n, k);
+                        formula = `${n}! / (${n} − ${k})!`;
+                        break;
+
+                    case "variacije-ponavljanje":
+                        // Prazna izbira ima eno možnost, tudi pri n = 0.
+                        vrednost = BigInt(n) ** BigInt(k);
+                        formula = `${n}^${k}`;
+                        break;
+
+                    case "kombinacije":
+                        vrednost = kombinacije(n, k);
+                        formula = `C(${n}, ${k})`;
+                        break;
+
+                    case "kombinacije-ponavljanje":
+                        vrednost = k === 0
+                            ? 1n
+                            : n === 0
+                                ? 0n
+                                : kombinacije(n + k - 1, k);
+                        formula = n === 0 || k === 0
+                            ? `Izbira ${k} elementov iz ${n} vrst s ponavljanjem`
+                            : `C(${n + k - 1}, ${k})`;
+                        break;
+                }
+
+                dodajOdstavek("Izračun: " + formula);
+                dodajOdstavek(
+                    vrednost.toString(),
+                    "kombinatorika-stevilo"
+                );
+                dodajOdstavek("Rezultat predstavlja število možnosti.");
+            } catch (error) {
+                napaka.textContent = error.message;
+            }
+        });
+
+        operacija.addEventListener("change", posodobi);
+        nVnos.addEventListener("input", pocisti);
+        kVnos.addEventListener("input", pocisti);
+
+        obrazec.addEventListener("reset", () => {
+            setTimeout(posodobi, 0);
+        });
+
+        posodobi();
+    </script>
+</body>
+</html>

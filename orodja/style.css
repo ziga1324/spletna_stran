@@ -1,49 +1,175 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+
+:root {
+    --text: #172b46;
+    --muted: #61718a;
+    --accent: #007e91;
+    --accent-dark: #005e73;
+    --purple: #7958df;
+    --border: rgb(255 255 255 / 80%);
+    --radius: 24px;
+    --shadow: 0 20px 60px rgb(42 64 115 / 10%);
+}
+
 * {
     box-sizing: border-box;
 }
 
+html {
+    min-height: 100%;
+    background: #edf2fc;
+}
+
 body {
+    position: relative;
+    isolation: isolate;
     margin: 0;
     min-height: 100vh;
-    font-family: Arial, Helvetica, sans-serif;
-    line-height: 1.6;
-    color: #142c43;
-    background: #f4f6f8;
+    font-family: "Manrope", Arial, Helvetica, sans-serif;
+    line-height: 1.7;
+    color: var(--text);
+    background: transparent;
+}
+
+/* Animirano ozadje */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    pointer-events: none;
+    z-index: -1;
+}
+
+body::before {
+    inset: -25%;
+    background:
+        radial-gradient(
+            ellipse at 20% 25%,
+            rgb(124 100 255 / 24%),
+            transparent 42%
+        ),
+        radial-gradient(
+            ellipse at 80% 30%,
+            rgb(0 199 208 / 23%),
+            transparent 40%
+        ),
+        radial-gradient(
+            ellipse at 55% 80%,
+            rgb(255 166 204 / 25%),
+            transparent 45%
+        ),
+        radial-gradient(
+            ellipse at 15% 85%,
+            rgb(141 184 255 / 24%),
+            transparent 38%
+        );
+    animation: aurora 24s ease-in-out infinite alternate;
+    transition: filter 1.2s ease;
+}
+
+body::after {
+    inset: 0;
+    background-image:
+        linear-gradient(rgb(96 115 160 / 5%) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(96 115 160 / 5%) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: linear-gradient(to bottom, black, transparent 90%);
+}
+
+body:has(.kalkulator:hover)::before {
+    filter: hue-rotate(30deg) saturate(1.3);
+}
+
+body:has(.razlaga:hover)::before {
+    filter: hue-rotate(-20deg);
+}
+
+@keyframes aurora {
+    0% {
+        transform: translate(-2%, -2%) rotate(-4deg) scale(1);
+    }
+    50% {
+        transform: translate(3%, 1%) rotate(3deg) scale(1.08);
+    }
+    100% {
+        transform: translate(-1%, 4%) rotate(-2deg) scale(1.03);
+    }
+}
+
+::selection {
+    color: #fff;
+    background: #7958df;
 }
 
 header,
 main,
 footer {
-    width: min(100% - 32px, 800px);
+    width: min(calc(100% - 40px), 880px);
     margin: 0 auto;
 }
 
 header {
-    padding: 40px 0 24px;
+    padding: 64px 0 32px;
+    animation: prihod 0.7s ease-out both;
 }
 
 header a {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    padding: 9px 15px;
     margin-bottom: 16px;
-    color: #087f8c;
-    font-weight: bold;
+    border: 1px solid rgb(255 255 255 / 80%);
+    border-radius: 100px;
+    color: var(--accent-dark);
+    background: rgb(255 255 255 / 55%);
+    font-weight: 700;
     text-decoration: none;
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 header a:hover {
-    text-decoration: underline;
+    transform: translateX(-4px);
+    background: rgb(255 255 255 / 90%);
+    box-shadow: 0 6px 20px rgb(42 64 115 / 8%);
 }
 
 h1 {
-    margin: 0 0 12px;
-    font-size: clamp(28px, 5vw, 40px);
-    line-height: 1.2;
+    margin: 0 0 16px;
+    font-size: clamp(32px, 5.5vw, 52px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.045em;
+    color: var(--text);
+}
+
+@supports (background-clip: text) {
+    h1 {
+        background: linear-gradient(
+            110deg,
+            #172b46 5%,
+            #007e91 50%,
+            #7958df 95%
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    }
 }
 
 h2 {
-    margin: 0 0 12px;
-    font-size: 24px;
+    margin: 0 0 16px;
+    font-size: 25px;
+    font-weight: 800;
     line-height: 1.3;
+    letter-spacing: -0.025em;
+}
+
+h3 {
+    margin: 0 0 12px;
+    line-height: 1.4;
 }
 
 p {
@@ -51,125 +177,336 @@ p {
 }
 
 header p {
-    color: #536575;
+    max-width: 650px;
+    font-size: 17px;
+    color: var(--muted);
 }
 
+a {
+    color: var(--accent-dark);
+    text-underline-offset: 4px;
+}
+
+/* Prosojne kartice */
 .kalkulator,
 .razlaga {
-    margin-bottom: 24px;
-    padding: 28px;
-    background: #ffffff;
-    border: 1px solid #dce5ea;
-    border-radius: 14px;
-    box-shadow: 0 4px 16px rgb(20 44 67 / 5%);
+    position: relative;
+    margin-bottom: 28px;
+    padding: 34px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: rgb(255 255 255 / 87%);
+    box-shadow: var(--shadow);
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+    animation: prihod 0.7s ease-out both;
+}
+
+.razlaga {
+    animation-delay: 0.1s;
+}
+
+@supports (backdrop-filter: blur(18px)) {
+    .kalkulator,
+    .razlaga {
+        background: rgb(255 255 255 / 65%);
+        backdrop-filter: blur(18px);
+    }
+}
+
+.kalkulator::before,
+.razlaga::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 28px;
+    right: 28px;
+    height: 2px;
+    border-radius: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #64d3dc,
+        #ad99f1,
+        transparent
+    );
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .kalkulator:hover,
+    .razlaga:hover {
+        transform: translateY(-3px);
+        border-color: rgb(121 88 223 / 25%);
+        box-shadow:
+            0 28px 70px rgb(42 64 115 / 13%),
+            0 0 35px rgb(102 214 222 / 8%);
+    }
+
+    .kalkulator:hover::before,
+    .razlaga:hover::before {
+        opacity: 1;
+    }
+}
+
+@keyframes prihod {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 form {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
 }
 
 label {
-    font-weight: bold;
+    font-size: 14px;
+    font-weight: 800;
+    color: #30445f;
 }
 
-input {
+input,
+textarea,
+select {
     width: 100%;
     min-width: 0;
     padding: 14px 16px;
-    border: 1px solid #a8b8c5;
-    border-radius: 8px;
+    border: 1px solid #cbd5e4;
+    border-radius: 12px;
     font: inherit;
-    color: #142c43;
-    background: #ffffff;
+    color: var(--text);
+    background: rgb(255 255 255 / 85%);
+    box-shadow: inset 0 2px 4px rgb(42 64 115 / 3%);
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
 }
 
-input::placeholder {
-    color: #687887;
+textarea {
+    display: block;
+    min-height: 120px;
+    resize: vertical;
 }
 
-input:focus {
-    border-color: #087f8c;
+select {
+    cursor: pointer;
 }
 
-input[aria-invalid="true"] {
+input::placeholder,
+textarea::placeholder {
+    color: #77869b;
+}
+
+input:hover,
+textarea:hover,
+select:hover {
+    border-color: #8eafbd;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--accent);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgb(0 126 145 / 9%);
+}
+
+input[aria-invalid="true"],
+textarea[aria-invalid="true"] {
     border-color: #b42318;
     background: #fff8f7;
 }
 
-#navodilo {
-    margin: 0 0 8px;
-    font-size: 14px;
-    color: #536575;
+input:disabled,
+textarea:disabled,
+select:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    background: #edf1f7;
 }
 
+/* Posebne vrste vnosov */
+input[type="checkbox"],
+input[type="radio"] {
+    width: 19px;
+    height: 19px;
+    padding: 0;
+    margin: 0;
+    flex-shrink: 0;
+    accent-color: var(--accent);
+    cursor: pointer;
+    box-shadow: none;
+}
+
+input[type="range"] {
+    padding: 0;
+    margin: 12px 0;
+    accent-color: var(--accent);
+    cursor: pointer;
+    box-shadow: none;
+}
+
+input[type="file"] {
+    padding: 10px;
+    font-size: 14px;
+}
+
+input[type="file"]::file-selector-button {
+    margin-right: 12px;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 8px;
+    color: var(--accent-dark);
+    background: #e2f2f5;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+fieldset {
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid #d6dfec;
+    border-radius: 14px;
+}
+
+legend {
+    padding: 0 8px;
+    font-weight: 800;
+}
+
+.moznost,
+.primerjava-moznost {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#navodilo,
+#navodila {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+/* Gumbi */
 .gumbi {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    margin-top: 8px;
+    margin-top: 10px;
 }
 
 button {
+    position: relative;
     min-height: 48px;
-    padding: 12px 20px;
-    border: 1px solid transparent;
-    border-radius: 8px;
+    padding: 13px 22px;
+    border: 1px solid #d6dfec;
+    border-radius: 12px;
     font: inherit;
-    font-weight: bold;
+    font-weight: 800;
+    color: #30445f;
+    background: #edf1f7;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
-button[type="submit"] {
-    color: #ffffff;
-    background: #087f8c;
-}
-
-button[type="submit"]:hover {
-    background: #066570;
+button[type="submit"],
+.pdf-prenos {
+    border-color: transparent;
+    color: #fff;
+    background: linear-gradient(120deg, #007e91, #5066ce);
+    box-shadow: 0 8px 20px rgb(0 126 145 / 18%);
 }
 
 button[type="reset"] {
-    color: #142c43;
-    background: #e9eef2;
-    border-color: #dce5ea;
+    color: #42526b;
+    background: rgb(235 240 247 / 90%);
 }
 
-button[type="reset"]:hover {
-    background: #dce5ea;
+@media (hover: hover) {
+    button:not(:disabled):hover {
+        transform: translateY(-2px);
+        background: #e0e8f3;
+        box-shadow: 0 8px 18px rgb(42 64 115 / 10%);
+    }
+
+    button[type="submit"]:not(:disabled):hover,
+    .pdf-prenos:hover {
+        background: linear-gradient(120deg, #006c80, #6652ce);
+        box-shadow:
+            0 12px 26px rgb(0 126 145 / 22%),
+            0 0 20px rgb(121 88 223 / 10%);
+    }
+}
+
+button:not(:disabled):active {
+    transform: translateY(1px);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
 }
 
 a:focus-visible,
 button:focus-visible,
-input:focus-visible {
-    outline: 3px solid #087f8c;
-    outline-offset: 3px;
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 4px;
 }
 
+/* Rezultati */
 .napaka {
     margin: 20px 0 0;
-    padding: 12px 16px;
-    color: #b42318;
-    background: #fff1f0;
-    border: 1px solid #f2b8b3;
-    border-radius: 8px;
+    padding: 14px 18px;
+    color: #a72520;
+    background: #fff0ef;
+    border: 1px solid #f0bfba;
+    border-radius: 14px;
 }
 
 .rezultat {
     margin-top: 24px;
-    padding: 20px;
-    background: #e5f3f5;
-    border: 1px solid #b6dfe3;
-    border-radius: 10px;
+    padding: 24px;
+    border: 1px solid rgb(0 126 145 / 18%);
+    border-radius: 18px;
+    background: linear-gradient(
+        135deg,
+        rgb(220 245 246 / 90%),
+        rgb(235 231 253 / 70%)
+    );
+    overflow-wrap: anywhere;
 }
 
-.rezultat h2 {
-    color: #066570;
+.rezultat h2,
+.rezultat h3 {
+    color: var(--accent-dark);
 }
 
-.rezultat p,
+.rezultat p {
+    margin-bottom: 12px;
+}
+
+.rezultat p:last-child,
 .razlaga p:last-child {
     margin-bottom: 0;
 }
@@ -179,21 +516,88 @@ input:focus-visible {
     display: none;
 }
 
-footer {
-    padding: 16px 0 32px;
-    text-align: center;
-    font-size: 14px;
-    color: #536575;
+[hidden] {
+    display: none !important;
 }
 
+table {
+    max-width: 100%;
+    font-variant-numeric: tabular-nums;
+}
+
+th,
+td {
+    border-color: #d6dfec;
+}
+
+canvas {
+    max-width: 100%;
+    border-radius: 14px;
+}
+
+progress {
+    accent-color: var(--accent);
+}
+
+details {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border: 1px solid #d6dfec;
+    border-radius: 12px;
+    background: rgb(255 255 255 / 45%);
+}
+
+summary {
+    cursor: pointer;
+    font-weight: 800;
+    color: var(--accent-dark);
+}
+
+details[open] summary {
+    margin-bottom: 12px;
+}
+
+code {
+    padding: 2px 6px;
+    border-radius: 5px;
+    color: #5844a4;
+    background: rgb(121 88 223 / 8%);
+    overflow-wrap: anywhere;
+}
+
+.pdf-prenos {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 14px 22px;
+    border-radius: 12px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: box-shadow 0.2s ease, background 0.2s ease;
+}
+
+footer {
+    padding: 24px 0 40px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+/* Mobilni prikaz */
 @media (max-width: 480px) {
+    header,
+    main,
+    footer {
+        width: calc(100% - 24px);
+    }
+
     header {
-        padding-top: 24px;
+        padding: 32px 0 24px;
     }
 
     .kalkulator,
     .razlaga {
-        padding: 20px;
+        padding: 22px;
+        border-radius: 20px;
     }
 
     .gumbi {
@@ -204,7 +608,53 @@ footer {
         width: 100%;
     }
 
+    .rezultat {
+        padding: 18px;
+    }
+
     .rezultat h2 {
         font-size: 21px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+}
+
+/* Upošteva uporabnikovo nastavitev zmanjšanega gibanja */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Čist prikaz pri tiskanju */
+@media print {
+    body {
+        background: #fff;
+        color: #000;
+    }
+
+    body::before,
+    body::after {
+        display: none;
+    }
+
+    h1 {
+        color: #000;
+        background: none;
+    }
+
+    .kalkulator,
+    .razlaga {
+        background: #fff;
+        box-shadow: none;
+        backdrop-filter: none;
+        border-color: #ccc;
+        transform: none;
     }
 }
