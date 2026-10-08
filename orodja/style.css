@@ -1,5 +1,4 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
-
 :root {
     --text: #172b46;
     --muted: #61718a;
@@ -10,16 +9,13 @@
     --radius: 24px;
     --shadow: 0 20px 60px rgb(42 64 115 / 10%);
 }
-
 * {
     box-sizing: border-box;
 }
-
 html {
     min-height: 100%;
     background: #edf2fc;
 }
-
 body {
     position: relative;
     isolation: isolate;
@@ -30,7 +26,6 @@ body {
     color: var(--text);
     background: transparent;
 }
-
 /* Animirano ozadje */
 body::before,
 body::after {
@@ -39,7 +34,6 @@ body::after {
     pointer-events: none;
     z-index: -1;
 }
-
 body::before {
     inset: -25%;
     background:
@@ -66,7 +60,6 @@ body::before {
     animation: aurora 24s ease-in-out infinite alternate;
     transition: filter 1.2s ease;
 }
-
 body::after {
     inset: 0;
     background-image:
@@ -75,15 +68,12 @@ body::after {
     background-size: 48px 48px;
     mask-image: linear-gradient(to bottom, black, transparent 90%);
 }
-
 body:has(.kalkulator:hover)::before {
     filter: hue-rotate(30deg) saturate(1.3);
 }
-
 body:has(.razlaga:hover)::before {
     filter: hue-rotate(-20deg);
 }
-
 @keyframes aurora {
     0% {
         transform: translate(-2%, -2%) rotate(-4deg) scale(1);
@@ -95,24 +85,20 @@ body:has(.razlaga:hover)::before {
         transform: translate(-1%, 4%) rotate(-2deg) scale(1.03);
     }
 }
-
 ::selection {
     color: #fff;
     background: #7958df;
 }
-
 header,
 main,
 footer {
     width: min(calc(100% - 40px), 880px);
     margin: 0 auto;
 }
-
 header {
     padding: 64px 0 32px;
     animation: prihod 0.7s ease-out both;
 }
-
 header a {
     display: inline-flex;
     align-items: center;
@@ -126,16 +112,14 @@ header a {
     text-decoration: none;
     transition:
         transform 0.2s ease,
-        background 0.2s ease,
+background 0.2s ease,
         box-shadow 0.2s ease;
 }
-
 header a:hover {
     transform: translateX(-4px);
     background: rgb(255 255 255 / 90%);
     box-shadow: 0 6px 20px rgb(42 64 115 / 8%);
 }
-
 h1 {
     margin: 0 0 16px;
     font-size: clamp(32px, 5.5vw, 52px);
@@ -144,7 +128,6 @@ h1 {
     letter-spacing: -0.045em;
     color: var(--text);
 }
-
 @supports (background-clip: text) {
     h1 {
         background: linear-gradient(
@@ -158,7 +141,6 @@ h1 {
         color: transparent;
     }
 }
-
 h2 {
     margin: 0 0 16px;
     font-size: 25px;
@@ -166,27 +148,22 @@ h2 {
     line-height: 1.3;
     letter-spacing: -0.025em;
 }
-
 h3 {
     margin: 0 0 12px;
     line-height: 1.4;
 }
-
 p {
     margin: 0 0 16px;
 }
-
 header p {
     max-width: 650px;
     font-size: 17px;
     color: var(--muted);
 }
-
 a {
     color: var(--accent-dark);
     text-underline-offset: 4px;
 }
-
 /* Prosojne kartice */
 .kalkulator,
 .razlaga {
@@ -203,11 +180,9 @@ a {
         border-color 0.3s ease;
     animation: prihod 0.7s ease-out both;
 }
-
 .razlaga {
     animation-delay: 0.1s;
 }
-
 @supports (backdrop-filter: blur(18px)) {
     .kalkulator,
     .razlaga {
@@ -215,7 +190,6 @@ a {
         backdrop-filter: blur(18px);
     }
 }
-
 .kalkulator::before,
 .razlaga::before {
     content: "";
@@ -235,7 +209,6 @@ a {
     opacity: 0.6;
     transition: opacity 0.3s ease;
 }
-
 @media (hover: hover) and (pointer: fine) {
     .kalkulator:hover,
     .razlaga:hover {
@@ -245,13 +218,11 @@ a {
             0 28px 70px rgb(42 64 115 / 13%),
             0 0 35px rgb(102 214 222 / 8%);
     }
-
     .kalkulator:hover::before,
     .razlaga:hover::before {
         opacity: 1;
     }
 }
-
 @keyframes prihod {
     from {
         opacity: 0;
@@ -262,19 +233,16 @@ a {
         transform: translateY(0);
     }
 }
-
 form {
     display: flex;
     flex-direction: column;
     gap: 14px;
 }
-
 label {
     font-size: 14px;
     font-weight: 800;
     color: #30445f;
 }
-
 input,
 textarea,
 select {
@@ -290,30 +258,25 @@ select {
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease,
-        background 0.2s ease;
+background 0.2s ease;
 }
-
 textarea {
     display: block;
     min-height: 120px;
     resize: vertical;
 }
-
 select {
     cursor: pointer;
 }
-
 input::placeholder,
 textarea::placeholder {
     color: #77869b;
 }
-
 input:hover,
 textarea:hover,
 select:hover {
     border-color: #8eafbd;
 }
-
 input:focus,
 textarea:focus,
 select:focus {
@@ -321,13 +284,11 @@ select:focus {
     background: #fff;
     box-shadow: 0 0 0 4px rgb(0 126 145 / 9%);
 }
-
 input[aria-invalid="true"],
 textarea[aria-invalid="true"] {
     border-color: #b42318;
     background: #fff8f7;
 }
-
 input:disabled,
 textarea:disabled,
 select:disabled {
@@ -335,7 +296,6 @@ select:disabled {
     cursor: not-allowed;
     background: #edf1f7;
 }
-
 /* Posebne vrste vnosov */
 input[type="checkbox"],
 input[type="radio"] {
@@ -348,7 +308,6 @@ input[type="radio"] {
     cursor: pointer;
     box-shadow: none;
 }
-
 input[type="range"] {
     padding: 0;
     margin: 12px 0;
@@ -356,12 +315,10 @@ input[type="range"] {
     cursor: pointer;
     box-shadow: none;
 }
-
 input[type="file"] {
     padding: 10px;
     font-size: 14px;
 }
-
 input[type="file"]::file-selector-button {
     margin-right: 12px;
     padding: 10px 14px;
@@ -373,33 +330,28 @@ input[type="file"]::file-selector-button {
     font-weight: 700;
     cursor: pointer;
 }
-
 fieldset {
     min-width: 0;
     padding: 18px;
     border: 1px solid #d6dfec;
     border-radius: 14px;
 }
-
 legend {
     padding: 0 8px;
     font-weight: 800;
 }
-
 .moznost,
 .primerjava-moznost {
     display: flex;
     align-items: center;
     gap: 10px;
 }
-
 #navodilo,
 #navodila {
     margin: 0 0 8px;
     font-size: 14px;
     color: var(--muted);
 }
-
 /* Gumbi */
 .gumbi {
     display: flex;
@@ -407,7 +359,6 @@ legend {
     gap: 12px;
     margin-top: 10px;
 }
-
 button {
     position: relative;
     min-height: 48px;
@@ -421,10 +372,9 @@ button {
     cursor: pointer;
     transition:
         transform 0.2s ease,
-        background 0.2s ease,
+background 0.2s ease,
         box-shadow 0.2s ease;
 }
-
 button[type="submit"],
 .pdf-prenos {
     border-color: transparent;
@@ -432,19 +382,16 @@ button[type="submit"],
     background: linear-gradient(120deg, #007e91, #5066ce);
     box-shadow: 0 8px 20px rgb(0 126 145 / 18%);
 }
-
 button[type="reset"] {
     color: #42526b;
     background: rgb(235 240 247 / 90%);
 }
-
 @media (hover: hover) {
     button:not(:disabled):hover {
         transform: translateY(-2px);
         background: #e0e8f3;
         box-shadow: 0 8px 18px rgb(42 64 115 / 10%);
     }
-
     button[type="submit"]:not(:disabled):hover,
     .pdf-prenos:hover {
         background: linear-gradient(120deg, #006c80, #6652ce);
@@ -453,17 +400,14 @@ button[type="reset"] {
             0 0 20px rgb(121 88 223 / 10%);
     }
 }
-
 button:not(:disabled):active {
     transform: translateY(1px);
 }
-
 button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     box-shadow: none;
 }
-
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
@@ -473,7 +417,6 @@ summary:focus-visible {
     outline: 3px solid var(--accent);
     outline-offset: 4px;
 }
-
 /* Rezultati */
 .napaka {
     margin: 20px 0 0;
@@ -483,7 +426,6 @@ summary:focus-visible {
     border: 1px solid #f0bfba;
     border-radius: 14px;
 }
-
 .rezultat {
     margin-top: 24px;
     padding: 24px;
@@ -496,49 +438,39 @@ summary:focus-visible {
     );
     overflow-wrap: anywhere;
 }
-
 .rezultat h2,
 .rezultat h3 {
     color: var(--accent-dark);
 }
-
 .rezultat p {
     margin-bottom: 12px;
 }
-
 .rezultat p:last-child,
 .razlaga p:last-child {
     margin-bottom: 0;
 }
-
 .napaka:empty,
 .rezultat:empty {
     display: none;
 }
-
 [hidden] {
     display: none !important;
 }
-
 table {
     max-width: 100%;
     font-variant-numeric: tabular-nums;
 }
-
 th,
 td {
     border-color: #d6dfec;
 }
-
 canvas {
     max-width: 100%;
     border-radius: 14px;
 }
-
 progress {
     accent-color: var(--accent);
 }
-
 details {
     margin-top: 16px;
     padding: 14px 16px;
@@ -546,17 +478,14 @@ details {
     border-radius: 12px;
     background: rgb(255 255 255 / 45%);
 }
-
 summary {
     cursor: pointer;
     font-weight: 800;
     color: var(--accent-dark);
 }
-
 details[open] summary {
     margin-bottom: 12px;
 }
-
 code {
     padding: 2px 6px;
     border-radius: 5px;
@@ -564,7 +493,6 @@ code {
     background: rgb(121 88 223 / 8%);
     overflow-wrap: anywhere;
 }
-
 .pdf-prenos {
     display: inline-block;
     margin-top: 16px;
@@ -574,14 +502,12 @@ code {
     text-decoration: none;
     transition: box-shadow 0.2s ease, background 0.2s ease;
 }
-
 footer {
     padding: 24px 0 40px;
     text-align: center;
     font-size: 14px;
     color: var(--muted);
 }
-
 /* Mobilni prikaz */
 @media (max-width: 480px) {
     header,
@@ -589,38 +515,30 @@ footer {
     footer {
         width: calc(100% - 24px);
     }
-
     header {
         padding: 32px 0 24px;
     }
-
     .kalkulator,
     .razlaga {
         padding: 22px;
         border-radius: 20px;
     }
-
     .gumbi {
         flex-direction: column;
     }
-
     button {
         width: 100%;
     }
-
     .rezultat {
         padding: 18px;
     }
-
     .rezultat h2 {
         font-size: 21px;
     }
-
     h2 {
         font-size: 22px;
     }
 }
-
 /* Upošteva uporabnikovo nastavitev zmanjšanega gibanja */
 @media (prefers-reduced-motion: reduce) {
     *,
@@ -631,30 +549,164 @@ footer {
         scroll-behavior: auto !important;
     }
 }
-
 /* Čist prikaz pri tiskanju */
 @media print {
     body {
         background: #fff;
         color: #000;
     }
-
     body::before,
     body::after {
         display: none;
     }
-
     h1 {
         color: #000;
         background: none;
     }
-
     .kalkulator,
     .razlaga {
         background: #fff;
         box-shadow: none;
         backdrop-filter: none;
         border-color: #ccc;
+        transform: none;
+    }
+}
+/* RISANKASTI SLOG ZA KALKULATORJE */
+:root {
+    --text: #202333;
+    --muted: #46506a;
+    --accent: #5740a5;
+    --accent-dark: #453185;
+    --border: #202333;
+    --radius: 22px;
+    --shadow: 7px 7px 0 #202333;
+}
+html { background: #fff9ed; }
+body { background: #fff9ed; }
+body::before {
+    z-index: -2;
+    background:
+        radial-gradient(circle at 18% 25%, #ffe58c 0, transparent 35%),
+        radial-gradient(circle at 80% 22%, #c8baff 0, transparent 38%),
+        radial-gradient(circle at 65% 75%, #a9ebdd 0, transparent 35%),
+        radial-gradient(circle at 15% 85%, #ffc7d5 0, transparent 32%);
+    animation: aurora 16s ease-in-out infinite alternate;
+}
+body::after {
+    z-index: -1;
+    background-image: radial-gradient(circle, rgb(32 35 51 / 16%) 1.5px, transparent 1.5px);
+    background-size: 26px 26px;
+    mask-image: none;
+    opacity: .55;
+}
+header { text-align: center; }
+header p { margin-inline: auto; }
+h1 {
+    color: var(--text);
+    background: none;
+    -webkit-text-fill-color: currentColor;
+}
+header a {
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: #ffe58c;
+    color: var(--text);
+    box-shadow: 3px 3px 0 var(--border);
+}
+header a:hover {
+    background: #fff1b0;
+    transform: translate(-2px,-2px);
+    box-shadow: 5px 5px 0 var(--border);
+}
+.kalkulator, .razlaga {
+    border: 3px solid var(--border);
+    background: #fffdf7;
+    backdrop-filter: none;
+    box-shadow: var(--shadow);
+    animation: none;
+}
+.razlaga { background: #f0eaff; }
+.kalkulator::before, .razlaga::before { display: none; }
+@media (hover: hover) and (pointer: fine) {
+    .kalkulator:hover, .razlaga:hover {
+        transform: translateY(-3px);
+        border-color: var(--border);
+        box-shadow: 9px 11px 0 var(--border);
+    }
+}
+input, textarea, select {
+    border: 2px solid var(--border);
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 2px 2px 0 #20233318;
+}
+input:focus, textarea:focus, select:focus {
+    border-color: var(--accent);
+    background: #fff;
+    box-shadow: 3px 3px 0 #c8baff;
+}
+.gumbi { gap: 14px; padding-bottom: 4px; }
+button, .pdf-prenos {
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: #dfd5ff;
+    color: var(--text);
+    box-shadow: 4px 4px 0 var(--border);
+}
+button[type="submit"], .pdf-prenos {
+    border-color: var(--border);
+    background: #a9ebdd;
+    color: var(--text);
+    box-shadow: 4px 4px 0 var(--border);
+}
+button[type="reset"] { background: #ffe58c; color: var(--text); }
+@media (hover: hover) and (pointer: fine) {
+    button:not(:disabled):hover, .pdf-prenos:hover {
+        transform: translate(-2px,-3px);
+        background: #c8baff;
+        color: var(--text);
+        box-shadow: 6px 7px 0 var(--border);
+    }
+    button[type="submit"]:not(:disabled):hover, .pdf-prenos:hover {
+        background: #8ee0cc;
+        box-shadow: 6px 7px 0 var(--border);
+    }
+}
+button:not(:disabled):active, .pdf-prenos:active {
+    transform: translate(3px,3px);
+    box-shadow: 1px 1px 0 var(--border);
+}
+button:disabled { box-shadow: none; }
+input[type="checkbox"], input[type="radio"], input[type="range"] { box-shadow: none; }
+input[type="file"]::file-selector-button {
+    border: 2px solid var(--border);
+    background: #ffe58c;
+    color: var(--text);
+}
+.rezultat {
+    background: #c7f1e4;
+    border: 2px solid var(--border);
+    box-shadow: 4px 4px 0 var(--border);
+}
+.rezultat h2, .rezultat h3 { color: var(--text); }
+.napaka { border: 2px solid #a72520; background: #ffe5e5; }
+fieldset, details { border: 2px solid var(--border); background: #fffdf7; }
+summary { color: var(--text); }
+@media (max-width: 480px) {
+    header, main, footer { width: calc(100% - 36px); }
+    .kalkulator, .razlaga { padding: 20px; box-shadow: 5px 5px 0 var(--border); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .kalkulator:hover, .razlaga:hover, button:not(:disabled):hover,
+    button:not(:disabled):active, .pdf-prenos:hover, .pdf-prenos:active,
+    header a:hover { transform: none; }
+}
+@media print {
+    body { background: #fff; }
+    .kalkulator, .razlaga, .rezultat, button, .pdf-prenos {
+        background: #fff;
+        box-shadow: none;
         transform: none;
     }
 }
