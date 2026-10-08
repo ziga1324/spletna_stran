@@ -8,21 +8,76 @@
 
     <style>
 
+/* ZAČETNA STRAN */
+
 body.zacetna {
     --crta: #202333;
     --pointer-x: 0px;
     --pointer-y: 0px;
+
+    position: relative;
+    isolation: isolate;
+    min-height: 100vh;
+    margin: 0;
     color: var(--crta);
+    background: #fff9ed;
+}
+
+.zacetna *,
+.zacetna *::before,
+.zacetna *::after {
+    box-sizing: border-box;
 }
 
 .zacetna header,
 .zacetna main,
 .zacetna footer {
     width: min(calc(100% - 40px), 1120px);
+    margin-inline: auto;
 }
 
-/* Pikčasto ozadje */
+/* ANIMIRANO OZADJE */
+
+.zacetna::before,
 .zacetna::after {
+    content: "";
+    position: fixed;
+    pointer-events: none;
+}
+
+.zacetna::before {
+    inset: -20%;
+    z-index: -2;
+    opacity: 0.8;
+    background:
+        radial-gradient(
+            circle at 18% 25%,
+            #ffe58c 0,
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 80% 22%,
+            #c8baff 0,
+            transparent 38%
+        ),
+        radial-gradient(
+            circle at 65% 75%,
+            #a9ebdd 0,
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 15% 85%,
+            #ffc7d5 0,
+            transparent 32%
+        );
+
+    animation: zacetna-barve 16s ease-in-out infinite alternate;
+    transition: filter 0.8s ease;
+}
+
+.zacetna::after {
+    inset: 0;
+    z-index: -1;
     background-image: radial-gradient(
         circle,
         rgb(32 35 51 / 16%) 1.5px,
@@ -33,48 +88,50 @@ body.zacetna {
     opacity: 0.55;
 }
 
-/* Ostrejši barvni poudarki pod pikami */
-.zacetna::before {
-    background:
-        radial-gradient(
-            circle at 18% 25%,
-            #ffe58c 0 10%,
-            transparent 10.3%
-        ),
-        radial-gradient(
-            circle at 80% 22%,
-            #c8baff 0 13%,
-            transparent 13.3%
-        ),
-        radial-gradient(
-            circle at 65% 75%,
-            #a9ebdd 0 12%,
-            transparent 12.3%
-        ),
-        radial-gradient(
-            circle at 15% 85%,
-            #ffc7d5 0 9%,
-            transparent 9.3%
-        );
-    opacity: 0.6;
+.zacetna:has(.orodje:hover)::before {
+    filter: hue-rotate(25deg) saturate(1.2);
 }
 
+@keyframes zacetna-barve {
+    from {
+        transform: translate(-3%, -2%) rotate(-4deg);
+    }
+
+    to {
+        transform: translate(3%, 3%) rotate(5deg) scale(1.08);
+    }
+}
+
+/* NASLOV IN UVOD */
+
 .zacetna header {
-    padding-top: 30px;
+    padding: 48px 0 32px;
+    text-align: center;
 }
 
 .zacetna header a {
+    display: inline-block;
+    padding: 10px 16px;
     border: 2px solid var(--crta);
     border-radius: 12px;
     background: #fff;
     color: var(--crta);
     box-shadow: 3px 3px 0 var(--crta);
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.zacetna header a:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--crta);
 }
 
 .zacetna .uvod {
     position: relative;
-    padding: 40px 0 56px;
     max-width: 850px;
+    margin-inline: auto;
+    padding: 40px 0 56px;
+    text-align: center;
 }
 
 .zacetna .nalepka {
@@ -88,50 +145,78 @@ body.zacetna {
     font-size: 14px;
     font-weight: 800;
     transform: rotate(-3deg);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.zacetna .nalepka:hover {
+    transform: rotate(2deg) translateY(-3px);
+    box-shadow: 5px 7px 0 var(--crta);
 }
 
 .zacetna h1 {
+    margin: 0 0 24px;
     color: var(--crta);
     background: none;
     -webkit-text-fill-color: currentColor;
     font-size: clamp(42px, 7vw, 80px);
     letter-spacing: -0.055em;
     line-height: 1.08;
+    text-align: center;
     text-wrap: balance;
 }
 
+.zacetna header p,
 .zacetna .uvod > p {
     max-width: 580px;
-    margin-top: 24px;
+    margin: 24px auto 0;
     font-size: clamp(17px, 2vw, 21px);
     color: #46506a;
 }
 
-/* Mreža orodij */
+/* KATEGORIJE IN KARTICE */
+
+.zacetna .kategorija {
+    margin-bottom: 44px;
+}
+
+.zacetna .kategorija > h2 {
+    margin-bottom: 24px;
+    text-align: center;
+    font-size: clamp(23px, 3vw, 30px);
+    line-height: 1.3;
+}
+
 .zacetna .orodja {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 26px;
-    padding-bottom: 40px;
+    gap: 28px;
+    padding-bottom: 24px;
 }
 
 .zacetna .orodje {
     --kartica: #fff5bf;
+
     position: relative;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     min-width: 0;
-    min-height: 290px;
-    padding: 26px;
+    min-height: 220px;
+    padding: 28px 24px;
+    overflow: hidden;
     border: 3px solid var(--crta);
     border-radius: 22px;
     color: var(--crta);
     background: var(--kartica);
     box-shadow: 7px 7px 0 var(--crta);
+    text-align: center;
     text-decoration: none;
+    transform-origin: center;
+
     transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+        transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+        box-shadow 0.3s ease;
 }
 
 .zacetna .orodje:nth-child(6n + 2) {
@@ -154,60 +239,88 @@ body.zacetna {
     --kartica: #ffdfbf;
 }
 
-.zacetna .ikona {
-    display: grid;
-    place-items: center;
-    width: 64px;
-    height: 64px;
-    margin-bottom: 22px;
-    border: 2px solid var(--crta);
-    border-radius: 17px;
-    background: #fff;
-    box-shadow: 3px 3px 0 var(--crta);
-    font-size: 32px;
-    transition: transform 0.25s ease;
+/* Svetlobni odsev ob prehodu miške */
+.zacetna .orodje::after {
+    content: "";
+    position: absolute;
+    inset: -50%;
+    pointer-events: none;
+    background: linear-gradient(
+        110deg,
+        transparent 40%,
+        rgb(255 255 255 / 65%) 50%,
+        transparent 60%
+    );
+    transform: translateX(-100%);
+    transition: transform 0.65s ease;
 }
 
-.zacetna .orodje h2 {
-    margin-bottom: 12px;
+.zacetna .orodje h2,
+.zacetna .orodje h3 {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 20px;
     font-size: 23px;
     line-height: 1.3;
+    overflow-wrap: anywhere;
+    transition: transform 0.3s ease;
 }
 
 .zacetna .orodje p {
+    position: relative;
+    z-index: 1;
     margin-bottom: 24px;
     color: #41475b;
     font-size: 15px;
 }
 
 .zacetna .odpri {
-    align-self: flex-start;
+    position: relative;
+    z-index: 1;
+    align-self: center;
     margin-top: auto;
-    padding: 7px 12px;
+    padding: 8px 14px;
     border: 2px solid var(--crta);
     border-radius: 9px;
     background: rgb(255 255 255 / 75%);
     font-size: 13px;
     font-weight: 800;
+
+    transition:
+        transform 0.3s ease,
+        background-color 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
     .zacetna .orodje:hover {
-        transform: translate(-3px, -6px) rotate(-1deg);
-        box-shadow: 10px 13px 0 var(--crta);
+        z-index: 2;
+        transform: translateY(-9px) rotate(-2deg);
+        box-shadow: 10px 15px 0 var(--crta);
     }
 
     .zacetna .orodje:nth-child(even):hover {
-        transform: translate(-3px, -6px) rotate(1deg);
+        transform: translateY(-9px) rotate(2deg);
     }
 
-    .zacetna .orodje:hover .ikona {
-        transform: rotate(-10deg) scale(1.08);
+    .zacetna .orodje:hover::after {
+        transform: translateX(100%);
+    }
+
+    .zacetna .orodje:hover h2,
+    .zacetna .orodje:hover h3 {
+        transform: translateY(-3px);
+    }
+
+    .zacetna .orodje:hover .odpri {
+        transform: translateY(-3px);
+        background: #fff;
+        box-shadow: 3px 3px 0 var(--crta);
     }
 }
 
 .zacetna .orodje:active {
-    transform: translate(4px, 4px);
+    transform: translate(3px, 3px) scale(0.98);
     box-shadow: 3px 3px 0 var(--crta);
 }
 
@@ -216,8 +329,14 @@ body.zacetna {
     outline-offset: 7px;
 }
 
-/* Dekoracije, ki se odzivajo na miško */
-.risankasto-ozadje {
+.zacetna .orodje:focus-visible .odpri {
+    background: #fff;
+    box-shadow: 3px 3px 0 var(--crta);
+}
+
+/* DEKORACIJE — podpora obema prejšnjima različicama HTML-ja */
+
+.zacetna .risankasto-ozadje {
     position: fixed;
     inset: 0;
     z-index: -1;
@@ -225,23 +344,27 @@ body.zacetna {
     pointer-events: none;
 }
 
-.risankasta-oblika {
+.zacetna .risankasto-ozadje > span {
     position: absolute;
     width: 130px;
     height: 130px;
-    border: 3px solid #202333;
+    border: 3px solid var(--crta);
     border-radius: 50%;
     background: #ffe58c;
     box-shadow: 7px 7px 0 rgb(32 35 51 / 18%);
     opacity: 0.65;
+
+    /* --mx in --my uporablja prej poslana datoteka index.html. */
     transform: translate(
-        var(--pointer-x),
-        var(--pointer-y)
+        var(--mx, var(--pointer-x)),
+        var(--my, var(--pointer-y))
     );
-    transition: transform 0.45s ease-out;
+
+    transition: transform 0.25s ease-out;
+    animation: zacetna-plavanje 9s ease-in-out infinite alternate;
 }
 
-.risankasta-oblika::after {
+.zacetna .risankasto-ozadje > span::after {
     content: "";
     position: absolute;
     inset: 15px;
@@ -249,53 +372,53 @@ body.zacetna {
     border-radius: inherit;
 }
 
-.risankasta-oblika:nth-child(1) {
+.zacetna .risankasto-ozadje > span:nth-child(1) {
     top: 12%;
     left: -45px;
-    animation: plavanje-a 9s ease-in-out infinite alternate;
 }
 
-.risankasta-oblika:nth-child(2) {
+.zacetna .risankasto-ozadje > span:nth-child(2) {
     top: 45%;
     right: -50px;
     width: 180px;
     height: 180px;
     border-radius: 35px;
     background: #c8baff;
-    animation: plavanje-b 12s ease-in-out infinite alternate;
+    animation-duration: 12s;
+    animation-delay: -4s;
 }
 
-.risankasta-oblika:nth-child(3) {
+.zacetna .risankasto-ozadje > span:nth-child(3) {
     bottom: 5%;
     left: 8%;
     width: 75px;
     height: 75px;
     border-radius: 20px;
     background: #a9ebdd;
-    animation: plavanje-a 11s ease-in-out infinite alternate-reverse;
+    animation-duration: 11s;
+    animation-delay: -6s;
+    animation-direction: alternate-reverse;
 }
 
-@keyframes plavanje-a {
+@keyframes zacetna-plavanje {
     from {
-        translate: 0 -12px;
-        rotate: -8deg;
+        translate: -8px -20px;
+        rotate: -12deg;
     }
-    to {
-        translate: 0 18px;
-        rotate: 10deg;
-    }
-}
 
-@keyframes plavanje-b {
-    from {
-        translate: -10px 0;
-        rotate: 12deg;
-    }
     to {
         translate: 12px 25px;
-        rotate: -8deg;
+        rotate: 14deg;
     }
 }
+
+.zacetna footer {
+    padding: 24px 0 40px;
+    text-align: center;
+    color: #46506a;
+}
+
+/* MOBILNI PRIKAZ */
 
 @media (max-width: 850px) {
     .zacetna .orodja {
@@ -310,6 +433,10 @@ body.zacetna {
         width: calc(100% - 36px);
     }
 
+    .zacetna header {
+        padding-top: 32px;
+    }
+
     .zacetna .uvod {
         padding: 24px 0 36px;
     }
@@ -320,56 +447,59 @@ body.zacetna {
     }
 
     .zacetna .orodje {
-        min-height: 250px;
+        min-height: 190px;
         padding: 24px;
     }
 
-    .risankasta-oblika {
+    .zacetna .risankasto-ozadje > span {
         opacity: 0.3;
     }
 }
 
+/* ZMANJŠANO GIBANJE */
+
 @media (prefers-reduced-motion: reduce) {
-    .risankasta-oblika,
-    .zacetna .orodje,
-    .zacetna .ikona {
+    .zacetna::before,
+    .zacetna::after,
+    .zacetna *,
+    .zacetna *::before,
+    .zacetna *::after {
         animation: none !important;
         transition: none !important;
+    }
+
+    .zacetna .orodje,
+    .zacetna .orodje h2,
+    .zacetna .orodje h3,
+    .zacetna .odpri,
+    .zacetna .risankasto-ozadje > span {
         transform: none !important;
+    }
+
+    .zacetna .orodje::after {
+        display: none;
     }
 }
 
+/* TISKANJE */
+
 @media print {
-    .risankasto-ozadje {
+    body.zacetna {
+        background: #fff;
+    }
+
+    .zacetna::before,
+    .zacetna::after,
+    .zacetna .risankasto-ozadje {
         display: none;
     }
 
     .zacetna .orodje {
         background: #fff;
         box-shadow: none;
+        transform: none;
         break-inside: avoid;
     }
-}
-
-/* Centriranje vsebine začetne strani */
-.zacetna header,
-.zacetna footer,
-.zacetna .kategorija > h2 {
-    text-align: center;
-}
-
-.zacetna header p {
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.zacetna .orodje {
-    align-items: center;
-    text-align: center;
-}
-
-.zacetna .odpri {
-    align-self: center;
 }
     </style>
 </head>
