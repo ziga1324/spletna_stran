@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Združi več PDF-datotek, nastavi njihov vrstni red in prenesi skupni dokument.">
+    <title>Združevanje PDF-jev</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer
+            src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Združevanje PDF-jev</h1>
+        <p>Izberi dokumente in jih združi v eno PDF-datoteko.</p>
+        <a href="/spletna_stran/index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Izberi dokumente</h2>
+
+            <label for="datoteke">Dodaj PDF-datoteke</label>
+            <input id="datoteke" type="file"
+                   accept=".pdf,application/pdf" multiple>
+
+            <p>
+                Dodaj vsaj dve datoteki. Dovoljenih je največ 20 datotek
+                s skupno velikostjo do 50 MiB.
+            </p>
+
+            <ol id="seznam" class="pdf-seznam"></ol>
+
+            <label for="ime">Ime združene datoteke</label>
+            <input id="ime" type="text" maxlength="100"
+                   value="zdruzeni-dokumenti.pdf">
+
+            <div class="gumbi">
+                <button id="zdruzi" type="button" disabled>
+                    Združi PDF-je
+                </button>
+                <button id="pocisti" type="button">Počisti seznam</button>
+            </div>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <p id="status" role="status" aria-live="polite"></p>
+
+            <a id="prenos" class="pdf-prenos" hidden>
+                Prenesi združeni PDF
+            </a>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Dodaj PDF-je in z gumboma Gor ter Dol nastavi njihov
+                vrstni red. Strani vsake datoteke se dodajo v izvirnem
+                zaporedju.
+            </p>
+            <p>
+                Datoteke se obdelajo v tvojem brskalniku in jih ta stran
+                ne pošilja na strežnik. Za nalaganje knjižnice je potrebna
+                internetna povezava.
+            </p>
+            <p>
+                Zaščiteni in poškodovani dokumenti niso podprti.
+                Orodje združuje strani; zaznamki, priponke, interaktivna
+                polja in digitalni podpisi se morda ne ohranijo.
+                Rezultat preveri pred uporabo.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Združevanje PDF-jev</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const izbira = document.getElementById("datoteke");
+        const seznam = document.getElementById("seznam");
+        const ime = document.getElementById("ime");
+        const zdruzi = document.getElementById("zdruzi");
+        const pocisti = document.getElementById("pocisti");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+        const prenos = document.getElementById("prenos");
+
+        let datoteke = [];
+        let url = null;
+        let obdelava = false;
+
+        function odstraniPrenos() {
+            if (url) URL.revokeObjectURL(url);
+            url = null;
+            prenos.hidden = true;
+            prenos.removeAttribute("href");
+            status.textContent = "";
+        }
+
+        function velikost(bajti) {
+            return (bajti / 1024 / 1024).toLocaleString("sl-SI", {
+                maximumFractionDigits: 2
+            }) + " MiB";
+        }
+
+        function gumb(besedilo, oznaka, dejanje, onemogocen = false) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.textContent = besedilo;
+            button.setAttribute("aria-label", oznaka);
+            button.disabled = obdelava || onemogocen;
+            button.addEventListener("click", dejanje);
+            return button;
+        }
+
+        function sprememba() {
+            odstraniPrenos();
+            napaka.textContent = "";
+            prikaziSeznam();
+        }
+
+        function prikaziSeznam() {
+            seznam.replaceChildren();
+
+            datoteke.forEach((datoteka, indeks) => {
+                const li = document.createElement("li");
+                const opis = document.createElement("p");
+                opis.textContent =
+                    datoteka.name + " · " + velikost(datoteka.size);
+
+                const gumbi = document.createElement("div");
+                gumbi.className = "gumbi";
+
+                gumbi.append(
+                    gumb(
+                        "Gor",
+                        "Premakni navzgor: " + datoteka.name,
+                        () => {
+                            [datoteke[indeks - 1], datoteke[indeks]] =
+                                [datoteke[indeks], datoteke[indeks - 1]];
+                            sprememba();
+                        },
+                        indeks === 0
+                    ),
+                    gumb(
+                        "Dol",
+                        "Premakni navzdol: " + datoteka.name,
+                        () => {
+                            [datoteke[indeks + 1], datoteke[indeks]] =
+                                [datoteke[indeks], datoteke[indeks + 1]];
+                            sprememba();
+                        },
+                        indeks === datoteke.length - 1
+                    ),
+                    gumb(
+                        "Odstrani",
+                        "Odstrani: " + datoteka.name,
+                        () => {
+                            datoteke.splice(indeks, 1);
+                            sprememba();
+                        }
+                    )
+                );
+
+                li.append(opis, gumbi);
+                seznam.appendChild(li);
+            });
+
+            zdruzi.disabled = obdelava || datoteke.length < 2;
+            pocisti.disabled = obdelava;
+            izbira.disabled = obdelava;
+            ime.disabled = obdelava;
+        }
+
+        izbira.addEventListener("change", () => {
+            const nove = [...izbira.files];
+            izbira.value = "";
+            napaka.textContent = "";
+
+            if (!nove.length) return;
+
+            if (nove.some(d => !/\.pdf$/i.test(d.name))) {
+                napaka.textContent = "Izberi samo datoteke s končnico .pdf.";
+                return;
+            }
+
+            const skupaj = [...datoteke, ...nove];
+
+            if (skupaj.length > 20) {
+                napaka.textContent = "Dodaj največ 20 datotek.";
+                return;
+            }
+
+            if (skupaj.reduce((vsota, d) => vsota + d.size, 0) >
+                50 * 1024 * 1024) {
+                napaka.textContent =
+                    "Skupna velikost datotek lahko znaša največ 50 MiB.";
+                return;
+            }
+
+            datoteke = skupaj;
+            sprememba();
+        });
+
+        function imePrenosa() {
+            let zapis = ime.value.trim()
+                .replace(/[\\/:*?"<>|\u0000-\u001f]/g, "_");
+
+            if (!zapis) zapis = "zdruzeni-dokumenti.pdf";
+            if (!/\.pdf$/i.test(zapis)) zapis += ".pdf";
+            return zapis;
+        }
+
+        zdruzi.addEventListener("click", async () => {
+            if (obdelava || datoteke.length < 2) return;
+
+            odstraniPrenos();
+            napaka.textContent = "";
+
+            if (!window.PDFLib) {
+                napaka.textContent =
+                    "Knjižnica se ni naložila. Preveri internetno povezavo " +
+                    "in ponovno naloži stran.";
+                return;
+            }
+
+            obdelava = true;
+            prikaziSeznam();
+
+            try {
+                const izhod = await PDFLib.PDFDocument.create();
+                let strani = 0;
+
+                for (let i = 0; i < datoteke.length; i++) {
+                    const datoteka = datoteke[i];
+                    status.textContent =
+                        `Obdelujem ${i + 1}/${datoteke.length}: ${datoteka.name}`;
+
+                    // Omogoči brskalniku, da osveži prikaz napredka.
+                    await new Promise(resolve => setTimeout(resolve, 0));
+
+                    let vhod;
+
+                    try {
+                        vhod = await PDFLib.PDFDocument.load(
+                            await datoteka.arrayBuffer()
+                        );
+                    } catch {
+                        throw new Error(
+                            "Datoteke »" + datoteka.name +
+                            "« ni mogoče odpreti. Lahko je zaščitena, " +
+                            "poškodovana ali ni veljaven PDF."
+                        );
+                    }
+
+                    const stevilo = vhod.getPageCount();
+
+                    if (stevilo === 0) {
+                        throw new Error(
+                            "Datoteka »" + datoteka.name + "« nima strani."
+                        );
+                    }
+
+                    strani += stevilo;
+
+                    if (strani > 2000) {
+                        throw new Error(
+                            "Skupaj je dovoljenih največ 2000 strani."
+                        );
+                    }
+
+                    const kopije = await izhod.copyPages(
+                        vhod,
+                        vhod.getPageIndices()
+                    );
+
+                    kopije.forEach(stran => izhod.addPage(stran));
+                }
+
+                status.textContent = "Pripravljam združeni dokument…";
+                const bajti = await izhod.save();
+                const blob = new Blob([bajti], {
+                    type: "application/pdf"
+                });
+
+                url = URL.createObjectURL(blob);
+                prenos.href = url;
+                prenos.download = imePrenosa();
+                prenos.hidden = false;
+
+                status.textContent =
+                    `Končano. Dokument vsebuje ${strani} strani. ` +
+                    `Velikost: ${velikost(blob.size)}.`;
+            } catch (error) {
+                odstraniPrenos();
+                napaka.textContent =
+                    error.message || "Združevanje ni uspelo.";
+            } finally {
+                obdelava = false;
+                prikaziSeznam();
+            }
+        });
+
+        pocisti.addEventListener("click", () => {
+            if (obdelava) return;
+            datoteke = [];
+            izbira.value = "";
+            sprememba();
+        });
+
+        ime.addEventListener("input", () => {
+            if (url) prenos.download = imePrenosa();
+        });
+
+        window.addEventListener("pagehide", () => {
+            if (url) URL.revokeObjectURL(url);
+        });
+
+        prikaziSeznam();
+    </script>
+</body>
+</html>
