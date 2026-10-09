@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Primerjaj dve besedili in prikaži dodane, odstranjene ter nespremenjene vrstice.">
+    <title>Primerjava dveh besedil</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Primerjava dveh besedil</h1>
+        <p>Odkrij razlike med prvotnim in spremenjenim besedilom.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Primerjaj besedili</h2>
+
+            <form id="obrazec">
+                <div class="primerjava-vnosi">
+                    <div>
+                        <label for="prvo">Prvotno besedilo</label>
+                        <textarea id="prvo" rows="10" maxlength="50000"
+                                  spellcheck="false"
+                                  placeholder="Vnesi prvotno besedilo"></textarea>
+                    </div>
+
+                    <div>
+                        <label for="drugo">Spremenjeno besedilo</label>
+                        <textarea id="drugo" rows="10" maxlength="50000"
+                                  spellcheck="false"
+                                  placeholder="Vnesi spremenjeno besedilo"></textarea>
+                    </div>
+                </div>
+
+                <label class="primerjava-moznost">
+                    <input id="male-crke" type="checkbox">
+                    Ne upoštevaj velikosti črk
+                </label>
+
+                <label class="primerjava-moznost">
+                    <input id="presledki" type="checkbox">
+                    Ne upoštevaj začetnih in končnih presledkov v vrsticah
+                </label>
+
+                <label class="primerjava-moznost">
+                    <input id="samo-razlike" type="checkbox">
+                    Prikaži samo razlike
+                </label>
+
+                <div class="gumbi">
+                    <button type="submit">Primerjaj</button>
+                    <button type="reset">Počisti</button>
+                    <button id="primer" type="button">Vstavi primer</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <p id="povzetek" class="rezultat" aria-live="polite"></p>
+
+            <div id="razlike" class="primerjava-izpis"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako bereš rezultat?</h2>
+            <ul>
+                <li><strong>+ Dodano:</strong> vrstica je v drugem besedilu.</li>
+                <li><strong>− Odstranjeno:</strong> vrstica je v prvem besedilu.</li>
+                <li><strong>= Enako:</strong> vrstici se po izbranih pravilih ujemata.</li>
+            </ul>
+
+            <p>
+                Primerjava poteka po celotnih vrsticah. Spremenjena vrstica
+                se prikaže kot odstranitev stare in dodajanje nove.
+                Pri več možnih ujemanjih ponovljenih vrstic je prikazana
+                ena od možnih razporeditev razlik.
+            </p>
+            <p>
+                Posamezno besedilo lahko vsebuje največ 50.000 znakov
+                in 500 vrstic. Prazno besedilo je dovoljeno.
+                Obdelava poteka v tvojem brskalniku.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Primerjava dveh besedil</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const prvo = document.getElementById("prvo");
+        const drugo = document.getElementById("drugo");
+        const maleCrke = document.getElementById("male-crke");
+        const presledki = document.getElementById("presledki");
+        const samoRazlike = document.getElementById("samo-razlike");
+        const napaka = document.getElementById("napaka");
+        const povzetek = document.getElementById("povzetek");
+        const razlike = document.getElementById("razlike");
+
+        let zadnjiRezultat = null;
+
+        function pocisti() {
+            napaka.textContent = "";
+            povzetek.textContent = "";
+            razlike.replaceChildren();
+            zadnjiRezultat = null;
+        }
+
+        function preberiVrstice(besedilo) {
+            if (besedilo.length > 50000) {
+                throw new Error("Vsako besedilo lahko vsebuje največ 50.000 znakov.");
+            }
+
+            const vrstice = besedilo === ""
+                ? []
+                : besedilo.replace(/\r\n?/g, "\n").split("\n");
+
+            if (vrstice.length > 500) {
+                throw new Error("Vsako besedilo lahko vsebuje največ 500 vrstic.");
+            }
+
+            return vrstice;
+        }
+
+        function normaliziraj(vrstica) {
+            let zapis = vrstica.normalize("NFC");
+
+            if (presledki.checked) zapis = zapis.trim();
+            if (maleCrke.checked) zapis = zapis.toLocaleLowerCase("sl-SI");
+
+            return zapis;
+        }
+
+        function primerjaj(a, b) {
+            const normalA = a.map(normaliziraj);
+            const normalB = b.map(normaliziraj);
+
+            // Najdaljše skupno podzaporedje vrstic.
+            const tabela = Array.from(
+                { length: a.length + 1 },
+                () => new Uint16Array(b.length + 1)
+            );
+
+            for (let i = a.length - 1; i >= 0; i--) {
+                for (let j = b.length - 1; j >= 0; j--) {
+                    tabela[i][j] = normalA[i] === normalB[j]
+                        ? tabela[i + 1][j + 1] + 1
+                        : Math.max(tabela[i + 1][j], tabela[i][j + 1]);
+                }
+            }
+
+            const rezultat = [];
+            let i = 0;
+            let j = 0;
+
+            while (i < a.length || j < b.length) {
+                if (i < a.length && j < b.length &&
+                    normalA[i] === normalB[j]) {
+                    rezultat.push({
+                        tip: "enako",
+                        besedilo: a[i],
+                        drugoBesedilo: b[j],
+                        levo: i + 1,
+                        desno: j + 1
+                    });
+                    i++;
+                    j++;
+                } else if (
+                    i < a.length &&
+                    (j === b.length ||
+                     tabela[i + 1][j] >= tabela[i][j + 1])
+                ) {
+                    rezultat.push({
+                        tip: "odstranjeno",
+                        besedilo: a[i],
+                        levo: i + 1,
+                        desno: null
+                    });
+                    i++;
+                } else {
+                    rezultat.push({
+                        tip: "dodano",
+                        besedilo: b[j],
+                        levo: null,
+                        desno: j + 1
+                    });
+                    j++;
+                }
+            }
+
+            return rezultat;
+        }
+
+        function prikazi() {
+            if (!zadnjiRezultat) return;
+
+            razlike.replaceChildren();
+
+            const stevci = {
+                enako: 0,
+                dodano: 0,
+                odstranjeno: 0
+            };
+
+            zadnjiRezultat.forEach(v => stevci[v.tip]++);
+
+            const uvod = stevci.dodano === 0 && stevci.odstranjeno === 0
+                ? "Besedili se po izbranih pravilih ujemata. "
+                : "";
+
+            povzetek.textContent =
+                uvod +
+                `Ujemajoče vrstice: ${stevci.enako}; ` +
+                `dodane: ${stevci.dodano}; ` +
+                `odstranjene: ${stevci.odstranjeno}.`;
+
+            const oznake = {
+                enako: "= Enako",
+                dodano: "+ Dodano",
+                odstranjeno: "− Odstranjeno"
+            };
+
+            const fragment = document.createDocumentFragment();
+
+            for (const vrstica of zadnjiRezultat) {
+                if (samoRazlike.checked && vrstica.tip === "enako") continue;
+
+                const blok = document.createElement("div");
+                blok.className = "primerjava-vrstica " + vrstica.tip;
+
+                const oznaka = document.createElement("p");
+                oznaka.className = "primerjava-oznaka";
+                oznaka.textContent =
+                    `${oznake[vrstica.tip]} · ` +
+                    `prvo: ${vrstica.levo ?? "—"}, ` +
+                    `drugo: ${vrstica.desno ?? "—"}`;
+
+                const besedilo = document.createElement("pre");
+                besedilo.textContent = vrstica.besedilo === ""
+                    ? "(prazna vrstica)"
+                    : vrstica.besedilo;
+
+                blok.append(oznaka, besedilo);
+
+                // Pri prezrtih razlikah pokaži oba dejanska zapisa.
+                if (vrstica.tip === "enako" &&
+                    vrstica.besedilo !== vrstica.drugoBesedilo) {
+                    const drugiZapis = document.createElement("pre");
+                    drugiZapis.textContent =
+                        "Zapis v drugem besedilu: " +
+                        (vrstica.drugoBesedilo || "(prazna vrstica)");
+                    blok.appendChild(drugiZapis);
+                }
+
+                fragment.appendChild(blok);
+            }
+
+            razlike.appendChild(fragment);
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            try {
+                const a = preberiVrstice(prvo.value);
+                const b = preberiVrstice(drugo.value);
+                zadnjiRezultat = primerjaj(a, b);
+                prikazi();
+            } catch (error) {
+                napaka.textContent = error.message;
+            }
+        });
+
+        document.getElementById("primer").addEventListener("click", () => {
+            prvo.value =
+                "Danes je lep dan.\nGrem v šolo.\nPopoldne berem knjigo.";
+            drugo.value =
+                "Danes je lep dan.\nGrem v knjižnico.\nPopoldne berem knjigo.\nZvečer telovadim.";
+
+            obrazec.requestSubmit();
+        });
+
+        prvo.addEventListener("input", pocisti);
+        drugo.addEventListener("input", pocisti);
+        maleCrke.addEventListener("change", pocisti);
+        presledki.addEventListener("change", pocisti);
+        samoRazlike.addEventListener("change", prikazi);
+        obrazec.addEventListener("reset", pocisti);
+    </script>
+</body>
+</html>

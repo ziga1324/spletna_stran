@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Spremeni vrstni red strani PDF-ja, jih zavrti ali odstrani in prenesi nov dokument.">
+    <title>Preurejanje in vrtenje strani PDF-ja</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer
+            src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Preurejanje in vrtenje strani PDF-ja</h1>
+        <p>Uredi strani in shrani nov PDF.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Izberi dokument</h2>
+
+            <label for="datoteka">PDF-datoteka</label>
+            <input id="datoteka" type="file" accept=".pdf,application/pdf">
+
+            <p id="podatki" role="status"></p>
+
+            <div class="gumbi">
+                <button id="obrni" type="button" disabled>
+                    Obrni vrstni red
+                </button>
+                <button id="obnovi" type="button" disabled>
+                    Obnovi izvirne strani
+                </button>
+            </div>
+
+            <ol id="seznam" class="pdf-strani"></ol>
+
+            <label for="ime">Ime nove datoteke</label>
+            <input id="ime" type="text" maxlength="100"
+                   value="urejeni-dokument.pdf">
+
+            <div class="gumbi">
+                <button id="shrani" type="button" disabled>
+                    Ustvari PDF
+                </button>
+                <button id="pocisti" type="button">Počisti</button>
+            </div>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <p id="status" role="status" aria-live="polite"></p>
+
+            <a id="prenos" class="pdf-prenos" hidden>
+                Prenesi urejeni PDF
+            </a>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Vsaka vrstica predstavlja eno stran iz izvirnega dokumenta.
+                Z gumboma Gor in Dol jo premakneš, z gumboma za vrtenje
+                spremeniš orientacijo, z gumbom Odstrani pa jo izločiš.
+            </p>
+            <p>
+                Prikazane številke se nanašajo na položaje v izvirnem PDF-ju.
+                Orodje ne prikazuje slikovnih predogledov strani.
+                Gumb Obnovi izvirne strani povrne tudi odstranjene strani.
+            </p>
+            <p>
+                Obdelava poteka v brskalniku. Ta stran ne pošilja PDF-ja
+                na strežnik. Za nalaganje knjižnice potrebuješ internet.
+                Izvirna datoteka ostane nespremenjena.
+            </p>
+            <p>
+                Podprti so dokumenti do 50 MiB in 200 strani.
+                Zaščiteni in poškodovani PDF-ji niso podprti.
+                Zaznamki, priponke, interaktivna polja in digitalni podpisi
+                se morda ne ohranijo.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Urejanje strani PDF-ja</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const datoteka = document.getElementById("datoteka");
+        const podatki = document.getElementById("podatki");
+        const seznam = document.getElementById("seznam");
+        const ime = document.getElementById("ime");
+        const obrni = document.getElementById("obrni");
+        const obnovi = document.getElementById("obnovi");
+        const shrani = document.getElementById("shrani");
+        const pocisti = document.getElementById("pocisti");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+        const prenos = document.getElementById("prenos");
+
+        let dokument = null;
+        let strani = [];
+        let obdelava = false;
+        let url = null;
+
+        function normalizirajKot(kot) {
+            return ((kot % 360) + 360) % 360;
+        }
+
+        function velikost(bajti) {
+            return (bajti / 1024 / 1024).toLocaleString("sl-SI", {
+                maximumFractionDigits: 2
+            }) + " MiB";
+        }
+
+        function odstraniPrenos() {
+            if (url) URL.revokeObjectURL(url);
+            url = null;
+            prenos.hidden = true;
+            prenos.removeAttribute("href");
+            status.textContent = "";
+        }
+
+        function imePrenosa() {
+            let zapis = ime.value.trim()
+                .replace(/[\\/:*?"<>|\u0000-\u001f]/g, "_");
+
+            if (!zapis) zapis = "urejeni-dokument.pdf";
+            if (!/\.pdf$/i.test(zapis)) zapis += ".pdf";
+            return zapis;
+        }
+
+        function izvirneStrani() {
+            return dokument.getPages().map((stran, indeks) => ({
+                indeks,
+                kot: normalizirajKot(stran.getRotation().angle)
+            }));
+        }
+
+        function sprememba() {
+            odstraniPrenos();
+            napaka.textContent = "";
+            prikazi();
+        }
+
+        function gumb(besedilo, oznaka, dejanje, onemogocen = false) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.textContent = besedilo;
+            button.setAttribute("aria-label", oznaka);
+            button.disabled = obdelava || onemogocen;
+            button.addEventListener("click", dejanje);
+            return button;
+        }
+
+        function prikazi() {
+            seznam.replaceChildren();
+
+            strani.forEach((stran, polozaj) => {
+                const li = document.createElement("li");
+                const opis = document.createElement("p");
+                opis.textContent =
+                    `Izvirna stran ${stran.indeks + 1} · ` +
+                    `zasuk: ${stran.kot}°`;
+
+                const gumbi = document.createElement("div");
+                gumbi.className = "gumbi";
+
+                const oznaka = "stran " + (stran.indeks + 1);
+
+                gumbi.append(
+                    gumb("Gor", "Premakni gor: " + oznaka, () => {
+                        [strani[polozaj - 1], strani[polozaj]] =
+                            [strani[polozaj], strani[polozaj - 1]];
+                        sprememba();
+                    }, polozaj === 0),
+
+                    gumb("Dol", "Premakni dol: " + oznaka, () => {
+                        [strani[polozaj + 1], strani[polozaj]] =
+                            [strani[polozaj], strani[polozaj + 1]];
+                        sprememba();
+                    }, polozaj === strani.length - 1),
+
+                    gumb("↶ 90°", "Zavrti levo: " + oznaka, () => {
+                        stran.kot = normalizirajKot(stran.kot - 90);
+                        sprememba();
+                    }),
+
+                    gumb("↷ 90°", "Zavrti desno: " + oznaka, () => {
+                        stran.kot = normalizirajKot(stran.kot + 90);
+                        sprememba();
+                    }),
+
+                    gumb("Odstrani", "Odstrani: " + oznaka, () => {
+                        strani.splice(polozaj, 1);
+                        sprememba();
+                    })
+                );
+
+                li.append(opis, gumbi);
+                seznam.appendChild(li);
+            });
+
+            datoteka.disabled = obdelava;
+            ime.disabled = obdelava;
+            pocisti.disabled = obdelava;
+            shrani.disabled = obdelava || !dokument || !strani.length;
+            obrni.disabled = obdelava || strani.length < 2;
+            obnovi.disabled = obdelava || !dokument;
+        }
+
+        datoteka.addEventListener("change", async () => {
+            const izbrana = datoteka.files[0];
+
+            dokument = null;
+            strani = [];
+            podatki.textContent = "";
+            napaka.textContent = "";
+            odstraniPrenos();
+
+            if (!izbrana) {
+                prikazi();
+                return;
+            }
+
+            obdelava = true;
+            prikazi();
+
+            try {
+                if (!window.PDFLib) {
+                    throw new Error(
+                        "Knjižnica se ni naložila. Preveri povezavo " +
+                        "in ponovno naloži stran."
+                    );
+                }
+
+                if (!/\.pdf$/i.test(izbrana.name)) {
+                    throw new Error("Izberi datoteko s končnico .pdf.");
+                }
+
+                if (izbrana.size > 50 * 1024 * 1024) {
+                    throw new Error("Največja velikost je 50 MiB.");
+                }
+
+                status.textContent = "Odpiram dokument…";
+
+                let vhod;
+                try {
+                    vhod = await PDFLib.PDFDocument.load(
+                        await izbrana.arrayBuffer()
+                    );
+                } catch {
+                    throw new Error(
+                        "PDF-ja ni mogoče odpreti. Lahko je zaščiten " +
+                        "ali poškodovan."
+                    );
+                }
+
+                if (vhod.getPageCount() < 1 || vhod.getPageCount() > 200) {
+                    throw new Error("Podprtih je od 1 do 200 strani.");
+                }
+
+                dokument = vhod;
+                strani = izvirneStrani();
+
+                podatki.textContent =
+                    `${izbrana.name} · ${strani.length} strani · ` +
+                    velikost(izbrana.size);
+
+                status.textContent = "Dokument je pripravljen.";
+            } catch (error) {
+                dokument = null;
+                strani = [];
+                status.textContent = "";
+                napaka.textContent = error.message;
+            } finally {
+                obdelava = false;
+                prikazi();
+            }
+        });
+
+        obrni.addEventListener("click", () => {
+            if (obdelava) return;
+            strani.reverse();
+            sprememba();
+        });
+
+        obnovi.addEventListener("click", () => {
+            if (!dokument || obdelava) return;
+            strani = izvirneStrani();
+            sprememba();
+        });
+
+        shrani.addEventListener("click", async () => {
+            if (!dokument || !strani.length || obdelava) return;
+
+            odstraniPrenos();
+            napaka.textContent = "";
+            obdelava = true;
+            prikazi();
+
+            try {
+                status.textContent = "Ustvarjam dokument…";
+                await new Promise(resolve => setTimeout(resolve, 0));
+
+                const izhod = await PDFLib.PDFDocument.create();
+                const kopije = await izhod.copyPages(
+                    dokument,
+                    strani.map(stran => stran.indeks)
+                );
+
+                kopije.forEach((stran, indeks) => {
+                    stran.setRotation(PDFLib.degrees(strani[indeks].kot));
+                    izhod.addPage(stran);
+                });
+
+                const bajti = await izhod.save();
+                const blob = new Blob([bajti], {
+                    type: "application/pdf"
+                });
+
+                url = URL.createObjectURL(blob);
+                prenos.href = url;
+                prenos.download = imePrenosa();
+                prenos.hidden = false;
+
+                status.textContent =
+                    `Končano. Novi dokument vsebuje ${strani.length} strani. ` +
+                    `Velikost: ${velikost(blob.size)}.`;
+            } catch (error) {
+                odstraniPrenos();
+                napaka.textContent =
+                    error.message || "Ustvarjanje PDF-ja ni uspelo.";
+            } finally {
+                obdelava = false;
+                prikazi();
+            }
+        });
+
+        ime.addEventListener("input", () => {
+            if (url) prenos.download = imePrenosa();
+        });
+
+        pocisti.addEventListener("click", () => {
+            if (obdelava) return;
+
+            dokument = null;
+            strani = [];
+            datoteka.value = "";
+            ime.value = "urejeni-dokument.pdf";
+            podatki.textContent = "";
+            sprememba();
+        });
+
+        window.addEventListener("pagehide", () => {
+            if (url) URL.revokeObjectURL(url);
+        });
+
+        prikazi();
+    </script>
+</body>
+</html>

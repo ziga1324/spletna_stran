@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Izračun povprečja, mediane, modusa, variance in standardnega odklona podatkovnega niza.">
+    <title>Statistika podatkovnega niza</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Statistika podatkovnega niza</h1>
+        <p>Vnesi števila in izračunaj njihove statistične lastnosti.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Statistični kalkulator</h2>
+
+            <form id="obrazec">
+                <label for="podatki">Podatki</label>
+                <textarea id="podatki" rows="6" maxlength="100000"
+                          required spellcheck="false"
+                          aria-describedby="navodila"
+                          placeholder="Primer: 2 4 4 6 8"></textarea>
+
+                <p id="navodila">
+                    Števila loči s presledki, podpičji ali novimi vrsticami.
+                    Decimalna števila zapisuj s piko ali vejico.
+                    Primer: 1,5; 2,5; 3.
+                    Vneseš lahko največ 10.000 števil.
+                </p>
+
+                <label for="vrsta">Vrsta podatkov</label>
+                <select id="vrsta">
+                    <option value="populacija">
+                        Celotna populacija — deljenje z n
+                    </option>
+                    <option value="vzorec">
+                        Vzorec — deljenje z n − 1
+                    </option>
+                </select>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                    <button id="primer" type="button">Vstavi primer</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <div id="rezultat" class="rezultat" aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kaj pomenijo rezultati?</h2>
+            <ul>
+                <li><strong>Povprečje:</strong> vsota števil, deljena z njihovim številom.</li>
+                <li><strong>Mediana:</strong> srednja vrednost urejenih podatkov.</li>
+                <li><strong>Modus:</strong> vrednost z največ ponovitvami.</li>
+                <li><strong>Razpon:</strong> razlika med največjo in najmanjšo vrednostjo.</li>
+                <li><strong>Varianca:</strong> mera razpršenosti okoli povprečja.</li>
+                <li><strong>Standardni odklon:</strong> kvadratni koren variance.</li>
+            </ul>
+
+            <p>
+                Če podatki predstavljajo celotno skupino, izberi populacijo.
+                Če so vzorec večje skupine, izberi vzorec.
+                Vzorčna varianca in standardni odklon zahtevata vsaj dve vrednosti.
+            </p>
+
+            <p>
+                Pri modusu kalkulator primerja vnesene številčne vrednosti
+                brez dodatnega zaokroževanja. Če imajo vse vrednosti enako
+                pogostost, izpiše, da ni izstopajočega modusa.
+                Rezultati so prikazani z največ 10 pomembnimi števkami.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Statistika podatkovnega niza</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const podatki = document.getElementById("podatki");
+        const vrsta = document.getElementById("vrsta");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        function pocisti() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function preberiPodatke(vnos) {
+            if (!vnos.trim()) {
+                throw new Error("Vnesi vsaj eno število.");
+            }
+
+            const elementi = vnos.trim().split(/[;\s]+/);
+
+            if (elementi.length > 10000) {
+                throw new Error("Vneseš lahko največ 10.000 števil.");
+            }
+
+            const vzorec =
+                /^[+-]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:e[+-]?\d+)?$/i;
+
+            return elementi.map((element, indeks) => {
+                if (!vzorec.test(element)) {
+                    throw new Error(
+                        `Neveljaven zapis na mestu ${indeks + 1}: ${element}. ` +
+                        "Števila loči s presledki ali podpičji."
+                    );
+                }
+
+                const stevilo = Number(element.replace(",", "."));
+
+                if (!Number.isFinite(stevilo)) {
+                    throw new Error(
+                        `Število na mestu ${indeks + 1} je preveliko.`
+                    );
+                }
+
+                return stevilo;
+            });
+        }
+
+        function oblikuj(vrednost) {
+            if (!Number.isFinite(vrednost)) {
+                throw new Error(
+                    "Izračun presega numerični obseg. Uporabi manjša števila."
+                );
+            }
+
+            if (vrednost === 0) return "0";
+
+            return Number(vrednost.toPrecision(10))
+                .toLocaleString("sl-SI", {
+                    maximumSignificantDigits: 10
+                });
+        }
+
+        function izracunaj(stevila) {
+            const n = stevila.length;
+            const urejena = [...stevila].sort((a, b) => a - b);
+            const minimum = urejena[0];
+            const maksimum = urejena[n - 1];
+
+            // Welfordov algoritem za povprečje in vsoto
+            // kvadratov odstopanj.
+            let povprecje = 0;
+            let m2 = 0;
+            let vsota = 0;
+
+            stevila.forEach((x, indeks) => {
+                vsota += x;
+
+                const razlika = x - povprecje;
+                povprecje += razlika / (indeks + 1);
+                m2 += razlika * (x - povprecje);
+
+                if (![vsota, povprecje, m2].every(Number.isFinite)) {
+                    throw new Error(
+                        "Izračun presega numerični obseg. " +
+                        "Uporabi manjša števila."
+                    );
+                }
+            });
+
+            const sredina = Math.floor(n / 2);
+            const mediana = n % 2
+                ? urejena[sredina]
+                : urejena[sredina - 1] / 2 + urejena[sredina] / 2;
+
+            const pogostosti = new Map();
+
+            for (const x of stevila) {
+                pogostosti.set(x, (pogostosti.get(x) || 0) + 1);
+            }
+
+            const najvecPonovitev = Math.max(...pogostosti.values());
+            const modusi = [...pogostosti.entries()]
+                .filter(([, pogostost]) => pogostost === najvecPonovitev)
+                .map(([vrednost]) => vrednost)
+                .sort((a, b) => a - b);
+
+            const brezModusa = modusi.length === pogostosti.size;
+            const vzorec = vrsta.value === "vzorec";
+            const delitelj = vzorec ? n - 1 : n;
+
+            const varianca = delitelj > 0
+                ? Math.max(0, m2 / delitelj)
+                : null;
+
+            return {
+                n,
+                vsota,
+                povprecje,
+                mediana,
+                minimum,
+                maksimum,
+                razpon: maksimum - minimum,
+                modusi,
+                brezModusa,
+                najvecPonovitev,
+                varianca,
+                odklon: varianca === null ? null : Math.sqrt(varianca),
+                vzorec
+            };
+        }
+
+        function prikazi(s) {
+            const naslov = document.createElement("h3");
+            naslov.textContent = "Rezultati";
+
+            const tabela = document.createElement("table");
+            tabela.className = "statistika-tabela";
+
+            const telo = document.createElement("tbody");
+
+            const modus = s.brezModusa
+                ? "Ni izstopajočega modusa"
+                : s.modusi.map(oblikuj).join("; ") +
+                  ` (pogostost: ${s.najvecPonovitev})`;
+
+            const vrstice = [
+                ["Število podatkov", String(s.n)],
+                ["Vsota", oblikuj(s.vsota)],
+                ["Povprečje", oblikuj(s.povprecje)],
+                ["Mediana", oblikuj(s.mediana)],
+                ["Modus", modus],
+                ["Minimum", oblikuj(s.minimum)],
+                ["Maksimum", oblikuj(s.maksimum)],
+                ["Razpon", oblikuj(s.razpon)],
+                [
+                    s.vzorec ? "Vzorčna varianca" : "Populacijska varianca",
+                    s.varianca === null
+                        ? "Potrebni sta vsaj dve vrednosti"
+                        : oblikuj(s.varianca)
+                ],
+                [
+                    s.vzorec
+                        ? "Vzorčni standardni odklon"
+                        : "Populacijski standardni odklon",
+                    s.odklon === null
+                        ? "Potrebni sta vsaj dve vrednosti"
+                        : oblikuj(s.odklon)
+                ]
+            ];
+
+            for (const [ime, vrednost] of vrstice) {
+                const tr = document.createElement("tr");
+                const th = document.createElement("th");
+                const td = document.createElement("td");
+
+                th.scope = "row";
+                th.textContent = ime;
+                td.textContent = vrednost;
+
+                tr.append(th, td);
+                telo.appendChild(tr);
+            }
+
+            tabela.appendChild(telo);
+            rezultat.append(naslov, tabela);
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            try {
+                const stevila = preberiPodatke(podatki.value);
+                prikazi(izracunaj(stevila));
+            } catch (error) {
+                rezultat.replaceChildren();
+                napaka.textContent = error.message;
+            }
+        });
+
+        document.getElementById("primer").addEventListener("click", () => {
+            podatki.value = "2 4 4 4 5 5 7 9";
+            vrsta.value = "populacija";
+            obrazec.requestSubmit();
+        });
+
+        podatki.addEventListener("input", pocisti);
+        vrsta.addEventListener("change", pocisti);
+        obrazec.addEventListener("reset", pocisti);
+    </script>
+</body>
+</html>

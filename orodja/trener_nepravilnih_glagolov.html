@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Vadi angleške nepravilne glagole: osnovna oblika, past simple in past participle.">
+    <title>Trener nepravilnih glagolov</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Trener nepravilnih glagolov</h1>
+        <p>Vadi drugo in tretjo obliko angleških glagolov.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Vaja</h2>
+
+            <label for="skupina">Zbirka glagolov</label>
+            <select id="skupina">
+                <option value="vsi">Vsi glagoli</option>
+                <option value="osnovni">Osnovni glagoli</option>
+                <option value="dodatni">Dodatni glagoli</option>
+            </select>
+
+            <p id="glagol" class="nepravilni-glagol" lang="en"></p>
+            <p id="prevod"></p>
+
+            <form id="obrazec">
+                <label for="past">Past simple — druga oblika</label>
+                <input id="past" type="text" maxlength="50"
+                       autocomplete="off" spellcheck="false" required>
+
+                <label for="participle">Past participle — tretja oblika</label>
+                <input id="participle" type="text" maxlength="50"
+                       autocomplete="off" spellcheck="false" required>
+
+                <div class="gumbi">
+                    <button id="preveri" type="submit">Preveri</button>
+                    <button id="resitev" type="button">Pokaži rešitev</button>
+                    <button id="naslednji" type="button">Naslednji glagol</button>
+                </div>
+            </form>
+
+            <div id="rezultat" class="rezultat" aria-live="polite"></div>
+
+            <p id="statistika" role="status"></p>
+            <button id="ponastavi" type="button">Ponastavi statistiko</button>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kdaj uporabiš katero obliko?</h2>
+            <p>
+                Drugo obliko uporabljaš v trdilnih povedih v past simple:
+                <span lang="en">I went home yesterday.</span>
+            </p>
+            <p>
+                Tretjo obliko uporabljaš na primer s have oziroma has
+                v present perfect:
+                <span lang="en">She has written a letter.</span>
+                Uporablja se tudi pri trpniku.
+            </p>
+            <p>
+                Vnesi eno veljavno obliko brez pomožnega glagola.
+                Pri glagolu be za drugo obliko zadostuje was ali were.
+                Pri glagolih z različicami zadostuje ena od sprejetih oblik.
+            </p>
+            <p>
+                Točko dobiš, če sta oba odgovora pravilna.
+                Šteje se prvi preverjeni odgovor.
+                Razkrita rešitev se ne točkuje.
+                Statistika velja do ponovnega nalaganja strani.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Trener nepravilnih glagolov</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        // Osnovna oblika, past simple, past participle, prevod, skupina.
+        const podatki = [
+            ["be", ["was", "were"], ["been"], "biti", "osnovni"],
+            ["become", ["became"], ["become"], "postati", "osnovni"],
+            ["begin", ["began"], ["begun"], "začeti", "osnovni"],
+            ["break", ["broke"], ["broken"], "zlomiti", "osnovni"],
+            ["bring", ["brought"], ["brought"], "prinesti", "osnovni"],
+            ["buy", ["bought"], ["bought"], "kupiti", "osnovni"],
+            ["come", ["came"], ["come"], "priti", "osnovni"],
+            ["do", ["did"], ["done"], "narediti", "osnovni"],
+            ["drink", ["drank"], ["drunk"], "piti", "osnovni"],
+            ["eat", ["ate"], ["eaten"], "jesti", "osnovni"],
+            ["find", ["found"], ["found"], "najti", "osnovni"],
+            ["get", ["got"], ["got", "gotten"], "dobiti", "osnovni"],
+            ["give", ["gave"], ["given"], "dati", "osnovni"],
+            ["go", ["went"], ["gone"], "iti", "osnovni"],
+            ["have", ["had"], ["had"], "imeti", "osnovni"],
+            ["know", ["knew"], ["known"], "vedeti, poznati", "osnovni"],
+            ["make", ["made"], ["made"], "narediti, izdelati", "osnovni"],
+            ["read", ["read"], ["read"], "brati", "osnovni"],
+            ["see", ["saw"], ["seen"], "videti", "osnovni"],
+            ["take", ["took"], ["taken"], "vzeti", "osnovni"],
+            ["write", ["wrote"], ["written"], "pisati", "osnovni"],
+
+            ["choose", ["chose"], ["chosen"], "izbrati", "dodatni"],
+            ["cut", ["cut"], ["cut"], "rezati", "dodatni"],
+            ["drive", ["drove"], ["driven"], "voziti", "dodatni"],
+            ["fall", ["fell"], ["fallen"], "pasti", "dodatni"],
+            ["feel", ["felt"], ["felt"], "čutiti", "dodatni"],
+            ["fly", ["flew"], ["flown"], "leteti", "dodatni"],
+            ["forget", ["forgot"], ["forgotten"], "pozabiti", "dodatni"],
+            ["grow", ["grew"], ["grown"], "rasti", "dodatni"],
+            ["hear", ["heard"], ["heard"], "slišati", "dodatni"],
+            ["keep", ["kept"], ["kept"], "obdržati", "dodatni"],
+            ["leave", ["left"], ["left"], "oditi, zapustiti", "dodatni"],
+            ["lose", ["lost"], ["lost"], "izgubiti", "dodatni"],
+            ["meet", ["met"], ["met"], "srečati", "dodatni"],
+            ["pay", ["paid"], ["paid"], "plačati", "dodatni"],
+            ["put", ["put"], ["put"], "postaviti", "dodatni"],
+            ["run", ["ran"], ["run"], "teči", "dodatni"],
+            ["say", ["said"], ["said"], "reči", "dodatni"],
+            ["sell", ["sold"], ["sold"], "prodati", "dodatni"],
+            ["send", ["sent"], ["sent"], "poslati", "dodatni"],
+            ["sing", ["sang"], ["sung"], "peti", "dodatni"],
+            ["sit", ["sat"], ["sat"], "sedeti", "dodatni"],
+            ["sleep", ["slept"], ["slept"], "spati", "dodatni"],
+            ["speak", ["spoke"], ["spoken"], "govoriti", "dodatni"],
+            ["stand", ["stood"], ["stood"], "stati", "dodatni"],
+            ["swim", ["swam"], ["swum"], "plavati", "dodatni"],
+            ["teach", ["taught"], ["taught"], "učiti", "dodatni"],
+            ["tell", ["told"], ["told"], "povedati", "dodatni"],
+            ["think", ["thought"], ["thought"], "misliti", "dodatni"],
+            ["understand", ["understood"], ["understood"], "razumeti", "dodatni"],
+            ["wear", ["wore"], ["worn"], "nositi oblačilo", "dodatni"],
+            ["win", ["won"], ["won"], "zmagati", "dodatni"]
+        ];
+
+        const skupina = document.getElementById("skupina");
+        const glagol = document.getElementById("glagol");
+        const prevod = document.getElementById("prevod");
+        const obrazec = document.getElementById("obrazec");
+        const past = document.getElementById("past");
+        const participle = document.getElementById("participle");
+        const preveri = document.getElementById("preveri");
+        const resitev = document.getElementById("resitev");
+        const rezultat = document.getElementById("rezultat");
+        const statistika = document.getElementById("statistika");
+
+        let vrsta = [];
+        let trenutni = null;
+        let zakljucen = false;
+        let pravilni = 0;
+        let poskusi = 0;
+
+        function normaliziraj(besedilo) {
+            return besedilo.trim().toLowerCase();
+        }
+
+        function posodobiStatistiko() {
+            statistika.textContent =
+                `Pravilno rešeni glagoli: ${pravilni}/${poskusi}.` +
+                (poskusi
+                    ? ` Uspešnost: ${Math.round(pravilni / poskusi * 100)} %.`
+                    : "");
+        }
+
+        function pripraviVrsto() {
+            vrsta = podatki.filter(v =>
+                skupina.value === "vsi" || v[4] === skupina.value
+            );
+
+            for (let i = vrsta.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [vrsta[i], vrsta[j]] = [vrsta[j], vrsta[i]];
+            }
+
+            if (vrsta.length > 1 && vrsta[vrsta.length - 1] === trenutni) {
+                [vrsta[0], vrsta[vrsta.length - 1]] =
+                    [vrsta[vrsta.length - 1], vrsta[0]];
+            }
+        }
+
+        function naslednji() {
+            if (!vrsta.length) pripraviVrsto();
+
+            trenutni = vrsta.pop();
+            zakljucen = false;
+
+            glagol.textContent = trenutni[0];
+            prevod.textContent = "Pomen: " + trenutni[3];
+            past.value = "";
+            participle.value = "";
+            past.disabled = false;
+            participle.disabled = false;
+            preveri.disabled = false;
+            resitev.disabled = false;
+            rezultat.replaceChildren();
+        }
+
+        function dodaj(besedilo, anglesko = false) {
+            const p = document.createElement("p");
+            p.textContent = besedilo;
+            if (anglesko) p.lang = "en";
+            rezultat.appendChild(p);
+        }
+
+        function zakljuci() {
+            zakljucen = true;
+            past.disabled = true;
+            participle.disabled = true;
+            preveri.disabled = true;
+            resitev.disabled = true;
+
+            dodaj(
+                `${trenutni[0]} — ${trenutni[1].join(" / ")} — ` +
+                trenutni[2].join(" / "),
+                true
+            );
+
+            if (trenutni[0] === "read") {
+                dodaj(
+                    "Read se v vseh treh oblikah piše enako. " +
+                    "Osnovna oblika se izgovori /riːd/, " +
+                    "druga in tretja pa /red/."
+                );
+            }
+
+            if (trenutni[0] === "get") {
+                dodaj(
+                    "Got je običajna tretja oblika v britanski angleščini. " +
+                    "Gotten se uporablja v ameriški angleščini; " +
+                    "izbira je odvisna tudi od pomena."
+                );
+            }
+
+            if (trenutni[0] === "be") {
+                dodaj(
+                    "Was uporabljamo z I, he, she in it; " +
+                    "were pa z you, we in they v običajnih trdilnih povedih."
+                );
+            }
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            if (zakljucen) return;
+
+            const odgovorPast = normaliziraj(past.value);
+            const odgovorParticiple = normaliziraj(participle.value);
+
+            if (!odgovorPast || !odgovorParticiple) {
+                rezultat.textContent = "Izpolni obe polji.";
+                return;
+            }
+
+            const pastPravilen = trenutni[1].includes(odgovorPast);
+            const participlePravilen = trenutni[2].includes(odgovorParticiple);
+
+            poskusi++;
+            if (pastPravilen && participlePravilen) pravilni++;
+
+            rezultat.replaceChildren();
+
+            dodaj(
+                "Past simple: " +
+                (pastPravilen ? "pravilno." : "ni pravilno.")
+            );
+            dodaj(
+                "Past participle: " +
+                (participlePravilen ? "pravilno." : "ni pravilno.")
+            );
+
+            zakljuci();
+            posodobiStatistiko();
+        });
+
+        resitev.addEventListener("click", () => {
+            if (zakljucen) return;
+
+            rezultat.replaceChildren();
+            dodaj("Rešitev je razkrita. Glagol se ne šteje v statistiko.");
+            zakljuci();
+        });
+
+        document.getElementById("naslednji").addEventListener("click", () => {
+            naslednji();
+            past.focus();
+        });
+
+        skupina.addEventListener("change", () => {
+            vrsta = [];
+            naslednji();
+        });
+
+        document.getElementById("ponastavi").addEventListener("click", () => {
+            pravilni = 0;
+            poskusi = 0;
+            posodobiStatistiko();
+        });
+
+        naslednji();
+        posodobiStatistiko();
+    </script>
+</body>
+</html>

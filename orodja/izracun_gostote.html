@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Kalkulator gostote, mase in prostornine s pretvorbo enot.">
+    <title>Izračun gostote</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Izračun gostote</h1>
+        <p>Izračunaj gostoto, maso ali prostornino.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Kalkulator</h2>
+
+            <form id="obrazec">
+                <label for="iskana">Kaj želiš izračunati?</label>
+                <select id="iskana">
+                    <option value="gostota">Gostoto ρ</option>
+                    <option value="masa">Maso m</option>
+                    <option value="prostornina">Prostornino V</option>
+                </select>
+
+                <div id="polje-masa">
+                    <label for="masa">Masa</label>
+                    <div class="gostota-vnos">
+                        <input id="masa" type="number" min="0"
+                               step="any" placeholder="Na primer 100" required>
+                        <select id="enota-masa" aria-label="Enota mase">
+                            <option value="0.000001">mg</option>
+                            <option value="0.001" selected>g</option>
+                            <option value="1">kg</option>
+                            <option value="1000">t</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="polje-prostornina">
+                    <label for="prostornina">Prostornina</label>
+                    <div class="gostota-vnos">
+                        <input id="prostornina" type="number" min="0"
+                               step="any" placeholder="Na primer 50" required>
+                        <select id="enota-prostornina"
+                                aria-label="Enota prostornine">
+                            <option value="0.000001" selected>cm³ / mL</option>
+                            <option value="0.001">dm³ / L</option>
+                            <option value="1">m³</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="polje-gostota" hidden>
+                    <label for="gostota">Gostota</label>
+                    <div class="gostota-vnos">
+                        <input id="gostota" type="number" min="0"
+                               step="any" placeholder="Na primer 2" disabled>
+                        <select id="enota-gostota"
+                                aria-label="Enota gostote" disabled>
+                            <option value="1">kg/m³</option>
+                            <option value="1000" selected>g/cm³</option>
+                            <option value="1000">g/mL</option>
+                            <option value="1000">kg/L</option>
+                            <option value="1">g/L</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                    <button id="primer" type="button">Vstavi primer</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <div id="rezultat" class="rezultat" aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Formule</h2>
+            <ul>
+                <li>Gostota: ρ = m / V</li>
+                <li>Masa: m = ρ × V</li>
+                <li>Prostornina: V = m / ρ</li>
+            </ul>
+
+            <p>
+                Primer: telo z maso 100 g in prostornino 50 cm³
+                ima povprečno gostoto 2 g/cm³ oziroma 2000 kg/m³.
+            </p>
+
+            <p>
+                Velja: 1 cm³ = 1 mL, 1 dm³ = 1 L in
+                1 g/cm³ = 1000 kg/m³.
+                Pri nehomogenem telesu rezultat predstavlja povprečno
+                gostoto celotnega telesa.
+            </p>
+
+            <p>
+                Vnesi pozitivne vrednosti. Rezultati so prikazani
+                z največ 10 pomembnimi števkami.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Kalkulator gostote</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const iskana = document.getElementById("iskana");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const polja = {
+            masa: {
+                input: document.getElementById("masa"),
+                enota: document.getElementById("enota-masa"),
+                ime: "Masa"
+            },
+            prostornina: {
+                input: document.getElementById("prostornina"),
+                enota: document.getElementById("enota-prostornina"),
+                ime: "Prostornina"
+            },
+            gostota: {
+                input: document.getElementById("gostota"),
+                enota: document.getElementById("enota-gostota"),
+                ime: "Gostota"
+            }
+        };
+
+        function pocisti() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function posodobi() {
+            for (const [kljuc, polje] of Object.entries(polja)) {
+                const skrito = kljuc === iskana.value;
+
+                document.getElementById("polje-" + kljuc).hidden = skrito;
+                polje.input.disabled = skrito;
+                polje.input.required = !skrito;
+                polje.enota.disabled = skrito;
+            }
+
+            pocisti();
+        }
+
+        function preveri(vrednost) {
+            if (!Number.isFinite(vrednost) || vrednost <= 0) {
+                throw new Error(
+                    "Izračun presega numerični obseg. Preveri vrednosti in enote."
+                );
+            }
+
+            return vrednost;
+        }
+
+        function preberi(polje) {
+            const vnos = polje.input.valueAsNumber;
+
+            if (!Number.isFinite(vnos) || vnos <= 0) {
+                throw new Error(
+                    polje.ime + " mora biti pozitivno končno število."
+                );
+            }
+
+            return preveri(vnos * Number(polje.enota.value));
+        }
+
+        function oblikuj(vrednost) {
+            preveri(vrednost);
+
+            return vrednost.toLocaleString("sl-SI", {
+                maximumSignificantDigits: 10
+            });
+        }
+
+        function dodaj(besedilo, poudarjeno = false) {
+            const p = document.createElement("p");
+            p.textContent = besedilo;
+            if (poudarjeno) p.className = "gostota-vrednost";
+            rezultat.appendChild(p);
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            try {
+                const vrednosti = {};
+
+                for (const [kljuc, polje] of Object.entries(polja)) {
+                    if (kljuc !== iskana.value) {
+                        vrednosti[kljuc] = preberi(polje);
+                    }
+                }
+
+                let { masa, prostornina, gostota } = vrednosti;
+
+                if (iskana.value === "gostota") {
+                    gostota = preveri(masa / prostornina);
+
+                    dodaj("ρ = " + oblikuj(gostota) + " kg/m³", true);
+                    dodaj(
+                        "Enakovredno: " + oblikuj(gostota / 1000) +
+                        " g/cm³ oziroma g/mL ali kg/L."
+                    );
+                    dodaj("Formula: ρ = m / V.");
+                } else if (iskana.value === "masa") {
+                    masa = preveri(gostota * prostornina);
+
+                    dodaj("m = " + oblikuj(masa) + " kg", true);
+                    dodaj("Enakovredno: " + oblikuj(masa * 1000) + " g.");
+                    dodaj("Formula: m = ρ × V.");
+                } else {
+                    prostornina = preveri(masa / gostota);
+
+                    dodaj("V = " + oblikuj(prostornina) + " m³", true);
+                    dodaj(
+                        "Enakovredno: " + oblikuj(prostornina * 1000) +
+                        " L oziroma " + oblikuj(prostornina * 1000000) +
+                        " cm³."
+                    );
+                    dodaj("Formula: V = m / ρ.");
+                }
+
+                dodaj(
+                    "Podatki v osnovnih enotah: m = " +
+                    oblikuj(masa) + " kg; V = " +
+                    oblikuj(prostornina) + " m³; ρ = " +
+                    oblikuj(gostota) + " kg/m³."
+                );
+            } catch (error) {
+                rezultat.replaceChildren();
+                napaka.textContent = error.message;
+            }
+        });
+
+        document.getElementById("primer").addEventListener("click", () => {
+            iskana.value = "gostota";
+            polja.masa.input.value = "100";
+            polja.masa.enota.value = "0.001";
+            polja.prostornina.input.value = "50";
+            polja.prostornina.enota.value = "0.000001";
+
+            posodobi();
+            obrazec.requestSubmit();
+        });
+
+        iskana.addEventListener("change", posodobi);
+
+        for (const polje of Object.values(polja)) {
+            polje.input.addEventListener("input", pocisti);
+            polje.enota.addEventListener("change", pocisti);
+        }
+
+        obrazec.addEventListener("reset", () => {
+            setTimeout(posodobi, 0);
+        });
+
+        posodobi();
+    </script>
+</body>
+</html>

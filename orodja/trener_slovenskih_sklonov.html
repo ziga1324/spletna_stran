@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Vaje slovenskih sklonov s preverjanjem odgovorov in razlagami.">
+    <title>Trener slovenskih sklonov</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Trener slovenskih sklonov</h1>
+        <p>Prepoznaj sklon ali vpiši pravilno obliko samostalnika.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Vaja</h2>
+
+            <label for="nacin">Vrsta vaj</label>
+            <select id="nacin">
+                <option value="prepoznaj">Prepoznavanje sklona</option>
+                <option value="dopolni">Dopolnjevanje povedi</option>
+                <option value="vsi">Mešane vaje</option>
+            </select>
+
+            <p id="poved" class="skloni-poved"></p>
+            <p id="navodilo"></p>
+
+            <form id="obrazec">
+                <div id="izbira-ovoj">
+                    <label for="sklon">Izberi sklon</label>
+                    <select id="sklon" required>
+                        <option value="">Izberi …</option>
+                        <option value="1">Imenovalnik</option>
+                        <option value="2">Rodilnik</option>
+                        <option value="3">Dajalnik</option>
+                        <option value="4">Tožilnik</option>
+                        <option value="5">Mestnik</option>
+                        <option value="6">Orodnik</option>
+                    </select>
+                </div>
+
+                <div id="vnos-ovoj" hidden>
+                    <label for="odgovor">Pravilna oblika samostalnika</label>
+                    <input id="odgovor" type="text" maxlength="50"
+                           autocomplete="off" spellcheck="false" disabled>
+                </div>
+
+                <div class="gumbi">
+                    <button id="preveri" type="submit">Preveri</button>
+                    <button id="resitev" type="button">Pokaži rešitev</button>
+                    <button id="naslednja" type="button">Naslednja vaja</button>
+                </div>
+            </form>
+
+            <div id="rezultat" class="rezultat" aria-live="polite"></div>
+            <p id="statistika" role="status"></p>
+            <button id="ponastavi" type="button">Ponastavi statistiko</button>
+        </section>
+
+        <section class="razlaga">
+            <h2>Skloni in vprašalnice</h2>
+            <div class="skloni-ovoj">
+                <table class="skloni-tabela">
+                    <thead>
+                        <tr>
+                            <th scope="col">Sklon</th>
+                            <th scope="col">Vprašalnica</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1. Imenovalnik</td><td>Kdo ali kaj?</td></tr>
+                        <tr><td>2. Rodilnik</td><td>Koga ali česa?</td></tr>
+                        <tr><td>3. Dajalnik</td><td>Komu ali čemu?</td></tr>
+                        <tr><td>4. Tožilnik</td><td>Koga ali kaj?</td></tr>
+                        <tr><td>5. Mestnik</td><td>O kom ali o čem?</td></tr>
+                        <tr><td>6. Orodnik</td><td>S kom ali s čim?</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>
+                Sklon določi glede na vlogo besede v povedi.
+                Sama končnica ni vedno dovolj, saj imajo različni
+                skloni lahko enako obliko.
+            </p>
+            <p>
+                Zbirka vsebuje 24 pripravljenih vaj v ednini.
+                Pri dopolnjevanju vpiši samo samostalnik in upoštevaj šumnike.
+                Šteje se prvi preverjeni odgovor; razkrita rešitev se ne točkuje.
+                Statistika se ob ponovnem nalaganju strani izbriše.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Trener slovenskih sklonov</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const skloni = {
+            1: "imenovalnik",
+            2: "rodilnik",
+            3: "dajalnik",
+            4: "tožilnik",
+            5: "mestnik",
+            6: "orodnik"
+        };
+
+        const vaje = [
+            {
+                n: "prepoznaj", p: "Učenec bere knjigo.", b: "Učenec", s: 1,
+                r: "Kdo bere knjigo? Učenec. Beseda je v imenovalniku."
+            },
+            {
+                n: "prepoznaj", p: "Na mizi leži knjiga.", b: "knjiga", s: 1,
+                r: "Kaj leži na mizi? Knjiga. Beseda je v imenovalniku."
+            },
+            {
+                n: "prepoznaj", p: "Danes ni učitelja.", b: "učitelja", s: 2,
+                r: "Koga ni? Učitelja. Pri tem zanikanju uporabimo rodilnik."
+            },
+            {
+                n: "prepoznaj", p: "Voda teče iz steklenice.", b: "steklenice", s: 2,
+                r: "Iz česa teče voda? Iz steklenice. Predlog iz zahteva rodilnik."
+            },
+            {
+                n: "prepoznaj", p: "Pomagam prijatelju.", b: "prijatelju", s: 3,
+                r: "Komu pomagam? Prijatelju. Beseda je v dajalniku."
+            },
+            {
+                n: "prepoznaj", p: "Približujem se mestu.", b: "mestu", s: 3,
+                r: "Čemu se približujem? Mestu. Beseda je v dajalniku."
+            },
+            {
+                n: "prepoznaj", p: "Vidim učenca.", b: "učenca", s: 4,
+                r: "Koga vidim? Učenca. Beseda je v tožilniku."
+            },
+            {
+                n: "prepoznaj", p: "Berem knjigo.", b: "knjigo", s: 4,
+                r: "Kaj berem? Knjigo. Beseda je v tožilniku."
+            },
+            {
+                n: "prepoznaj", p: "Govorimo o prijatelju.", b: "prijatelju", s: 5,
+                r: "O kom govorimo? O prijatelju. Predlog o tukaj zahteva mestnik."
+            },
+            {
+                n: "prepoznaj", p: "Živim v mestu.", b: "mestu", s: 5,
+                r: "V čem oziroma kje živim? V mestu. Gre za mestnik."
+            },
+            {
+                n: "prepoznaj", p: "Potujem s prijateljem.", b: "prijateljem", s: 6,
+                r: "S kom potujem? S prijateljem. Beseda je v orodniku."
+            },
+            {
+                n: "prepoznaj", p: "Pišem s svinčnikom.", b: "svinčnikom", s: 6,
+                r: "S čim pišem? S svinčnikom. Beseda je v orodniku."
+            },
+
+            {
+                n: "dopolni", p: "___ raste na vrtu.", b: "roža",
+                a: "roža", s: 1,
+                r: "Kaj raste na vrtu? Roža. Potrebujemo imenovalnik ednine."
+            },
+            {
+                n: "dopolni", p: "Na dvorišču stoji ___.", b: "avto",
+                a: "avto", s: 1,
+                r: "Kaj stoji na dvorišču? Avto. Potrebujemo imenovalnik ednine."
+            },
+            {
+                n: "dopolni", p: "V sobi ni ___.", b: "miza",
+                a: "mize", s: 2,
+                r: "Česa ni? Mize. Potrebujemo rodilnik ednine."
+            },
+            {
+                n: "dopolni", p: "Vrnil sem se iz ___.", b: "mesto",
+                a: "mesta", s: 2,
+                r: "Iz česa oziroma od kod? Iz mesta. Predlog iz zahteva rodilnik."
+            },
+            {
+                n: "dopolni", p: "Pomagam ___.", b: "sestra",
+                a: "sestri", s: 3,
+                r: "Komu pomagam? Sestri. Potrebujemo dajalnik ednine."
+            },
+            {
+                n: "dopolni", p: "Približujem se ___.", b: "most",
+                a: "mostu", s: 3,
+                r: "Čemu se približujem? Mostu. Potrebujemo dajalnik ednine."
+            },
+            {
+                n: "dopolni", p: "Kupujem ___.", b: "knjiga",
+                a: "knjigo", s: 4,
+                r: "Kaj kupujem? Knjigo. Potrebujemo tožilnik ednine."
+            },
+            {
+                n: "dopolni", p: "Na poti srečam ___.", b: "prijatelj",
+                a: "prijatelja", s: 4,
+                r: "Koga srečam? Prijatelja. Potrebujemo tožilnik ednine."
+            },
+            {
+                n: "dopolni", p: "Pogovarjamo se o ___.", b: "šola",
+                a: "šoli", s: 5,
+                r: "O čem se pogovarjamo? O šoli. Potrebujemo mestnik ednine."
+            },
+            {
+                n: "dopolni", p: "Sedim na ___.", b: "stol",
+                a: "stolu", s: 5,
+                r: "Na čem sedim? Na stolu. Pri opisovanju mesta je tukaj mestnik."
+            },
+            {
+                n: "dopolni", p: "Na izlet grem z ___.", b: "brat",
+                a: "bratom", s: 6,
+                r: "S kom grem? Z bratom. Potrebujemo orodnik ednine."
+            },
+            {
+                n: "dopolni", p: "Rišem s ___.", b: "svinčnik",
+                a: "svinčnikom", s: 6,
+                r: "S čim rišem? S svinčnikom. Potrebujemo orodnik ednine."
+            }
+        ];
+
+        const nacin = document.getElementById("nacin");
+        const poved = document.getElementById("poved");
+        const navodilo = document.getElementById("navodilo");
+        const obrazec = document.getElementById("obrazec");
+        const sklon = document.getElementById("sklon");
+        const odgovor = document.getElementById("odgovor");
+        const preveri = document.getElementById("preveri");
+        const resitev = document.getElementById("resitev");
+        const rezultat = document.getElementById("rezultat");
+        const statistika = document.getElementById("statistika");
+
+        let vrsta = [];
+        let trenutna = null;
+        let zakljucena = false;
+        let pravilni = 0;
+        let poskusi = 0;
+
+        function normaliziraj(besedilo) {
+            return besedilo.normalize("NFC").trim().toLocaleLowerCase("sl-SI");
+        }
+
+        function posodobiStatistiko() {
+            statistika.textContent =
+                `Pravilni odgovori: ${pravilni}/${poskusi}.` +
+                (poskusi
+                    ? ` Uspešnost: ${Math.round(pravilni / poskusi * 100)} %.`
+                    : "");
+        }
+
+        function pripraviVrsto() {
+            vrsta = vaje.filter(v =>
+                nacin.value === "vsi" || v.n === nacin.value
+            );
+
+            for (let i = vrsta.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [vrsta[i], vrsta[j]] = [vrsta[j], vrsta[i]];
+            }
+
+            if (vrsta.length > 1 && vrsta[vrsta.length - 1] === trenutna) {
+                [vrsta[0], vrsta[vrsta.length - 1]] =
+                    [vrsta[vrsta.length - 1], vrsta[0]];
+            }
+        }
+
+        function naslednja() {
+            if (!vrsta.length) pripraviVrsto();
+
+            trenutna = vrsta.pop();
+            zakljucena = false;
+            rezultat.replaceChildren();
+            poved.replaceChildren();
+
+            const prepoznavanje = trenutna.n === "prepoznaj";
+
+            if (prepoznavanje) {
+                const indeks = trenutna.p.indexOf(trenutna.b);
+                const oznaceno = document.createElement("strong");
+                oznaceno.className = "skloni-beseda";
+                oznaceno.textContent = trenutna.b;
+
+                poved.append(
+                    document.createTextNode(trenutna.p.slice(0, indeks)),
+                    oznaceno,
+                    document.createTextNode(
+                        trenutna.p.slice(indeks + trenutna.b.length)
+                    )
+                );
+
+                navodilo.textContent = "Določi sklon poudarjene besede.";
+            } else {
+                poved.textContent = trenutna.p;
+                navodilo.textContent =
+                    "Samostalnik v imenovalniku ednine: " + trenutna.b + ".";
+            }
+
+            document.getElementById("izbira-ovoj").hidden = !prepoznavanje;
+            document.getElementById("vnos-ovoj").hidden = prepoznavanje;
+
+            sklon.value = "";
+            odgovor.value = "";
+            sklon.disabled = !prepoznavanje;
+            sklon.required = prepoznavanje;
+            odgovor.disabled = prepoznavanje;
+            odgovor.required = !prepoznavanje;
+
+            preveri.disabled = false;
+            resitev.disabled = false;
+        }
+
+        function prikazi(sporocilo) {
+            const status = document.createElement("p");
+            status.textContent = sporocilo;
+
+            const resena = document.createElement("p");
+            resena.textContent = trenutna.n === "dopolni"
+                ? trenutna.p.replace("___", trenutna.a)
+                : trenutna.p;
+
+            const razlaga = document.createElement("p");
+            razlaga.textContent = trenutna.r;
+
+            rezultat.replaceChildren(status, resena, razlaga);
+
+            zakljucena = true;
+            sklon.disabled = true;
+            odgovor.disabled = true;
+            preveri.disabled = true;
+            resitev.disabled = true;
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            if (zakljucena) return;
+
+            const prepoznavanje = trenutna.n === "prepoznaj";
+            const vnos = prepoznavanje
+                ? sklon.value
+                : normaliziraj(odgovor.value);
+
+            if (!vnos) {
+                rezultat.textContent = "Vnesi oziroma izberi odgovor.";
+                return;
+            }
+
+            const pravilen = prepoznavanje
+                ? Number(vnos) === trenutna.s
+                : vnos === normaliziraj(trenutna.a);
+
+            poskusi++;
+            if (pravilen) pravilni++;
+
+            const pravilenOdgovor = prepoznavanje
+                ? skloni[trenutna.s]
+                : trenutna.a;
+
+            prikazi(
+                pravilen
+                    ? "Pravilno!"
+                    : "Odgovor ni pravilen. Rešitev: " + pravilenOdgovor + "."
+            );
+            posodobiStatistiko();
+        });
+
+        resitev.addEventListener("click", () => {
+            if (zakljucena) return;
+
+            const pravilno = trenutna.n === "prepoznaj"
+                ? skloni[trenutna.s]
+                : trenutna.a;
+
+            prikazi(
+                "Rešitev: " + pravilno +
+                ". Vaja se ne šteje v statistiko."
+            );
+        });
+
+        document.getElementById("naslednja").addEventListener("click", () => {
+            naslednja();
+            if (trenutna.n === "prepoznaj") sklon.focus();
+            else odgovor.focus();
+        });
+
+        nacin.addEventListener("change", () => {
+            vrsta = [];
+            naslednja();
+        });
+
+        document.getElementById("ponastavi").addEventListener("click", () => {
+            pravilni = 0;
+            poskusi = 0;
+            posodobiStatistiko();
+        });
+
+        naslednja();
+        posodobiStatistiko();
+    </script>
+</body>
+</html>

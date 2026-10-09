@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Kalkulator redčenja raztopin po enačbi C1 × V1 = C2 × V2.">
+    <title>Redčenje raztopin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Redčenje raztopin</h1>
+        <p>Iz treh znanih vrednosti izračunaj četrto.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Kalkulator redčenja</h2>
+
+            <form id="obrazec">
+                <label for="iskana">Kaj želiš izračunati?</label>
+                <select id="iskana">
+                    <option value="v1">V₁ — prostornina začetne raztopine</option>
+                    <option value="c1">C₁ — začetna koncentracija</option>
+                    <option value="c2">C₂ — končna koncentracija</option>
+                    <option value="v2">V₂ — končna prostornina</option>
+                </select>
+
+                <label for="koncentracija-enota">Enota obeh koncentracij</label>
+                <select id="koncentracija-enota">
+                    <option value="mol/L">mol/L</option>
+                    <option value="mmol/L">mmol/L</option>
+                    <option value="g/L">g/L</option>
+                    <option value="mg/L">mg/L</option>
+                </select>
+
+                <div id="polje-c1">
+                    <label for="c1">Začetna koncentracija C₁</label>
+                    <input id="c1" type="number" min="0"
+                           step="any" placeholder="Na primer 1" required>
+                </div>
+
+                <div id="polje-v1">
+                    <label for="v1">Prostornina začetne raztopine V₁</label>
+                    <div class="redcenje-vnos">
+                        <input id="v1" type="number" min="0"
+                               step="any" placeholder="Na primer 10">
+                        <select id="enota-v1" aria-label="Enota prostornine V1">
+                            <option value="0.000001">µL</option>
+                            <option value="0.001" selected>mL</option>
+                            <option value="1">L</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="polje-c2">
+                    <label for="c2">Končna koncentracija C₂</label>
+                    <input id="c2" type="number" min="0"
+                           step="any" placeholder="Na primer 0,1" required>
+                </div>
+
+                <div id="polje-v2">
+                    <label for="v2">Končna prostornina V₂</label>
+                    <div class="redcenje-vnos">
+                        <input id="v2" type="number" min="0"
+                               step="any" placeholder="Na primer 100" required>
+                        <select id="enota-v2" aria-label="Enota prostornine V2">
+                            <option value="0.000001">µL</option>
+                            <option value="0.001" selected>mL</option>
+                            <option value="1">L</option>
+                        </select>
+                    </div>
+                </div>
+
+                <p>
+                    Polje iskane vrednosti je skrito.
+                    Koncentraciji morata uporabljati isto enoto.
+                </p>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                    <button id="primer" type="button">Vstavi primer</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <div id="rezultat" class="rezultat" aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Pri redčenju se količina topljenca ohrani:
+                C₁ × V₁ = C₂ × V₂.
+                V₁ pomeni prostornino odvzete začetne raztopine,
+                V₂ pa skupno prostornino pripravljene raztopine.
+            </p>
+            <p>
+                Primer: za 100 mL raztopine s koncentracijo 0,1 mol/L
+                iz začetne raztopine s koncentracijo 1 mol/L potrebuješ
+                10 mL začetne raztopine.
+            </p>
+            <p>
+                Končno prostornino dosežeš z dopolnitvijo s topilom.
+                Razlika V₂ − V₁ je približek količine dodanega topila,
+                saj prostornine pri mešanju niso vedno seštevne.
+            </p>
+            <p>
+                Kalkulator predpostavlja redčenje brez reakcije in brez
+                izgube topljenca. Podpira pozitivne koncentracije in
+                prostornine. Masni odstotki niso podprti, ker za njih
+                ta prostorninska enačba brez dodatnih podatkov ne velja.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Kalkulator redčenja raztopin</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const iskana = document.getElementById("iskana");
+        const koncentracijaEnota =
+            document.getElementById("koncentracija-enota");
+        const enotaV1 = document.getElementById("enota-v1");
+        const enotaV2 = document.getElementById("enota-v2");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const polja = {
+            c1: document.getElementById("c1"),
+            v1: document.getElementById("v1"),
+            c2: document.getElementById("c2"),
+            v2: document.getElementById("v2")
+        };
+
+        function pocisti() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function posodobi() {
+            for (const [kljuc, polje] of Object.entries(polja)) {
+                const skrito = kljuc === iskana.value;
+                document.getElementById("polje-" + kljuc).hidden = skrito;
+                polje.disabled = skrito;
+                polje.required = !skrito;
+            }
+
+            enotaV1.disabled = iskana.value === "v1";
+            enotaV2.disabled = iskana.value === "v2";
+            pocisti();
+        }
+
+        function preberi(polje, ime) {
+            const vrednost = polje.valueAsNumber;
+
+            if (!Number.isFinite(vrednost) || vrednost <= 0) {
+                throw new Error(ime + " mora biti pozitivno končno število.");
+            }
+
+            return vrednost;
+        }
+
+        function oblikuj(vrednost) {
+            return vrednost.toLocaleString("sl-SI", {
+                maximumSignificantDigits: 10
+            });
+        }
+
+        function prostornina(vrednostL) {
+            if (vrednostL >= 1) {
+                return oblikuj(vrednostL) + " L";
+            }
+            if (vrednostL >= 0.001) {
+                return oblikuj(vrednostL * 1000) + " mL";
+            }
+            return oblikuj(vrednostL * 1000000) + " µL";
+        }
+
+        function dodaj(besedilo, poudarjeno = false) {
+            const p = document.createElement("p");
+            p.textContent = besedilo;
+            if (poudarjeno) p.className = "redcenje-vrednost";
+            rezultat.appendChild(p);
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            try {
+                const vrednosti = {};
+
+                for (const [kljuc, polje] of Object.entries(polja)) {
+                    if (kljuc === iskana.value) continue;
+
+                    let vrednost = preberi(polje, kljuc.toUpperCase());
+
+                    if (kljuc === "v1") {
+                        vrednost *= Number(enotaV1.value);
+                    } else if (kljuc === "v2") {
+                        vrednost *= Number(enotaV2.value);
+                    }
+
+                    vrednosti[kljuc] = vrednost;
+                }
+
+                let { c1, v1, c2, v2 } = vrednosti;
+                let formula;
+
+                switch (iskana.value) {
+                    case "c1":
+                        c1 = c2 * (v2 / v1);
+                        formula = "C₁ = C₂ × V₂ / V₁";
+                        break;
+                    case "v1":
+                        v1 = v2 * (c2 / c1);
+                        formula = "V₁ = C₂ × V₂ / C₁";
+                        break;
+                    case "c2":
+                        c2 = c1 * (v1 / v2);
+                        formula = "C₂ = C₁ × V₁ / V₂";
+                        break;
+                    case "v2":
+                        v2 = v1 * (c1 / c2);
+                        formula = "V₂ = C₁ × V₁ / C₂";
+                        break;
+                }
+
+                if (![c1, v1, c2, v2].every(
+                    x => Number.isFinite(x) && x > 0
+                )) {
+                    throw new Error(
+                        "Izračun presega numerični obseg. Preveri vrednosti."
+                    );
+                }
+
+                const toleranca = 1e-12;
+
+                if (c2 > c1 * (1 + toleranca) ||
+                    v1 > v2 * (1 + toleranca)) {
+                    throw new Error(
+                        "Podatki opisujejo koncentriranje, ne redčenja. " +
+                        "Pri redčenju mora biti C₂ ≤ C₁ in V₂ ≥ V₁."
+                    );
+                }
+
+                const enotaC = koncentracijaEnota.value;
+                const prikazi = {
+                    c1: ["Začetna koncentracija C₁", oblikuj(c1) + " " + enotaC],
+                    v1: ["Začetna prostornina V₁", prostornina(v1)],
+                    c2: ["Končna koncentracija C₂", oblikuj(c2) + " " + enotaC],
+                    v2: ["Končna prostornina V₂", prostornina(v2)]
+                };
+
+                const [ime, vrednost] = prikazi[iskana.value];
+                dodaj(ime + ": " + vrednost, true);
+                dodaj("Formula: " + formula);
+
+                for (const [kljuc, [naziv, prikaz]] of Object.entries(prikazi)) {
+                    if (kljuc !== iskana.value) {
+                        dodaj(naziv + ": " + prikaz);
+                    }
+                }
+
+                dodaj("Faktor redčenja C₁/C₂: " + oblikuj(c1 / c2) + ".");
+                dodaj(
+                    "Približna razlika prostornin V₂ − V₁: " +
+                    prostornina(Math.max(0, v2 - v1)) + "."
+                );
+                dodaj(
+                    "Za pripravo odmeri V₁ začetne raztopine in " +
+                    "dopolni s topilom do končne prostornine V₂."
+                );
+            } catch (error) {
+                rezultat.replaceChildren();
+                napaka.textContent = error.message;
+            }
+        });
+
+        document.getElementById("primer").addEventListener("click", () => {
+            iskana.value = "v1";
+            koncentracijaEnota.value = "mol/L";
+            polja.c1.value = "1";
+            polja.c2.value = "0.1";
+            polja.v2.value = "100";
+            enotaV1.value = "0.001";
+            enotaV2.value = "0.001";
+
+            posodobi();
+            obrazec.requestSubmit();
+        });
+
+        iskana.addEventListener("change", posodobi);
+
+        Object.values(polja).forEach(polje => {
+            polje.addEventListener("input", pocisti);
+        });
+
+        [koncentracijaEnota, enotaV1, enotaV2].forEach(select => {
+            select.addEventListener("change", pocisti);
+        });
+
+        obrazec.addEventListener("reset", () => {
+            setTimeout(posodobi, 0);
+        });
+
+        posodobi();
+    </script>
+</body>
+</html>

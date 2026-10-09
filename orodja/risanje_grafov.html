@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Nariši graf matematične funkcije in nastavi območje prikaza.">
+    <title>Risanje grafov funkcij</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Risanje grafov funkcij</h1>
+        <p>Vnesi funkcijo in izberi območje koordinatnega sistema.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Nariši graf</h2>
+
+            <form id="obrazec">
+                <label for="funkcija">Funkcija f(x)</label>
+                <input id="funkcija" type="text" value="x^2"
+                       maxlength="300" required
+                       autocomplete="off" spellcheck="false"
+                       aria-describedby="navodilo">
+
+                <p id="navodilo">
+                    Za množenje uporabi *, za potence ^.
+                    Primer: 2*x^2 - 3*x + 1.
+                </p>
+
+                <label for="xmin">Najmanjši x</label>
+                <input id="xmin" type="number" value="-10"
+                       min="-1000000" max="1000000" step="any" required>
+
+                <label for="xmax">Največji x</label>
+                <input id="xmax" type="number" value="10"
+                       min="-1000000" max="1000000" step="any" required>
+
+                <label for="ymin">Najmanjši y</label>
+                <input id="ymin" type="number" value="-10"
+                       min="-1000000" max="1000000" step="any" required>
+
+                <label for="ymax">Največji y</label>
+                <input id="ymax" type="number" value="10"
+                       min="-1000000" max="1000000" step="any" required>
+
+                <button type="submit">Nariši graf</button>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+
+            <canvas id="graf" width="720" height="480"
+                    aria-label="Graf funkcije v koordinatnem sistemu">
+                Tvoj brskalnik ne podpira prikaza grafa.
+            </canvas>
+
+            <p id="opis" class="rezultat" aria-live="polite"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako zapisati funkcijo?</h2>
+            <ul>
+                <li>Premica: <code>2*x + 1</code></li>
+                <li>Parabola: <code>x^2</code></li>
+                <li>Ulomek: <code>1/x</code></li>
+                <li>Koren: <code>sqrt(x)</code></li>
+                <li>Sinus: <code>sin(x)</code></li>
+                <li>Logaritem: <code>ln(x)</code></li>
+                <li>Eksponentna funkcija: <code>exp(x)</code></li>
+            </ul>
+
+            <p>
+                Na voljo so sin, cos, tan, sqrt, abs, ln, log in exp.
+                ln pomeni naravni logaritem, log pa logaritem z osnovo 10.
+                Trigonometrične funkcije uporabljajo radiane.
+                Konstanti sta pi in e. Decimalna števila zapisuj s piko.
+            </p>
+
+            <p>
+                Graf je numerični približek. Zelo ozke spremembe in
+                prekinitve lahko zahtevajo manjše območje prikaza.
+                Točke zunaj definicijskega območja se ne izrišejo.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Risanje grafov funkcij</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const napaka = document.getElementById("napaka");
+        const opis = document.getElementById("opis");
+        const canvas = document.getElementById("graf");
+        const ctx = canvas.getContext("2d");
+
+        let trenutniGraf = null;
+
+        const funkcije = {
+            sin: Math.sin,
+            cos: Math.cos,
+            tan: Math.tan,
+            sqrt: Math.sqrt,
+            abs: Math.abs,
+            ln: Math.log,
+            log: Math.log10,
+            exp: Math.exp
+        };
+
+        // Razčlenjevalnik sprejme samo dovoljene matematične izraze.
+        // Uporabniškega vnosa ne izvaja kot JavaScript.
+        function razcleni(vnos) {
+            const besedilo = vnos.toLowerCase().trim();
+            const tokeni = [];
+            let mesto = 0;
+
+            while (mesto < besedilo.length) {
+                const preostanek = besedilo.slice(mesto);
+
+                const presledek = preostanek.match(/^\s+/);
+                if (presledek) {
+                    mesto += presledek[0].length;
+                    continue;
+                }
+
+                const stevilo = preostanek.match(
+                    /^(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?/
+                );
+
+                if (stevilo) {
+                    const vrednost = Number(stevilo[0]);
+                    if (!Number.isFinite(vrednost)) {
+                        throw new Error("Število je preveliko.");
+                    }
+                    tokeni.push({ tip: "stevilo", vrednost });
+                    mesto += stevilo[0].length;
+                    continue;
+                }
+
+                const ime = preostanek.match(/^[a-z]+/);
+                if (ime) {
+                    tokeni.push({ tip: "ime", vrednost: ime[0] });
+                    mesto += ime[0].length;
+                    continue;
+                }
+
+                const znak = besedilo[mesto];
+                if ("+-*/^()".includes(znak)) {
+                    tokeni.push({ tip: znak });
+                    mesto++;
+                    continue;
+                }
+
+                throw new Error("Nedovoljen znak: " + znak);
+            }
+
+            let indeks = 0;
+
+            function sprejmi(tip) {
+                if (tokeni[indeks]?.tip === tip) {
+                    indeks++;
+                    return true;
+                }
+                return false;
+            }
+
+            function zahtevaj(tip) {
+                if (!sprejmi(tip)) {
+                    throw new Error("Manjka znak " + tip + ".");
+                }
+            }
+
+            function izraz() {
+                let levo = produkt();
+
+                while (true) {
+                    if (sprejmi("+")) {
+                        const a = levo;
+                        const b = produkt();
+                        levo = x => a(x) + b(x);
+                    } else if (sprejmi("-")) {
+                        const a = levo;
+                        const b = produkt();
+                        levo = x => a(x) - b(x);
+                    } else {
+                        return levo;
+                    }
+                }
+            }
+
+            function produkt() {
+                let levo = predznak();
+
+                while (true) {
+                    if (sprejmi("*")) {
+                        const a = levo;
+                        const b = predznak();
+                        levo = x => a(x) * b(x);
+                    } else if (sprejmi("/")) {
+                        const a = levo;
+                        const b = predznak();
+                        levo = x => a(x) / b(x);
+                    } else {
+                        return levo;
+                    }
+                }
+            }
+
+            function predznak() {
+                if (sprejmi("+")) return predznak();
+
+                if (sprejmi("-")) {
+                    const a = predznak();
+                    return x => -a(x);
+                }
+
+                return potenca();
+            }
+
+            function potenca() {
+                const a = osnovniIzraz();
+
+                if (sprejmi("^")) {
+                    const b = predznak();
+                    return x => Math.pow(a(x), b(x));
+                }
+
+                return a;
+            }
+
+            function osnovniIzraz() {
+                const token = tokeni[indeks];
+
+                if (!token) {
+                    throw new Error("Izraz ni dokončan.");
+                }
+
+                if (sprejmi("stevilo")) {
+                    return () => token.vrednost;
+                }
+
+                if (sprejmi("(")) {
+                    const a = izraz();
+                    zahtevaj(")");
+                    return a;
+                }
+
+                if (sprejmi("ime")) {
+                    const ime = token.vrednost;
+
+                    if (ime === "x") return x => x;
+                    if (ime === "pi") return () => Math.PI;
+                    if (ime === "e") return () => Math.E;
+
+                    if (Object.hasOwn(funkcije, ime)) {
+                        zahtevaj("(");
+                        const a = izraz();
+                        zahtevaj(")");
+                        return x => funkcije[ime](a(x));
+                    }
+
+                    throw new Error("Neznana funkcija ali konstanta: " + ime);
+                }
+
+                throw new Error("Preveri zapis funkcije in oklepaje.");
+            }
+
+            if (!tokeni.length) {
+                throw new Error("Vnesi funkcijo.");
+            }
+
+            const rezultat = izraz();
+
+            if (indeks !== tokeni.length) {
+                throw new Error(
+                    "Preveri zapis. Za množenje uporabi *, na primer 2*x."
+                );
+            }
+
+            return rezultat;
+        }
+
+        function korakMreze(razpon) {
+            const osnovni = razpon / 8;
+            const potenca = 10 ** Math.floor(Math.log10(osnovni));
+            const razmerje = osnovni / potenca;
+
+            const faktor = razmerje <= 1 ? 1
+                : razmerje <= 2 ? 2
+                : razmerje <= 5 ? 5 : 10;
+
+            return faktor * potenca;
+        }
+
+        function oznaka(vrednost) {
+            if (Math.abs(vrednost) < 1e-12) return "0";
+            return Number(vrednost.toPrecision(5)).toString();
+        }
+
+        function narisi() {
+            if (!trenutniGraf || !ctx) return;
+
+            const { f, xmin, xmax, ymin, ymax } = trenutniGraf;
+            const sirina = canvas.clientWidth;
+            const visina = Math.round(sirina * 2 / 3);
+            const gostota = Math.min(window.devicePixelRatio || 1, 2);
+
+            canvas.width = Math.round(sirina * gostota);
+            canvas.height = Math.round(visina * gostota);
+            ctx.setTransform(gostota, 0, 0, gostota, 0, 0);
+
+            const rob = { levo: 64, desno: 20, zgoraj: 20, spodaj: 40 };
+            const w = sirina - rob.levo - rob.desno;
+            const h = visina - rob.zgoraj - rob.spodaj;
+
+            const px = x => rob.levo + (x - xmin) / (xmax - xmin) * w;
+            const py = y => rob.zgoraj + (ymax - y) / (ymax - ymin) * h;
+
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, sirina, visina);
+            ctx.font = "12px sans-serif";
+
+            function mreza(min, max, korak, vodoravno) {
+                const zacetek = Math.ceil(min / korak);
+                const konec = Math.floor(max / korak);
+
+                for (let i = zacetek; i <= konec; i++) {
+                    const v = i * korak;
+                    const p = vodoravno ? py(v) : px(v);
+
+                    ctx.strokeStyle = "#e2e8ee";
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+
+                    if (vodoravno) {
+                        ctx.moveTo(rob.levo, p);
+                        ctx.lineTo(rob.levo + w, p);
+                    } else {
+                        ctx.moveTo(p, rob.zgoraj);
+                        ctx.lineTo(p, rob.zgoraj + h);
+                    }
+
+                    ctx.stroke();
+                    ctx.fillStyle = "#526273";
+
+                    if (vodoravno) {
+                        ctx.textAlign = "right";
+                        ctx.textBaseline = "middle";
+                        ctx.fillText(oznaka(v), rob.levo - 8, p);
+                    } else {
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "top";
+                        ctx.fillText(oznaka(v), p, rob.zgoraj + h + 8);
+                    }
+                }
+            }
+
+            mreza(xmin, xmax, korakMreze(xmax - xmin), false);
+            mreza(ymin, ymax, korakMreze(ymax - ymin), true);
+
+            ctx.strokeStyle = "#142c43";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+
+            if (xmin <= 0 && xmax >= 0) {
+                ctx.moveTo(px(0), rob.zgoraj);
+                ctx.lineTo(px(0), rob.zgoraj + h);
+            }
+
+            if (ymin <= 0 && ymax >= 0) {
+                ctx.moveTo(rob.levo, py(0));
+                ctx.lineTo(rob.levo + w, py(0));
+            }
+
+            ctx.stroke();
+            ctx.strokeRect(rob.levo, rob.zgoraj, w, h);
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(rob.levo, rob.zgoraj, w, h);
+            ctx.clip();
+
+            ctx.strokeStyle = "#087f8c";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            const vzorci = Math.max(1000, Math.ceil(w * 4));
+            let prejsnja = null;
+            let vidneTocke = 0;
+
+            for (let i = 0; i <= vzorci; i++) {
+                const x = xmin + i / vzorci * (xmax - xmin);
+                const y = f(x);
+
+                if (!Number.isFinite(y)) {
+                    prejsnja = null;
+                    continue;
+                }
+
+                const tocka = { x: px(x), y: py(y), vrednost: y };
+
+                if (y >= ymin && y <= ymax) vidneTocke++;
+
+                if (prejsnja) {
+                    const sredinaX = x - (xmax - xmin) / vzorci / 2;
+                    const sredinaY = f(sredinaX);
+                    const povprecjeY = (prejsnja.vrednost + y) / 2;
+
+                    // Prekini črto ob velikih skokih ali izraziti
+                    // ukrivljenosti med sosednjima vzorcema.
+                    const povezljivo =
+                        Number.isFinite(sredinaY) &&
+                        Math.abs(tocka.y - prejsnja.y) <= h / 2 &&
+                        Math.abs(sredinaY - povprecjeY) <=
+                            (ymax - ymin) * 0.05;
+
+                    if (povezljivo) {
+                        ctx.moveTo(prejsnja.x, prejsnja.y);
+                        ctx.lineTo(tocka.x, tocka.y);
+                    }
+                }
+
+                prejsnja = tocka;
+            }
+
+            ctx.stroke();
+            ctx.restore();
+
+            opis.textContent = vidneTocke
+                ? `Graf f(x) = ${trenutniGraf.besedilo}. ` +
+                  `Območje x: od ${xmin} do ${xmax}; ` +
+                  `območje y: od ${ymin} do ${ymax}.`
+                : "V izbranem območju ni vidnih vzorčenih točk. " +
+                  "Spremeni območje ali preveri funkcijo.";
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            napaka.textContent = "";
+
+            try {
+                if (!ctx) {
+                    throw new Error("Brskalnik ne podpira risanja grafa.");
+                }
+
+                const besedilo = document.getElementById("funkcija").value;
+                const xmin = document.getElementById("xmin").valueAsNumber;
+                const xmax = document.getElementById("xmax").valueAsNumber;
+                const ymin = document.getElementById("ymin").valueAsNumber;
+                const ymax = document.getElementById("ymax").valueAsNumber;
+
+                if (![xmin, xmax, ymin, ymax].every(Number.isFinite)) {
+                    throw new Error("Vnesi veljavne meje prikaza.");
+                }
+
+                if (xmin >= xmax || ymin >= ymax) {
+                    throw new Error(
+                        "Najmanjša vrednost mora biti manjša od največje."
+                    );
+                }
+
+                if (xmax - xmin < 1e-9 || ymax - ymin < 1e-9) {
+                    throw new Error("Izbrano območje je preozko.");
+                }
+
+                const f = razcleni(besedilo);
+                trenutniGraf = { f, besedilo, xmin, xmax, ymin, ymax };
+                narisi();
+            } catch (error) {
+                napaka.textContent = error.message;
+            }
+        });
+
+        window.addEventListener("resize", narisi);
+        obrazec.requestSubmit();
+    </script>
+</body>
+</html>

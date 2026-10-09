@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Pretvori slike JPG in PNG v PDF ter nastavi vrstni red in velikost strani.">
+    <title>Slike v PDF</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer
+            src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Slike v PDF</h1>
+        <p>Združi slike v dokument PDF.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Izberi slike</h2>
+
+            <label for="slike">Dodaj JPG ali PNG</label>
+            <input id="slike" type="file"
+                   accept=".jpg,.jpeg,.png,image/jpeg,image/png" multiple>
+
+            <p>
+                Največ 30 slik s skupno velikostjo do 50 MiB.
+                Vsaka slika bo na svoji strani.
+            </p>
+
+            <ol id="seznam" class="slike-pdf-seznam"></ol>
+
+            <label for="format">Velikost strani</label>
+            <select id="format">
+                <option value="pokoncno">A4 — pokončno</option>
+                <option value="lezeco">A4 — ležeče</option>
+                <option value="samodejno">A4 — orientacija glede na sliko</option>
+            </select>
+
+            <label for="rob">Rob strani v milimetrih</label>
+            <input id="rob" type="number" min="0" max="50"
+                   step="1" value="10">
+
+            <label for="ime">Ime dokumenta</label>
+            <input id="ime" type="text" maxlength="100" value="slike.pdf">
+
+            <div class="gumbi">
+                <button id="ustvari" type="button" disabled>Ustvari PDF</button>
+                <button id="pocisti" type="button">Počisti seznam</button>
+            </div>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <p id="status" role="status" aria-live="polite"></p>
+
+            <a id="prenos" class="pdf-prenos" hidden>Prenesi PDF</a>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Dodaj slike in z gumboma Gor ter Dol določi njihov vrstni
+                red. Slike se sorazmerno prilagodijo prostoru znotraj
+                izbranega roba, brez obrezovanja.
+            </p>
+            <p>
+                Majhne slike se lahko povečajo, zato so lahko v PDF-ju
+                manj ostre. Prosojni deli slik PNG se prikažejo na beli
+                podlagi strani.
+            </p>
+            <p>
+                Obdelava poteka v brskalniku. Ta stran slik ne pošilja
+                na strežnik. Internet potrebuješ za nalaganje knjižnice.
+                Če fotografija uporablja orientacijo v metapodatkih,
+                jo po potrebi predhodno zavrti in ponovno shrani.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Pretvornik slik v PDF</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const izbira = document.getElementById("slike");
+        const seznam = document.getElementById("seznam");
+        const format = document.getElementById("format");
+        const rob = document.getElementById("rob");
+        const ime = document.getElementById("ime");
+        const ustvari = document.getElementById("ustvari");
+        const pocisti = document.getElementById("pocisti");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+        const prenos = document.getElementById("prenos");
+
+        let slike = [];
+        let obdelava = false;
+        let url = null;
+
+        function velikost(bajti) {
+            return (bajti / 1024 / 1024).toLocaleString("sl-SI", {
+                maximumFractionDigits: 2
+            }) + " MiB";
+        }
+
+        function odstraniPrenos() {
+            if (url) URL.revokeObjectURL(url);
+            url = null;
+            prenos.hidden = true;
+            prenos.removeAttribute("href");
+            status.textContent = "";
+        }
+
+        function imePrenosa() {
+            let zapis = ime.value.trim()
+                .replace(/[\\/:*?"<>|\u0000-\u001f]/g, "_");
+            if (!zapis) zapis = "slike.pdf";
+            if (!/\.pdf$/i.test(zapis)) zapis += ".pdf";
+            return zapis;
+        }
+
+        function sprememba() {
+            odstraniPrenos();
+            napaka.textContent = "";
+            prikazi();
+        }
+
+        function gumb(besedilo, oznaka, dejanje, onemogocen = false) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.textContent = besedilo;
+            button.setAttribute("aria-label", oznaka);
+            button.disabled = obdelava || onemogocen;
+            button.addEventListener("click", dejanje);
+            return button;
+        }
+
+        function prikazi() {
+            seznam.replaceChildren();
+
+            slike.forEach((slika, indeks) => {
+                const li = document.createElement("li");
+                const opis = document.createElement("p");
+                opis.textContent = slika.name + " · " + velikost(slika.size);
+
+                const gumbi = document.createElement("div");
+                gumbi.className = "gumbi";
+
+                gumbi.append(
+                    gumb("Gor", "Premakni gor: " + slika.name, () => {
+                        [slike[indeks - 1], slike[indeks]] =
+                            [slike[indeks], slike[indeks - 1]];
+                        sprememba();
+                    }, indeks === 0),
+
+                    gumb("Dol", "Premakni dol: " + slika.name, () => {
+                        [slike[indeks + 1], slike[indeks]] =
+                            [slike[indeks], slike[indeks + 1]];
+                        sprememba();
+                    }, indeks === slike.length - 1),
+
+                    gumb("Odstrani", "Odstrani: " + slika.name, () => {
+                        slike.splice(indeks, 1);
+                        sprememba();
+                    })
+                );
+
+                li.append(opis, gumbi);
+                seznam.appendChild(li);
+            });
+
+            izbira.disabled = obdelava;
+            format.disabled = obdelava;
+            rob.disabled = obdelava;
+            ime.disabled = obdelava;
+            pocisti.disabled = obdelava;
+            ustvari.disabled = obdelava || !slike.length;
+        }
+
+        izbira.addEventListener("change", () => {
+            const nove = [...izbira.files];
+            izbira.value = "";
+            napaka.textContent = "";
+
+            if (!nove.length) return;
+
+            if (nove.some(s => !/\.(png|jpe?g)$/i.test(s.name))) {
+                napaka.textContent = "Podprte so samo slike JPG in PNG.";
+                return;
+            }
+
+            const skupaj = [...slike, ...nove];
+
+            if (skupaj.length > 30) {
+                napaka.textContent = "Dodaj največ 30 slik.";
+                return;
+            }
+
+            if (skupaj.reduce((vsota, s) => vsota + s.size, 0) >
+                50 * 1024 * 1024) {
+                napaka.textContent = "Skupna velikost lahko znaša največ 50 MiB.";
+                return;
+            }
+
+            slike = skupaj;
+            sprememba();
+        });
+
+        function vrstaSlike(bajti) {
+            const png = [137, 80, 78, 71, 13, 10, 26, 10];
+
+            if (png.every((v, i) => bajti[i] === v)) return "png";
+            if (bajti[0] === 255 && bajti[1] === 216 &&
+                bajti[2] === 255) return "jpg";
+
+            throw new Error("Datoteka ni prepoznana kot JPG ali PNG.");
+        }
+
+        ustvari.addEventListener("click", async () => {
+            if (obdelava || !slike.length) return;
+
+            odstraniPrenos();
+            napaka.textContent = "";
+
+            if (!window.PDFLib) {
+                napaka.textContent =
+                    "Knjižnica se ni naložila. Preveri povezavo " +
+                    "in ponovno naloži stran.";
+                return;
+            }
+
+            const robMM = rob.valueAsNumber;
+            if (!Number.isInteger(robMM) || robMM < 0 || robMM > 50) {
+                napaka.textContent = "Rob mora biti celo število od 0 do 50 mm.";
+                return;
+            }
+
+            obdelava = true;
+            prikazi();
+
+            try {
+                const dokument = await PDFLib.PDFDocument.create();
+                const robPT = robMM * 72 / 25.4;
+                const a4 = [595.28, 841.89];
+
+                for (let i = 0; i < slike.length; i++) {
+                    const datoteka = slike[i];
+                    status.textContent =
+                        `Obdelujem sliko ${i + 1}/${slike.length}: ${datoteka.name}`;
+
+                    await new Promise(resolve => setTimeout(resolve, 0));
+
+                    let slika;
+                    try {
+                        const bajti = new Uint8Array(await datoteka.arrayBuffer());
+                        slika = vrstaSlike(bajti) === "png"
+                            ? await dokument.embedPng(bajti)
+                            : await dokument.embedJpg(bajti);
+                    } catch {
+                        throw new Error(
+                            "Slike »" + datoteka.name +
+                            "« ni mogoče obdelati. Preveri format in datoteko."
+                        );
+                    }
+
+                    const lezece = format.value === "lezeco" ||
+                        (format.value === "samodejno" &&
+                         slika.width > slika.height);
+
+                    const sirina = lezece ? a4[1] : a4[0];
+                    const visina = lezece ? a4[0] : a4[1];
+
+                    const faktor = Math.min(
+                        (sirina - 2 * robPT) / slika.width,
+                        (visina - 2 * robPT) / slika.height
+                    );
+
+                    const w = slika.width * faktor;
+                    const h = slika.height * faktor;
+                    const stran = dokument.addPage([sirina, visina]);
+
+                    stran.drawImage(slika, {
+                        x: (sirina - w) / 2,
+                        y: (visina - h) / 2,
+                        width: w,
+                        height: h
+                    });
+                }
+
+                status.textContent = "Shranjujem PDF…";
+                const bajti = await dokument.save();
+                const blob = new Blob([bajti], {
+                    type: "application/pdf"
+                });
+
+                url = URL.createObjectURL(blob);
+                prenos.href = url;
+                prenos.download = imePrenosa();
+                prenos.hidden = false;
+
+                status.textContent =
+                    `Končano. PDF vsebuje ${slike.length} strani. ` +
+                    `Velikost: ${velikost(blob.size)}.`;
+            } catch (error) {
+                odstraniPrenos();
+                napaka.textContent =
+                    error.message || "Ustvarjanje PDF-ja ni uspelo.";
+            } finally {
+                obdelava = false;
+                prikazi();
+            }
+        });
+
+        format.addEventListener("change", sprememba);
+        rob.addEventListener("input", sprememba);
+
+        ime.addEventListener("input", () => {
+            if (url) prenos.download = imePrenosa();
+        });
+
+        pocisti.addEventListener("click", () => {
+            if (obdelava) return;
+            slike = [];
+            izbira.value = "";
+            sprememba();
+        });
+
+        window.addEventListener("pagehide", () => {
+            if (url) URL.revokeObjectURL(url);
+        });
+
+        prikazi();
+    </script>
+</body>
+</html>

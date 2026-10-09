@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Kalkulator Ohmovega zakona: izračun napetosti, toka, upornosti in električne moči.">
+    <title>Ohmov zakon in električna moč</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Ohmov zakon in električna moč</h1>
+        <p>Iz dveh znanih vrednosti izračunaj napetost, tok, upornost in moč.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Kalkulator</h2>
+
+            <form id="obrazec">
+                <p>
+                    Izpolni natanko dve polji.
+                    Uporabi pozitivne vrednosti in izberi ustrezne enote.
+                </p>
+
+                <label for="napetost">Napetost U</label>
+                <div class="elektricni-vnos">
+                    <input id="napetost" type="number" min="0"
+                           step="any" placeholder="Na primer 12">
+                    <select id="enota-u" aria-label="Enota napetosti">
+                        <option value="0.001">mV</option>
+                        <option value="1" selected>V</option>
+                        <option value="1000">kV</option>
+                    </select>
+                </div>
+
+                <label for="tok">Tok I</label>
+                <div class="elektricni-vnos">
+                    <input id="tok" type="number" min="0"
+                           step="any" placeholder="Na primer 0,5">
+                    <select id="enota-i" aria-label="Enota toka">
+                        <option value="0.000001">µA</option>
+                        <option value="0.001">mA</option>
+                        <option value="1" selected>A</option>
+                    </select>
+                </div>
+
+                <label for="upornost">Upornost R</label>
+                <div class="elektricni-vnos">
+                    <input id="upornost" type="number" min="0"
+                           step="any" placeholder="Na primer 24">
+                    <select id="enota-r" aria-label="Enota upornosti">
+                        <option value="1" selected>Ω</option>
+                        <option value="1000">kΩ</option>
+                        <option value="1000000">MΩ</option>
+                    </select>
+                </div>
+
+                <label for="moc">Moč P</label>
+                <div class="elektricni-vnos">
+                    <input id="moc" type="number" min="0"
+                           step="any" placeholder="Na primer 6">
+                    <select id="enota-p" aria-label="Enota moči">
+                        <option value="0.001">mW</option>
+                        <option value="1" selected>W</option>
+                        <option value="1000">kW</option>
+                    </select>
+                </div>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                    <button id="primer" type="button">Vstavi primer</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <div id="rezultat" class="rezultat" aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Formule</h2>
+            <ul>
+                <li>Napetost: U = I × R</li>
+                <li>Tok: I = U / R</li>
+                <li>Upornost: R = U / I</li>
+                <li>Moč: P = U × I = I² × R = U² / R</li>
+            </ul>
+
+            <p>
+                Kalkulator uporablja pozitivne velikosti za idealni ohmski
+                upor pri enosmernem toku. Pri izmeničnem toku formule veljajo
+                za čisto uporovno breme z efektivnimi vrednostmi napetosti
+                in toka.
+            </p>
+
+            <p>
+                Primer: pri napetosti 12 V in upornosti 24 Ω je tok
+                0,5 A, moč pa 6 W.
+            </p>
+
+            <p>
+                Ničelne vrednosti v tej različici niso podprte, ker nekatere
+                kombinacije ne določijo enoličnega rezultata.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Ohmov zakon in električna moč</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const polja = [
+            {
+                kljuc: "U",
+                ime: "Napetost",
+                input: document.getElementById("napetost"),
+                enota: document.getElementById("enota-u")
+            },
+            {
+                kljuc: "I",
+                ime: "Tok",
+                input: document.getElementById("tok"),
+                enota: document.getElementById("enota-i")
+            },
+            {
+                kljuc: "R",
+                ime: "Upornost",
+                input: document.getElementById("upornost"),
+                enota: document.getElementById("enota-r")
+            },
+            {
+                kljuc: "P",
+                ime: "Moč",
+                input: document.getElementById("moc"),
+                enota: document.getElementById("enota-p")
+            }
+        ];
+
+        function pocisti() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function oblikuj(vrednost) {
+            return vrednost.toLocaleString("sl-SI", {
+                maximumSignificantDigits: 10
+            });
+        }
+
+        function preberi() {
+            const znane = {};
+
+            for (const polje of polja) {
+                if (polje.input.validity.badInput) {
+                    throw new Error(
+                        polje.ime + ": vnesi veljavno število."
+                    );
+                }
+
+                if (polje.input.value.trim() === "") continue;
+
+                const vnos = polje.input.valueAsNumber;
+                const vrednost = vnos * Number(polje.enota.value);
+
+                if (!Number.isFinite(vrednost) || vrednost <= 0) {
+                    throw new Error(
+                        polje.ime + " mora biti pozitivno končno število."
+                    );
+                }
+
+                znane[polje.kljuc] = vrednost;
+            }
+
+            if (Object.keys(znane).length !== 2) {
+                throw new Error("Izpolni natanko dve polji.");
+            }
+
+            return znane;
+        }
+
+        function izracunaj(znane) {
+            let { U, I, R, P } = znane;
+            let postopek;
+
+            if (U !== undefined && I !== undefined) {
+                R = U / I;
+                P = U * I;
+                postopek = "R = U / I; P = U × I";
+            } else if (U !== undefined && R !== undefined) {
+                I = U / R;
+                P = U * I;
+                postopek = "I = U / R; P = U × I";
+            } else if (U !== undefined && P !== undefined) {
+                I = P / U;
+                R = U / I;
+                postopek = "I = P / U; R = U / I";
+            } else if (I !== undefined && R !== undefined) {
+                U = I * R;
+                P = U * I;
+                postopek = "U = I × R; P = U × I";
+            } else if (I !== undefined && P !== undefined) {
+                U = P / I;
+                R = U / I;
+                postopek = "U = P / I; R = U / I";
+            } else {
+                // sqrt(P) / sqrt(R) zmanjša možnost preliva
+                // pri vmesnem računanju razmerja P / R.
+                I = Math.sqrt(P) / Math.sqrt(R);
+                U = Math.sqrt(P) * Math.sqrt(R);
+                postopek = "I = √(P / R); U = √(P × R)";
+            }
+
+            if (![U, I, R, P].every(
+                vrednost => Number.isFinite(vrednost) && vrednost > 0
+            )) {
+                throw new Error(
+                    "Vrednosti presegajo numerični obseg kalkulatorja. " +
+                    "Preveri velikosti in enote."
+                );
+            }
+
+            return { U, I, R, P, postopek };
+        }
+
+        function prikazi(vrednosti, znane) {
+            const naslov = document.createElement("h3");
+            naslov.textContent = "Rezultati";
+
+            const tabela = document.createElement("table");
+            tabela.className = "ohm-tabela";
+
+            const telo = document.createElement("tbody");
+
+            const vrstice = [
+                ["U", "Napetost", "V"],
+                ["I", "Tok", "A"],
+                ["R", "Upornost", "Ω"],
+                ["P", "Moč", "W"]
+            ];
+
+            for (const [kljuc, ime, enota] of vrstice) {
+                const tr = document.createElement("tr");
+                const th = document.createElement("th");
+                const td = document.createElement("td");
+                const status = document.createElement("td");
+
+                th.scope = "row";
+                th.textContent = `${ime} ${kljuc}`;
+                td.textContent = `${oblikuj(vrednosti[kljuc])} ${enota}`;
+                status.textContent = Object.hasOwn(znane, kljuc)
+                    ? "Vneseno"
+                    : "Izračunano";
+
+                tr.append(th, td, status);
+                telo.appendChild(tr);
+            }
+
+            tabela.appendChild(telo);
+
+            const postopek = document.createElement("p");
+            postopek.textContent = "Postopek: " + vrednosti.postopek;
+
+            rezultat.append(naslov, tabela, postopek);
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            try {
+                const znane = preberi();
+                prikazi(izracunaj(znane), znane);
+            } catch (error) {
+                napaka.textContent = error.message;
+            }
+        });
+
+        document.getElementById("primer").addEventListener("click", () => {
+            obrazec.reset();
+
+            document.getElementById("napetost").value = "12";
+            document.getElementById("upornost").value = "24";
+
+            obrazec.requestSubmit();
+        });
+
+        for (const polje of polja) {
+            polje.input.addEventListener("input", pocisti);
+            polje.enota.addEventListener("change", pocisti);
+        }
+
+        obrazec.addEventListener("reset", pocisti);
+    </script>
+</body>
+</html>

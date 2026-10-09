@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Uravnoteženje kemijskih enačb z izračunom najmanjših celoštevilskih koeficientov.">
+    <title>Uravnoteženje kemijskih enačb</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Uravnoteženje kemijskih enačb</h1>
+        <p>Izračunaj koeficiente, ki ohranijo število atomov vseh elementov.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Kalkulator enačb</h2>
+
+            <form id="obrazec">
+                <label for="enacba">Kemijska enačba brez koeficientov</label>
+                <input id="enacba" type="text" maxlength="400"
+                       placeholder="Na primer Fe + O2 -> Fe2O3"
+                       required autocomplete="off" spellcheck="false"
+                       aria-describedby="navodila">
+
+                <p id="navodila">
+                    Spojine loči z +, strani pa z ->, → ali =.
+                    Uporabi običajne številke in pravilno velikost črk.
+                    Podprti so oklepaji () in [].
+                </p>
+
+                <div class="gumbi">
+                    <button type="submit">Uravnoteži</button>
+                    <button type="reset">Počisti</button>
+                    <button id="primer" type="button">Vstavi primer</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <div id="rezultat" class="rezultat" aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Kalkulator postavi enačbo za vsak element in poišče
+                najmanjše pozitivne celoštevilske koeficiente.
+                Indeksi znotraj formul ostanejo nespremenjeni.
+            </p>
+            <p>
+                Primer: Fe + O2 → Fe2O3 postane
+                4 Fe + 3 O2 → 2 Fe2O3.
+            </p>
+            <p>
+                Podprte so enačbe z eno neodvisno rešitvijo do skupnega
+                množitelja. Če obstaja več neodvisnih rešitev, je treba
+                dodatno določiti reakcijo.
+            </p>
+            <p>
+                Ionski naboji, elektroni, izotopi, oznake agregatnih stanj
+                in hidrati s piko niso podprti. Uravnotežena enačba
+                potrjuje ohranitev atomov, ne pa tega, da reakcija
+                dejansko poteka.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Uravnoteženje kemijskih enačb</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const vnos = document.getElementById("enacba");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const elementi = new Set((
+            "H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca " +
+            "Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr " +
+            "Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba " +
+            "La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W " +
+            "Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U " +
+            "Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg Bh Hs Mt " +
+            "Ds Rg Cn Nh Fl Mc Lv Ts Og"
+        ).split(" "));
+
+        function pocisti() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function abs(n) {
+            return n < 0n ? -n : n;
+        }
+
+        function gcd(a, b) {
+            a = abs(a);
+            b = abs(b);
+            while (b !== 0n) [a, b] = [b, a % b];
+            return a;
+        }
+
+        function lcm(a, b) {
+            return a / gcd(a, b) * b;
+        }
+
+        // Natančni ulomki z BigInt.
+        function ulomek(n, d = 1n) {
+            if (d === 0n) throw new Error("Deljenje z nič.");
+            if (d < 0n) {
+                n = -n;
+                d = -d;
+            }
+            const g = gcd(n, d);
+            return { n: n / g, d: d / g };
+        }
+
+        function odstej(a, b) {
+            return ulomek(a.n * b.d - b.n * a.d, a.d * b.d);
+        }
+
+        function zmnozi(a, b) {
+            return ulomek(a.n * b.n, a.d * b.d);
+        }
+
+        function deli(a, b) {
+            return ulomek(a.n * b.d, a.d * b.n);
+        }
+
+        function preberiFormulo(zapis) {
+            let mesto = 0;
+
+            function indeks() {
+                const zacetek = mesto;
+                while (mesto < zapis.length && /\d/.test(zapis[mesto])) {
+                    mesto++;
+                }
+
+                if (zacetek === mesto) return 1n;
+
+                const besedilo = zapis.slice(zacetek, mesto);
+                if (besedilo.startsWith("0") ||
+                    besedilo.length > 6 ||
+                    BigInt(besedilo) > 100000n) {
+                    throw new Error(
+                        "Indeksi morajo biti od 1 do 100.000 brez začetnih ničel."
+                    );
+                }
+
+                return BigInt(besedilo);
+            }
+
+            function dodaj(mapa, simbol, n) {
+                mapa.set(simbol, (mapa.get(simbol) || 0n) + n);
+            }
+
+            function skupina(konec = null, globina = 0) {
+                if (globina > 10) {
+                    throw new Error("Preveč ugnezdenih oklepajev.");
+                }
+
+                const mapa = new Map();
+                let clenov = 0;
+
+                while (mesto < zapis.length) {
+                    const znak = zapis[mesto];
+
+                    if (znak === ")" || znak === "]") {
+                        if (znak !== konec || clenov === 0) {
+                            throw new Error("Preveri oklepaje v " + zapis + ".");
+                        }
+                        mesto++;
+                        return mapa;
+                    }
+
+                    if (znak === "(" || znak === "[") {
+                        mesto++;
+                        const notranji = skupina(
+                            znak === "(" ? ")" : "]", globina + 1
+                        );
+                        const faktor = indeks();
+
+                        for (const [simbol, n] of notranji) {
+                            dodaj(mapa, simbol, n * faktor);
+                        }
+                        clenov++;
+                        continue;
+                    }
+
+                    if (/[A-Z]/.test(znak)) {
+                        let simbol = zapis[mesto++];
+
+                        if (mesto < zapis.length &&
+                            /[a-z]/.test(zapis[mesto])) {
+                            simbol += zapis[mesto++];
+                        }
+
+                        if (!elementi.has(simbol)) {
+                            throw new Error("Neznan element: " + simbol + ".");
+                        }
+
+                        dodaj(mapa, simbol, indeks());
+                        clenov++;
+                        continue;
+                    }
+
+                    throw new Error(
+                        "Neveljaven zapis formule " + zapis +
+                        ". Odstrani koeficiente, naboje in oznake stanj."
+                    );
+                }
+
+                if (konec !== null) {
+                    throw new Error("Manjka zaključni oklepaj v " + zapis + ".");
+                }
+                if (clenov === 0) throw new Error("Manjka kemijska formula.");
+
+                return mapa;
+            }
+
+            return skupina();
+        }
+
+        function preberiEnacbo() {
+            const zapis = vnos.value.trim();
+            const strani = zapis.split(/->|→|=/);
+
+            if (strani.length !== 2) {
+                throw new Error("Uporabi natanko en ločilni znak ->, → ali =.");
+            }
+
+            function preberiStran(stran) {
+                return stran.split("+").map(del => {
+                    const formula = del.trim();
+
+                    if (!formula || /\s/.test(formula)) {
+                        throw new Error(
+                            "Vsako formulo zapiši brez notranjih presledkov."
+                        );
+                    }
+
+                    return { formula, atomi: preberiFormulo(formula) };
+                });
+            }
+
+            const levi = preberiStran(strani[0]);
+            const desni = preberiStran(strani[1]);
+            const spojine = [...levi, ...desni];
+
+            if (spojine.length > 12) {
+                throw new Error("Podprtih je največ 12 spojin.");
+            }
+
+            if (new Set(spojine.map(s => s.formula)).size !== spojine.length) {
+                throw new Error(
+                    "Odstrani ponovljene formule oziroma spojine, " +
+                    "ki so zapisane na obeh straneh."
+                );
+            }
+
+            return { levi, desni, spojine };
+        }
+
+        function uravnotezi(levi, spojine) {
+            const simboli = [...new Set(
+                spojine.flatMap(s => [...s.atomi.keys()])
+            )];
+
+            const matrika = simboli.map(simbol =>
+                spojine.map((s, j) =>
+                    ulomek(
+                        (s.atomi.get(simbol) || 0n) *
+                        (j < levi.length ? 1n : -1n)
+                    )
+                )
+            );
+
+            const pivoti = [];
+            let vrstica = 0;
+            const stolpci = spojine.length;
+
+            for (let j = 0; j < stolpci && vrstica < matrika.length; j++) {
+                const pivot = matrika.findIndex(
+                    (r, i) => i >= vrstica && r[j].n !== 0n
+                );
+                if (pivot === -1) continue;
+
+                [matrika[vrstica], matrika[pivot]] =
+                    [matrika[pivot], matrika[vrstica]];
+
+                const delitelj = matrika[vrstica][j];
+                matrika[vrstica] = matrika[vrstica].map(
+                    x => deli(x, delitelj)
+                );
+
+                for (let i = 0; i < matrika.length; i++) {
+                    if (i === vrstica || matrika[i][j].n === 0n) continue;
+                    const faktor = matrika[i][j];
+
+                    matrika[i] = matrika[i].map((x, k) =>
+                        odstej(x, zmnozi(faktor, matrika[vrstica][k]))
+                    );
+                }
+
+                pivoti.push(j);
+                vrstica++;
+            }
+
+            const prosti = Array.from(
+                { length: stolpci }, (_, j) => j
+            ).filter(j => !pivoti.includes(j));
+
+            if (prosti.length === 0) {
+                throw new Error(
+                    "Enačbe ni mogoče uravnotežiti z navedenimi spojinami."
+                );
+            }
+
+            if (prosti.length !== 1) {
+                throw new Error(
+                    "Enačba ima več neodvisnih rešitev. " +
+                    "Dodatno določi reakcijo ali odstrani odvečne spojine."
+                );
+            }
+
+            const resitev = Array.from(
+                { length: stolpci }, () => ulomek(0n)
+            );
+            resitev[prosti[0]] = ulomek(1n);
+
+            pivoti.forEach((stolpec, i) => {
+                const x = matrika[i][prosti[0]];
+                resitev[stolpec] = ulomek(-x.n, x.d);
+            });
+
+            const imenovalec = resitev.reduce(
+                (skupni, x) => lcm(skupni, x.d), 1n
+            );
+
+            let koeficienti = resitev.map(
+                x => x.n * (imenovalec / x.d)
+            );
+
+            if (koeficienti.every(x => x < 0n)) {
+                koeficienti = koeficienti.map(x => -x);
+            }
+
+            if (koeficienti.some(x => x <= 0n)) {
+                throw new Error(
+                    "Za zapisane strani ni rešitve s pozitivnimi " +
+                    "koeficienti vseh spojin."
+                );
+            }
+
+            const skupniDelitelj = koeficienti.reduce(
+                (g, x) => gcd(g, x), 0n
+            );
+            koeficienti = koeficienti.map(x => x / skupniDelitelj);
+
+            // Preveri ohranitev atomov z izračunanimi koeficienti.
+            for (const simbol of simboli) {
+                const bilanca = spojine.reduce((vsota, s, j) =>
+                    vsota + (s.atomi.get(simbol) || 0n) *
+                    koeficienti[j] * (j < levi.length ? 1n : -1n),
+                    0n
+                );
+
+                if (bilanca !== 0n) {
+                    throw new Error("Preverjanje rezultata ni uspelo.");
+                }
+            }
+
+            return { koeficienti, simboli };
+        }
+
+        function prikazi(levi, desni, spojine, koeficienti, simboli) {
+            function stran(seznam, zamik) {
+                return seznam.map((s, i) => {
+                    const k = koeficienti[i + zamik];
+                    return (k === 1n ? "" : k.toString() + " ") + s.formula;
+                }).join(" + ");
+            }
+
+            const enacba = document.createElement("p");
+            enacba.className = "kemijska-enacba";
+            enacba.textContent =
+                stran(levi, 0) + " → " + stran(desni, levi.length);
+
+            const tabela = document.createElement("table");
+            tabela.className = "kemijska-tabela";
+            const glava = document.createElement("thead");
+            const trGlava = document.createElement("tr");
+
+            for (const naziv of ["Element", "Leva stran", "Desna stran"]) {
+                const th = document.createElement("th");
+                th.scope = "col";
+                th.textContent = naziv;
+                trGlava.appendChild(th);
+            }
+            glava.appendChild(trGlava);
+
+            const telo = document.createElement("tbody");
+
+            for (const simbol of simboli) {
+                let levo = 0n;
+                let desno = 0n;
+
+                spojine.forEach((s, j) => {
+                    const n = (s.atomi.get(simbol) || 0n) * koeficienti[j];
+                    if (j < levi.length) levo += n;
+                    else desno += n;
+                });
+
+                const tr = document.createElement("tr");
+                for (const vrednost of [simbol, levo.toString(), desno.toString()]) {
+                    const td = document.createElement("td");
+                    td.textContent = vrednost;
+                    tr.appendChild(td);
+                }
+                telo.appendChild(tr);
+            }
+
+            tabela.append(glava, telo);
+            const ovoj = document.createElement("div");
+            ovoj.className = "kemijska-ovoj";
+            ovoj.appendChild(tabela);
+
+            const opis = document.createElement("p");
+            opis.textContent =
+                "Koeficienti so najmanjša pozitivna cela števila. " +
+                "Tabela prikazuje število atomov na vsaki strani.";
+
+            rezultat.append(enacba, opis, ovoj);
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            try {
+                const { levi, desni, spojine } = preberiEnacbo();
+                const { koeficienti, simboli } = uravnotezi(levi, spojine);
+                prikazi(levi, desni, spojine, koeficienti, simboli);
+            } catch (error) {
+                napaka.textContent = error.message;
+            }
+        });
+
+        document.getElementById("primer").addEventListener("click", () => {
+            vnos.value = "C2H6 + O2 -> CO2 + H2O";
+            obrazec.requestSubmit();
+        });
+
+        vnos.addEventListener("input", pocisti);
+        obrazec.addEventListener("reset", pocisti);
+    </script>
+</body>
+</html>

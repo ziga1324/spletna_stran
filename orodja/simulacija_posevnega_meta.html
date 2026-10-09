@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Simulacija poševnega meta: pot leta, domet, največja višina in čas leta.">
+    <title>Simulacija poševnega meta</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Simulacija poševnega meta</h1>
+        <p>Razišči gibanje telesa pri izbrani začetni hitrosti in kotu.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Nastavitve meta</h2>
+
+            <form id="obrazec">
+                <label for="hitrost">Začetna hitrost v m/s</label>
+                <input id="hitrost" type="number" min="0.01"
+                       max="10000" step="any" value="20" required>
+
+                <label for="kot">Kot meta v stopinjah</label>
+                <input id="kot" type="number" min="0" max="90"
+                       step="any" value="45" required>
+
+                <label for="visina">Začetna višina v metrih</label>
+                <input id="visina" type="number" min="0" max="100000"
+                       step="any" value="0" required>
+
+                <label for="gravitacija">Gravitacijski pospešek v m/s²</label>
+                <input id="gravitacija" type="number" min="0.001"
+                       max="1000" step="any" value="9.81" required>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj in prikaži</button>
+                    <button type="reset">Ponastavi</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <div id="rezultat" class="rezultat" aria-live="polite"></div>
+
+            <canvas id="graf-meta" width="720" height="420"
+                    aria-label="Pot telesa pri poševnem metu">
+                Tvoj brskalnik ne podpira prikaza simulacije.
+            </canvas>
+
+            <div class="gumbi">
+                <button id="predvajaj" type="button" disabled>
+                    Predvajaj
+                </button>
+                <button id="ustavi" type="button" disabled>
+                    Ustavi
+                </button>
+            </div>
+
+            <label for="cas">Položaj med letom</label>
+            <input id="cas" type="range" min="0" max="1000"
+                   step="1" value="0" disabled>
+
+            <p id="polozaj"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Vodoravna hitrost je vₓ = v₀ × cos(α),
+                začetna navpična hitrost pa vᵧ = v₀ × sin(α).
+            </p>
+            <p>
+                Položaj izračunamo z enačbama:
+                x(t) = vₓ × t in
+                y(t) = h₀ + vᵧ × t − g × t² / 2.
+            </p>
+            <p>
+                Simulacija se konča pri tleh, kjer je y = 0.
+                Največja višina je merjena od tal.
+                Gravitacija je stalna, zračni upor in ukrivljenost
+                Zemlje pa sta zanemarjena.
+            </p>
+            <p>
+                Animacija celoten let prikaže v približno petih sekundah.
+                Osi uporabljata enako merilo, zato je lahko pri skoraj
+                navpičnem metu pot videti zelo ozka.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Simulacija poševnega meta</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+        const canvas = document.getElementById("graf-meta");
+        const ctx = canvas.getContext("2d");
+        const drsnik = document.getElementById("cas");
+        const polozaj = document.getElementById("polozaj");
+        const predvajaj = document.getElementById("predvajaj");
+        const ustavi = document.getElementById("ustavi");
+
+        const vnosi = [
+            document.getElementById("hitrost"),
+            document.getElementById("kot"),
+            document.getElementById("visina"),
+            document.getElementById("gravitacija")
+        ];
+
+        let model = null;
+        let animacija = null;
+
+        function oblikuj(vrednost) {
+            return vrednost.toLocaleString("sl-SI", {
+                maximumFractionDigits: 3
+            });
+        }
+
+        function ustaviAnimacijo() {
+            if (animacija !== null) {
+                cancelAnimationFrame(animacija);
+            }
+            animacija = null;
+            ustavi.disabled = true;
+            predvajaj.disabled = !model || model.casLeta === 0;
+        }
+
+        function pocisti() {
+            ustaviAnimacijo();
+            model = null;
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+            polozaj.textContent = "";
+            drsnik.value = "0";
+            drsnik.disabled = true;
+            predvajaj.disabled = true;
+
+            if (ctx) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        function preberi(polje, ime, min, max) {
+            const vrednost = polje.valueAsNumber;
+
+            if (!Number.isFinite(vrednost) ||
+                vrednost < min || vrednost > max) {
+                throw new Error(
+                    `${ime}: vnesi vrednost od ${min} do ${max}.`
+                );
+            }
+
+            return vrednost;
+        }
+
+        function tocka(t) {
+            return {
+                x: model.vx * t,
+                y: Math.max(
+                    0,
+                    model.h + model.vy * t - model.g * t * t / 2
+                )
+            };
+        }
+
+        function narisi() {
+            if (!ctx || !model) return;
+
+            const sirina = canvas.clientWidth;
+            const visina = Math.round(sirina * 7 / 12);
+            const gostota = Math.min(window.devicePixelRatio || 1, 2);
+
+            canvas.width = Math.round(sirina * gostota);
+            canvas.height = Math.round(visina * gostota);
+            ctx.setTransform(gostota, 0, 0, gostota, 0, 0);
+
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, sirina, visina);
+
+            const rob = { levo: 60, desno: 20, zgoraj: 25, spodaj: 45 };
+            const w = Math.max(1, sirina - rob.levo - rob.desno);
+            const h = Math.max(1, visina - rob.zgoraj - rob.spodaj);
+
+            const xmax = Math.max(1, model.domet * 1.1);
+            const ymax = Math.max(1, model.maxVisina * 1.15);
+            const merilo = Math.min(w / xmax, h / ymax);
+
+            const px = x => rob.levo + x * merilo;
+            const py = y => rob.zgoraj + h - y * merilo;
+
+            // Oznake osi so prilagojene dejanskemu vidnemu območju.
+            const vidniX = w / merilo;
+            const vidniY = h / merilo;
+
+            ctx.font = "11px sans-serif";
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i <= 4; i++) {
+                const x = vidniX * i / 4;
+                const y = vidniY * i / 4;
+
+                ctx.strokeStyle = "#e2e8ee";
+                ctx.beginPath();
+                ctx.moveTo(px(x), rob.zgoraj);
+                ctx.lineTo(px(x), py(0));
+                ctx.moveTo(px(0), py(y));
+                ctx.lineTo(rob.levo + w, py(y));
+                ctx.stroke();
+
+                ctx.fillStyle = "#526273";
+                ctx.textAlign = "center";
+                ctx.fillText(oblikaOsi(x), px(x), py(0) + 18);
+                ctx.textAlign = "right";
+                ctx.fillText(oblikaOsi(y), rob.levo - 7, py(y) + 4);
+            }
+
+            ctx.strokeStyle = "#142c43";
+            ctx.beginPath();
+            ctx.moveTo(rob.levo, rob.zgoraj);
+            ctx.lineTo(rob.levo, py(0));
+            ctx.lineTo(rob.levo + w, py(0));
+            ctx.stroke();
+
+            ctx.fillStyle = "#142c43";
+            ctx.textAlign = "right";
+            ctx.fillText("x (m)", rob.levo + w, visina - 5);
+            ctx.textAlign = "left";
+            ctx.fillText("y (m)", 5, 15);
+
+            ctx.strokeStyle = "#087f8c";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            for (let i = 0; i <= 400; i++) {
+                const p = tocka(model.casLeta * i / 400);
+                if (i === 0) ctx.moveTo(px(p.x), py(p.y));
+                else ctx.lineTo(px(p.x), py(p.y));
+            }
+
+            ctx.stroke();
+
+            const t = model.casLeta * Number(drsnik.value) / 1000;
+            const p = tocka(t);
+
+            ctx.fillStyle = "#e56b2f";
+            ctx.beginPath();
+            ctx.arc(px(p.x), py(p.y), 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            polozaj.textContent =
+                `Čas: ${oblikuj(t)} s; ` +
+                `x: ${oblikuj(p.x)} m; y: ${oblikuj(p.y)} m.`;
+        }
+
+        function oblikaOsi(vrednost) {
+            return Number(vrednost.toPrecision(3)).toLocaleString("sl-SI");
+        }
+
+        function dodajRezultat(ime, vrednost, enota) {
+            const p = document.createElement("p");
+            p.textContent = `${ime}: ${oblikuj(vrednost)} ${enota}`;
+            rezultat.appendChild(p);
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            try {
+                if (!ctx) {
+                    throw new Error("Brskalnik ne podpira risanja.");
+                }
+
+                const v = preberi(vnosi[0], "Hitrost", 0.01, 10000);
+                const kot = preberi(vnosi[1], "Kot", 0, 90);
+                const h = preberi(vnosi[2], "Višina", 0, 100000);
+                const g = preberi(vnosi[3], "Gravitacija", 0.001, 1000);
+
+                const radiani = kot * Math.PI / 180;
+                const vx = kot === 90 ? 0 : v * Math.cos(radiani);
+                const vy = v * Math.sin(radiani);
+                const casLeta = (vy + Math.sqrt(vy * vy + 2 * g * h)) / g;
+
+                model = {
+                    vx, vy, h, g, casLeta,
+                    domet: vx * casLeta,
+                    maxVisina: h + vy * vy / (2 * g)
+                };
+
+                dodajRezultat("Čas leta", casLeta, "s");
+                dodajRezultat("Domet", model.domet, "m");
+                dodajRezultat("Največja višina", model.maxVisina, "m");
+                dodajRezultat("Vodoravna hitrost", vx, "m/s");
+
+                drsnik.disabled = casLeta === 0;
+                predvajaj.disabled = casLeta === 0;
+
+                if (casLeta === 0) {
+                    const p = document.createElement("p");
+                    p.textContent =
+                        "Pri vodoravnem metu z višine 0 m je " +
+                        "čas do stika s tlemi v tem modelu 0 s.";
+                    rezultat.appendChild(p);
+                }
+
+                narisi();
+            } catch (error) {
+                napaka.textContent = error.message;
+            }
+        });
+
+        predvajaj.addEventListener("click", () => {
+            if (!model || model.casLeta === 0) return;
+
+            ustaviAnimacijo();
+
+            if (Number(drsnik.value) >= 1000) drsnik.value = "0";
+
+            const zacetniDelez = Number(drsnik.value) / 1000;
+            const zacetek = performance.now();
+
+            predvajaj.disabled = true;
+            ustavi.disabled = false;
+
+            function korak(zdaj) {
+                const delez = Math.min(
+                    1,
+                    zacetniDelez + (zdaj - zacetek) / 5000
+                );
+
+                drsnik.value = String(Math.round(delez * 1000));
+                narisi();
+
+                if (delez < 1) {
+                    animacija = requestAnimationFrame(korak);
+                } else {
+                    animacija = null;
+                    ustavi.disabled = true;
+                    predvajaj.disabled = false;
+                }
+            }
+
+            animacija = requestAnimationFrame(korak);
+        });
+
+        ustavi.addEventListener("click", ustaviAnimacijo);
+
+        drsnik.addEventListener("input", () => {
+            ustaviAnimacijo();
+            narisi();
+        });
+
+        vnosi.forEach(vnos => vnos.addEventListener("input", pocisti));
+        obrazec.addEventListener("reset", pocisti);
+        window.addEventListener("resize", narisi);
+    </script>
+</body>
+</html>

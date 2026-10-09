@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Izračun upornosti in tolerance iz barvnih obročkov uporov s štirimi ali petimi obročki.">
+    <title>Barvne oznake uporov</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Barvne oznake uporov</h1>
+        <p>Izberi barve obročkov in izračunaj upornost ter toleranco.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Dekodiranje upora</h2>
+
+            <form id="obrazec">
+                <label for="stevilo">Število obročkov</label>
+                <select id="stevilo">
+                    <option value="4">4 obročki</option>
+                    <option value="5">5 obročkov</option>
+                </select>
+
+                <label for="prvi">Prvi obroček — prva števka</label>
+                <select id="prvi"></select>
+
+                <label for="drugi">Drugi obroček — druga števka</label>
+                <select id="drugi"></select>
+
+                <div id="tretji-ovoj" hidden>
+                    <label for="tretji">Tretji obroček — tretja števka</label>
+                    <select id="tretji" disabled></select>
+                </div>
+
+                <label for="mnozilnik">Množilnik</label>
+                <select id="mnozilnik"></select>
+
+                <label for="toleranca">Toleranca</label>
+                <select id="toleranca"></select>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj upornost</button>
+                    <button type="reset">Ponastavi</button>
+                </div>
+            </form>
+
+            <div class="upor-prikaz" aria-hidden="true">
+                <div class="upor-zica"></div>
+                <div id="upor-telo" class="upor-telo"></div>
+            </div>
+
+            <p id="barvni-opis"></p>
+            <div id="rezultat" class="rezultat" aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako prebereš obročke?</h2>
+            <p>
+                Pri štirih obročkih prva dva predstavljata števki,
+                tretji je množilnik, četrti pa toleranca.
+                Pri petih obročkih prve tri barve predstavljajo števke,
+                četrta je množilnik, peta pa toleranca.
+            </p>
+            <p>
+                Upor običajno bereš tako, da je obroček tolerance na desni.
+                Pogosto je nekoliko bolj oddaljen od drugih.
+            </p>
+            <p>
+                Primer: rumena, vijolična, rdeča in zlata pomenijo
+                47 × 100 Ω = 4,7 kΩ s toleranco ±5 %.
+            </p>
+            <p>
+                Prikazana toleranca določa dovoljeno odstopanje nazivne
+                upornosti. Dejanska upornost se ugotovi z meritvijo.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Barvne oznake uporov</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const barve = [
+            { ime: "Črna",      css: "#202020", stevka: 0, faktor: 1 },
+            { ime: "Rjava",     css: "#784421", stevka: 1, faktor: 10, toleranca: 1 },
+            { ime: "Rdeča",     css: "#d32f2f", stevka: 2, faktor: 100, toleranca: 2 },
+            { ime: "Oranžna",   css: "#f57c00", stevka: 3, faktor: 1000 },
+            { ime: "Rumena",    css: "#fdd835", stevka: 4, faktor: 10000 },
+            { ime: "Zelena",    css: "#388e3c", stevka: 5, faktor: 100000, toleranca: 0.5 },
+            { ime: "Modra",     css: "#1976d2", stevka: 6, faktor: 1000000, toleranca: 0.25 },
+            { ime: "Vijolična", css: "#7b1fa2", stevka: 7, faktor: 10000000, toleranca: 0.1 },
+            { ime: "Siva",      css: "#808080", stevka: 8, faktor: 100000000, toleranca: 0.05 },
+            { ime: "Bela",      css: "#ffffff", stevka: 9, faktor: 1000000000 },
+            { ime: "Zlata",     css: "#c6a44b", faktor: 0.1, toleranca: 5 },
+            { ime: "Srebrna",   css: "#bfc3c7", faktor: 0.01, toleranca: 10 }
+        ];
+
+        const obrazec = document.getElementById("obrazec");
+        const stevilo = document.getElementById("stevilo");
+        const prvi = document.getElementById("prvi");
+        const drugi = document.getElementById("drugi");
+        const tretji = document.getElementById("tretji");
+        const tretjiOvoj = document.getElementById("tretji-ovoj");
+        const mnozilnik = document.getElementById("mnozilnik");
+        const toleranca = document.getElementById("toleranca");
+        const telo = document.getElementById("upor-telo");
+        const opis = document.getElementById("barvni-opis");
+        const rezultat = document.getElementById("rezultat");
+
+        function steviloBesedilo(vrednost) {
+            return vrednost.toLocaleString("sl-SI", {
+                maximumSignificantDigits: 10
+            });
+        }
+
+        function upornostBesedilo(vrednost) {
+            const enote = [
+                { meja: 1e9, ime: "GΩ" },
+                { meja: 1e6, ime: "MΩ" },
+                { meja: 1e3, ime: "kΩ" },
+                { meja: 1, ime: "Ω" }
+            ];
+
+            const enota = enote.find(e => vrednost >= e.meja)
+                || enote[enote.length - 1];
+
+            return steviloBesedilo(vrednost / enota.meja) + " " + enota.ime;
+        }
+
+        function napolni(select, pogoj, oznaka, privzeta) {
+            barve.forEach((barva, indeks) => {
+                if (!pogoj(barva)) return;
+
+                const option = document.createElement("option");
+                option.value = String(indeks);
+                option.textContent = oznaka(barva);
+
+                if (indeks === privzeta) {
+                    option.selected = true;
+                    option.defaultSelected = true;
+                }
+
+                select.appendChild(option);
+            });
+        }
+
+        napolni(
+            prvi,
+            b => b.stevka !== undefined && b.stevka !== 0,
+            b => `${b.ime} — ${b.stevka}`,
+            4
+        );
+
+        napolni(
+            drugi,
+            b => b.stevka !== undefined,
+            b => `${b.ime} — ${b.stevka}`,
+            7
+        );
+
+        napolni(
+            tretji,
+            b => b.stevka !== undefined,
+            b => `${b.ime} — ${b.stevka}`,
+            0
+        );
+
+        napolni(
+            mnozilnik,
+            b => b.faktor !== undefined,
+            b => `${b.ime} — × ${steviloBesedilo(b.faktor)}`,
+            2
+        );
+
+        napolni(
+            toleranca,
+            b => b.toleranca !== undefined,
+            b => `${b.ime} — ±${steviloBesedilo(b.toleranca)} %`,
+            10
+        );
+
+        function izbranaBarva(select) {
+            return barve[Number(select.value)];
+        }
+
+        function posodobiPrikaz() {
+            const pet = stevilo.value === "5";
+
+            tretjiOvoj.hidden = !pet;
+            tretji.disabled = !pet;
+
+            const izbrane = [
+                izbranaBarva(prvi),
+                izbranaBarva(drugi)
+            ];
+
+            if (pet) izbrane.push(izbranaBarva(tretji));
+
+            izbrane.push(
+                izbranaBarva(mnozilnik),
+                izbranaBarva(toleranca)
+            );
+
+            telo.replaceChildren();
+
+            izbrane.forEach((barva, indeks) => {
+                const obrocek = document.createElement("span");
+                obrocek.className = "upor-obrocek";
+                obrocek.style.backgroundColor = barva.css;
+
+                if (indeks === izbrane.length - 1) {
+                    obrocek.classList.add("upor-toleranca");
+                }
+
+                telo.appendChild(obrocek);
+            });
+
+            opis.textContent =
+                "Barve od leve proti desni: " +
+                izbrane.map(b => b.ime.toLowerCase()).join(", ") + ".";
+
+            rezultat.replaceChildren();
+        }
+
+        function dodajVrstico(besedilo, poudarjeno = false) {
+            const p = document.createElement("p");
+            p.textContent = besedilo;
+
+            if (poudarjeno) p.className = "upor-vrednost";
+
+            rezultat.appendChild(p);
+        }
+
+        function izracunaj() {
+            const pet = stevilo.value === "5";
+            const a = izbranaBarva(prvi).stevka;
+            const b = izbranaBarva(drugi).stevka;
+            const c = izbranaBarva(tretji).stevka;
+            const faktor = izbranaBarva(mnozilnik).faktor;
+            const odstotek = izbranaBarva(toleranca).toleranca;
+
+            const osnova = pet ? a * 100 + b * 10 + c : a * 10 + b;
+            const upornost = osnova * faktor;
+            const odstopanje = upornost * odstotek / 100;
+            const minimum = upornost - odstopanje;
+            const maksimum = upornost + odstopanje;
+
+            rezultat.replaceChildren();
+
+            dodajVrstico(
+                `${upornostBesedilo(upornost)} ±${steviloBesedilo(odstotek)} %`,
+                true
+            );
+
+            dodajVrstico(
+                `Izračun: ${osnova} × ${steviloBesedilo(faktor)} Ω = ` +
+                `${steviloBesedilo(upornost)} Ω`
+            );
+
+            dodajVrstico(
+                "Dovoljeno odstopanje: ±" + upornostBesedilo(odstopanje)
+            );
+
+            dodajVrstico(
+                "Območje upornosti: od " + upornostBesedilo(minimum) +
+                " do " + upornostBesedilo(maksimum)
+            );
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            izracunaj();
+        });
+
+        for (const select of [
+            stevilo, prvi, drugi, tretji, mnozilnik, toleranca
+        ]) {
+            select.addEventListener("change", posodobiPrikaz);
+        }
+
+        obrazec.addEventListener("reset", () => {
+            setTimeout(posodobiPrikaz, 0);
+        });
+
+        posodobiPrikaz();
+        izracunaj();
+    </script>
+</body>
+</html>

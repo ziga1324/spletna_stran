@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Izračun skupne upornosti zaporedno ali vzporedno vezanih uporov.">
+    <title>Zaporedna in vzporedna vezava uporov</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Zaporedna in vzporedna vezava uporov</h1>
+        <p>Vnesi vrednosti uporov in izračunaj skupno upornost.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Kalkulator vezave</h2>
+
+            <form id="obrazec">
+                <label for="vezava">Vrsta vezave</label>
+                <select id="vezava">
+                    <option value="zaporedna">Zaporedna vezava</option>
+                    <option value="vzporedna">Vzporedna vezava</option>
+                </select>
+
+                <label for="upori">Vrednosti uporov</label>
+                <textarea id="upori" rows="5" maxlength="10000"
+                          required spellcheck="false"
+                          aria-describedby="navodila"
+                          placeholder="Primer: 100 220 330"></textarea>
+
+                <p id="navodila">
+                    Vrednosti loči s presledki, podpičji ali novimi vrsticami.
+                    Decimalna števila zapisuj s piko ali vejico.
+                    Vsi upori uporabljajo spodaj izbrano enoto.
+                    Vneseš lahko od 1 do 100 uporov.
+                </p>
+
+                <label for="enota">Enota vseh vnesenih uporov</label>
+                <select id="enota">
+                    <option value="1">Ω</option>
+                    <option value="1000">kΩ</option>
+                    <option value="1000000">MΩ</option>
+                </select>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                    <button id="primer" type="button">Vstavi primer</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <div id="rezultat" class="rezultat" aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Zaporedna vezava</h2>
+            <p>
+                Skupna upornost je vsota vseh uporov:
+                R = R₁ + R₂ + … + Rₙ.
+                Skozi vse upore teče isti tok.
+            </p>
+
+            <h2>Vzporedna vezava</h2>
+            <p>
+                Seštejejo se obratne vrednosti uporov:
+                1/R = 1/R₁ + 1/R₂ + … + 1/Rₙ.
+                Na vseh vejah je enaka napetost.
+            </p>
+            <p>
+                Za dva upora velja tudi:
+                R = (R₁ × R₂) / (R₁ + R₂).
+            </p>
+
+            <p>
+                Kalkulator predpostavlja idealne upore in zanemari
+                upornost povezav. Pri vzporedni vezavi idealna veja
+                z upornostjo 0 Ω pomeni skupno upornost 0 Ω.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Kalkulator vezave uporov</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const upori = document.getElementById("upori");
+        const vezava = document.getElementById("vezava");
+        const enota = document.getElementById("enota");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        function pocisti() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function oblikuj(vrednost) {
+            return vrednost.toLocaleString("sl-SI", {
+                maximumSignificantDigits: 10
+            });
+        }
+
+        function prikazUpornosti(vrednost) {
+            let delitelj = 1;
+            let oznaka = "Ω";
+
+            if (vrednost >= 1e9) {
+                delitelj = 1e9;
+                oznaka = "GΩ";
+            } else if (vrednost >= 1e6) {
+                delitelj = 1e6;
+                oznaka = "MΩ";
+            } else if (vrednost >= 1e3) {
+                delitelj = 1e3;
+                oznaka = "kΩ";
+            } else if (vrednost > 0 && vrednost < 1e-6) {
+                delitelj = 1e-9;
+                oznaka = "nΩ";
+            } else if (vrednost > 0 && vrednost < 1e-3) {
+                delitelj = 1e-6;
+                oznaka = "µΩ";
+            } else if (vrednost > 0 && vrednost < 1) {
+                delitelj = 1e-3;
+                oznaka = "mΩ";
+            }
+
+            return oblikuj(vrednost / delitelj) + " " + oznaka;
+        }
+
+        function preberiUpore() {
+            const besedilo = upori.value.trim();
+
+            if (!besedilo) {
+                throw new Error("Vnesi vsaj eno upornost.");
+            }
+
+            const elementi = besedilo.split(/[;\s]+/);
+
+            if (elementi.length > 100) {
+                throw new Error("Vneseš lahko največ 100 uporov.");
+            }
+
+            const vzorec =
+                /^[+-]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:e[+-]?\d+)?$/i;
+
+            const faktor = Number(enota.value);
+
+            return elementi.map((element, indeks) => {
+                if (!vzorec.test(element)) {
+                    throw new Error(
+                        `Neveljaven zapis pri uporu ${indeks + 1}: ${element}.`
+                    );
+                }
+
+                const vnos = Number(element.replace(",", "."));
+                const vrednost = vnos * faktor;
+
+                if (!Number.isFinite(vrednost) || vrednost < 0) {
+                    throw new Error(
+                        `Upor ${indeks + 1} mora imeti končno, nenegativno upornost.`
+                    );
+                }
+
+                // Pozitiven zapis se ne sme zaradi podtekanja
+                // pretvoriti v ničelno upornost.
+                const mantisa = element.split(/e/i)[0];
+                if (vrednost === 0 && /[1-9]/.test(mantisa)) {
+                    throw new Error(
+                        `Vrednost upora ${indeks + 1} je premajhna za izračun.`
+                    );
+                }
+
+                return vrednost;
+            });
+        }
+
+        function skupnaUpornost(vrednosti) {
+            let skupna;
+
+            if (vezava.value === "zaporedna") {
+                skupna = vrednosti.reduce((vsota, r) => vsota + r, 0);
+            } else if (vrednosti.includes(0)) {
+                skupna = 0;
+            } else {
+                // Skalirana formula prepreči preliv pri računanju 1/R.
+                const najmanjsa = Math.min(...vrednosti);
+                const vsota = vrednosti.reduce(
+                    (s, r) => s + najmanjsa / r,
+                    0
+                );
+                skupna = najmanjsa / vsota;
+
+                if (skupna === 0) {
+                    throw new Error(
+                        "Skupna upornost je premajhna za numerični obseg kalkulatorja."
+                    );
+                }
+            }
+
+            if (!Number.isFinite(skupna)) {
+                throw new Error(
+                    "Skupna upornost presega numerični obseg. Uporabi manjše vrednosti."
+                );
+            }
+
+            return skupna;
+        }
+
+        function dodajOdstavek(besedilo, razred) {
+            const p = document.createElement("p");
+            p.textContent = besedilo;
+            if (razred) p.className = razred;
+            rezultat.appendChild(p);
+        }
+
+        function prikazi(vrednosti, skupna) {
+            const zaporedna = vezava.value === "zaporedna";
+
+            dodajOdstavek(
+                "Skupna upornost: " + prikazUpornosti(skupna),
+                "vezava-vrednost"
+            );
+
+            dodajOdstavek(
+                "Vrsta vezave: " +
+                (zaporedna ? "zaporedna" : "vzporedna") +
+                ". Število uporov: " + vrednosti.length + "."
+            );
+
+            dodajOdstavek("V osnovni enoti: " + oblikuj(skupna) + " Ω.");
+
+            if (zaporedna) {
+                dodajOdstavek("Formula: R = R₁ + R₂ + … + Rₙ.");
+            } else if (vrednosti.includes(0)) {
+                dodajOdstavek(
+                    "Ena od vzporednih vej ima 0 Ω, zato je idealna skupna upornost 0 Ω."
+                );
+            } else {
+                dodajOdstavek("Formula: R = 1 / (1/R₁ + 1/R₂ + … + 1/Rₙ).");
+            }
+
+            const podrobnosti = document.createElement("details");
+            const povzetek = document.createElement("summary");
+            povzetek.textContent = "Prikaži vnesene upore";
+
+            const seznam = document.createElement("ol");
+
+            vrednosti.forEach((r, indeks) => {
+                const li = document.createElement("li");
+                li.textContent = `R${indeks + 1} = ${prikazUpornosti(r)}`;
+                seznam.appendChild(li);
+            });
+
+            podrobnosti.append(povzetek, seznam);
+            rezultat.appendChild(podrobnosti);
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            try {
+                const vrednosti = preberiUpore();
+                prikazi(vrednosti, skupnaUpornost(vrednosti));
+            } catch (error) {
+                rezultat.replaceChildren();
+                napaka.textContent = error.message;
+            }
+        });
+
+        document.getElementById("primer").addEventListener("click", () => {
+            upori.value = "100 220 330";
+            enota.value = "1";
+            obrazec.requestSubmit();
+        });
+
+        upori.addEventListener("input", pocisti);
+        vezava.addEventListener("change", pocisti);
+        enota.addEventListener("change", pocisti);
+        obrazec.addEventListener("reset", pocisti);
+    </script>
+</body>
+</html>

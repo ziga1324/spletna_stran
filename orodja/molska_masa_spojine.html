@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Izračun molske mase spojine iz kemijske formule z razčlenitvijo po elementih.">
+    <title>Molska masa spojine</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Molska masa spojine</h1>
+        <p>Vnesi kemijsko formulo in izračunaj molsko maso.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Kalkulator molske mase</h2>
+
+            <form id="obrazec">
+                <label for="formula">Kemijska formula</label>
+                <input id="formula" type="text" maxlength="200"
+                       placeholder="Na primer Al2(SO4)3"
+                       required autocomplete="off" spellcheck="false"
+                       aria-describedby="navodila">
+
+                <p id="navodila">
+                    Uporabi običajne številke. Velike in male črke so
+                    pomembne: Co je kobalt, CO pa ogljikov monoksid.
+                    Podprti so oklepaji () in [].
+                </p>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Počisti</button>
+                    <button id="primer" type="button">Vstavi primer</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <div id="rezultat" class="rezultat" aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Molska masa je vsota prispevkov vseh atomov v formuli.
+                Prispevek elementa dobimo tako, da število njegovih atomov
+                pomnožimo z uporabljeno atomsko maso.
+            </p>
+            <p>
+                Primer: H2O vsebuje dva atoma vodika in en atom kisika.
+                M = 2 × 1,008 + 15,999 = 18,015 g/mol.
+            </p>
+            <p>
+                Uporabljene so približne tabelarične atomske mase.
+                Izračun ni namenjen posameznim izotopom.
+                Zapisi hidratov s piko, naboji in koeficienti pred
+                formulo niso podprti. Hidrat lahko zapišeš z združeno
+                sestavo, na primer CuSO4(H2O)5.
+            </p>
+
+            <details>
+                <summary>Podprti elementi</summary>
+                <p id="elementi"></p>
+            </details>
+        </section>
+    </main>
+
+    <footer>
+        <p>Kalkulator molske mase</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        // Približne atomske mase v g/mol.
+        const mase = {
+            H: 1.008, He: 4.0026, Li: 6.94, Be: 9.0122,
+            B: 10.81, C: 12.011, N: 14.007, O: 15.999,
+            F: 18.9984, Ne: 20.1797, Na: 22.9898, Mg: 24.305,
+            Al: 26.9815, Si: 28.085, P: 30.9738, S: 32.06,
+            Cl: 35.45, Ar: 39.948, K: 39.0983, Ca: 40.078,
+            Sc: 44.9559, Ti: 47.867, V: 50.9415, Cr: 51.9961,
+            Mn: 54.938, Fe: 55.845, Co: 58.9332, Ni: 58.6934,
+            Cu: 63.546, Zn: 65.38, Ga: 69.723, Ge: 72.630,
+            As: 74.9216, Se: 78.971, Br: 79.904, Kr: 83.798,
+            Rb: 85.4678, Sr: 87.62, Ag: 107.8682, Cd: 112.414,
+            Sn: 118.710, Sb: 121.760, I: 126.9045, Xe: 131.293,
+            Cs: 132.9055, Ba: 137.327, W: 183.84, Pt: 195.084,
+            Au: 196.9666, Hg: 200.592, Pb: 207.2, U: 238.0289
+        };
+
+        const obrazec = document.getElementById("obrazec");
+        const formula = document.getElementById("formula");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        document.getElementById("elementi").textContent =
+            Object.keys(mase).join(", ") + ".";
+
+        function pocisti() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function oblikuj(vrednost) {
+            return vrednost.toLocaleString("sl-SI", {
+                maximumFractionDigits: 6
+            });
+        }
+
+        function razcleni(vnos) {
+            const zapis = vnos.trim();
+
+            if (!zapis) throw new Error("Vnesi kemijsko formulo.");
+
+            if (/\s/.test(zapis)) {
+                throw new Error("Formulo zapiši brez presledkov.");
+            }
+
+            let mesto = 0;
+            const meja = 1000000;
+
+            function steviloAtomov() {
+                const zacetek = mesto;
+
+                while (mesto < zapis.length && /\d/.test(zapis[mesto])) {
+                    mesto++;
+                }
+
+                if (zacetek === mesto) return 1;
+
+                const besedilo = zapis.slice(zacetek, mesto);
+                const n = Number(besedilo);
+
+                if (besedilo.startsWith("0") ||
+                    !Number.isSafeInteger(n) || n < 1 || n > meja) {
+                    throw new Error(
+                        "Indeksi morajo biti cela števila od 1 do 1.000.000 " +
+                        "brez začetnih ničel."
+                    );
+                }
+
+                return n;
+            }
+
+            function dodaj(cilj, element, n) {
+                const novo = (cilj.get(element) || 0) + n;
+
+                if (!Number.isSafeInteger(novo) || novo > meja) {
+                    throw new Error(
+                        "Največje podprto število atomov posameznega " +
+                        "elementa je 1.000.000."
+                    );
+                }
+
+                cilj.set(element, novo);
+            }
+
+            function skupina(zakljucek = null, globina = 0) {
+                if (globina > 20) {
+                    throw new Error("Formula vsebuje preveč ugnezdenih oklepajev.");
+                }
+
+                const atomi = new Map();
+                let clenov = 0;
+
+                while (mesto < zapis.length) {
+                    const znak = zapis[mesto];
+
+                    if (znak === ")" || znak === "]") {
+                        if (znak !== zakljucek) {
+                            throw new Error("Oklepaji niso pravilno povezani.");
+                        }
+
+                        if (clenov === 0) {
+                            throw new Error("Oklepaji ne smejo biti prazni.");
+                        }
+
+                        mesto++;
+                        return atomi;
+                    }
+
+                    if (znak === "(" || znak === "[") {
+                        mesto++;
+                        const notranji = skupina(
+                            znak === "(" ? ")" : "]",
+                            globina + 1
+                        );
+                        const faktor = steviloAtomov();
+
+                        for (const [element, n] of notranji) {
+                            dodaj(atomi, element, n * faktor);
+                        }
+
+                        clenov++;
+                        continue;
+                    }
+
+                    if (/[A-Z]/.test(znak)) {
+                        let element = znak;
+                        mesto++;
+
+                        if (mesto < zapis.length &&
+                            /[a-z]/.test(zapis[mesto])) {
+                            element += zapis[mesto++];
+                        }
+
+                        if (!Object.hasOwn(mase, element)) {
+                            throw new Error(
+                                "Neznan ali nepodprt element: " + element + "."
+                            );
+                        }
+
+                        dodaj(atomi, element, steviloAtomov());
+                        clenov++;
+                        continue;
+                    }
+
+                    throw new Error(
+                        `Neveljaven znak na mestu ${mesto + 1}: ${znak}. ` +
+                        "Preveri zapis simbolov in indeksov."
+                    );
+                }
+
+                if (zakljucek !== null) {
+                    throw new Error("Manjka zaključni oklepaj " + zakljucek + ".");
+                }
+
+                return atomi;
+            }
+
+            return { zapis, atomi: skupina() };
+        }
+
+        function prikazi(zapis, atomi) {
+            let skupnaMasa = 0;
+            let skupnoAtomov = 0;
+
+            const tabela = document.createElement("table");
+            tabela.className = "molska-tabela";
+
+            const glava = document.createElement("thead");
+            const glavaVrstica = document.createElement("tr");
+
+            for (const naziv of [
+                "Element", "Število atomov", "Masa (g/mol)", "Prispevek (g/mol)"
+            ]) {
+                const th = document.createElement("th");
+                th.scope = "col";
+                th.textContent = naziv;
+                glavaVrstica.appendChild(th);
+            }
+
+            glava.appendChild(glavaVrstica);
+            const telo = document.createElement("tbody");
+
+            for (const [element, n] of atomi) {
+                const prispevek = mase[element] * n;
+                skupnaMasa += prispevek;
+                skupnoAtomov += n;
+
+                const tr = document.createElement("tr");
+
+                for (const vrednost of [
+                    element, String(n), oblikuj(mase[element]), oblikuj(prispevek)
+                ]) {
+                    const td = document.createElement("td");
+                    td.textContent = vrednost;
+                    tr.appendChild(td);
+                }
+
+                telo.appendChild(tr);
+            }
+
+            tabela.append(glava, telo);
+
+            const naslov = document.createElement("h3");
+            naslov.textContent = "Formula: " + zapis;
+
+            const masa = document.createElement("p");
+            masa.className = "molska-vrednost";
+            masa.textContent = "M ≈ " + oblikuj(skupnaMasa) + " g/mol";
+
+            const stevilo = document.createElement("p");
+            stevilo.textContent =
+                "Skupno število atomov v zapisani formulski enoti: " +
+                skupnoAtomov + ".";
+
+            const ovoj = document.createElement("div");
+            ovoj.className = "molska-ovoj";
+            ovoj.appendChild(tabela);
+
+            rezultat.append(naslov, masa, stevilo, ovoj);
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            try {
+                const { zapis, atomi } = razcleni(formula.value);
+                prikazi(zapis, atomi);
+            } catch (error) {
+                napaka.textContent = error.message;
+            }
+        });
+
+        document.getElementById("primer").addEventListener("click", () => {
+            formula.value = "Al2(SO4)3";
+            obrazec.requestSubmit();
+        });
+
+        formula.addEventListener("input", pocisti);
+        obrazec.addEventListener("reset", pocisti);
+    </script>
+</body>
+</html>

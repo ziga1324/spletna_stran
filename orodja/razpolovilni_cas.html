@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Kalkulator razpolovnega časa, preostale količine in časa eksponentnega razpada.">
+    <title>Razpolovni čas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Razpolovni čas</h1>
+        <p>Izračunaj spreminjanje količine pri eksponentnem razpadu.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Kalkulator razpada</h2>
+
+            <form id="obrazec">
+                <label for="iskana">Kaj želiš izračunati?</label>
+                <select id="iskana">
+                    <option value="kolicina">Preostalo količino N</option>
+                    <option value="cas">Pretečeni čas t</option>
+                    <option value="razpolovni">Razpolovni čas T½</option>
+                </select>
+
+                <label for="zacetna">Začetna količina N₀</label>
+                <input id="zacetna" type="number" min="0"
+                       step="any" value="100" required>
+
+                <p>
+                    Začetna in preostala količina morata biti v isti enoti,
+                    na primer gramih ali številu delcev.
+                </p>
+
+                <div id="polje-kolicina" hidden>
+                    <label for="kolicina">Preostala količina N</label>
+                    <input id="kolicina" type="number" min="0"
+                           step="any" value="25" disabled>
+                </div>
+
+                <div id="polje-cas">
+                    <label for="cas">Pretečeni čas t</label>
+                    <input id="cas" type="number" min="0"
+                           step="any" value="20" required>
+                </div>
+
+                <div id="polje-razpolovni">
+                    <label for="razpolovni">Razpolovni čas T½</label>
+                    <input id="razpolovni" type="number" min="0"
+                           step="any" value="10" required>
+                </div>
+
+                <label for="enota">Skupna enota časa</label>
+                <select id="enota">
+                    <option value="s">Sekunde</option>
+                    <option value="min">Minute</option>
+                    <option value="h">Ure</option>
+                    <option value="dni" selected>Dnevi</option>
+                    <option value="let">Leta</option>
+                </select>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Ponastavi</button>
+                    <button id="primer" type="button">Vstavi primer</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <div id="rezultat" class="rezultat" aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Po enem razpolovnem času ostane polovica začetne količine.
+                Po dveh ostane četrtina, po treh osmina.
+            </p>
+            <ul>
+                <li>Preostala količina: N = N₀ × 2<sup>−t/T½</sup></li>
+                <li>Pretečeni čas: t = T½ × ln(N₀/N) / ln(2)</li>
+                <li>Razpolovni čas: T½ = t × ln(2) / ln(N₀/N)</li>
+            </ul>
+            <p>
+                Model predpostavlja stalni razpolovni čas in brez dodajanja
+                snovi. Pri radioaktivnem razpadu opisuje pričakovano
+                količino velikega števila delcev.
+            </p>
+            <p>
+                Pri računanju časa mora biti preostala količina pozitivna
+                in največ enaka začetni. Za izračun razpolovnega časa
+                potrebujemo pozitiven čas in strogo zmanjšanje količine.
+                V tem modelu količina pri končnem času ne doseže natanko nič.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Kalkulator razpolovnega časa</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const iskana = document.getElementById("iskana");
+        const zacetna = document.getElementById("zacetna");
+        const enota = document.getElementById("enota");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+
+        const polja = {
+            kolicina: document.getElementById("kolicina"),
+            cas: document.getElementById("cas"),
+            razpolovni: document.getElementById("razpolovni")
+        };
+
+        function pocisti() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function posodobi() {
+            for (const [kljuc, polje] of Object.entries(polja)) {
+                const skrito = kljuc === iskana.value;
+                document.getElementById("polje-" + kljuc).hidden = skrito;
+                polje.disabled = skrito;
+                polje.required = !skrito;
+            }
+            pocisti();
+        }
+
+        function preberi(polje, ime, dovoljenaNicla = false) {
+            const vrednost = polje.valueAsNumber;
+
+            if (!Number.isFinite(vrednost) ||
+                (dovoljenaNicla ? vrednost < 0 : vrednost <= 0)) {
+                throw new Error(
+                    ime + " mora biti " +
+                    (dovoljenaNicla ? "nenegativno" : "pozitivno") +
+                    " končno število."
+                );
+            }
+
+            return vrednost;
+        }
+
+        function oblikuj(vrednost) {
+            if (vrednost === 0) return "0";
+
+            if (Math.abs(vrednost) < 0.000001 ||
+                Math.abs(vrednost) >= 1e12) {
+                return vrednost.toExponential(6).replace(".", ",");
+            }
+
+            return vrednost.toLocaleString("sl-SI", {
+                maximumSignificantDigits: 10
+            });
+        }
+
+        function dodaj(besedilo, poudarjeno = false) {
+            const p = document.createElement("p");
+            p.textContent = besedilo;
+            if (poudarjeno) p.className = "razpad-vrednost";
+            rezultat.appendChild(p);
+        }
+
+        // Stabilnejši izračun logaritma razmerja za podobni količini.
+        function logRazmerja(n0, n) {
+            if (n >= n0 / 2) {
+                return Math.log1p((n0 - n) / n);
+            }
+            return Math.log(n0) - Math.log(n);
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            try {
+                const n0 = preberi(zacetna, "Začetna količina");
+                let n, t, polovica, steviloPolovic;
+                const oznaka = enota.value;
+
+                if (iskana.value === "kolicina") {
+                    t = preberi(polja.cas, "Pretečeni čas", true);
+                    polovica = preberi(polja.razpolovni, "Razpolovni čas");
+                    steviloPolovic = t / polovica;
+
+                    // Računanje v logaritemski obliki zmanjša
+                    // prezgodnje podtekanje vmesnih rezultatov.
+                    n = t === 0
+                        ? n0
+                        : Math.exp(
+                            Math.log(n0) - steviloPolovic * Math.LN2
+                        );
+                    n = Math.min(n0, n);
+
+                    if (!Number.isFinite(steviloPolovic) || n === 0) {
+                        throw new Error(
+                            "Preostala količina je premajhna za numerični " +
+                            "obseg kalkulatorja. Matematično je še vedno pozitivna."
+                        );
+                    }
+
+                    dodaj("Preostala količina: " + oblikuj(n), true);
+                } else {
+                    n = preberi(polja.kolicina, "Preostala količina");
+
+                    if (n > n0) {
+                        throw new Error(
+                            "Preostala količina ne sme presegati začetne."
+                        );
+                    }
+
+                    steviloPolovic = logRazmerja(n0, n) / Math.LN2;
+
+                    if (iskana.value === "cas") {
+                        polovica = preberi(
+                            polja.razpolovni, "Razpolovni čas"
+                        );
+                        t = polovica * steviloPolovic;
+                        dodaj(
+                            "Pretečeni čas: " + oblikuj(t) + " " + oznaka,
+                            true
+                        );
+                    } else {
+                        t = preberi(polja.cas, "Pretečeni čas");
+
+                        if (n === n0) {
+                            throw new Error(
+                                "Za izračun razpolovnega časa mora biti " +
+                                "preostala količina manjša od začetne."
+                            );
+                        }
+
+                        polovica = t / steviloPolovic;
+                        dodaj(
+                            "Razpolovni čas: " +
+                            oblikuj(polovica) + " " + oznaka,
+                            true
+                        );
+                    }
+                }
+
+                if (![n, t, polovica, steviloPolovic].every(Number.isFinite) ||
+                    polovica <= 0 ||
+                    (iskana.value === "cas" && n < n0 && t === 0)) {
+                    throw new Error(
+                        "Izračun presega numerični obseg. Preveri vrednosti."
+                    );
+                }
+
+                const delez = Math.min(1, n / n0);
+                const odstotek = delez * 100;
+
+                dodaj("Začetna količina: " + oblikuj(n0) + ".");
+                dodaj("Preostala količina: " + oblikuj(n) + ".");
+                dodaj("Preostali delež: " + oblikuj(odstotek) + " %.");
+                dodaj("Pretečeni čas: " + oblikuj(t) + " " + oznaka + ".");
+                dodaj(
+                    "Razpolovni čas: " +
+                    oblikuj(polovica) + " " + oznaka + "."
+                );
+                dodaj(
+                    "Število pretečenih razpolovnih časov: " +
+                    oblikuj(steviloPolovic) + "."
+                );
+
+                const merilnik = document.createElement("progress");
+                merilnik.max = 1;
+                merilnik.value = delez;
+                merilnik.setAttribute("aria-label", "Preostali delež količine");
+                rezultat.appendChild(merilnik);
+            } catch (error) {
+                rezultat.replaceChildren();
+                napaka.textContent = error.message;
+            }
+        });
+
+        document.getElementById("primer").addEventListener("click", () => {
+            iskana.value = "kolicina";
+            zacetna.value = "100";
+            polja.cas.value = "20";
+            polja.razpolovni.value = "10";
+            enota.value = "dni";
+            posodobi();
+            obrazec.requestSubmit();
+        });
+
+        iskana.addEventListener("change", posodobi);
+        zacetna.addEventListener("input", pocisti);
+        Object.values(polja).forEach(polje => {
+            polje.addEventListener("input", pocisti);
+        });
+        enota.addEventListener("change", pocisti);
+
+        obrazec.addEventListener("reset", () => {
+            setTimeout(posodobi, 0);
+        });
+
+        posodobi();
+    </script>
+</body>
+</html>
