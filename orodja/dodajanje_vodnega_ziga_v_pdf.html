@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Dodaj besedilni vodni žig na vse strani PDF-ja in prenesi nov dokument.">
+    <title>Dodajanje vodnega žiga v PDF</title>
+
+    <link rel="stylesheet" href="../style.css">
+
+    <script defer
+            src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Dodajanje vodnega žiga v PDF</h1>
+        <p>Dodaj svoje besedilo na vse strani dokumenta.</p>
+        <a href="../index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Nastavitve vodnega žiga</h2>
+
+            <form id="obrazec">
+                <label for="datoteka">PDF-datoteka</label>
+                <input id="datoteka" type="file"
+                       accept=".pdf,application/pdf" required>
+
+                <p>
+                    Največja velikost datoteke je 50 MiB.
+                    Podprtih je največ 500 strani.
+                </p>
+
+                <label for="besedilo">Besedilo vodnega žiga</label>
+                <input id="besedilo" type="text" maxlength="80"
+                       value="OSNUTEK" required
+                       placeholder="Na primer ZAUPNO">
+
+                <label for="barva">Barva</label>
+                <input id="barva" type="color" value="#7958df">
+
+                <label for="prosojnost">
+                    Vidnost: <output id="vidnost">20 %</output>
+                </label>
+                <input id="prosojnost" type="range"
+                       min="5" max="100" step="1" value="20">
+
+                <label for="velikost">Velikost žiga</label>
+                <select id="velikost">
+                    <option value="0.35">Majhna</option>
+                    <option value="0.60" selected>Srednja</option>
+                    <option value="0.85">Velika</option>
+                </select>
+
+                <label for="smer">Usmeritev</label>
+                <select id="smer">
+                    <option value="45">Diagonalno</option>
+                    <option value="0">Vodoravno</option>
+                </select>
+
+                <label for="ime">Ime nove datoteke</label>
+                <input id="ime" type="text" maxlength="100"
+                       value="pdf-z-vodnim-zigom.pdf">
+
+                <div class="gumbi">
+                    <button id="ustvari" type="submit">
+                        Dodaj vodni žig
+                    </button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <p id="status" role="status" aria-live="polite"></p>
+
+            <a id="prenos" class="pdf-prenos" hidden>
+                Prenesi PDF z vodnim žigom
+            </a>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Besedilni žig se doda na sredino vsake strani, čez
+                obstoječo vsebino. Njegova velikost se prilagodi strani.
+                Podprte so tudi slovenske črke č, š in ž.
+            </p>
+
+            <p>
+                Izvirna datoteka ostane nespremenjena. Dokument se
+                obdeluje v tvojem brskalniku in ga ta stran ne pošilja
+                na strežnik. Internet potrebuješ za nalaganje knjižnice.
+            </p>
+
+            <p>
+                Zaščiteni in poškodovani PDF-ji niso podprti.
+                Spreminjanje dokumenta lahko razveljavi digitalne podpise.
+                Vodni žig ni zaščita pred kopiranjem ali odstranjevanjem.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Dodajanje vodnega žiga v PDF</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const datoteka = document.getElementById("datoteka");
+        const besedilo = document.getElementById("besedilo");
+        const barva = document.getElementById("barva");
+        const prosojnost = document.getElementById("prosojnost");
+        const vidnost = document.getElementById("vidnost");
+        const velikost = document.getElementById("velikost");
+        const smer = document.getElementById("smer");
+        const ime = document.getElementById("ime");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+        const prenos = document.getElementById("prenos");
+
+        let url = null;
+        let obdelava = false;
+
+        function odstraniPrenos() {
+            if (url) URL.revokeObjectURL(url);
+
+            url = null;
+            prenos.hidden = true;
+            prenos.removeAttribute("href");
+        }
+
+        function pocistiRezultat() {
+            odstraniPrenos();
+            napaka.textContent = "";
+            status.textContent = "";
+        }
+
+        function zakleni(zaklenjeno) {
+            obdelava = zaklenjeno;
+
+            for (const element of obrazec.elements) {
+                element.disabled = zaklenjeno;
+            }
+
+            obrazec.setAttribute("aria-busy", String(zaklenjeno));
+        }
+
+        function imePrenosa() {
+            let zapis = ime.value.trim()
+                .replace(/[\\/:*?"<>|\u0000-\u001f]/g, "_");
+
+            if (!zapis) zapis = "pdf-z-vodnim-zigom.pdf";
+            if (!/\.pdf$/i.test(zapis)) zapis += ".pdf";
+
+            return zapis;
+        }
+
+        // Besedilo pretvori v prosojno sliko.
+        // Tako lahko uporabimo tudi slovenske šumnike.
+        async function ustvariSliko(zapis, barvaZiga) {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+
+            if (!ctx) {
+                throw new Error("Brskalnik ne podpira risanja besedila.");
+            }
+
+            const font = "bold 100px Arial, Helvetica, sans-serif";
+
+            ctx.font = font;
+            const sirinaBesedila = ctx.measureText(zapis).width;
+
+            // Omeji velikost začasne slike.
+            const faktor = Math.min(1, 4000 / (sirinaBesedila + 40));
+
+            canvas.width = Math.max(
+                1,
+                Math.ceil((sirinaBesedila + 40) * faktor)
+            );
+            canvas.height = Math.ceil(160 * faktor);
+
+            ctx.scale(faktor, faktor);
+            ctx.font = font;
+            ctx.fillStyle = barvaZiga;
+            ctx.textBaseline = "middle";
+            ctx.fillText(zapis, 20, 80);
+
+            const blob = await new Promise(resolve => {
+                canvas.toBlob(resolve, "image/png");
+            });
+
+            if (!blob) {
+                throw new Error("Slike vodnega žiga ni mogoče ustvariti.");
+            }
+
+            return new Uint8Array(await blob.arrayBuffer());
+        }
+
+        obrazec.addEventListener("submit", async event => {
+            event.preventDefault();
+
+            if (obdelava) return;
+            pocistiRezultat();
+
+            const izbrana = datoteka.files[0];
+            const zapis = besedilo.value.trim();
+
+            if (!izbrana) {
+                napaka.textContent = "Izberi PDF-datoteko.";
+                return;
+            }
+
+            if (!zapis) {
+                napaka.textContent = "Vnesi besedilo vodnega žiga.";
+                return;
+            }
+
+            if (!/\.pdf$/i.test(izbrana.name)) {
+                napaka.textContent = "Izberi datoteko s končnico .pdf.";
+                return;
+            }
+
+            if (izbrana.size > 50 * 1024 * 1024) {
+                napaka.textContent = "Največja dovoljena velikost je 50 MiB.";
+                return;
+            }
+
+            if (!window.PDFLib) {
+                napaka.textContent =
+                    "Knjižnica se ni naložila. Preveri internetno " +
+                    "povezavo in ponovno naloži stran.";
+                return;
+            }
+
+            const vidljivost = Number(prosojnost.value) / 100;
+            const delez = Number(velikost.value);
+            const kot = Number(smer.value);
+            const izhodnoIme = imePrenosa();
+
+            zakleni(true);
+
+            try {
+                status.textContent = "Odpiram PDF…";
+
+                let dokument;
+
+                try {
+                    dokument = await PDFLib.PDFDocument.load(
+                        await izbrana.arrayBuffer()
+                    );
+                } catch {
+                    throw new Error(
+                        "PDF-ja ni mogoče odpreti. Lahko je zaščiten, " +
+                        "poškodovan ali ni veljaven dokument."
+                    );
+                }
+
+                const strani = dokument.getPages();
+
+                if (strani.length < 1 || strani.length > 500) {
+                    throw new Error(
+                        "Dokument mora vsebovati od 1 do 500 strani."
+                    );
+                }
+
+                const png = await ustvariSliko(zapis, barva.value);
+                const slika = await dokument.embedPng(png);
+
+                for (let i = 0; i < strani.length; i++) {
+                    const stran = strani[i];
+                    const okvir = stran.getCropBox();
+
+                    if (okvir.width <= 0 || okvir.height <= 0) {
+                        throw new Error(
+                            "Stran " + (i + 1) + " ima neveljavne mere."
+                        );
+                    }
+
+                    // Upoštevaj izvirno rotacijo strani.
+                    const rotacijaStrani = (
+                        (stran.getRotation().angle % 360) + 360
+                    ) % 360;
+
+                    const radiani = (
+                        kot + rotacijaStrani
+                    ) * Math.PI / 180;
+
+                    const cos = Math.cos(radiani);
+                    const sin = Math.sin(radiani);
+
+                    // Mere okvirja zasukane slike.
+                    const okvirSirina =
+                        Math.abs(slika.width * cos) +
+                        Math.abs(slika.height * sin);
+
+                    const okvirVisina =
+                        Math.abs(slika.width * sin) +
+                        Math.abs(slika.height * cos);
+
+                    const merilo = Math.min(
+                        okvir.width * delez / okvirSirina,
+                        okvir.height * delez / okvirVisina
+                    );
+
+                    const w = slika.width * merilo;
+                    const h = slika.height * merilo;
+
+                    const centerX = okvir.x + okvir.width / 2;
+                    const centerY = okvir.y + okvir.height / 2;
+
+                    stran.drawImage(slika, {
+                        x: centerX - (w * cos - h * sin) / 2,
+                        y: centerY - (w * sin + h * cos) / 2,
+                        width: w,
+                        height: h,
+                        rotate: PDFLib.degrees(kot + rotacijaStrani),
+                        opacity: vidljivost
+                    });
+
+                    if (i % 10 === 0) {
+                        status.textContent =
+                            `Dodajam žig: stran ${i + 1}/${strani.length}…`;
+
+                        await new Promise(resolve => {
+                            setTimeout(resolve, 0);
+                        });
+                    }
+                }
+
+                status.textContent = "Shranjujem dokument…";
+
+                const bajti = await dokument.save();
+                const blob = new Blob([bajti], {
+                    type: "application/pdf"
+                });
+
+                url = URL.createObjectURL(blob);
+                prenos.href = url;
+                prenos.download = izhodnoIme;
+                prenos.hidden = false;
+
+                status.textContent =
+                    `Končano. Vodni žig je dodan na ${strani.length} strani.`;
+            } catch (error) {
+                odstraniPrenos();
+                status.textContent = "";
+                napaka.textContent =
+                    error.message || "Dodajanje vodnega žiga ni uspelo.";
+            } finally {
+                zakleni(false);
+            }
+        });
+
+        prosojnost.addEventListener("input", () => {
+            vidnost.textContent = prosojnost.value + " %";
+        });
+
+        for (const polje of [
+            datoteka, besedilo, barva, prosojnost, velikost, smer
+        ]) {
+            polje.addEventListener("input", pocistiRezultat);
+            polje.addEventListener("change", pocistiRezultat);
+        }
+
+        ime.addEventListener("input", () => {
+            if (url) prenos.download = imePrenosa();
+        });
+
+        obrazec.addEventListener("reset", () => {
+            pocistiRezultat();
+
+            setTimeout(() => {
+                vidnost.textContent = prosojnost.value + " %";
+            }, 0);
+        });
+
+        window.addEventListener("pagehide", () => {
+            if (url) URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>
