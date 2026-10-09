@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Izloči izbrane strani iz PDF-ja in jih prenesi kot nov dokument.">
+    <title>Razdelitev PDF-ja</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer
+            src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Razdelitev PDF-ja</h1>
+        <p>Izberi strani, ki jih želiš shraniti v nov PDF.</p>
+        <a href="index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Izberi dokument</h2>
+
+            <label for="datoteka">PDF-datoteka</label>
+            <input id="datoteka" type="file" accept=".pdf,application/pdf">
+
+            <p id="podatki" role="status"></p>
+
+            <form id="obrazec">
+                <label for="strani">Strani za izločitev</label>
+                <input id="strani" type="text" maxlength="2000"
+                       placeholder="Na primer 1-3, 5, 8-10"
+                       required disabled aria-describedby="navodila">
+
+                <p id="navodila">
+                    Številčenje se začne z 1. Posamezne strani in razpone
+                    loči z vejicami. Strani bodo v novem dokumentu
+                    razvrščene po tvojem zapisu; ponovitve se odstranijo.
+                </p>
+
+                <label for="ime">Ime nove datoteke</label>
+                <input id="ime" type="text" maxlength="100"
+                       value="izbrane-strani.pdf">
+
+                <div class="gumbi">
+                    <button id="izloci" type="submit" disabled>
+                        Ustvari PDF
+                    </button>
+                    <button id="vse" type="button" disabled>
+                        Izberi vse strani
+                    </button>
+                    <button id="pocisti" type="button">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <p id="status" role="status" aria-live="polite"></p>
+
+            <a id="prenos" class="pdf-prenos" hidden>
+                Prenesi izbrane strani
+            </a>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Naloži PDF in vpiši strani, ki jih želiš izločiti.
+                Zapis 1-3, 5 pomeni prvo, drugo, tretjo in peto stran.
+                Zapis 5, 1-3 postavi peto stran na začetek novega dokumenta.
+            </p>
+            <p>
+                Številke pomenijo položaj strani v datoteki in se lahko
+                razlikujejo od številk, natisnjenih na straneh.
+                Izvirna datoteka ostane nespremenjena.
+            </p>
+            <p>
+                Obdelava poteka v brskalniku. Ta stran ne pošilja
+                izbranega PDF-ja na strežnik. Internetna povezava je
+                potrebna za nalaganje knjižnice.
+            </p>
+            <p>
+                Omejitev je 50 MiB in 2000 strani.
+                Zaščiteni in poškodovani PDF-ji niso podprti.
+                Zaznamki, priponke, interaktivna polja in digitalni
+                podpisi se morda ne ohranijo.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Razdelitev PDF-ja</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const datoteka = document.getElementById("datoteka");
+        const podatki = document.getElementById("podatki");
+        const obrazec = document.getElementById("obrazec");
+        const strani = document.getElementById("strani");
+        const ime = document.getElementById("ime");
+        const izloci = document.getElementById("izloci");
+        const vse = document.getElementById("vse");
+        const pocisti = document.getElementById("pocisti");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+        const prenos = document.getElementById("prenos");
+
+        let dokument = null;
+        let url = null;
+        let obdelava = false;
+
+        function odstraniPrenos() {
+            if (url) URL.revokeObjectURL(url);
+            url = null;
+            prenos.hidden = true;
+            prenos.removeAttribute("href");
+            status.textContent = "";
+        }
+
+        function posodobiGumbe() {
+            datoteka.disabled = obdelava;
+            strani.disabled = obdelava || !dokument;
+            izloci.disabled = obdelava || !dokument;
+            vse.disabled = obdelava || !dokument;
+            pocisti.disabled = obdelava;
+            ime.disabled = obdelava;
+        }
+
+        function velikost(bajti) {
+            return (bajti / 1024 / 1024).toLocaleString("sl-SI", {
+                maximumFractionDigits: 2
+            }) + " MiB";
+        }
+
+        function imePrenosa() {
+            let zapis = ime.value.trim()
+                .replace(/[\\/:*?"<>|\u0000-\u001f]/g, "_");
+
+            if (!zapis) zapis = "izbrane-strani.pdf";
+            if (!/\.pdf$/i.test(zapis)) zapis += ".pdf";
+            return zapis;
+        }
+
+        datoteka.addEventListener("change", async () => {
+            const izbrana = datoteka.files[0];
+
+            dokument = null;
+            podatki.textContent = "";
+            strani.value = "";
+            napaka.textContent = "";
+            odstraniPrenos();
+
+            if (!izbrana) {
+                posodobiGumbe();
+                return;
+            }
+
+            obdelava = true;
+            posodobiGumbe();
+
+            try {
+                if (!window.PDFLib) {
+                    throw new Error(
+                        "Knjižnica se ni naložila. Preveri povezavo " +
+                        "in ponovno naloži stran."
+                    );
+                }
+
+                if (!/\.pdf$/i.test(izbrana.name)) {
+                    throw new Error("Izberi datoteko s končnico .pdf.");
+                }
+
+                if (izbrana.size > 50 * 1024 * 1024) {
+                    throw new Error("Največja dovoljena velikost je 50 MiB.");
+                }
+
+                status.textContent = "Odpiram dokument…";
+
+                let vhod;
+                try {
+                    vhod = await PDFLib.PDFDocument.load(
+                        await izbrana.arrayBuffer()
+                    );
+                } catch {
+                    throw new Error(
+                        "Dokumenta ni mogoče odpreti. Lahko je zaščiten, " +
+                        "poškodovan ali ni veljaven PDF."
+                    );
+                }
+
+                const stevilo = vhod.getPageCount();
+
+                if (stevilo < 1 || stevilo > 2000) {
+                    throw new Error(
+                        "Dokument mora vsebovati od 1 do 2000 strani."
+                    );
+                }
+
+                dokument = vhod;
+                podatki.textContent =
+                    `${izbrana.name} · ${stevilo} strani · ` +
+                    velikost(izbrana.size);
+
+                strani.value = "1";
+                status.textContent = "Dokument je pripravljen.";
+            } catch (error) {
+                napaka.textContent = error.message;
+                status.textContent = "";
+            } finally {
+                obdelava = false;
+                posodobiGumbe();
+            }
+        });
+
+        function preberiStrani(zapis, maksimum) {
+            if (!zapis.trim()) {
+                throw new Error("Vnesi strani za izločitev.");
+            }
+
+            const izbrane = new Set();
+
+            for (const del of zapis.split(",")) {
+                const ujemanje = del.trim().match(
+                    /^(\d+)(?:\s*[-–]\s*(\d+))?$/
+                );
+
+                if (!ujemanje) {
+                    throw new Error(
+                        "Neveljaven zapis: " + (del.trim() || "(prazno)") +
+                        ". Uporabi na primer 1-3, 5."
+                    );
+                }
+
+                const zacetek = Number(ujemanje[1]);
+                const konec = ujemanje[2]
+                    ? Number(ujemanje[2])
+                    : zacetek;
+
+                if (!Number.isSafeInteger(zacetek) ||
+                    !Number.isSafeInteger(konec) ||
+                    zacetek < 1 || konec > maksimum ||
+                    konec < zacetek) {
+                    throw new Error(
+                        `Uporabi naraščajoče razpone med 1 in ${maksimum}.`
+                    );
+                }
+
+                for (let n = zacetek; n <= konec; n++) {
+                    izbrane.add(n - 1);
+                }
+            }
+
+            return [...izbrane];
+        }
+
+        obrazec.addEventListener("submit", async event => {
+            event.preventDefault();
+            if (!dokument || obdelava) return;
+
+            odstraniPrenos();
+            napaka.textContent = "";
+            obdelava = true;
+            posodobiGumbe();
+
+            try {
+                const indeksi = preberiStrani(
+                    strani.value,
+                    dokument.getPageCount()
+                );
+
+                status.textContent = "Ustvarjam dokument…";
+                await new Promise(resolve => setTimeout(resolve, 0));
+
+                const izhod = await PDFLib.PDFDocument.create();
+                const kopije = await izhod.copyPages(dokument, indeksi);
+
+                kopije.forEach(stran => izhod.addPage(stran));
+
+                const bajti = await izhod.save();
+                const blob = new Blob([bajti], {
+                    type: "application/pdf"
+                });
+
+                url = URL.createObjectURL(blob);
+                prenos.href = url;
+                prenos.download = imePrenosa();
+                prenos.hidden = false;
+
+                status.textContent =
+                    `Končano. Novi PDF vsebuje ${indeksi.length} strani. ` +
+                    `Velikost: ${velikost(blob.size)}.`;
+            } catch (error) {
+                odstraniPrenos();
+                napaka.textContent =
+                    error.message || "Ustvarjanje dokumenta ni uspelo.";
+            } finally {
+                obdelava = false;
+                posodobiGumbe();
+            }
+        });
+
+        vse.addEventListener("click", () => {
+            if (!dokument || obdelava) return;
+
+            strani.value = dokument.getPageCount() === 1
+                ? "1"
+                : "1-" + dokument.getPageCount();
+
+            odstraniPrenos();
+            napaka.textContent = "";
+        });
+
+        strani.addEventListener("input", () => {
+            odstraniPrenos();
+            napaka.textContent = "";
+        });
+
+        ime.addEventListener("input", () => {
+            if (url) prenos.download = imePrenosa();
+        });
+
+        pocisti.addEventListener("click", () => {
+            if (obdelava) return;
+
+            dokument = null;
+            datoteka.value = "";
+            strani.value = "";
+            ime.value = "izbrane-strani.pdf";
+            podatki.textContent = "";
+            napaka.textContent = "";
+            odstraniPrenos();
+            posodobiGumbe();
+        });
+
+        window.addEventListener("pagehide", () => {
+            if (url) URL.revokeObjectURL(url);
+        });
+
+        posodobiGumbe();
+    </script>
+</body>
+</html>
