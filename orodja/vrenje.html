@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vrenje v biologiji — razlaga in naloge | Sidebit</title>
+    <meta name="description"
+          content="Spoznaj alkoholno in mlečnokislinsko vrenje ter preveri znanje z interaktivnimi nalogami.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Vrenje v biologiji</h1>
+        <p>Kako se lahko razgradnja glukoze nadaljuje brez uporabe kisika?</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Kaj je vrenje?</h2>
+
+            <p>
+                Vrenje oziroma fermentacija je presnovni proces,
+                pri katerem se elektroni prenesejo na organsko molekulo.
+                Pri alkoholnem in mlečnokislinskem vrenju se NADH
+                pretvori nazaj v NAD⁺, ki je potreben za glikolizo.
+            </p>
+
+            <div class="vr-poudarek">
+                <strong>Ključna naloga: obnoviti NAD⁺.</strong>
+                <p>
+                    Brez njegove obnove bi se glikoliza ustavila,
+                    ko bi celici zmanjkalo razpoložljivega NAD⁺.
+                </p>
+            </div>
+
+            <p>
+                Obravnavani poti potekata v citosolu in neposredno
+                ne potrebujeta kisika. Vrenje ni isto kot fizikalno
+                vrenje vode pri segrevanju.
+            </p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Od glukoze do produktov</h2>
+
+            <div class="vr-zacetek">
+                <strong>1 glukoza</strong>
+                <span>↓ glikoliza ↓</span>
+                <strong>2 piruvata</strong>
+                <p>Neto nastaneta 2 ATP in 2 NADH.</p>
+            </div>
+
+            <div class="gumbi vr-izbira">
+                <button type="button" data-pot="alkoholno"
+                        aria-pressed="true">
+                    Alkoholno vrenje
+                </button>
+                <button type="button" data-pot="mlecno"
+                        aria-pressed="false">
+                    Mlečnokislinsko vrenje
+                </button>
+            </div>
+
+            <div id="vr-pot" class="vr-pot">
+                <h3 id="vr-pot-naslov"></h3>
+                <div id="vr-pot-koraki"></div>
+                <p id="vr-pot-opis" role="status"></p>
+                <strong class="vr-obnova">2 NADH → 2 NAD⁺</strong>
+            </div>
+
+            <p class="vr-opomba">
+                Prikaz je poenostavljen pregled snovnih pretvorb,
+                ne popolna kemijska enačba. NADH pri obnovi NAD⁺
+                odda elektrone, organska molekula pa jih sprejme.
+            </p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Dve pogosti vrsti vrenja</h2>
+
+            <div class="vr-primerjava">
+                <article>
+                    <h3>Alkoholno vrenje</h3>
+                    <p>
+                        Piruvat najprej izgubi CO₂ in se pretvori
+                        v acetaldehid. Ta se nato pretvori v etanol,
+                        pri čemer se NADH oksidira v NAD⁺.
+                    </p>
+                    <p>
+                        Iz ene glukoze nastaneta 2 molekuli etanola
+                        in 2 molekuli CO₂.
+                    </p>
+                    <p>
+                        Primer: kvasovke. Pri vzhajanju testa
+                        sproščeni CO₂ ustvarja plinske mehurčke.
+                    </p>
+                </article>
+
+                <article>
+                    <h3>Mlečnokislinsko vrenje</h3>
+                    <p>
+                        Piruvat se neposredno pretvori v laktat,
+                        pri čemer se NADH oksidira v NAD⁺.
+                    </p>
+                    <p>
+                        Pri prikazani homolaktični poti iz ene
+                        glukoze nastaneta 2 molekuli laktata.
+                        CO₂ pri tej pretvorbi ne nastaja.
+                    </p>
+                    <p>
+                        Primeri: nekatere mlečnokislinske bakterije
+                        ter pretvorba piruvata v laktat v mišičnih celicah.
+                    </p>
+                </article>
+            </div>
+
+            <p class="vr-opomba">
+                Obstajajo tudi druge vrste vrenja. Nekatere bakterijske
+                poti tvorijo mešanico produktov, zato zgornje primerjave
+                ne posplošujemo na vse fermentacije.
+            </p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kje nastane ATP?</h2>
+
+            <div class="vr-atp">
+                <div>
+                    <h3>Glikoliza</h3>
+                    <p>4 ATP nastanejo − 2 ATP porabimo</p>
+                    <strong>Neto: 2 ATP</strong>
+                </div>
+
+                <div>
+                    <h3>Pretvorba piruvata</h3>
+                    <p>V laktat oziroma etanol</p>
+                    <strong>Dodatni ATP: 0</strong>
+                </div>
+            </div>
+
+            <p>
+                Skupni neto izkupiček glikolize in ene od teh dveh
+                fermentacijskih poti je 2 ATP na molekulo glukoze.
+                NADH, ki nastane v glikolizi, se pri nadaljnji
+                pretvorbi porabi za obnovo NAD⁺.
+            </p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Razišči količine</h2>
+
+            <label for="vr-glukoze">Število molekul glukoze</label>
+            <input id="vr-glukoze" type="range" min="1" max="10" value="1">
+
+            <p id="vr-stevilo" class="vr-sredina"></p>
+
+            <div id="vr-kolicine" class="vr-kolicine"
+                 aria-live="polite"></div>
+
+            <p class="vr-opomba">
+                Izračun velja za izbrano pot in popolno pretvorbo
+                v prikazane produkte.
+            </p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Preveri znanje</h2>
+
+            <form id="vr-naloge">
+                <label for="vr-nad">
+                    1. Katera molekula se obnovi pri obravnavanih vrstah vrenja?
+                </label>
+                <select id="vr-nad" required>
+                    <option value="">Izberi odgovor</option>
+                    <option value="nad">NAD⁺</option>
+                    <option value="kisik">O₂</option>
+                    <option value="glukoza">Glukoza</option>
+                </select>
+
+                <label for="vr-plin">
+                    2. Kateri plin pomaga testu vzhajati?
+                </label>
+                <select id="vr-plin" required>
+                    <option value="">Izberi odgovor</option>
+                    <option value="o2">Kisik</option>
+                    <option value="co2">Ogljikov dioksid</option>
+                    <option value="n2">Dušik</option>
+                </select>
+
+                <label for="vr-produkt">
+                    3. V kaj se piruvat pretvori pri mlečnokislinskem vrenju?
+                </label>
+                <select id="vr-produkt" required>
+                    <option value="">Izberi odgovor</option>
+                    <option value="etanol">Etanol</option>
+                    <option value="laktat">Laktat</option>
+                    <option value="glukoza">Glukozo</option>
+                </select>
+
+                <label for="vr-atp-odgovor">
+                    4. Koliko ATP neto dobimo iz treh glukoz
+                    z glikolizo in alkoholnim vrenjem?
+                </label>
+                <input id="vr-atp-odgovor" type="number"
+                       min="0" max="1000" step="1" required>
+
+                <label for="vr-co2-odgovor">
+                    5. Koliko molekul CO₂ nastane pri alkoholnem
+                    vrenju dveh glukoz?
+                </label>
+                <input id="vr-co2-odgovor" type="number"
+                       min="0" max="1000" step="1" required>
+
+                <label for="vr-dodatni">
+                    6. Ali pretvorba piruvata v laktat sama ustvari dodatni ATP?
+                </label>
+                <select id="vr-dodatni" required>
+                    <option value="">Izberi odgovor</option>
+                    <option value="da">Da</option>
+                    <option value="ne">Ne</option>
+                </select>
+
+                <div class="gumbi">
+                    <button type="submit">Preveri odgovore</button>
+                    <button type="reset">Poskusi znova</button>
+                </div>
+            </form>
+
+            <div id="vr-rezultat" class="rezultat"
+                 aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Povezane razlage in viri</h2>
+            <ul>
+                <li><a href="glukoza.html">Glukoza</a></li>
+                <li><a href="glikoliza.html">Glikoliza</a></li>
+                <li>
+                    <a href="https://www.ncbi.nlm.nih.gov/books/NBK9903/"
+                       target="_blank" rel="noopener noreferrer">
+                        NCBI Bookshelf: energija in celična presnova
+                    </a>
+                </li>
+                <li>
+                    <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4507297/"
+                       target="_blank" rel="noopener noreferrer">
+                        Strokovna razlaga glikolize in fermentacijskih poti
+                    </a>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — razlage in uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        let izbranaPot = "alkoholno";
+
+        const poti = {
+            alkoholno: {
+                naslov: "Alkoholno vrenje",
+                koraki: [
+                    "2 piruvata",
+                    "2 acetaldehida + 2 CO₂",
+                    "2 etanola"
+                ],
+                opis:
+                    "CO₂ se sprosti pri pretvorbi piruvata v acetaldehid. " +
+                    "Pri pretvorbi acetaldehida v etanol se obnovi NAD⁺."
+            },
+            mlecno: {
+                naslov: "Mlečnokislinsko vrenje",
+                koraki: ["2 piruvata", "2 laktata"],
+                opis:
+                    "Piruvat sprejme elektrone iz NADH in se pretvori " +
+                    "v laktat. Pri tem se obnovi NAD⁺; CO₂ ne nastaja."
+            }
+        };
+
+        function prikaziPot(kljuc) {
+            izbranaPot = kljuc;
+            const pot = poti[kljuc];
+
+            document.getElementById("vr-pot-naslov").textContent = pot.naslov;
+            document.getElementById("vr-pot-opis").textContent = pot.opis;
+
+            const koraki = document.getElementById("vr-pot-koraki");
+            koraki.replaceChildren();
+
+            pot.koraki.forEach((besedilo, indeks) => {
+                if (indeks > 0) {
+                    const puscica = document.createElement("span");
+                    puscica.className = "vr-puscica";
+                    puscica.textContent = "↓";
+                    puscica.setAttribute("aria-hidden", "true");
+                    koraki.appendChild(puscica);
+                }
+
+                const korak = document.createElement("div");
+                korak.className = "vr-korak";
+                korak.textContent = besedilo;
+                koraki.appendChild(korak);
+            });
+
+            document.querySelectorAll("[data-pot]").forEach(gumb => {
+                gumb.setAttribute(
+                    "aria-pressed",
+                    String(gumb.dataset.pot === kljuc)
+                );
+            });
+
+            document.getElementById("vr-pot").dataset.pot = kljuc;
+            posodobiKolicine();
+        }
+
+        function posodobiKolicine() {
+            const n = Number(document.getElementById("vr-glukoze").value);
+            const vsebnik = document.getElementById("vr-kolicine");
+            vsebnik.replaceChildren();
+
+            document.getElementById("vr-stevilo").textContent =
+                `${poti[izbranaPot].naslov} · Molekule glukoze: ${n}`;
+
+            const podatki = izbranaPot === "alkoholno"
+                ? [
+                    ["Etanol", 2 * n],
+                    ["CO₂", 2 * n],
+                    ["Neto ATP iz glikolize", 2 * n]
+                ]
+                : [
+                    ["Laktat", 2 * n],
+                    ["CO₂", 0],
+                    ["Neto ATP iz glikolize", 2 * n]
+                ];
+
+            for (const [naslov, vrednost] of podatki) {
+                const kartica = document.createElement("article");
+                const h3 = document.createElement("h3");
+                const p = document.createElement("p");
+
+                h3.textContent = naslov;
+                p.textContent = vrednost;
+                kartica.append(h3, p);
+                vsebnik.appendChild(kartica);
+            }
+        }
+
+        document.querySelectorAll("[data-pot]").forEach(gumb => {
+            gumb.addEventListener("click", () => {
+                prikaziPot(gumb.dataset.pot);
+            });
+        });
+
+        document.getElementById("vr-glukoze")
+            .addEventListener("input", posodobiKolicine);
+
+        const obrazec = document.getElementById("vr-naloge");
+        const rezultat = document.getElementById("vr-rezultat");
+
+        obrazec.addEventListener("input", () => rezultat.replaceChildren());
+        obrazec.addEventListener("reset", () => rezultat.replaceChildren());
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            rezultat.replaceChildren();
+
+            const odgovori = [
+                [
+                    document.getElementById("vr-nad").value === "nad",
+                    "Obnovi se NAD⁺, ki omogoča nadaljevanje glikolize."
+                ],
+                [
+                    document.getElementById("vr-plin").value === "co2",
+                    "Pri alkoholnem vrenju nastaja CO₂, ki tvori mehurčke v testu."
+                ],
+                [
+                    document.getElementById("vr-produkt").value === "laktat",
+                    "Piruvat se pri mlečnokislinskem vrenju pretvori v laktat."
+                ],
+                [
+                    document.getElementById("vr-atp-odgovor")
+                        .valueAsNumber === 6,
+                    "Neto dobimo 2 ATP na glukozo: 3 × 2 = 6 ATP."
+                ],
+                [
+                    document.getElementById("vr-co2-odgovor")
+                        .valueAsNumber === 4,
+                    "Na glukozo nastaneta 2 molekuli CO₂: 2 × 2 = 4."
+                ],
+                [
+                    document.getElementById("vr-dodatni").value === "ne",
+                    "Ne. ATP nastaja v glikolizi, ne pri pretvorbi piruvata v laktat."
+                ]
+            ];
+
+            const naslov = document.createElement("h2");
+            naslov.textContent =
+                `Rezultat: ${odgovori.filter(o => o[0]).length} od 6`;
+
+            const seznam = document.createElement("ol");
+            seznam.className = "vr-odgovori";
+
+            for (const [pravilno, razlaga] of odgovori) {
+                const li = document.createElement("li");
+                li.className = pravilno ? "vr-pravilno" : "vr-napacno";
+                li.textContent =
+                    `${pravilno ? "Pravilno." : "Ni pravilno."} ${razlaga}`;
+                seznam.appendChild(li);
+            }
+
+            rezultat.append(naslov, seznam);
+        });
+
+        prikaziPot("alkoholno");
+    </script>
+</body>
+</html>

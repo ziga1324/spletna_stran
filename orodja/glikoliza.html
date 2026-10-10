@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Glikoliza — razlaga in naloge | Sidebit</title>
+    <meta name="description"
+          content="Spoznaj glikolizo, njeni fazi in izkupiček ATP. Preveri znanje z interaktivnimi nalogami.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Glikoliza</h1>
+        <p>Kako celica iz glukoze pridobi prve molekule ATP?</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Kaj je glikoliza?</h2>
+            <p>
+                Glikoliza je zaporedje desetih encimsko vodenih reakcij.
+                Pri njih se ena molekula glukoze s šestimi ogljikovimi
+                atomi pretvori v dve molekuli piruvata, vsaka s tremi
+                ogljikovimi atomi.
+            </p>
+
+            <div class="gk-dejstva">
+                <article>
+                    <h3>Kje?</h3>
+                    <p>V citosolu — tekočem delu celice zunaj organelov.</p>
+                </article>
+                <article>
+                    <h3>Kisik?</h3>
+                    <p>Glikoliza ga neposredno ne porablja.</p>
+                </article>
+                <article>
+                    <h3>Izkupiček?</h3>
+                    <p>Na glukozo: 2 piruvata, neto 2 ATP in 2 NADH.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Vizualni pregled</h2>
+            <p>
+                Izberi fazo. Krogci predstavljajo ogljikove atome,
+                ne celotnih molekul ali njihovih kemijskih vezi.
+            </p>
+
+            <div class="gumbi gk-zavihki">
+                <button type="button" data-faza="0" aria-pressed="true">
+                    1. Vlaganje energije
+                </button>
+                <button type="button" data-faza="1" aria-pressed="false">
+                    2. Pridobivanje energije
+                </button>
+            </div>
+
+            <div class="gk-prikaz">
+                <h3 id="gk-faza-naslov"></h3>
+                <div id="gk-ogljiki" aria-hidden="true"></div>
+                <p id="gk-faza-opis" role="status"></p>
+                <strong id="gk-faza-bilanca"></strong>
+            </div>
+
+            <div class="gk-bilanca">
+                <span>4 ATP nastanejo</span>
+                <span>− 2 ATP porabimo</span>
+                <strong>= 2 ATP neto</strong>
+            </div>
+
+            <p>
+                ATP prenaša energijo za celične procese.
+                NADH je prenašalec elektronov, ki lahko sodeluje pri
+                nadaljnjih procesih pridobivanja energije.
+                NADH in ATP nista ista molekula.
+            </p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kaj se dogaja v obeh fazah?</h2>
+
+            <div class="gk-fazi">
+                <article>
+                    <h3>1. Vlaganje energije</h3>
+                    <p>
+                        V prvih petih reakcijah celica porabi 2 ATP.
+                        Šestogljikova spojina se razcepi, po preureditvi
+                        pa dobimo dve molekuli gliceraldehid-3-fosfata
+                        oziroma G3P.
+                    </p>
+                </article>
+
+                <article>
+                    <h3>2. Pridobivanje energije</h3>
+                    <p>
+                        Vsaka molekula G3P se v naslednjih petih reakcijah
+                        pretvori v piruvat. Ker sta molekuli G3P dve,
+                        skupaj nastanejo 4 ATP in 2 NADH.
+                    </p>
+                </article>
+            </div>
+
+            <details class="gk-podrobnosti">
+                <summary>Prikaži zaporedje vseh desetih reakcij</summary>
+                <ol>
+                    <li>Glukoza → glukoza-6-fosfat; poraba ATP.</li>
+                    <li>Glukoza-6-fosfat → fruktoza-6-fosfat.</li>
+                    <li>Fruktoza-6-fosfat → fruktoza-1,6-bisfosfat; poraba ATP.</li>
+                    <li>
+                        Fruktoza-1,6-bisfosfat → G3P in
+                        dihidroksiacetonfosfat (DHAP).
+                    </li>
+                    <li>DHAP → G3P; zdaj imamo dve molekuli G3P.</li>
+                    <li>G3P → 1,3-bisfosfoglicerat; nastanek NADH.</li>
+                    <li>1,3-bisfosfoglicerat → 3-fosfoglicerat; nastanek ATP.</li>
+                    <li>3-fosfoglicerat → 2-fosfoglicerat.</li>
+                    <li>2-fosfoglicerat → fosfoenolpiruvat; sprostitev vode.</li>
+                    <li>Fosfoenolpiruvat → piruvat; nastanek ATP.</li>
+                </ol>
+                <p>
+                    Reakcije od 6 do 10 potekajo dvakrat na začetno
+                    molekulo glukoze, saj iz nje nastaneta dve molekuli G3P.
+                </p>
+            </details>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kaj sledi glikolizi?</h2>
+            <p>
+                V celicah z mitohondriji in ob ustreznih pogojih se piruvat
+                lahko pretvori v acetil-CoA, ki vstopi v citratni oziroma
+                Krebsov cikel. To je nadaljnji proces, ne del glikolize.
+            </p>
+            <p>
+                Pri mlečnokislinskem vrenju se piruvat pretvori v laktat.
+                Pri tem se NADH oksidira nazaj v NAD⁺, ki ga glikoliza
+                potrebuje za nadaljevanje. Pretvorba piruvata v laktat
+                sama ne prinese dodatnega ATP.
+            </p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Razišči izkupiček</h2>
+
+            <label for="gk-stevilo">Število molekul glukoze</label>
+            <input id="gk-stevilo" type="range" min="1" max="10" value="1">
+
+            <p id="gk-kolicina" class="gk-sredina"></p>
+            <div id="gk-izkupicek" class="gk-dejstva" aria-live="polite"></div>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Preveri znanje</h2>
+
+            <form id="gk-naloge">
+                <label for="gk-kje">1. Kje poteka glikoliza?</label>
+                <select id="gk-kje" required>
+                    <option value="">Izberi odgovor</option>
+                    <option value="jedro">V jedru</option>
+                    <option value="citosol">V citosolu</option>
+                    <option value="mitohondrij">V matriksu mitohondrija</option>
+                </select>
+
+                <label for="gk-atp">
+                    2. Koliko ATP neto dobimo iz ene glukoze?
+                </label>
+                <input id="gk-atp" type="number" min="0" max="100"
+                       step="1" required>
+
+                <label for="gk-piruvat">
+                    3. Koliko piruvatov nastane iz treh molekul glukoze?
+                </label>
+                <input id="gk-piruvat" type="number" min="0" max="100"
+                       step="1" required>
+
+                <label for="gk-kisik">
+                    4. Ali glikoliza neposredno potrebuje kisik?
+                </label>
+                <select id="gk-kisik" required>
+                    <option value="">Izberi odgovor</option>
+                    <option value="da">Da</option>
+                    <option value="ne">Ne</option>
+                </select>
+
+                <label for="gk-nadh">
+                    5. Koliko NADH nastane v glikolizi iz dveh glukoz?
+                </label>
+                <input id="gk-nadh" type="number" min="0" max="100"
+                       step="1" required>
+
+                <div class="gumbi">
+                    <button type="submit">Preveri odgovore</button>
+                    <button type="reset">Poskusi znova</button>
+                </div>
+            </form>
+
+            <div id="gk-rezultat" class="rezultat" aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Nadaljnje branje</h2>
+            <p>
+                <a href="glukoza.html">Najprej spoznaj glukozo</a>
+            </p>
+            <p>
+                <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8091952/"
+                   target="_blank" rel="noopener noreferrer">
+                    Strokovna razlaga glikolize — NCBI / PMC
+                </a>
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — razlage in uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const faze = [
+            {
+                naslov: "Najprej vložimo 2 ATP",
+                opis:
+                    "Iz ene šestogljikove glukoze po prvih petih reakcijah " +
+                    "dobimo dve triogljikovi molekuli G3P.",
+                bilanca: "Poraba: 2 ATP",
+                skupine: [6]
+            },
+            {
+                naslov: "Nato nastanejo 4 ATP in 2 NADH",
+                opis:
+                    "Dve molekuli G3P se pretvorita v dva piruvata. " +
+                    "Vsak piruvat ima tri ogljikove atome.",
+                bilanca: "Nastanek: 4 ATP + 2 NADH + 2 piruvata",
+                skupine: [3, 3]
+            }
+        ];
+
+        function prikaziFazo(indeks) {
+            const faza = faze[indeks];
+            const ogljiki = document.getElementById("gk-ogljiki");
+            ogljiki.replaceChildren();
+
+            document.getElementById("gk-faza-naslov").textContent = faza.naslov;
+            document.getElementById("gk-faza-opis").textContent = faza.opis;
+            document.getElementById("gk-faza-bilanca").textContent = faza.bilanca;
+
+            for (const stevilo of faza.skupine) {
+                const skupina = document.createElement("div");
+                skupina.className = "gk-ogljikova-skupina";
+
+                for (let i = 0; i < stevilo; i++) {
+                    const atom = document.createElement("span");
+                    atom.className = "gk-atom";
+                    atom.textContent = "C";
+                    skupina.appendChild(atom);
+                }
+
+                ogljiki.appendChild(skupina);
+            }
+
+            document.querySelectorAll("[data-faza]").forEach(gumb => {
+                gumb.setAttribute(
+                    "aria-pressed",
+                    String(Number(gumb.dataset.faza) === indeks)
+                );
+            });
+        }
+
+        document.querySelectorAll("[data-faza]").forEach(gumb => {
+            gumb.addEventListener("click", () => {
+                prikaziFazo(Number(gumb.dataset.faza));
+            });
+        });
+
+        function posodobiIzkupicek() {
+            const n = Number(document.getElementById("gk-stevilo").value);
+            const vsebnik = document.getElementById("gk-izkupicek");
+            vsebnik.replaceChildren();
+
+            document.getElementById("gk-kolicina").textContent =
+                `Število molekul glukoze: ${n}`;
+
+            const vrednosti = [
+                ["Porabljeni ATP", 2 * n],
+                ["Nastali ATP", 4 * n],
+                ["Neto ATP", 2 * n],
+                ["Nastali NADH", 2 * n],
+                ["Nastali piruvati", 2 * n]
+            ];
+
+            for (const [naslov, vrednost] of vrednosti) {
+                const kartica = document.createElement("article");
+                const h3 = document.createElement("h3");
+                const p = document.createElement("p");
+                h3.textContent = naslov;
+                p.textContent = vrednost;
+                kartica.append(h3, p);
+                vsebnik.appendChild(kartica);
+            }
+        }
+
+        document.getElementById("gk-stevilo")
+            .addEventListener("input", posodobiIzkupicek);
+
+        const obrazec = document.getElementById("gk-naloge");
+        const rezultat = document.getElementById("gk-rezultat");
+
+        obrazec.addEventListener("input", () => rezultat.replaceChildren());
+        obrazec.addEventListener("reset", () => rezultat.replaceChildren());
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            rezultat.replaceChildren();
+
+            const odgovori = [
+                [
+                    document.getElementById("gk-kje").value === "citosol",
+                    "Glikoliza poteka v citosolu."
+                ],
+                [
+                    document.getElementById("gk-atp").valueAsNumber === 2,
+                    "Nastanejo 4 ATP, porabita se 2 ATP: neto dobimo 2 ATP."
+                ],
+                [
+                    document.getElementById("gk-piruvat").valueAsNumber === 6,
+                    "Iz vsake glukoze nastaneta 2 piruvata: 3 × 2 = 6."
+                ],
+                [
+                    document.getElementById("gk-kisik").value === "ne",
+                    "Glikoliza kisika neposredno ne potrebuje."
+                ],
+                [
+                    document.getElementById("gk-nadh").valueAsNumber === 4,
+                    "Iz vsake glukoze nastaneta 2 NADH: 2 × 2 = 4."
+                ]
+            ];
+
+            const naslov = document.createElement("h2");
+            naslov.textContent =
+                `Rezultat: ${odgovori.filter(o => o[0]).length} od 5`;
+
+            const seznam = document.createElement("ol");
+            seznam.className = "gk-odgovori";
+
+            for (const [pravilno, razlaga] of odgovori) {
+                const li = document.createElement("li");
+                li.className = pravilno ? "gk-pravilno" : "gk-napacno";
+                li.textContent =
+                    `${pravilno ? "Pravilno." : "Ni pravilno."} ${razlaga}`;
+                seznam.appendChild(li);
+            }
+
+            rezultat.append(naslov, seznam);
+        });
+
+        prikaziFazo(0);
+        posodobiIzkupicek();
+    </script>
+</body>
+</html>

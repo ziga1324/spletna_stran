@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Krebsov cikel — razlaga in naloge | Sidebit</title>
+    <meta name="description"
+          content="Gimnazijska razlaga Krebsovega cikla z interaktivnim prikazom, bilanco snovi in nalogami.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Krebsov cikel</h1>
+        <p>Krožna presnovna pot, ki povezuje razgradnjo hranil z nastajanjem ATP.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Kaj je Krebsov cikel?</h2>
+
+            <p>
+                Krebsov cikel imenujemo tudi citratni cikel ali
+                cikel trikarboksilnih kislin. V evkariontskih celicah
+                poteka v matriksu mitohondrija.
+            </p>
+
+            <p>
+                Vanj vstopi acetilna skupina acetil-CoA z dvema
+                ogljikovima atomoma. Poveže se s štiriogljikovim
+                oksaloacetatom in nastane šestogljikov citrat.
+                Skozi nadaljnje reakcije se oksaloacetat obnovi.
+            </p>
+
+            <div class="kc-poudarek">
+                <strong>Zakaj je to cikel?</strong>
+                <p>
+                    Ker se oksaloacetat na koncu obnovi in lahko
+                    sprejme novo acetilno skupino.
+                </p>
+            </div>
+
+            <p>
+                Večina izkupička je v obliki NADH in FADH₂.
+                Ta prenašalca oddajata elektrone dihalni verigi,
+                kjer se njihova energija uporabi za nastajanje ATP.
+            </p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako pridemo do acetil-CoA?</h2>
+
+            <div class="kc-pot">
+                <div>
+                    <strong>1 glukoza</strong>
+                    <span>Glikoliza v citosolu</span>
+                </div>
+                <div>
+                    <strong>2 piruvata</strong>
+                    <span>Oksidacija piruvata v matriksu</span>
+                </div>
+                <div>
+                    <strong>2 acetil-CoA</strong>
+                    <span>Dva obrata Krebsovega cikla</span>
+                </div>
+            </div>
+
+            <p>
+                Pri oksidaciji dveh piruvatov nastaneta tudi
+                2 CO₂ in 2 NADH. To je predhodna reakcija,
+                zato teh produktov ne prištevamo izkupičku
+                samega Krebsovega cikla.
+            </p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Razišči cikel</h2>
+            <p>
+                Izberi korak in preberi, kaj se zgodi.
+                Oznake C povedo število ogljikovih atomov v posamezni spojini.
+            </p>
+
+            <div class="kc-koraki" aria-label="Koraki Krebsovega cikla">
+                <button type="button" data-korak="0" aria-pressed="true">
+                    1. Citrat · 6 C
+                </button>
+                <button type="button" data-korak="1" aria-pressed="false">
+                    2. Izocitrat · 6 C
+                </button>
+                <button type="button" data-korak="2" aria-pressed="false">
+                    3. α-ketoglutarat · 5 C
+                </button>
+                <button type="button" data-korak="3" aria-pressed="false">
+                    4. Sukcinil-CoA · 4 C
+                </button>
+                <button type="button" data-korak="4" aria-pressed="false">
+                    5. Sukcinat · 4 C
+                </button>
+                <button type="button" data-korak="5" aria-pressed="false">
+                    6. Fumarat · 4 C
+                </button>
+                <button type="button" data-korak="6" aria-pressed="false">
+                    7. Malat · 4 C
+                </button>
+                <button type="button" data-korak="7" aria-pressed="false">
+                    8. Oksaloacetat · 4 C
+                </button>
+            </div>
+
+            <article class="kc-predogled">
+                <span id="kc-stevilka" class="kc-nalepka"></span>
+                <h3 id="kc-naslov"></h3>
+
+                <div id="kc-ogljiki" aria-hidden="true"></div>
+
+                <p id="kc-opis" role="status"></p>
+                <strong id="kc-produkti"></strong>
+            </article>
+
+            <div class="gumbi kc-navigacija">
+                <button type="button" id="kc-prejsnji">Prejšnji korak</button>
+                <button type="button" id="kc-naslednji">Naslednji korak</button>
+            </div>
+
+            <p class="kc-opomba">
+                Krogci prikazujejo samo število ogljikovih atomov
+                v prikazani spojini, ne njene strukture.
+                Pri spojinah s CoA štejemo ogljike acetilnega oziroma
+                sukcinilnega dela, ne celotnega koencima A.
+            </p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Izkupiček cikla</h2>
+
+            <label for="kc-obrati">Število obratov cikla</label>
+            <select id="kc-obrati">
+                <option value="1">1 obrat — en acetil-CoA</option>
+                <option value="2">2 obrata — iz ene glukoze</option>
+                <option value="4">4 obrati — iz dveh glukoz</option>
+            </select>
+
+            <div id="kc-bilanca" class="kc-bilanca" aria-live="polite"></div>
+
+            <p>
+                ATP oziroma GTP nastaja s substratno fosforilacijo.
+                GTP je energijsko enakovreden ATP in lahko sodeluje
+                pri njegovem nastajanju.
+            </p>
+
+            <p class="kc-opomba">
+                NADH in FADH₂ nista ATP. Njuna energija se lahko
+                pozneje uporabi pri oksidativni fosforilaciji.
+                Ta izkupiček ATP ni vključen v zgornjo bilanco.
+            </p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kaj moraš razumeti za gimnazijo?</h2>
+
+            <div class="kc-dejstva">
+                <article>
+                    <h3>Ogljikova bilanca</h3>
+                    <p>
+                        Vstopita 2 ogljikova atoma acetilne skupine,
+                        sprostita se 2 CO₂, štiriogljikov oksaloacetat
+                        pa se obnovi.
+                    </p>
+                </article>
+
+                <article>
+                    <h3>Prenašalci elektronov</h3>
+                    <p>
+                        NAD⁺ in FAD sprejmeta elektrone ter se
+                        reducirata v NADH in FADH₂.
+                        Dihalna veriga ju nato ponovno oksidira.
+                    </p>
+                </article>
+
+                <article>
+                    <h3>Povezava s kisikom</h3>
+                    <p>
+                        Cikel kisika neposredno ne porablja.
+                        V običajnem aerobnem dihanju pa je odvisen
+                        od delovanja dihalne verige, ki obnavlja
+                        oksidirane prenašalce.
+                    </p>
+                </article>
+
+                <article>
+                    <h3>Cikel ni samo za glukozo</h3>
+                    <p>
+                        V presnovne poti lahko vstopajo tudi produkti
+                        razgradnje maščob in aminokislin.
+                        Vmesne spojine cikla služijo tudi kot izhodišča
+                        za sintezo drugih snovi.
+                    </p>
+                </article>
+            </div>
+
+            <details class="kc-podrobnosti">
+                <summary>Ali izločena CO₂ takoj vsebujeta ogljika nove acetilne skupine?</summary>
+                <p>
+                    Ne v prvem obratu. Ogljikova atoma, ki se tedaj
+                    sprostita kot CO₂, izvirata iz predhodnega oksaloacetata.
+                    Ogljika novo vstopljene acetilne skupine se lahko
+                    sprostita v poznejših obratih.
+                    Skupna ogljikova bilanca kljub temu ostaja:
+                    2 C vstopita in 2 C se sprostita.
+                </p>
+            </details>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Preveri znanje</h2>
+
+            <form id="kc-naloge">
+                <label for="kc-q1">
+                    1. Kje poteka Krebsov cikel v evkariontski celici?
+                </label>
+                <select id="kc-q1" required>
+                    <option value="">Izberi</option>
+                    <option value="citosol">V citosolu</option>
+                    <option value="matriks">V matriksu mitohondrija</option>
+                    <option value="jedro">V jedru</option>
+                </select>
+
+                <label for="kc-q2">
+                    2. Koliko ogljikovih atomov ima citrat?
+                </label>
+                <input id="kc-q2" type="number"
+                       min="0" max="100" step="1" required>
+
+                <label for="kc-q3">
+                    3. Katera spojina se na koncu obnovi?
+                </label>
+                <select id="kc-q3" required>
+                    <option value="">Izberi</option>
+                    <option value="glukoza">Glukoza</option>
+                    <option value="oksaloacetat">Oksaloacetat</option>
+                    <option value="piruvat">Piruvat</option>
+                </select>
+
+                <label for="kc-q4">
+                    4. Koliko NADH nastane v dveh obratih cikla?
+                </label>
+                <input id="kc-q4" type="number"
+                       min="0" max="100" step="1" required>
+
+                <label for="kc-q5">
+                    5. Koliko CO₂ nastane samo v Krebsovem ciklu
+                    na eno začetno glukozo?
+                </label>
+                <input id="kc-q5" type="number"
+                       min="0" max="100" step="1" required>
+
+                <label for="kc-q6">
+                    6. Ali Krebsov cikel neposredno porablja O₂?
+                </label>
+                <select id="kc-q6" required>
+                    <option value="">Izberi</option>
+                    <option value="da">Da</option>
+                    <option value="ne">Ne</option>
+                </select>
+
+                <label for="kc-q7">
+                    7. Koliko FADH₂ nastane v štirih obratih cikla?
+                </label>
+                <input id="kc-q7" type="number"
+                       min="0" max="100" step="1" required>
+
+                <div class="gumbi">
+                    <button type="submit">Preveri odgovore</button>
+                    <button type="reset">Poskusi znova</button>
+                </div>
+            </form>
+
+            <div id="kc-rezultat" class="rezultat" aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Poveži znanje</h2>
+            <p>
+                Zakaj se Krebsov cikel upočasni, če se dihalna veriga ustavi,
+                čeprav sam ne porablja kisika?
+            </p>
+
+            <details class="kc-podrobnosti">
+                <summary>Prikaži razlago</summary>
+                <p>
+                    Dihalna veriga ne oksidira več NADH in FADH₂
+                    dovolj učinkovito. Zmanjša se razpoložljivost NAD⁺
+                    in FAD, ki ju potrebujejo reakcije cikla.
+                    Zato se cikel zavre.
+                </p>
+            </details>
+        </section>
+
+        <section class="razlaga">
+            <h2>Povezane razlage</h2>
+            <ul>
+                <li><a href="glukoza.html">Glukoza</a></li>
+                <li><a href="glikoliza.html">Glikoliza</a></li>
+                <li><a href="celicno_dihanje.html">Celično dihanje</a></li>
+                <li>
+                    <a href="https://www.ncbi.nlm.nih.gov/books/NBK9903/"
+                       target="_blank" rel="noopener noreferrer">
+                        NCBI Bookshelf: presnovna energija
+                    </a>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — razlage in uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const koraki = [
+            {
+                naslov: "Nastanek citrata",
+                ogljiki: 6,
+                opis:
+                    "Acetilna skupina acetil-CoA z 2 C se poveže " +
+                    "z oksaloacetatom s 4 C. Nastane citrat s 6 C, " +
+                    "koencim A pa se sprosti.",
+                produkti: "2 C + 4 C → 6 C"
+            },
+            {
+                naslov: "Preureditev v izocitrat",
+                ogljiki: 6,
+                opis:
+                    "Citrat se preuredi v izocitrat. Število ogljikovih " +
+                    "atomov ostane enako.",
+                produkti: "Brez nastanka ATP, NADH ali CO₂"
+            },
+            {
+                naslov: "Nastanek α-ketoglutarata",
+                ogljiki: 5,
+                opis:
+                    "Izocitrat se oksidira in izgubi en ogljikov atom " +
+                    "kot CO₂. NAD⁺ se reducira v NADH.",
+                produkti: "Nastaneta 1 NADH in 1 CO₂"
+            },
+            {
+                naslov: "Nastanek sukcinil-CoA",
+                ogljiki: 4,
+                opis:
+                    "α-ketoglutarat se oksidira in sprosti še en CO₂. " +
+                    "Preostali štiriogljikov del se poveže s koencimom A.",
+                produkti: "Nastaneta 1 NADH in 1 CO₂"
+            },
+            {
+                naslov: "Nastanek sukcinata",
+                ogljiki: 4,
+                opis:
+                    "Sprosti se koencim A. Energija pretvorbe omogoča " +
+                    "nastanek ATP oziroma GTP s substratno fosforilacijo.",
+                produkti: "Nastane 1 ATP oziroma GTP"
+            },
+            {
+                naslov: "Nastanek fumarata",
+                ogljiki: 4,
+                opis:
+                    "Sukcinat se oksidira v fumarat. FAD sprejme " +
+                    "elektrone in se reducira v FADH₂.",
+                produkti: "Nastane 1 FADH₂"
+            },
+            {
+                naslov: "Nastanek malata",
+                ogljiki: 4,
+                opis:
+                    "Fumaratu se doda voda in nastane malat. " +
+                    "Število ogljikovih atomov ostane štiri.",
+                produkti: "Porabi se voda"
+            },
+            {
+                naslov: "Obnova oksaloacetata",
+                ogljiki: 4,
+                opis:
+                    "Malat se oksidira v oksaloacetat. Obnovljeni " +
+                    "oksaloacetat lahko sprejme novo acetilno skupino.",
+                produkti: "Nastane 1 NADH; cikel se lahko ponovi"
+            }
+        ];
+
+        let trenutniKorak = 0;
+
+        function prikaziKorak(indeks) {
+            trenutniKorak = (indeks + koraki.length) % koraki.length;
+            const korak = koraki[trenutniKorak];
+
+            document.getElementById("kc-stevilka").textContent =
+                `${trenutniKorak + 1}. korak od 8`;
+
+            document.getElementById("kc-naslov").textContent = korak.naslov;
+            document.getElementById("kc-opis").textContent = korak.opis;
+            document.getElementById("kc-produkti").textContent = korak.produkti;
+
+            const ogljiki = document.getElementById("kc-ogljiki");
+            ogljiki.replaceChildren();
+
+            for (let i = 0; i < korak.ogljiki; i++) {
+                const atom = document.createElement("span");
+                atom.className = "kc-atom";
+                atom.textContent = "C";
+                ogljiki.appendChild(atom);
+            }
+
+            document.querySelectorAll("[data-korak]").forEach(gumb => {
+                gumb.setAttribute(
+                    "aria-pressed",
+                    String(Number(gumb.dataset.korak) === trenutniKorak)
+                );
+            });
+        }
+
+        document.querySelectorAll("[data-korak]").forEach(gumb => {
+            gumb.addEventListener("click", () => {
+                prikaziKorak(Number(gumb.dataset.korak));
+            });
+        });
+
+        document.getElementById("kc-prejsnji").addEventListener("click", () => {
+            prikaziKorak(trenutniKorak - 1);
+        });
+
+        document.getElementById("kc-naslednji").addEventListener("click", () => {
+            prikaziKorak(trenutniKorak + 1);
+        });
+
+        function posodobiBilanco() {
+            const obrati = Number(document.getElementById("kc-obrati").value);
+            const vsebnik = document.getElementById("kc-bilanca");
+            vsebnik.replaceChildren();
+
+            const podatki = [
+                ["NADH", 3 * obrati],
+                ["FADH₂", obrati],
+                ["ATP/GTP", obrati],
+                ["CO₂", 2 * obrati]
+            ];
+
+            for (const [naziv, stevilo] of podatki) {
+                const kartica = document.createElement("article");
+                const naslov = document.createElement("h3");
+                const vrednost = document.createElement("p");
+
+                naslov.textContent = naziv;
+                vrednost.textContent = stevilo;
+                kartica.append(naslov, vrednost);
+                vsebnik.appendChild(kartica);
+            }
+        }
+
+        document.getElementById("kc-obrati")
+            .addEventListener("change", posodobiBilanco);
+
+        const obrazec = document.getElementById("kc-naloge");
+        const rezultat = document.getElementById("kc-rezultat");
+
+        obrazec.addEventListener("input", () => rezultat.replaceChildren());
+        obrazec.addEventListener("reset", () => rezultat.replaceChildren());
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            rezultat.replaceChildren();
+
+            const odgovori = [
+                [
+                    document.getElementById("kc-q1").value === "matriks",
+                    "Krebsov cikel poteka v matriksu mitohondrija."
+                ],
+                [
+                    document.getElementById("kc-q2").valueAsNumber === 6,
+                    "Citrat ima 6 C: 2 iz acetilne skupine in 4 iz oksaloacetata."
+                ],
+                [
+                    document.getElementById("kc-q3").value === "oksaloacetat",
+                    "Obnovi se oksaloacetat, ki omogoča naslednji obrat."
+                ],
+                [
+                    document.getElementById("kc-q4").valueAsNumber === 6,
+                    "Na obrat nastanejo 3 NADH. Dva obrata: 6 NADH."
+                ],
+                [
+                    document.getElementById("kc-q5").valueAsNumber === 4,
+                    "Dva obrata cikla sprostita 4 CO₂. Predhodna oksidacija piruvata ni vključena."
+                ],
+                [
+                    document.getElementById("kc-q6").value === "ne",
+                    "Cikel O₂ neposredno ne porablja; odvisen pa je od obnove prenašalcev."
+                ],
+                [
+                    document.getElementById("kc-q7").valueAsNumber === 4,
+                    "Na obrat nastane 1 FADH₂. Štirje obrati: 4 FADH₂."
+                ]
+            ];
+
+            const naslov = document.createElement("h2");
+            naslov.textContent =
+                `Rezultat: ${odgovori.filter(o => o[0]).length} od 7`;
+
+            const seznam = document.createElement("ol");
+            seznam.className = "kc-odgovori";
+
+            for (const [pravilno, razlaga] of odgovori) {
+                const li = document.createElement("li");
+                li.className = pravilno ? "kc-pravilno" : "kc-napacno";
+                li.textContent =
+                    `${pravilno ? "Pravilno." : "Ni pravilno."} ${razlaga}`;
+                seznam.appendChild(li);
+            }
+
+            rezultat.append(naslov, seznam);
+        });
+
+        prikaziKorak(0);
+        posodobiBilanco();
+    </script>
+</body>
+</html>

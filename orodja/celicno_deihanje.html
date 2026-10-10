@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Celično dihanje — razlaga in naloge | Sidebit</title>
+    <meta name="description"
+          content="Gimnazijska razlaga celičnega dihanja: glikoliza, oksidacija piruvata, Krebsov cikel in oksidativna fosforilacija.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Celično dihanje</h1>
+        <p>Od glukoze do ATP — razlaga na gimnazijski ravni.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Kaj je celično dihanje?</h2>
+            <p>
+                Celično dihanje je skupek presnovnih procesov,
+                pri katerih celica razgrajuje organske snovi in del
+                njihove kemijske energije uporabi za nastajanje ATP.
+                Tukaj obravnavamo aerobno razgradnjo glukoze
+                v evkariontski celici.
+            </p>
+
+            <div class="cd-enacba">
+                C₆H₁₂O₆ + 6 O₂
+                <span>↓</span>
+                6 CO₂ + 6 H₂O
+            </div>
+
+            <p class="cd-sredina">
+                Sproščena energija se deloma prenese v ATP,
+                deloma pa se sprosti kot toplota.
+            </p>
+
+            <div class="cd-kartice">
+                <article>
+                    <h3>Glukoza se oksidira</h3>
+                    <p>Oddaja elektrone; njeni ogljikovi atomi končajo v CO₂.</p>
+                </article>
+                <article>
+                    <h3>Kisik se reducira</h3>
+                    <p>Na koncu dihalne verige sprejme elektrone in nastane voda.</p>
+                </article>
+            </div>
+
+            <p>
+                Celično dihanje ni isto kot vdihavanje in izdihavanje.
+                Dihanje organizma omogoča izmenjavo plinov,
+                celično dihanje pa so kemijske reakcije v celicah.
+                Opravljajo ga tudi rastlinske celice.
+            </p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Razišči štiri faze</h2>
+            <p>Izberi fazo in preveri njeno mesto ter izkupiček.</p>
+
+            <div class="gumbi cd-faze">
+                <button type="button" data-faza="0" aria-pressed="true">
+                    1. Glikoliza
+                </button>
+                <button type="button" data-faza="1" aria-pressed="false">
+                    2. Oksidacija piruvata
+                </button>
+                <button type="button" data-faza="2" aria-pressed="false">
+                    3. Krebsov cikel
+                </button>
+                <button type="button" data-faza="3" aria-pressed="false">
+                    4. Oksidativna fosforilacija
+                </button>
+            </div>
+
+            <article class="cd-predogled">
+                <span id="cd-mesto" class="cd-nalepka"></span>
+                <h3 id="cd-naslov"></h3>
+                <div id="cd-pretvorba" class="cd-pretvorba"></div>
+                <p id="cd-opis" role="status"></p>
+                <strong id="cd-izkupicek"></strong>
+            </article>
+
+            <p class="cd-opomba">
+                Vsi izkupički na tej strani veljajo za eno začetno
+                molekulo glukoze. Prikazi so poenostavljeni.
+            </p>
+        </section>
+
+        <section class="razlaga">
+            <h2>1. Glikoliza</h2>
+            <p>
+                V citosolu se šestogljikova glukoza pretvori
+                v dva triogljikova piruvata. Porabita se 2 ATP,
+                nastanejo pa 4 ATP: neto izkupiček je 2 ATP.
+                Nastaneta tudi 2 NADH.
+            </p>
+            <p>
+                ATP nastaja s substratno fosforilacijo:
+                fosfatna skupina se prenese z organske spojine na ADP.
+                Glikoliza neposredno ne potrebuje kisika.
+            </p>
+        </section>
+
+        <section class="razlaga">
+            <h2>2. Oksidacija piruvata</h2>
+            <p>
+                Piruvat vstopi v mitohondrij. V matriksu se pretvori
+                v acetil-CoA: odcepi se CO₂, preostali dvoogljikov
+                acetilni del pa se poveže s koencimom A.
+                Pri tem nastane NADH.
+            </p>
+            <p>
+                Iz dveh piruvatov dobimo 2 acetil-CoA, 2 CO₂ in 2 NADH.
+                ATP v tej fazi neposredno ne nastaja.
+            </p>
+        </section>
+
+        <section class="razlaga">
+            <h2>3. Krebsov oziroma citratni cikel</h2>
+            <p>
+                V matriksu mitohondrija se dvoogljikov acetilni del
+                poveže s štiriogljikovim oksaloacetatom.
+                Nastane šestogljikov citrat.
+                Skozi zaporedje reakcij se oksaloacetat obnovi,
+                zato lahko cikel ponovno steče.
+            </p>
+            <p>
+                En obrat cikla daje 2 CO₂, 3 NADH, 1 FADH₂ in
+                1 ATP oziroma energijsko enakovreden GTP.
+                Ker iz ene glukoze nastaneta dva acetil-CoA,
+                se cikel zavrti dvakrat.
+            </p>
+            <div class="cd-poudarek">
+                Na glukozo: 4 CO₂ + 6 NADH + 2 FADH₂ + 2 ATP/GTP.
+            </div>
+        </section>
+
+        <section class="razlaga">
+            <h2>4. Oksidativna fosforilacija</h2>
+            <p>
+                Poteka na notranji membrani mitohondrija.
+                Vključuje dihalno verigo in kemiosmozo.
+                NADH in FADH₂ oddajata elektrone ter se ponovno
+                pretvorita v NAD⁺ in FAD.
+            </p>
+
+            <div class="cd-kemiosmoza">
+                <article>
+                    <h3>A. Prenos elektronov</h3>
+                    <p>
+                        Elektroni prehajajo po dihalni verigi.
+                        Sproščena energija poganja črpanje H⁺
+                        iz matriksa v medmembranski prostor.
+                    </p>
+                </article>
+                <article>
+                    <h3>B. Protonski gradient</h3>
+                    <p>
+                        Čez notranjo membrano nastane razlika
+                        v koncentraciji H⁺ in električnem potencialu:
+                        elektrokemijski gradient.
+                    </p>
+                </article>
+                <article>
+                    <h3>C. ATP-sintaza</h3>
+                    <p>
+                        H⁺ se skozi ATP-sintazo vračajo v matriks.
+                        Energija tega toka omogoča nastajanje ATP
+                        iz ADP in anorganskega fosfata.
+                    </p>
+                </article>
+            </div>
+
+            <div class="cd-poudarek">
+                Kisik je končni sprejemnik elektronov.
+                Skupaj z elektroni in H⁺ tvori vodo.
+            </div>
+
+            <p>
+                Če ni kisika, se dihalna veriga ustavi.
+                NADH in FADH₂ se ne moreta ustrezno oksidirati,
+                zato se zavrejo tudi oksidacija piruvata in Krebsov cikel,
+                čeprav kisika neposredno ne porabljata.
+            </p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Bilanca na eno glukozo</h2>
+
+            <div class="cd-tabela-ovitek" tabindex="0"
+                 aria-label="Vodoravno pomična tabela izkupičkov">
+                <table class="cd-tabela">
+                    <caption>Izkupički posameznih faz</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Faza</th>
+                            <th scope="col">ATP/GTP neto</th>
+                            <th scope="col">NADH</th>
+                            <th scope="col">FADH₂</th>
+                            <th scope="col">CO₂</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Glikoliza</th>
+                            <td>2</td><td>2</td><td>0</td><td>0</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Oksidacija piruvata</th>
+                            <td>0</td><td>2</td><td>0</td><td>2</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Krebsov cikel</th>
+                            <td>2</td><td>6</td><td>2</td><td>4</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Oksidativna fosforilacija</th>
+                            <td>Približno 26–28</td>
+                            <td colspan="2">Poraba prenašalcev</td>
+                            <td>0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="cd-poudarek cd-sredina">
+                Skupaj približno 30–32 ATP na glukozo.
+            </div>
+
+            <p>
+                Pred dihalno verigo skupaj nastane 10 NADH in 2 FADH₂.
+                To niso dodatne molekule ATP: omogočijo njegov nastanek
+                pri oksidativni fosforilaciji.
+            </p>
+            <p class="cd-opomba">
+                Izkupiček je odvisen od prenosa elektronov iz citosolnega
+                NADH v mitohondrij in drugih celičnih pogojev.
+                V starejših poenostavljenih modelih najdeš tudi 36 ali 38 ATP.
+                Pri šolskih nalogah preveri predpostavke, ki jih zahteva učitelj.
+            </p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Preveri znanje</h2>
+
+            <form id="cd-naloge">
+                <label for="cd-q1">1. Kje poteka glikoliza?</label>
+                <select id="cd-q1" required>
+                    <option value="">Izberi</option>
+                    <option value="citosol">V citosolu</option>
+                    <option value="matriks">V matriksu mitohondrija</option>
+                    <option value="jedro">V jedru</option>
+                </select>
+
+                <label for="cd-q2">
+                    2. Kolikokrat se Krebsov cikel zavrti na eno glukozo?
+                </label>
+                <input id="cd-q2" type="number"
+                       min="0" max="100" step="1" required>
+
+                <label for="cd-q3">
+                    3. Koliko CO₂ skupaj nastane pri oksidaciji
+                    piruvata in Krebsovem ciklu na eno glukozo?
+                </label>
+                <input id="cd-q3" type="number"
+                       min="0" max="100" step="1" required>
+
+                <label for="cd-q4">
+                    4. Kaj je neposredna vloga kisika v dihalni verigi?
+                </label>
+                <select id="cd-q4" required>
+                    <option value="">Izberi</option>
+                    <option value="razcep">Razcepi glukozo na piruvat</option>
+                    <option value="sprejemnik">Sprejme elektrone in nastane voda</option>
+                    <option value="atp">Neposredno prenese fosfat na ADP</option>
+                </select>
+
+                <label for="cd-q5">
+                    5. V katero smer tečejo H⁺ skozi ATP-sintazo?
+                </label>
+                <select id="cd-q5" required>
+                    <option value="">Izberi</option>
+                    <option value="noter">Iz medmembranskega prostora v matriks</option>
+                    <option value="ven">Iz matriksa v medmembranski prostor</option>
+                </select>
+
+                <label for="cd-q6">
+                    6. Koliko NADH nastane pred dihalno verigo
+                    pri razgradnji dveh glukoz?
+                </label>
+                <input id="cd-q6" type="number"
+                       min="0" max="1000" step="1" required>
+
+                <label for="cd-q7">
+                    7. Kje nastane največ ATP pri aerobnem celičnem dihanju?
+                </label>
+                <select id="cd-q7" required>
+                    <option value="">Izberi</option>
+                    <option value="glikoliza">V glikolizi</option>
+                    <option value="krebs">Neposredno v Krebsovem ciklu</option>
+                    <option value="fosforilacija">Pri oksidativni fosforilaciji</option>
+                </select>
+
+                <div class="gumbi">
+                    <button type="submit">Preveri odgovore</button>
+                    <button type="reset">Poskusi znova</button>
+                </div>
+            </form>
+
+            <div id="cd-rezultat" class="rezultat" aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Naloga za razmislek</h2>
+            <p>
+                Notranja membrana postane prepustna za H⁺.
+                Protonov zato ni več treba vračati skozi ATP-sintazo.
+                Kako bi to vplivalo na nastajanje ATP?
+            </p>
+            <details class="cd-resitev">
+                <summary>Prikaži razlago</summary>
+                <p>
+                    Protonski gradient bi se zmanjšal.
+                    ATP-sintaza bi imela manj energije za tvorbo ATP,
+                    zato bi oksidativna fosforilacija proizvedla manj ATP.
+                    Prenos elektronov lahko še poteka, vendar je slabše
+                    sklopljen z nastajanjem ATP; več energije se sprosti
+                    kot toplota.
+                </p>
+            </details>
+        </section>
+
+        <section class="razlaga">
+            <h2>Povezane razlage in viri</h2>
+            <ul>
+                <li><a href="glukoza.html">Glukoza</a></li>
+                <li><a href="glikoliza.html">Glikoliza</a></li>
+                <li><a href="vrenje.html">Vrenje</a></li>
+                <li>
+                    <a href="https://www.ncbi.nlm.nih.gov/books/NBK26894/"
+                       target="_blank" rel="noopener noreferrer">
+                        NCBI Bookshelf: mitohondrij
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.khanacademy.org/science/biology/cellular-respiration/oxidative-phosphorylation/a/oxidative-phosphorylation-etc"
+                       target="_blank" rel="noopener noreferrer">
+                        Khan Academy: oksidativna fosforilacija
+                    </a>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — razlage in uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const faze = [
+            {
+                naslov: "Glikoliza",
+                mesto: "Citosol",
+                pretvorba: "1 glukoza (6 C) → 2 piruvata (po 3 C)",
+                opis:
+                    "Deset reakcij pretvori glukozo v piruvat. " +
+                    "ATP nastaja s substratno fosforilacijo.",
+                izkupicek: "Neto: 2 ATP + 2 NADH"
+            },
+            {
+                naslov: "Oksidacija piruvata",
+                mesto: "Matriks mitohondrija",
+                pretvorba: "2 piruvata → 2 acetil-CoA + 2 CO₂",
+                opis:
+                    "Vsak piruvat izgubi en ogljikov atom v obliki CO₂. " +
+                    "Dvoogljikov acetilni del se poveže s koencimom A.",
+                izkupicek: "2 NADH; neposredno 0 ATP"
+            },
+            {
+                naslov: "Krebsov cikel",
+                mesto: "Matriks mitohondrija",
+                pretvorba: "2 acetilna dela → skupaj 4 CO₂",
+                opis:
+                    "Cikel se na glukozo zavrti dvakrat. " +
+                    "Oksaloacetat se obnovi, večina energije pa se " +
+                    "prenese v NADH in FADH₂.",
+                izkupicek: "2 ATP/GTP + 6 NADH + 2 FADH₂"
+            },
+            {
+                naslov: "Oksidativna fosforilacija",
+                mesto: "Notranja membrana mitohondrija",
+                pretvorba: "Prenos elektronov → gradient H⁺ → ATP",
+                opis:
+                    "NADH in FADH₂ oddajata elektrone. Kisik jih na koncu " +
+                    "sprejme in nastane voda. Tok H⁺ skozi ATP-sintazo " +
+                    "poganja tvorbo ATP.",
+                izkupicek: "Približno 26–28 ATP"
+            }
+        ];
+
+        function prikaziFazo(indeks) {
+            const faza = faze[indeks];
+
+            document.getElementById("cd-mesto").textContent = faza.mesto;
+            document.getElementById("cd-naslov").textContent = faza.naslov;
+            document.getElementById("cd-pretvorba").textContent = faza.pretvorba;
+            document.getElementById("cd-opis").textContent = faza.opis;
+            document.getElementById("cd-izkupicek").textContent = faza.izkupicek;
+
+            document.querySelectorAll("[data-faza]").forEach(gumb => {
+                gumb.setAttribute(
+                    "aria-pressed",
+                    String(Number(gumb.dataset.faza) === indeks)
+                );
+            });
+        }
+
+        document.querySelectorAll("[data-faza]").forEach(gumb => {
+            gumb.addEventListener("click", () => {
+                prikaziFazo(Number(gumb.dataset.faza));
+            });
+        });
+
+        const obrazec = document.getElementById("cd-naloge");
+        const rezultat = document.getElementById("cd-rezultat");
+
+        obrazec.addEventListener("input", () => rezultat.replaceChildren());
+        obrazec.addEventListener("reset", () => rezultat.replaceChildren());
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            rezultat.replaceChildren();
+
+            const odgovori = [
+                [
+                    document.getElementById("cd-q1").value === "citosol",
+                    "Glikoliza poteka v citosolu."
+                ],
+                [
+                    document.getElementById("cd-q2").valueAsNumber === 2,
+                    "Iz ene glukoze nastaneta dva acetil-CoA: dva obrata cikla."
+                ],
+                [
+                    document.getElementById("cd-q3").valueAsNumber === 6,
+                    "Oksidacija piruvata daje 2 CO₂, Krebsov cikel pa 4 CO₂."
+                ],
+                [
+                    document.getElementById("cd-q4").value === "sprejemnik",
+                    "Kisik je končni sprejemnik elektronov; z elektroni in H⁺ tvori vodo."
+                ],
+                [
+                    document.getElementById("cd-q5").value === "noter",
+                    "H⁺ se skozi ATP-sintazo vračajo v matriks."
+                ],
+                [
+                    document.getElementById("cd-q6").valueAsNumber === 20,
+                    "Na glukozo nastane 2 + 2 + 6 = 10 NADH. Za dve: 20 NADH."
+                ],
+                [
+                    document.getElementById("cd-q7").value === "fosforilacija",
+                    "Največ ATP nastane pri oksidativni fosforilaciji."
+                ]
+            ];
+
+            const naslov = document.createElement("h2");
+            naslov.textContent =
+                `Rezultat: ${odgovori.filter(o => o[0]).length} od 7`;
+
+            const seznam = document.createElement("ol");
+            seznam.className = "cd-odgovori";
+
+            for (const [pravilno, razlaga] of odgovori) {
+                const li = document.createElement("li");
+                li.className = pravilno ? "cd-pravilno" : "cd-napacno";
+                li.textContent =
+                    `${pravilno ? "Pravilno." : "Ni pravilno."} ${razlaga}`;
+                seznam.appendChild(li);
+            }
+
+            rezultat.append(naslov, seznam);
+        });
+
+        prikaziFazo(0);
+    </script>
+</body>
+</html>
