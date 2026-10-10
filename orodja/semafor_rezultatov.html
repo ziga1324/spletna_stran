@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Semafor rezultatov | Sidebit</title>
+    <meta name="description"
+          content="Beleži rezultate dveh ekip z velikim semaforjem in gumbi za dodajanje točk.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Semafor rezultatov</h1>
+        <p>Pregleden prikaz točk za tekme, kvize in družabne igre.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Nastavitve ekip</h2>
+
+            <div class="semafor-imena">
+                <div>
+                    <label for="semafor-ime-a">Prva ekipa</label>
+                    <input id="semafor-ime-a" type="text"
+                           maxlength="40" value="Ekipa A">
+                </div>
+
+                <div>
+                    <label for="semafor-ime-b">Druga ekipa</label>
+                    <input id="semafor-ime-b" type="text"
+                           maxlength="40" value="Ekipa B">
+                </div>
+            </div>
+        </section>
+
+        <section class="kalkulator" id="semafor-prikaz"
+                 aria-label="Semafor rezultatov">
+            <div class="semafor-ekipe">
+                <section class="semafor-ekipa semafor-ekipa-a">
+                    <h2 id="semafor-naziv-a">Ekipa A</h2>
+                    <p id="semafor-tocke-a" class="semafor-tocke">0</p>
+
+                    <div class="semafor-gumbi">
+                        <button type="button" data-ekipa="a" data-tocke="-1">
+                            −1
+                        </button>
+                        <button type="button" data-ekipa="a" data-tocke="1">
+                            +1
+                        </button>
+                        <button type="button" data-ekipa="a" data-tocke="2">
+                            +2
+                        </button>
+                        <button type="button" data-ekipa="a" data-tocke="3">
+                            +3
+                        </button>
+                    </div>
+                </section>
+
+                <section class="semafor-ekipa semafor-ekipa-b">
+                    <h2 id="semafor-naziv-b">Ekipa B</h2>
+                    <p id="semafor-tocke-b" class="semafor-tocke">0</p>
+
+                    <div class="semafor-gumbi">
+                        <button type="button" data-ekipa="b" data-tocke="-1">
+                            −1
+                        </button>
+                        <button type="button" data-ekipa="b" data-tocke="1">
+                            +1
+                        </button>
+                        <button type="button" data-ekipa="b" data-tocke="2">
+                            +2
+                        </button>
+                        <button type="button" data-ekipa="b" data-tocke="3">
+                            +3
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <p id="semafor-vodstvo" role="status" aria-live="polite"></p>
+
+            <div class="gumbi semafor-dejanja">
+                <button type="button" id="semafor-razveljavi" disabled>
+                    Razveljavi
+                </button>
+                <button type="button" id="semafor-ponastavi">
+                    Ponastavi rezultat
+                </button>
+                <button type="button" id="semafor-celozaslonsko">
+                    Celozaslonski prikaz
+                </button>
+            </div>
+
+            <p id="semafor-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Z gumbi dodajaš ali odvzemaš točke posamezni ekipi.
+                Rezultat ne more biti negativen.
+                Razveljaviš lahko zadnjih 100 sprememb v trenutni seji,
+                vključno s ponastavitvijo rezultata.
+            </p>
+            <p>
+                Imeni ekip in rezultat se shranijo v ta brskalnik,
+                če je lokalno shranjevanje omogočeno.
+                Zgodovina razveljavitev se ob ponovnem nalaganju strani izbriše.
+                Za izhod iz celozaslonskega prikaza pritisni Esc
+                ali uporabi gumb za izhod.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const KLJUC = "sidebit-semafor-rezultatov-v1";
+        const MAX_TOCK = 999999;
+
+        const imeA = document.getElementById("semafor-ime-a");
+        const imeB = document.getElementById("semafor-ime-b");
+        const status = document.getElementById("semafor-status");
+        const prikaz = document.getElementById("semafor-prikaz");
+        const razveljavi = document.getElementById("semafor-razveljavi");
+        const celozaslonsko = document.getElementById("semafor-celozaslonsko");
+
+        let stanje = {
+            imeA: "Ekipa A",
+            imeB: "Ekipa B",
+            a: 0,
+            b: 0
+        };
+
+        const zgodovina = [];
+        let shrambaNaVoljo = true;
+
+        function veljavnoStanje(p) {
+            return p &&
+                typeof p.imeA === "string" && p.imeA.length <= 40 &&
+                typeof p.imeB === "string" && p.imeB.length <= 40 &&
+                Number.isInteger(p.a) && p.a >= 0 && p.a <= MAX_TOCK &&
+                Number.isInteger(p.b) && p.b >= 0 && p.b <= MAX_TOCK;
+        }
+
+        try {
+            const shranjeno = localStorage.getItem(KLJUC);
+
+            if (shranjeno !== null) {
+                const podatki = JSON.parse(shranjeno);
+                if (!veljavnoStanje(podatki)) {
+                    throw new Error("Neveljavni podatki.");
+                }
+
+                stanje = {
+                    imeA: podatki.imeA.trim() || "Ekipa A",
+                    imeB: podatki.imeB.trim() || "Ekipa B",
+                    a: podatki.a,
+                    b: podatki.b
+                };
+            }
+        } catch {
+            shrambaNaVoljo = false;
+            status.textContent =
+                "Shranjeni podatki niso dostopni. Semafor lahko " +
+                "uporabljaš do zaprtja strani.";
+        }
+
+        imeA.value = stanje.imeA;
+        imeB.value = stanje.imeB;
+
+        function shrani(sporocilo = "") {
+            if (shrambaNaVoljo) {
+                try {
+                    localStorage.setItem(KLJUC, JSON.stringify(stanje));
+                } catch {
+                    shrambaNaVoljo = false;
+                }
+            }
+
+            status.textContent = shrambaNaVoljo
+                ? sporocilo
+                : `${sporocilo} Samodejno shranjevanje ni na voljo.`.trim();
+        }
+
+        function narisi() {
+            document.getElementById("semafor-naziv-a").textContent = stanje.imeA;
+            document.getElementById("semafor-naziv-b").textContent = stanje.imeB;
+
+            document.getElementById("semafor-tocke-a").textContent =
+                stanje.a.toLocaleString("sl-SI");
+
+            document.getElementById("semafor-tocke-b").textContent =
+                stanje.b.toLocaleString("sl-SI");
+
+            const vodstvo = document.getElementById("semafor-vodstvo");
+
+            if (stanje.a === stanje.b) {
+                vodstvo.textContent =
+                    `Izenačeno: ${stanje.a} : ${stanje.b}.`;
+            } else {
+                const vodilna = stanje.a > stanje.b ? stanje.imeA : stanje.imeB;
+                const razlika = Math.abs(stanje.a - stanje.b);
+
+                vodstvo.textContent =
+                    `Vodi ${vodilna}. Razlika v točkah: ${razlika}. ` +
+                    `Rezultat: ${stanje.a} : ${stanje.b}.`;
+            }
+
+            razveljavi.disabled = zgodovina.length === 0;
+
+            document.querySelectorAll(".semafor-gumbi button")
+                .forEach(gumb => {
+                    const ekipa = gumb.dataset.ekipa;
+                    const sprememba = Number(gumb.dataset.tocke);
+                    const noviRezultat = stanje[ekipa] + sprememba;
+                    const naziv = ekipa === "a" ? stanje.imeA : stanje.imeB;
+
+                    gumb.disabled =
+                        noviRezultat < 0 || noviRezultat > MAX_TOCK;
+
+                    gumb.setAttribute(
+                        "aria-label",
+                        `${naziv}: ${
+                            sprememba > 0 ? "dodaj" : "odvzemi"
+                        } ${Math.abs(sprememba)} točk`
+                    );
+                });
+        }
+
+        function zapomniRezultat() {
+            zgodovina.push({ a: stanje.a, b: stanje.b });
+
+            if (zgodovina.length > 100) {
+                zgodovina.shift();
+            }
+        }
+
+        document.querySelectorAll(".semafor-gumbi button")
+            .forEach(gumb => {
+                gumb.addEventListener("click", () => {
+                    const ekipa = gumb.dataset.ekipa;
+                    const sprememba = Number(gumb.dataset.tocke);
+                    const noviRezultat = stanje[ekipa] + sprememba;
+
+                    if (noviRezultat < 0 || noviRezultat > MAX_TOCK) return;
+
+                    zapomniRezultat();
+                    stanje[ekipa] = noviRezultat;
+                    narisi();
+                    shrani();
+                });
+            });
+
+        for (const [vnos, kljuc, privzeto] of [
+            [imeA, "imeA", "Ekipa A"],
+            [imeB, "imeB", "Ekipa B"]
+        ]) {
+            vnos.addEventListener("input", () => {
+                stanje[kljuc] = vnos.value.trim() || privzeto;
+                narisi();
+                shrani();
+            });
+
+            vnos.addEventListener("blur", () => {
+                vnos.value = stanje[kljuc];
+            });
+        }
+
+        razveljavi.addEventListener("click", () => {
+            const prejsnje = zgodovina.pop();
+            if (!prejsnje) return;
+
+            stanje.a = prejsnje.a;
+            stanje.b = prejsnje.b;
+            narisi();
+            shrani("Zadnja sprememba rezultata je razveljavljena.");
+        });
+
+        document.getElementById("semafor-ponastavi")
+            .addEventListener("click", () => {
+                if (stanje.a === 0 && stanje.b === 0) return;
+
+                zapomniRezultat();
+                stanje.a = 0;
+                stanje.b = 0;
+                narisi();
+                shrani("Rezultat je ponastavljen. Spremembo lahko razveljaviš.");
+            });
+
+        if (!document.fullscreenEnabled || !prikaz.requestFullscreen) {
+            celozaslonsko.disabled = true;
+            celozaslonsko.textContent = "Celozaslonski prikaz ni na voljo";
+        }
+
+        celozaslonsko.addEventListener("click", async () => {
+            try {
+                if (document.fullscreenElement === prikaz) {
+                    await document.exitFullscreen();
+                } else {
+                    await prikaz.requestFullscreen();
+                }
+            } catch {
+                status.textContent =
+                    "Brskalnik ni omogočil celozaslonskega prikaza.";
+            }
+        });
+
+        document.addEventListener("fullscreenchange", () => {
+            celozaslonsko.textContent =
+                document.fullscreenElement === prikaz
+                    ? "Izhod iz celozaslonskega prikaza"
+                    : "Celozaslonski prikaz";
+        });
+
+        narisi();
+    </script>
+</body>
+</html>

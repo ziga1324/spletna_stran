@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Prilagajanje količin recepta | Sidebit</title>
+    <meta name="description"
+          content="Preračunaj količine sestavin recepta za želeno število porcij.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Prilagajanje količin recepta</h1>
+        <p>Prilagodi recept številu oseb, za katere pripravljaš obrok.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Recept in sestavine</h2>
+
+            <form id="recept-obrazec">
+                <label for="recept-ime">Ime recepta — neobvezno</label>
+                <input id="recept-ime" type="text" maxlength="100"
+                       placeholder="Na primer: palačinke">
+
+                <div class="recept-porcije">
+                    <div>
+                        <label for="recept-osnovne">Prvotno število porcij</label>
+                        <input id="recept-osnovne" type="number"
+                               min="1" max="10000" step="1"
+                               value="4" required>
+                    </div>
+
+                    <div>
+                        <label for="recept-zelene">Želeno število porcij</label>
+                        <input id="recept-zelene" type="number"
+                               min="1" max="10000" step="1"
+                               value="6" required>
+                    </div>
+                </div>
+
+                <p class="recept-navodilo">
+                    Vnesi sestavine za prvotno število porcij.
+                    Količine lahko zapišeš kot 1,5 ali kot ulomek 1/2.
+                    Pri sestavinah »po okusu« pusti količino prazno.
+                </p>
+
+                <div id="recept-sestavine"></div>
+
+                <div class="gumbi">
+                    <button type="button" id="recept-dodaj">
+                        Dodaj sestavino
+                    </button>
+                    <button type="submit">Preračunaj</button>
+                    <button type="reset">Ponastavi</button>
+                </div>
+            </form>
+
+            <p id="recept-napaka" class="napaka" role="alert"></p>
+            <div id="recept-rezultat" class="rezultat"
+                 aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Vsako količino pomnožimo z razmerjem med želenim in prvotnim
+                številom porcij. Če recept za 4 porcije prilagodiš na 6 porcij,
+                se količine pomnožijo z 1,5.
+            </p>
+            <p>
+                Enote ostanejo enake. Rezultati so prikazani z največ tremi
+                decimalnimi mesti. Začimbe prilagodi po okusu, čas peke
+                in velikost posode pa preveri posebej.
+                Pri delih jajca lahko jajce razžvrkljaš in uporabiš ustrezen delež.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("recept-obrazec");
+        const seznam = document.getElementById("recept-sestavine");
+        const rezultat = document.getElementById("recept-rezultat");
+        const napaka = document.getElementById("recept-napaka");
+
+        const oblikovalnik = new Intl.NumberFormat("sl-SI", {
+            maximumFractionDigits: 3
+        });
+
+        let zaporedje = 0;
+
+        function pocistiRezultat() {
+            rezultat.replaceChildren();
+            napaka.textContent = "";
+        }
+
+        function dodajSestavino(ime = "", kolicina = "", enota = "") {
+            if (seznam.children.length >= 100) {
+                napaka.textContent = "Dodati je mogoče največ 100 sestavin.";
+                return;
+            }
+
+            const id = ++zaporedje;
+            const vrstica = document.createElement("div");
+            vrstica.className = "recept-vrstica";
+
+            function ustvariPolje(naslov, tip, vrednost, razred, omejitev) {
+                const ovitek = document.createElement("div");
+                const label = document.createElement("label");
+                const input = document.createElement("input");
+
+                input.id = `recept-${razred}-${id}`;
+                input.type = tip;
+                input.value = vrednost;
+                input.className = razred;
+                input.maxLength = omejitev;
+                label.htmlFor = input.id;
+                label.textContent = naslov;
+
+                ovitek.append(label, input);
+                vrstica.appendChild(ovitek);
+                return input;
+            }
+
+            const imePolje = ustvariPolje(
+                "Sestavina", "text", ime, "sestavina-ime", 100
+            );
+            imePolje.placeholder = "Na primer: moka";
+
+            const kolicinaPolje = ustvariPolje(
+                "Količina", "text", kolicina, "sestavina-kolicina", 30
+            );
+            kolicinaPolje.placeholder = "250 ali 1/2";
+
+            const enotaPolje = ustvariPolje(
+                "Enota / opomba", "text", enota, "sestavina-enota", 50
+            );
+            enotaPolje.placeholder = "g, ml, kos, po okusu";
+
+            const odstrani = document.createElement("button");
+            odstrani.type = "button";
+            odstrani.textContent = "Odstrani";
+            odstrani.setAttribute("aria-label", `Odstrani sestavino ${id}`);
+
+            odstrani.addEventListener("click", () => {
+                vrstica.remove();
+                pocistiRezultat();
+                document.getElementById("recept-dodaj").focus();
+            });
+
+            vrstica.appendChild(odstrani);
+            seznam.appendChild(vrstica);
+            return imePolje;
+        }
+
+        function preberiStevilo(besedilo) {
+            const vrednost = besedilo.trim().replace(",", ".");
+
+            if (!/^(?:\d+(?:\.\d+)?|\.\d+)$/.test(vrednost)) {
+                return null;
+            }
+
+            const stevilo = Number(vrednost);
+            return Number.isFinite(stevilo) ? stevilo : null;
+        }
+
+        function preberiKolicino(besedilo) {
+            const deli = besedilo.trim().split("/");
+            if (deli.length > 2) return null;
+
+            const stevec = preberiStevilo(deli[0]);
+            if (stevec === null) return null;
+
+            let kolicina = stevec;
+
+            if (deli.length === 2) {
+                const imenovalec = preberiStevilo(deli[1]);
+
+                if (imenovalec === null || imenovalec <= 0) return null;
+                kolicina = stevec / imenovalec;
+            }
+
+            return Number.isFinite(kolicina) &&
+                kolicina > 0 && kolicina <= 1000000000
+                    ? kolicina
+                    : null;
+        }
+
+        function oblikujKolicino(stevilo) {
+            return stevilo < 0.0005
+                ? "manj kot 0,001"
+                : oblikovalnik.format(stevilo);
+        }
+
+        function privzeto() {
+            seznam.replaceChildren();
+            dodajSestavino();
+            dodajSestavino();
+            dodajSestavino();
+        }
+
+        document.getElementById("recept-dodaj")
+            .addEventListener("click", () => {
+                pocistiRezultat();
+                dodajSestavino()?.focus();
+            });
+
+        obrazec.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("reset", () => {
+            pocistiRezultat();
+            requestAnimationFrame(privzeto);
+        });
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocistiRezultat();
+
+            const osnovne = document.getElementById("recept-osnovne")
+                .valueAsNumber;
+            const zelene = document.getElementById("recept-zelene")
+                .valueAsNumber;
+
+            if (!Number.isInteger(osnovne) ||
+                !Number.isInteger(zelene) ||
+                osnovne < 1 || zelene < 1 ||
+                osnovne > 10000 || zelene > 10000) {
+                napaka.textContent =
+                    "Število porcij mora biti celo število med 1 in 10.000.";
+                return;
+            }
+
+            const faktor = zelene / osnovne;
+            const sestavine = [];
+
+            for (const vrstica of seznam.children) {
+                const imePolje = vrstica.querySelector(".sestavina-ime");
+                const kolicinaPolje =
+                    vrstica.querySelector(".sestavina-kolicina");
+
+                const ime = imePolje.value.trim();
+                const vnos = kolicinaPolje.value.trim();
+                const enota = vrstica.querySelector(".sestavina-enota")
+                    .value.trim();
+
+                // Popolnoma prazne vrstice preskočimo.
+                if (!ime && !vnos && !enota) continue;
+
+                if (!ime) {
+                    napaka.textContent = "V vsaki izpolnjeni vrstici vnesi ime sestavine.";
+                    imePolje.focus();
+                    return;
+                }
+
+                const kolicina = vnos ? preberiKolicino(vnos) : null;
+
+                if (vnos && kolicina === null) {
+                    napaka.textContent =
+                        `Pri sestavini »${ime}« vnesi pozitivno količino ` +
+                        "do 1.000.000.000 ali veljaven ulomek.";
+                    kolicinaPolje.focus();
+                    return;
+                }
+
+                sestavine.push({
+                    ime,
+                    enota,
+                    kolicina: kolicina === null ? null : kolicina * faktor
+                });
+            }
+
+            if (!sestavine.length) {
+                napaka.textContent = "Dodaj vsaj eno sestavino.";
+                return;
+            }
+
+            const imeRecepta = document.getElementById("recept-ime")
+                .value.trim();
+
+            const naslov = document.createElement("h2");
+            naslov.textContent = imeRecepta || "Prilagojen recept";
+
+            const opis = document.createElement("p");
+            opis.textContent =
+                `${osnovne} → ${zelene} porcij. ` +
+                `Faktor prilagoditve: ${oblikovalnik.format(faktor)}.`;
+
+            const seznamRezultatov = document.createElement("ul");
+            seznamRezultatov.className = "recept-izracun";
+
+            const vrsticeZaKopiranje = [
+                imeRecepta || "Prilagojen recept",
+                `Število porcij: ${zelene}`,
+                ""
+            ];
+
+            for (const sestavina of sestavine) {
+                const kolicinaBesedilo = sestavina.kolicina === null
+                    ? (sestavina.enota || "po okusu")
+                    : `${oblikujKolicino(sestavina.kolicina)}${
+                        sestavina.enota ? " " + sestavina.enota : ""
+                    }`;
+
+                const li = document.createElement("li");
+                const ime = document.createElement("strong");
+                const kolicina = document.createElement("span");
+
+                ime.textContent = sestavina.ime;
+                kolicina.textContent = kolicinaBesedilo;
+                li.append(ime, kolicina);
+                seznamRezultatov.appendChild(li);
+
+                vrsticeZaKopiranje.push(
+                    `${sestavina.ime}: ${kolicinaBesedilo}`
+                );
+            }
+
+            const gumbi = document.createElement("div");
+            gumbi.className = "gumbi";
+
+            const kopiraj = document.createElement("button");
+            kopiraj.type = "button";
+            kopiraj.textContent = "Kopiraj recept";
+
+            const sporocilo = document.createElement("p");
+            sporocilo.className = "recept-kopiranje";
+            sporocilo.setAttribute("role", "status");
+
+            const kopija = document.createElement("textarea");
+            kopija.className = "recept-kopija";
+            kopija.readOnly = true;
+            kopija.hidden = true;
+            kopija.setAttribute("aria-label", "Recept za ročno kopiranje");
+            kopija.value = vrsticeZaKopiranje.join("\n");
+
+            kopiraj.addEventListener("click", async () => {
+                try {
+                    await navigator.clipboard.writeText(kopija.value);
+                    sporocilo.textContent = "Recept je kopiran.";
+                } catch {
+                    kopija.hidden = false;
+                    kopija.focus();
+                    kopija.select();
+                    sporocilo.textContent =
+                        "Besedilo je označeno. Kopiraj ga s Ctrl+C oziroma Cmd+C.";
+                }
+            });
+
+            gumbi.appendChild(kopiraj);
+            rezultat.append(
+                naslov, opis, seznamRezultatov, gumbi, kopija, sporocilo
+            );
+        });
+
+        privzeto();
+    </script>
+</body>
+</html>

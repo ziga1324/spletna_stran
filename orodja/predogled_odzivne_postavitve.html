@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Predogled odzivne postavitve | Sidebit</title>
+    <meta name="description"
+          content="Preveri postavitev spletne strani pri različnih širinah zaslona.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Predogled odzivne postavitve</h1>
+        <p>Preveri, kako se stran prilagodi telefonu, tablici in računalniku.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Vsebina predogleda</h2>
+
+            <form id="odziv-obrazec">
+                <label for="odziv-nacin">Vrsta vsebine</label>
+                <select id="odziv-nacin">
+                    <option value="url">Spletni naslov</option>
+                    <option value="html">HTML koda</option>
+                </select>
+
+                <div id="odziv-url-polje">
+                    <label for="odziv-url">Naslov spletne strani</label>
+                    <input id="odziv-url" type="url"
+                           placeholder="https://www.sidebit.si"
+                           value="https://www.sidebit.si">
+                </div>
+
+                <div id="odziv-html-polje" hidden>
+                    <label for="odziv-html">HTML koda</label>
+                    <textarea id="odziv-html" rows="10"
+                              spellcheck="false"
+                              placeholder="Prilepi celotno HTML kodo …"></textarea>
+                    <p class="odziv-opomba">
+                        CSS lahko vključiš v oznako style. Za zunanje slike
+                        in CSS uporabi celotne naslove HTTPS.
+                    </p>
+                </div>
+
+                <button type="submit">Prikaži stran</button>
+            </form>
+
+            <p id="odziv-napaka" class="napaka" role="alert"></p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Velikost zaslona</h2>
+
+            <div class="gumbi odziv-naprave">
+                <button type="button" data-sirina="375" data-visina="812">
+                    Telefon
+                </button>
+                <button type="button" data-sirina="768" data-visina="1024">
+                    Tablica
+                </button>
+                <button type="button" data-sirina="1366" data-visina="768">
+                    Prenosnik
+                </button>
+                <button type="button" data-sirina="1920" data-visina="1080">
+                    Računalnik
+                </button>
+            </div>
+
+            <form id="odziv-mere-obrazec">
+                <div class="odziv-mere">
+                    <div>
+                        <label for="odziv-sirina">Širina (px)</label>
+                        <input id="odziv-sirina" type="number"
+                               min="240" max="3840" step="1"
+                               value="375" required>
+                    </div>
+
+                    <div>
+                        <label for="odziv-visina">Višina (px)</label>
+                        <input id="odziv-visina" type="number"
+                               min="240" max="2160" step="1"
+                               value="812" required>
+                    </div>
+                </div>
+
+                <div class="gumbi">
+                    <button type="submit">Uporabi dimenzije</button>
+                    <button type="button" id="odziv-zasuk">
+                        Zamenjaj širino in višino
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Predogled</h2>
+
+            <p id="odziv-podatki" role="status" aria-live="polite"></p>
+
+            <div id="odziv-oder">
+                <div id="odziv-okvir">
+                    <iframe
+                        id="odziv-iframe"
+                        title="Predogled odzivne postavitve"
+                        sandbox="allow-scripts"
+                        referrerpolicy="no-referrer">
+                    </iframe>
+                </div>
+            </div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kaj prikazuje orodje?</h2>
+            <p>
+                Stran se izriše pri izbrani širini in višini v CSS slikovnih
+                pikah. Če je predogled širši od razpoložljivega prostora,
+                se prikaz pomanjša, izbrana širina strani pa ostane enaka.
+            </p>
+            <p>
+                Nekatere spletne strani prepovedujejo prikaz v okvirju.
+                Če je predogled prazen ali prikaže zavrnitev povezave,
+                uporabi HTML kodo. V tem načinu se vsebina obdeluje
+                lokalno, zunanje povezave v kodi pa lahko nalagajo vire.
+            </p>
+            <p>
+                Predogled preverja postavitev in CSS media queries.
+                Ne posnema vseh lastnosti prave naprave, kot so gostota
+                slikovnih pik, zaslon na dotik ali mobilni brskalnik.
+                Zaradi omejenega okvirja prijava in nekatere funkcije
+                spletnih strani morda ne bodo delovale.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const nacin = document.getElementById("odziv-nacin");
+        const urlPolje = document.getElementById("odziv-url-polje");
+        const htmlPolje = document.getElementById("odziv-html-polje");
+        const urlVnos = document.getElementById("odziv-url");
+        const htmlVnos = document.getElementById("odziv-html");
+        const sirinaVnos = document.getElementById("odziv-sirina");
+        const visinaVnos = document.getElementById("odziv-visina");
+
+        const iframe = document.getElementById("odziv-iframe");
+        const oder = document.getElementById("odziv-oder");
+        const okvir = document.getElementById("odziv-okvir");
+        const podatki = document.getElementById("odziv-podatki");
+        const napaka = document.getElementById("odziv-napaka");
+
+        let sirina = 375;
+        let visina = 812;
+
+        // Začetni primer deluje tudi brez internetne povezave.
+        const primer = `<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 24px;
+            font-family: Arial, sans-serif;
+            color: #202333;
+            background: #fff9ed;
+        }
+        h1 { font-size: clamp(28px, 5vw, 48px); }
+        .mreza {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+        }
+        article {
+            padding: 24px;
+            border: 3px solid #202333;
+            border-radius: 18px;
+            background: #ffe58c;
+            box-shadow: 5px 5px 0 #202333;
+        }
+        article:nth-child(2) { background: #dfd5ff; }
+        article:nth-child(3) { background: #c7f1e4; }
+        @media (max-width: 900px) {
+            .mreza { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 540px) {
+            .mreza { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Odzivna postavitev</h1>
+    <p>Spremeni širino predogleda in opazuj razporeditev kartic.</p>
+    <div class="mreza">
+        <article><h2>Prva kartica</h2><p>Vsebina prve kartice.</p></article>
+        <article><h2>Druga kartica</h2><p>Vsebina druge kartice.</p></article>
+        <article><h2>Tretja kartica</h2><p>Vsebina tretje kartice.</p></article>
+    </div>
+</body>
+</html>`;
+
+        htmlVnos.value = primer;
+        iframe.srcdoc = primer;
+
+        nacin.addEventListener("change", () => {
+            const htmlNacin = nacin.value === "html";
+            urlPolje.hidden = htmlNacin;
+            htmlPolje.hidden = !htmlNacin;
+            urlVnos.disabled = htmlNacin;
+            napaka.textContent = "";
+        });
+
+        document.getElementById("odziv-obrazec")
+            .addEventListener("submit", event => {
+                event.preventDefault();
+                napaka.textContent = "";
+
+                if (nacin.value === "html") {
+                    const html = htmlVnos.value;
+
+                    if (!html.trim()) {
+                        napaka.textContent = "Najprej prilepi HTML kodo.";
+                        return;
+                    }
+
+                    if (html.length > 1000000) {
+                        napaka.textContent =
+                            "HTML koda je predolga. Omejitev je milijon znakov.";
+                        return;
+                    }
+
+                    iframe.removeAttribute("src");
+                    iframe.srcdoc = html;
+                    return;
+                }
+
+                try {
+                    const url = new URL(urlVnos.value.trim());
+
+                    if (url.protocol !== "https:" ||
+                        url.username || url.password) {
+                        throw new Error();
+                    }
+
+                    iframe.removeAttribute("srcdoc");
+                    iframe.src = url.href;
+                } catch {
+                    napaka.textContent =
+                        "Vnesi veljaven naslov HTTPS brez uporabniškega imena ali gesla.";
+                }
+            });
+
+        function prilagodiPredogled() {
+            const prostor = oder.clientWidth;
+            if (!prostor) return;
+
+            const merilo = Math.min(1, prostor / sirina);
+
+            iframe.style.width = `${sirina}px`;
+            iframe.style.height = `${visina}px`;
+            iframe.style.transform = `scale(${merilo})`;
+
+            okvir.style.width = `${sirina * merilo}px`;
+            okvir.style.height = `${visina * merilo}px`;
+
+            podatki.textContent =
+                `${sirina} × ${visina} px — ` +
+                `merilo prikaza ${Math.round(merilo * 100)} %`;
+        }
+
+        function uporabiMere(novaSirina, novaVisina) {
+            if (!Number.isInteger(novaSirina) ||
+                !Number.isInteger(novaVisina) ||
+                novaSirina < 240 || novaSirina > 3840 ||
+                novaVisina < 240 || novaVisina > 2160) {
+                napaka.textContent =
+                    "Širina mora biti med 240 in 3840 px, " +
+                    "višina pa med 240 in 2160 px.";
+                return;
+            }
+
+            sirina = novaSirina;
+            visina = novaVisina;
+            sirinaVnos.value = sirina;
+            visinaVnos.value = visina;
+            napaka.textContent = "";
+            prilagodiPredogled();
+        }
+
+        document.getElementById("odziv-mere-obrazec")
+            .addEventListener("submit", event => {
+                event.preventDefault();
+                uporabiMere(
+                    sirinaVnos.valueAsNumber,
+                    visinaVnos.valueAsNumber
+                );
+            });
+
+        document.querySelectorAll(".odziv-naprave button")
+            .forEach(button => {
+                button.addEventListener("click", () => {
+                    uporabiMere(
+                        Number(button.dataset.sirina),
+                        Number(button.dataset.visina)
+                    );
+                });
+            });
+
+        document.getElementById("odziv-zasuk")
+            .addEventListener("click", () => {
+                uporabiMere(
+                    visinaVnos.valueAsNumber,
+                    sirinaVnos.valueAsNumber
+                );
+            });
+
+        const opazovalec = new ResizeObserver(prilagodiPredogled);
+        opazovalec.observe(oder);
+        prilagodiPredogled();
+    </script>
+</body>
+</html>

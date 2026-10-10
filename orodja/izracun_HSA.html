@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Izračunaj SHA-256 besedila ali datoteke in primerjaj rezultat s pričakovanim odtisom.">
+    <title>Izračun SHA-256</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>Izračun SHA-256</h1>
+        <p>Izračunaj digitalni odtis besedila ali datoteke.</p>
+        <a href="../index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Kalkulator SHA-256</h2>
+
+            <form id="obrazec">
+                <label for="nacin">Vrsta vnosa</label>
+                <select id="nacin">
+                    <option value="besedilo">Besedilo</option>
+                    <option value="datoteka">Datoteka</option>
+                </select>
+
+                <div id="besedilo-ovoj">
+                    <label for="besedilo">Besedilo</label>
+                    <textarea id="besedilo" rows="7" maxlength="200000"
+                              spellcheck="false"
+                              placeholder="Vnesi besedilo"></textarea>
+                    <p>
+                        Uporablja se UTF-8. Presledki, velikost črk
+                        in prelomi vrstic vplivajo na rezultat.
+                        Tudi prazno besedilo ima veljaven odtis.
+                    </p>
+                </div>
+
+                <div id="datoteka-ovoj" hidden>
+                    <label for="datoteka">Izberi datoteko</label>
+                    <input id="datoteka" type="file" disabled>
+                    <p>Največja dovoljena velikost je 50 MiB.</p>
+                </div>
+
+                <label for="pricakovani">
+                    Pričakovani SHA-256 — neobvezno
+                </label>
+                <input id="pricakovani" type="text" maxlength="64"
+                       autocomplete="off" spellcheck="false"
+                       placeholder="64 šestnajstiških znakov">
+
+                <div class="gumbi">
+                    <button id="izracunaj" type="submit">
+                        Izračunaj SHA-256
+                    </button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <p id="status" role="status" aria-live="polite"></p>
+
+            <div id="izhod" hidden>
+                <label for="odtis">Rezultat SHA-256</label>
+                <textarea id="odtis" rows="3"
+                          readonly spellcheck="false"></textarea>
+
+                <p id="primerjava" role="status"></p>
+
+                <button id="kopiraj" type="button">
+                    Kopiraj odtis
+                </button>
+            </div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kaj je SHA-256?</h2>
+            <p>
+                SHA-256 iz podatkov izračuna 256-bitni odtis,
+                prikazan s 64 šestnajstiškimi znaki.
+                Enaki podatki vedno dajo enak rezultat.
+            </p>
+            <p>
+                Uporablja se na primer za preverjanje, ali se prenesena
+                datoteka ujema z odtisom, ki ga objavi njen ponudnik.
+                Pričakovani odtis pridobi iz zaupanja vrednega vira.
+            </p>
+            <p>
+                SHA-256 ni šifriranje in nima funkcije za dekodiranje.
+                Sam po sebi tudi ni ustrezen način shranjevanja gesel.
+            </p>
+            <p>
+                Datoteka se obdeluje v tvojem brskalniku in je ta stran
+                ne pošilja na strežnik. Pri datoteki se upoštevajo njeni
+                bajti, ne njeno ime.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Kalkulator SHA-256</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const nacin = document.getElementById("nacin");
+        const besedilo = document.getElementById("besedilo");
+        const datoteka = document.getElementById("datoteka");
+        const pricakovani = document.getElementById("pricakovani");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+        const izhod = document.getElementById("izhod");
+        const odtis = document.getElementById("odtis");
+        const primerjava = document.getElementById("primerjava");
+        const kopiraj = document.getElementById("kopiraj");
+
+        let obdelava = false;
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            status.textContent = "";
+            odtis.value = "";
+            primerjava.textContent = "";
+            primerjava.className = "";
+            izhod.hidden = true;
+        }
+
+        function posodobiPolja() {
+            const datotecniNacin = nacin.value === "datoteka";
+
+            document.getElementById("besedilo-ovoj").hidden = datotecniNacin;
+            document.getElementById("datoteka-ovoj").hidden = !datotecniNacin;
+
+            besedilo.disabled = obdelava || datotecniNacin;
+            datoteka.disabled = obdelava || !datotecniNacin;
+            datoteka.required = datotecniNacin;
+        }
+
+        function zakleni(zaklenjeno) {
+            obdelava = zaklenjeno;
+
+            for (const element of obrazec.elements) {
+                element.disabled = zaklenjeno;
+            }
+
+            kopiraj.disabled = zaklenjeno;
+            posodobiPolja();
+            obrazec.setAttribute("aria-busy", String(zaklenjeno));
+        }
+
+        function preveriOdtis(vnos) {
+            const zapis = vnos.trim();
+
+            if (zapis && !/^[a-f0-9]{64}$/i.test(zapis)) {
+                throw new Error(
+                    "Pričakovani SHA-256 mora vsebovati natanko " +
+                    "64 znakov od 0 do 9 in od a do f."
+                );
+            }
+
+            return zapis.toLowerCase();
+        }
+
+        function prikaziPrimerjavo() {
+            primerjava.textContent = "";
+            primerjava.className = "";
+
+            const zapis = preveriOdtis(pricakovani.value);
+
+            if (!zapis || !odtis.value) return;
+
+            const ujema = zapis === odtis.value;
+
+            primerjava.textContent = ujema
+                ? "Odtisa se ujemata."
+                : "Odtisa se NE ujemata.";
+
+            primerjava.className = ujema
+                ? "sha-ujemanje"
+                : "sha-neujemanje";
+        }
+
+        obrazec.addEventListener("submit", async event => {
+            event.preventDefault();
+            if (obdelava) return;
+
+            pocistiRezultat();
+
+            try {
+                if (!window.crypto?.subtle) {
+                    throw new Error(
+                        "SHA-256 ni na voljo. Objavljeno stran odpri prek " +
+                        "HTTPS; pri lokalnem razvoju uporabi localhost."
+                    );
+                }
+
+                preveriOdtis(pricakovani.value);
+
+                const datotecniNacin = nacin.value === "datoteka";
+                const izbrana = datoteka.files[0];
+
+                if (datotecniNacin && !izbrana) {
+                    throw new Error("Izberi datoteko.");
+                }
+
+                if (datotecniNacin &&
+                    izbrana.size > 50 * 1024 * 1024) {
+                    throw new Error("Največja velikost datoteke je 50 MiB.");
+                }
+
+                if (!datotecniNacin && besedilo.value.length > 200000) {
+                    throw new Error("Vnesi največ 200.000 znakov.");
+                }
+
+                zakleni(true);
+                status.textContent = "Izračunavam odtis…";
+
+                // Omogoči osvežitev prikaza pred obdelavo.
+                await new Promise(resolve => setTimeout(resolve, 0));
+
+                const bajti = datotecniNacin
+                    ? await izbrana.arrayBuffer()
+                    : new TextEncoder().encode(besedilo.value);
+
+                const rezultat = await crypto.subtle.digest(
+                    "SHA-256",
+                    bajti
+                );
+
+                odtis.value = Array.from(
+                    new Uint8Array(rezultat),
+                    bajt => bajt.toString(16).padStart(2, "0")
+                ).join("");
+
+                izhod.hidden = false;
+                prikaziPrimerjavo();
+
+                status.textContent = datotecniNacin
+                    ? "Odtis je izračunan za datoteko: " + izbrana.name
+                    : "Odtis besedila je izračunan.";
+            } catch (error) {
+                pocistiRezultat();
+                napaka.textContent =
+                    error.message || "Izračun ni uspel.";
+            } finally {
+                zakleni(false);
+            }
+        });
+
+        kopiraj.addEventListener("click", async () => {
+            try {
+                await navigator.clipboard.writeText(odtis.value);
+                status.textContent = "Odtis je kopiran.";
+            } catch {
+                odtis.focus();
+                odtis.select();
+
+                status.textContent =
+                    "Samodejno kopiranje ni uspelo. " +
+                    "Odtis je označen; kopiraj ga ročno.";
+            }
+        });
+
+        nacin.addEventListener("change", () => {
+            pocistiRezultat();
+            posodobiPolja();
+        });
+
+        besedilo.addEventListener("input", pocistiRezultat);
+        datoteka.addEventListener("change", pocistiRezultat);
+
+        pricakovani.addEventListener("input", () => {
+            napaka.textContent = "";
+
+            try {
+                prikaziPrimerjavo();
+            } catch (error) {
+                primerjava.textContent = "";
+                primerjava.className = "";
+                napaka.textContent = error.message;
+            }
+        });
+
+        obrazec.addEventListener("reset", () => {
+            pocistiRezultat();
+            setTimeout(posodobiPolja, 0);
+        });
+
+        posodobiPolja();
+    </script>
+</body>
+</html>

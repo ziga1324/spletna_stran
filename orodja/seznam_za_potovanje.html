@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Seznam za potovanje | Sidebit</title>
+    <meta name="description"
+          content="Pripravi seznam za potovanje in spremljaj, katere stvari si že spakiral.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Seznam za potovanje</h1>
+        <p>Pripravi prtljago in označi stvari, ki so že spakirane.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Pripravi osnovni seznam</h2>
+
+            <form id="pot-obrazec">
+                <label for="pot-ime">Ime potovanja — neobvezno</label>
+                <input id="pot-ime" type="text" maxlength="100"
+                       placeholder="Na primer: izlet v Ljubljano">
+
+                <label for="pot-dnevi">Število dni</label>
+                <input id="pot-dnevi" type="number"
+                       min="1" max="365" step="1" value="3" required>
+
+                <label for="pot-vrsta">Vrsta potovanja</label>
+                <select id="pot-vrsta">
+                    <option value="splosno">Splošno potovanje</option>
+                    <option value="morje">Morje</option>
+                    <option value="gore">Pohodništvo</option>
+                    <option value="poslovno">Poslovno potovanje</option>
+                </select>
+
+                <button type="submit">Dodaj osnovni seznam</button>
+            </form>
+
+            <p class="pot-navodilo">
+                Osnovni seznam dopolni obstoječe predmete.
+                Predmeti z enakim imenom v isti kategoriji se ne podvajajo.
+                Predlagane količine lahko spremeniš.
+            </p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Dodaj svoj predmet</h2>
+
+            <form id="pot-predmet-obrazec">
+                <label for="pot-predmet">Predmet</label>
+                <input id="pot-predmet" type="text"
+                       maxlength="100" required
+                       placeholder="Na primer: polnilec">
+
+                <div class="pot-polja">
+                    <div>
+                        <label for="pot-kolicina">Količina</label>
+                        <input id="pot-kolicina" type="number"
+                               min="1" max="1000" step="1"
+                               value="1" required>
+                    </div>
+
+                    <div>
+                        <label for="pot-kategorija">Kategorija</label>
+                        <select id="pot-kategorija"></select>
+                    </div>
+                </div>
+
+                <button type="submit">Dodaj predmet</button>
+            </form>
+
+            <p id="pot-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="kalkulator">
+            <h2 id="pot-naslov">Tvoj seznam</h2>
+
+            <progress id="pot-napredek" max="100" value="0"
+                      aria-label="Delež spakiranih postavk"></progress>
+
+            <p id="pot-povzetek" aria-live="polite"></p>
+
+            <div id="pot-seznam"></div>
+
+            <div class="gumbi">
+                <button type="button" id="pot-prenesi">
+                    Prenesi seznam
+                </button>
+                <button type="button" id="pot-pocisti">
+                    Počisti seznam
+                </button>
+            </div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Pred odhodom</h2>
+            <p>
+                Seznam je izhodišče. Prilagodi ga vremenu, nastanitvi,
+                dejavnostim in možnosti pranja oblačil.
+                Preveri tudi dokumente in druge zahteve za svoj cilj.
+            </p>
+            <p>
+                Oznaka »spakirano« velja za celotno navedeno količino predmeta.
+                Napredek se računa po postavkah. Podatki se shranijo
+                v ta brskalnik, če je lokalno shranjevanje omogočeno.
+                Ne sinhronizirajo se med napravami.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const KLJUC = "sidebit-seznam-potovanje-v1";
+        const kategorije = {
+            dokumenti: "Dokumenti in denar",
+            oblacila: "Oblačila",
+            higiena: "Higiena in osebne potrebščine",
+            elektronika: "Elektronika",
+            oprema: "Oprema",
+            drugo: "Drugo"
+        };
+
+        const ime = document.getElementById("pot-ime");
+        const dnevi = document.getElementById("pot-dnevi");
+        const vrsta = document.getElementById("pot-vrsta");
+        const kategorijaVnos = document.getElementById("pot-kategorija");
+        const status = document.getElementById("pot-status");
+        const seznam = document.getElementById("pot-seznam");
+
+        let podatki = {
+            ime: "",
+            dnevi: 3,
+            vrsta: "splosno",
+            predmeti: []
+        };
+
+        let shrambaNaVoljo = true;
+
+        function veljavenPredmet(p) {
+            return p &&
+                typeof p.id === "string" &&
+                typeof p.ime === "string" &&
+                p.ime.trim().length > 0 && p.ime.length <= 100 &&
+                Object.hasOwn(kategorije, p.kategorija) &&
+                Number.isInteger(p.kolicina) &&
+                p.kolicina >= 1 && p.kolicina <= 1000 &&
+                typeof p.spakirano === "boolean";
+        }
+
+        try {
+            const shranjeno = localStorage.getItem(KLJUC);
+
+            if (shranjeno !== null) {
+                const p = JSON.parse(shranjeno);
+
+                if (!p ||
+                    typeof p.ime !== "string" || p.ime.length > 100 ||
+                    !Number.isInteger(p.dnevi) ||
+                    p.dnevi < 1 || p.dnevi > 365 ||
+                    !["splosno", "morje", "gore", "poslovno"].includes(p.vrsta) ||
+                    !Array.isArray(p.predmeti) ||
+                    p.predmeti.length > 500 ||
+                    !p.predmeti.every(veljavenPredmet) ||
+                    new Set(p.predmeti.map(x => x.id)).size !== p.predmeti.length) {
+                    throw new Error("Neveljavni podatki.");
+                }
+
+                podatki = p;
+            }
+        } catch {
+            shrambaNaVoljo = false;
+            status.textContent =
+                "Shranjeni podatki niso dostopni. Nov seznam lahko " +
+                "uporabljaš do zaprtja strani in ga preneseš.";
+        }
+
+        ime.value = podatki.ime;
+        dnevi.value = podatki.dnevi;
+        vrsta.value = podatki.vrsta;
+
+        for (const [vrednost, naziv] of Object.entries(kategorije)) {
+            const option = document.createElement("option");
+            option.value = vrednost;
+            option.textContent = naziv;
+            kategorijaVnos.appendChild(option);
+        }
+
+        function shrani(sporocilo) {
+            if (shrambaNaVoljo) {
+                try {
+                    localStorage.setItem(KLJUC, JSON.stringify(podatki));
+                } catch {
+                    shrambaNaVoljo = false;
+                }
+            }
+
+            status.textContent = shrambaNaVoljo
+                ? sporocilo
+                : `${sporocilo} Shranjevanje ni na voljo; prenesi seznam.`;
+        }
+
+        function ustvariId() {
+            return globalThis.crypto?.randomUUID
+                ? crypto.randomUUID()
+                : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        }
+
+        function obstaja(imePredmeta, kategorija) {
+            const normalizirano = imePredmeta.trim().toLocaleLowerCase("sl-SI");
+
+            return podatki.predmeti.some(p =>
+                p.kategorija === kategorija &&
+                p.ime.trim().toLocaleLowerCase("sl-SI") === normalizirano
+            );
+        }
+
+        function posodobiNapredek() {
+            const skupaj = podatki.predmeti.length;
+            const spakirano = podatki.predmeti.filter(p => p.spakirano).length;
+
+            document.getElementById("pot-napredek").value =
+                skupaj ? spakirano / skupaj * 100 : 0;
+
+            document.getElementById("pot-povzetek").textContent =
+                `Spakirano: ${spakirano} od ${skupaj} postavk.`;
+        }
+
+        function narisi() {
+            seznam.replaceChildren();
+
+            document.getElementById("pot-naslov").textContent =
+                podatki.ime || "Tvoj seznam";
+
+            posodobiNapredek();
+
+            if (!podatki.predmeti.length) {
+                const p = document.createElement("p");
+                p.textContent = "Dodaj osnovni seznam ali svoje predmete.";
+                seznam.appendChild(p);
+                return;
+            }
+
+            for (const [kategorija, naziv] of Object.entries(kategorije)) {
+                const predmeti = podatki.predmeti.filter(
+                    p => p.kategorija === kategorija
+                );
+
+                if (!predmeti.length) continue;
+
+                const skupina = document.createElement("section");
+                skupina.className = "pot-skupina";
+
+                const naslov = document.createElement("h3");
+                naslov.textContent = naziv;
+
+                const ul = document.createElement("ul");
+
+                for (const predmet of predmeti) {
+                    const li = document.createElement("li");
+                    li.className = "pot-predmet";
+                    li.classList.toggle("pot-spakirano", predmet.spakirano);
+
+                    const label = document.createElement("label");
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.checked = predmet.spakirano;
+
+                    const besedilo = document.createElement("span");
+                    besedilo.textContent = predmet.ime;
+                    label.append(checkbox, besedilo);
+
+                    checkbox.addEventListener("change", () => {
+                        predmet.spakirano = checkbox.checked;
+                        li.classList.toggle("pot-spakirano", predmet.spakirano);
+                        posodobiNapredek();
+                        shrani("Oznaka predmeta je posodobljena.");
+                    });
+
+                    const kolicina = document.createElement("input");
+                    kolicina.type = "number";
+                    kolicina.min = "1";
+                    kolicina.max = "1000";
+                    kolicina.step = "1";
+                    kolicina.value = predmet.kolicina;
+                    kolicina.setAttribute(
+                        "aria-label",
+                        `Količina: ${predmet.ime}`
+                    );
+
+                    kolicina.addEventListener("change", () => {
+                        const nova = kolicina.valueAsNumber;
+
+                        if (!Number.isInteger(nova) || nova < 1 || nova > 1000) {
+                            kolicina.value = predmet.kolicina;
+                            status.textContent = "Količina mora biti med 1 in 1000.";
+                            return;
+                        }
+
+                        if (nova !== predmet.kolicina) {
+                            predmet.kolicina = nova;
+                            predmet.spakirano = false;
+                            checkbox.checked = false;
+                            li.classList.remove("pot-spakirano");
+                            posodobiNapredek();
+                            shrani(
+                                "Količina je spremenjena. Ponovno preveri, ali je vse spakirano."
+                            );
+                        }
+                    });
+
+                    const izbrisi = document.createElement("button");
+                    izbrisi.type = "button";
+                    izbrisi.textContent = "Izbriši";
+                    izbrisi.setAttribute(
+                        "aria-label",
+                        `Izbriši predmet: ${predmet.ime}`
+                    );
+
+                    izbrisi.addEventListener("click", () => {
+                        podatki.predmeti = podatki.predmeti.filter(
+                            p => p.id !== predmet.id
+                        );
+                        narisi();
+                        shrani("Predmet je izbrisan.");
+                    });
+
+                    li.append(label, kolicina, izbrisi);
+                    ul.appendChild(li);
+                }
+
+                skupina.append(naslov, ul);
+                seznam.appendChild(skupina);
+            }
+        }
+
+        function shraniNastavitve() {
+            const stevilo = dnevi.valueAsNumber;
+
+            if (!Number.isInteger(stevilo) || stevilo < 1 || stevilo > 365) {
+                status.textContent = "Število dni mora biti med 1 in 365.";
+                return false;
+            }
+
+            podatki.ime = ime.value.trim();
+            podatki.dnevi = stevilo;
+            podatki.vrsta = vrsta.value;
+            return true;
+        }
+
+        for (const polje of [ime, dnevi, vrsta]) {
+            polje.addEventListener("change", () => {
+                if (shraniNastavitve()) {
+                    document.getElementById("pot-naslov").textContent =
+                        podatki.ime || "Tvoj seznam";
+                    shrani("Nastavitve potovanja so shranjene.");
+                }
+            });
+        }
+
+        document.getElementById("pot-obrazec")
+            .addEventListener("submit", event => {
+                event.preventDefault();
+                if (!shraniNastavitve()) return;
+
+                const d = podatki.dnevi;
+
+                const osnovni = [
+                    ["Osebni dokument", 1, "dokumenti"],
+                    ["Denarnica", 1, "dokumenti"],
+                    ["Potrdila o rezervacijah", 1, "dokumenti"],
+                    ["Majica", Math.min(d, 7), "oblacila"],
+                    ["Spodnje perilo", Math.min(d, 7), "oblacila"],
+                    ["Par nogavic", Math.min(d, 7), "oblacila"],
+                    ["Hlače", Math.max(1, Math.ceil(Math.min(d, 14) / 3)), "oblacila"],
+                    ["Topel zgornji del", 1, "oblacila"],
+                    ["Zobna ščetka", 1, "higiena"],
+                    ["Zobna pasta", 1, "higiena"],
+                    ["Osebne potrebščine", 1, "higiena"],
+                    ["Telefon", 1, "elektronika"],
+                    ["Polnilec", 1, "elektronika"],
+                    ["Steklenica za vodo", 1, "oprema"]
+                ];
+
+                const dodatni = {
+                    splosno: [],
+                    morje: [
+                        ["Kopalke", 2, "oblacila"],
+                        ["Brisača za plažo", 1, "oprema"],
+                        ["Zaščita pred soncem", 1, "higiena"],
+                        ["Pokrivalo", 1, "oblacila"]
+                    ],
+                    gore: [
+                        ["Pohodniški čevlji", 1, "oprema"],
+                        ["Nahrbtnik", 1, "oprema"],
+                        ["Dežna jakna", 1, "oblacila"],
+                        ["Zemljevid poti", 1, "oprema"],
+                        ["Čelna svetilka", 1, "oprema"]
+                    ],
+                    poslovno: [
+                        ["Poslovna oblačila", 1, "oblacila"],
+                        ["Prenosnik", 1, "elektronika"],
+                        ["Polnilec za prenosnik", 1, "elektronika"],
+                        ["Beležka", 1, "drugo"]
+                    ]
+                };
+
+                const novi = [...osnovni, ...dodatni[podatki.vrsta]]
+                    .filter(([naziv, , kategorija]) => !obstaja(naziv, kategorija));
+
+                if (podatki.predmeti.length + novi.length > 500) {
+                    status.textContent =
+                        "Seznam lahko vsebuje največ 500 predmetov.";
+                    return;
+                }
+
+                for (const [naziv, kolicina, kategorija] of novi) {
+                    podatki.predmeti.push({
+                        id: ustvariId(),
+                        ime: naziv,
+                        kolicina,
+                        kategorija,
+                        spakirano: false
+                    });
+                }
+
+                narisi();
+                shrani(`Dodane postavke: ${novi.length}.`);
+            });
+
+        document.getElementById("pot-predmet-obrazec")
+            .addEventListener("submit", event => {
+                event.preventDefault();
+
+                const vnos = document.getElementById("pot-predmet");
+                const naziv = vnos.value.trim();
+                const kolicina = document.getElementById("pot-kolicina")
+                    .valueAsNumber;
+                const kategorija = kategorijaVnos.value;
+
+                if (!naziv || !Number.isInteger(kolicina) ||
+                    kolicina < 1 || kolicina > 1000) {
+                    status.textContent = "Vnesi predmet in količino med 1 in 1000.";
+                    return;
+                }
+
+                if (obstaja(naziv, kategorija)) {
+                    status.textContent =
+                        "Predmet že obstaja v tej kategoriji. Spremeni njegovo količino.";
+                    return;
+                }
+
+                if (podatki.predmeti.length >= 500) {
+                    status.textContent = "Dosežena je omejitev 500 predmetov.";
+                    return;
+                }
+
+                podatki.predmeti.push({
+                    id: ustvariId(),
+                    ime: naziv,
+                    kolicina,
+                    kategorija,
+                    spakirano: false
+                });
+
+                narisi();
+                shrani("Predmet je dodan.");
+                vnos.value = "";
+                vnos.focus();
+            });
+
+        document.getElementById("pot-pocisti")
+            .addEventListener("click", () => {
+                if (!podatki.predmeti.length) return;
+
+                if (!confirm("Izbrišem celoten seznam predmetov?")) return;
+
+                podatki.predmeti = [];
+                narisi();
+                shrani("Seznam je počiščen.");
+            });
+
+        document.getElementById("pot-prenesi")
+            .addEventListener("click", () => {
+                if (!shraniNastavitve()) return;
+
+                const vrstice = [
+                    podatki.ime || "Seznam za potovanje",
+                    `Število dni: ${podatki.dnevi}`,
+                    ""
+                ];
+
+                for (const [kategorija, naziv] of Object.entries(kategorije)) {
+                    const predmeti = podatki.predmeti.filter(
+                        p => p.kategorija === kategorija
+                    );
+
+                    if (!predmeti.length) continue;
+
+                    vrstice.push(naziv.toUpperCase());
+
+                    for (const p of predmeti) {
+                        vrstice.push(
+                            `${p.spakirano ? "[x]" : "[ ]"} ${p.ime} — ${p.kolicina}`
+                        );
+                    }
+
+                    vrstice.push("");
+                }
+
+                const blob = new Blob(
+                    ["\uFEFF", vrstice.join("\n")],
+                    { type: "text/plain;charset=utf-8" }
+                );
+
+                const url = URL.createObjectURL(blob);
+                const povezava = document.createElement("a");
+                povezava.href = url;
+                povezava.download = "seznam-za-potovanje.txt";
+                document.body.appendChild(povezava);
+                povezava.click();
+                povezava.remove();
+
+                setTimeout(() => URL.revokeObjectURL(url), 30000);
+                shrani("Seznam je pripravljen za prenos.");
+            });
+
+        narisi();
+    </script>
+</body>
+</html>

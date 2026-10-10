@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Kodiranje in dekodiranje besedila za uporabo v URL-jih.">
+    <title>Kodiranje in dekodiranje URL</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>Kodiranje in dekodiranje URL</h1>
+        <p>Pretvori posebne znake v zapis za URL in nazaj.</p>
+        <a href="../index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Pretvornik URL</h2>
+
+            <form id="obrazec">
+                <label for="nacin">Vrsta pretvorbe</label>
+                <select id="nacin">
+                    <option value="kodiraj">Kodiraj besedilo</option>
+                    <option value="dekodiraj">Dekodiraj besedilo</option>
+                </select>
+
+                <label for="zapis">Način zapisa</label>
+                <select id="zapis">
+                    <option value="komponenta">
+                        Vrednost parametra ali del poti — presledek %20
+                    </option>
+                    <option value="obrazec">
+                        Vrednost obrazčnega parametra — presledek +
+                    </option>
+                </select>
+
+                <label id="oznaka" for="vnos">Besedilo za kodiranje</label>
+                <textarea id="vnos" rows="7" maxlength="200000"
+                          spellcheck="false"
+                          placeholder="Na primer čaj & kava"></textarea>
+
+                <div class="gumbi">
+                    <button type="submit">Pretvori</button>
+                    <button id="primer" type="button">Vstavi primer</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <p id="status" role="status" aria-live="polite"></p>
+
+            <div id="izhod" hidden>
+                <label for="rezultat-url">Rezultat</label>
+                <textarea id="rezultat-url" rows="7"
+                          readonly spellcheck="false"></textarea>
+
+                <div class="gumbi">
+                    <button id="kopiraj" type="button">Kopiraj rezultat</button>
+                    <button id="obrni" type="button">
+                        Pretvori rezultat nazaj
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kdaj uporabiti kodiranje URL?</h2>
+            <p>
+                Ko v URL dodajaš vrednost parametra, lahko posebni znaki
+                spremenijo njegov pomen. Znak & na primer običajno
+                ločuje parametre, zato ga znotraj vrednosti kodiramo.
+            </p>
+
+            <p>
+                Primer: čaj & kava postane
+                <code>%C4%8Daj%20%26%20kava</code>.
+            </p>
+
+            <p>
+                Pri obrazčnem načinu se presledek zapiše kot +.
+                Dejanski znak + se kodira kot %2B.
+                Pri dekodiranju običajne komponente znak + ostane plus.
+            </p>
+
+            <p>
+                Orodje pretvarja posamezno vrednost, ne celotne strukture
+                URL-ja. Če vpišeš celoten spletni naslov, bo kodiralo tudi
+                njegove ločilne znake, kot so :, /, ? in &.
+            </p>
+
+            <p>
+                Kodiranje ni šifriranje. Obdelava poteka v brskalniku.
+                Podprtih je največ 200.000 znakov vnosa.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Pretvornik URL</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const nacin = document.getElementById("nacin");
+        const zapis = document.getElementById("zapis");
+        const vnos = document.getElementById("vnos");
+        const oznaka = document.getElementById("oznaka");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+        const izhod = document.getElementById("izhod");
+        const rezultat = document.getElementById("rezultat-url");
+
+        let zadnjiNacin = null;
+        let zadnjiZapis = null;
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            status.textContent = "";
+            rezultat.value = "";
+            izhod.hidden = true;
+            zadnjiNacin = null;
+            zadnjiZapis = null;
+        }
+
+        function posodobi() {
+            const kodiranje = nacin.value === "kodiraj";
+
+            oznaka.textContent = kodiranje
+                ? "Besedilo za kodiranje"
+                : "Besedilo za dekodiranje";
+
+            vnos.placeholder = kodiranje
+                ? "Na primer čaj & kava"
+                : "Na primer %C4%8Daj%20%26%20kava";
+
+            pocistiRezultat();
+        }
+
+        function kodiraj(besedilo, obrazcno) {
+            if (obrazcno) {
+                const parametri = new URLSearchParams();
+                parametri.set("v", besedilo);
+
+                // Odstrani samo začetni del "v=".
+                return parametri.toString().slice(2);
+            }
+
+            // Strožje kodiranje komponente po RFC 3986.
+            return encodeURIComponent(besedilo).replace(
+                /[!'()*]/g,
+                znak => "%" + znak.charCodeAt(0)
+                    .toString(16).toUpperCase()
+            );
+        }
+
+        function dekodiraj(besedilo, obrazcno) {
+            const pripravljeno = obrazcno
+                ? besedilo.replace(/\+/g, " ")
+                : besedilo;
+
+            return decodeURIComponent(pripravljeno);
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocistiRezultat();
+
+            try {
+                if (vnos.value.length > 200000) {
+                    throw new Error("Vnesi največ 200.000 znakov.");
+                }
+
+                const kodiranje = nacin.value === "kodiraj";
+                const obrazcno = zapis.value === "obrazec";
+
+                rezultat.value = kodiranje
+                    ? kodiraj(vnos.value, obrazcno)
+                    : dekodiraj(vnos.value, obrazcno);
+
+                zadnjiNacin = nacin.value;
+                zadnjiZapis = zapis.value;
+                izhod.hidden = false;
+
+                status.textContent = rezultat.value === ""
+                    ? "Pretvorba je končana. Rezultat je prazen."
+                    : "Pretvorba je končana.";
+            } catch (error) {
+                napaka.textContent = error instanceof URIError
+                    ? "Neveljaven zapis. Preveri znake % in kodiranje UTF-8. " +
+                      "Pri kodiranju preveri tudi pravilnost znakov Unicode."
+                    : error.message;
+            }
+        });
+
+        document.getElementById("kopiraj").addEventListener("click", async () => {
+            try {
+                await navigator.clipboard.writeText(rezultat.value);
+                status.textContent = "Rezultat je kopiran.";
+            } catch {
+                rezultat.focus();
+                rezultat.select();
+
+                status.textContent =
+                    "Samodejno kopiranje ni uspelo. " +
+                    "Rezultat je označen; kopiraj ga ročno.";
+            }
+        });
+
+        document.getElementById("obrni").addEventListener("click", () => {
+            const besedilo = rezultat.value;
+            const novNacin = zadnjiNacin === "kodiraj"
+                ? "dekodiraj"
+                : "kodiraj";
+            const prejsnjiZapis = zadnjiZapis;
+
+            if (besedilo.length > 200000) {
+                napaka.textContent =
+                    "Rezultat presega omejitev vnosa 200.000 znakov.";
+                return;
+            }
+
+            nacin.value = novNacin;
+            zapis.value = prejsnjiZapis;
+            vnos.value = besedilo;
+
+            posodobi();
+            obrazec.requestSubmit();
+        });
+
+        document.getElementById("primer").addEventListener("click", () => {
+            if (nacin.value === "kodiraj") {
+                vnos.value = "čaj & kava + piškoti";
+            } else {
+                vnos.value = zapis.value === "obrazec"
+                    ? "%C4%8Daj+%26+kava+%2B+pi%C5%A1koti"
+                    : "%C4%8Daj%20%26%20kava%20%2B%20pi%C5%A1koti";
+            }
+
+            obrazec.requestSubmit();
+        });
+
+        nacin.addEventListener("change", posodobi);
+        zapis.addEventListener("change", pocistiRezultat);
+        vnos.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("reset", () => {
+            pocistiRezultat();
+            setTimeout(posodobi, 0);
+        });
+
+        posodobi();
+    </script>
+</body>
+</html>

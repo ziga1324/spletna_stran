@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Preizkusi regularni izraz, poišči ujemanja in preveri zajemne skupine.">
+    <title>Preizkuševalnik regularnih izrazov</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>Preizkuševalnik regularnih izrazov</h1>
+        <p>Poišči vzorce v besedilu in preveri njihova ujemanja.</p>
+        <a href="../index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Preizkusi izraz</h2>
+
+            <form id="obrazec">
+                <label for="vzorec">Regularni izraz</label>
+                <input id="vzorec" type="text" maxlength="1000"
+                       value="\d+" autocomplete="off" spellcheck="false"
+                       aria-describedby="navodila">
+
+                <p id="navodila">
+                    Vnesi samo vzorec, brez začetne in končne poševnice.
+                    Primer: \d+ poišče eno ali več števk.
+                </p>
+
+                <fieldset>
+                    <legend>Zastavice</legend>
+
+                    <label class="moznost">
+                        <input id="g" type="checkbox" checked>
+                        g — vsa ujemanja
+                    </label>
+
+                    <label class="moznost">
+                        <input id="i" type="checkbox">
+                        i — ne razlikuj velikih in malih črk
+                    </label>
+
+                    <label class="moznost">
+                        <input id="m" type="checkbox">
+                        m — ^ in $ veljata za posamezne vrstice
+                    </label>
+
+                    <label class="moznost">
+                        <input id="s" type="checkbox">
+                        s — pika ujame tudi novo vrstico
+                    </label>
+
+                    <label class="moznost">
+                        <input id="u" type="checkbox" checked>
+                        u — način Unicode
+                    </label>
+                </fieldset>
+
+                <label for="besedilo">Besedilo za preverjanje</label>
+                <textarea id="besedilo" rows="8" maxlength="50000"
+                          spellcheck="false">Danes imam 3 naloge in 12 primerov.</textarea>
+
+                <div class="gumbi">
+                    <button id="preveri" type="submit">Preizkusi</button>
+                    <button id="primer" type="button">Primer z e-pošto</button>
+                    <button type="reset">Ponastavi</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <p id="status" role="status"></p>
+
+            <div id="rezultat" class="rezultat" aria-live="polite"></div>
+            <div id="oznaceno" class="regex-besedilo" hidden></div>
+            <div id="ujemanja"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Osnovni vzorci</h2>
+            <ul>
+                <li><code>\d+</code> — ena ali več števk.</li>
+                <li><code>[A-Za-z]+</code> — ena ali več črk od A do Z.</li>
+                <li><code>mačka|pes</code> — ena od navedenih besed.</li>
+                <li><code>^Pozdrav</code> — besedilo se začne s Pozdrav.</li>
+                <li><code>(\d+)-(\d+)</code> — dve zajemni skupini.</li>
+            </ul>
+
+            <p>
+                Orodje uporablja regularne izraze JavaScript.
+                Rezultati se lahko razlikujejo od drugih jezikov.
+                Položaji se začnejo z 0 in štejejo kodne enote UTF-16.
+            </p>
+
+            <p>
+                Prikaže največ 500 ujemanj. Ničelno dolga ujemanja
+                so navedena v seznamu, v besedilu pa nimajo barvnega
+                poudarka. Obdelava poteka v tvojem brskalniku.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Preizkuševalnik regularnih izrazov</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const vzorec = document.getElementById("vzorec");
+        const besedilo = document.getElementById("besedilo");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+        const rezultat = document.getElementById("rezultat");
+        const oznaceno = document.getElementById("oznaceno");
+        const seznam = document.getElementById("ujemanja");
+        const preveri = document.getElementById("preveri");
+
+        let worker = null;
+        let casovnik = null;
+
+        function ustavi() {
+            if (worker) worker.terminate();
+            if (casovnik !== null) clearTimeout(casovnik);
+
+            worker = null;
+            casovnik = null;
+            preveri.disabled = false;
+            status.textContent = "";
+        }
+
+        function pocisti() {
+            ustavi();
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+            oznaceno.replaceChildren();
+            oznaceno.hidden = true;
+            seznam.replaceChildren();
+        }
+
+        function prikazi(podatki, izvirnik) {
+            rezultat.textContent =
+                `Najdenih ujemanj: ${podatki.ujemanja.length}.` +
+                (podatki.omejeno
+                    ? " Prikazanih je samo prvih 500."
+                    : "");
+
+            oznaceno.hidden = false;
+            let zadnji = 0;
+
+            for (const ujemanje of podatki.ujemanja) {
+                if (ujemanje.besedilo.length === 0) continue;
+
+                oznaceno.appendChild(document.createTextNode(
+                    izvirnik.slice(zadnji, ujemanje.indeks)
+                ));
+
+                const mark = document.createElement("mark");
+                mark.textContent = ujemanje.besedilo;
+                oznaceno.appendChild(mark);
+
+                zadnji = ujemanje.indeks + ujemanje.besedilo.length;
+            }
+
+            oznaceno.appendChild(document.createTextNode(
+                izvirnik.slice(zadnji)
+            ));
+
+            if (!izvirnik) {
+                oznaceno.textContent = "(prazno besedilo)";
+            }
+
+            podatki.ujemanja.forEach((ujemanje, indeks) => {
+                const details = document.createElement("details");
+                const summary = document.createElement("summary");
+
+                summary.textContent =
+                    `Ujemanje ${indeks + 1} · položaj ${ujemanje.indeks} · ` +
+                    `dolžina ${ujemanje.besedilo.length}`;
+
+                const vsebina = document.createElement("pre");
+                vsebina.textContent = JSON.stringify(
+                    ujemanje.besedilo
+                );
+
+                details.append(summary, vsebina);
+
+                ujemanje.skupine.forEach((vrednost, i) => {
+                    const p = document.createElement("p");
+                    p.textContent =
+                        `Skupina ${i + 1}: ` +
+                        (vrednost === null
+                            ? "(ni sodelovala)"
+                            : JSON.stringify(vrednost));
+                    details.appendChild(p);
+                });
+
+                for (const [ime, vrednost] of Object.entries(
+                    ujemanje.poimenovane || {}
+                )) {
+                    const p = document.createElement("p");
+                    p.textContent =
+                        `Poimenovana skupina ${ime}: ` +
+                        (vrednost === null
+                            ? "(ni sodelovala)"
+                            : JSON.stringify(vrednost));
+                    details.appendChild(p);
+                }
+
+                seznam.appendChild(details);
+            });
+        }
+
+        const workerKoda = `
+            self.onmessage = event => {
+                try {
+                    const { vzorec, zastavice, besedilo } = event.data;
+                    const regex = new RegExp(vzorec, zastavice);
+                    const ujemanja = [];
+                    let omejeno = false;
+                    let match;
+
+                    while ((match = regex.exec(besedilo)) !== null) {
+                        if (ujemanja.length === 500) {
+                            omejeno = true;
+                            break;
+                        }
+
+                        const poimenovane = match.groups
+                            ? Object.fromEntries(
+                                Object.entries(match.groups).map(
+                                    ([ime, vrednost]) => [
+                                        ime, vrednost ?? null
+                                    ]
+                                )
+                            )
+                            : null;
+
+                        ujemanja.push({
+                            besedilo: match[0],
+                            indeks: match.index,
+                            skupine: match.slice(1).map(x => x ?? null),
+                            poimenovane
+                        });
+
+                        if (!regex.global) break;
+
+                        // Ročno napredovanje pri praznih ujemanjih.
+                        if (match[0].length === 0) {
+                            const i = regex.lastIndex;
+                            const kodnaTocka = besedilo.codePointAt(i);
+
+                            regex.lastIndex = i + (
+                                regex.unicode && kodnaTocka > 0xffff
+                                    ? 2
+                                    : 1
+                            );
+                        }
+                    }
+
+                    self.postMessage({ ujemanja, omejeno });
+                } catch (error) {
+                    self.postMessage({ napaka: error.message });
+                }
+            };
+        `;
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            const zastavice = ["g", "i", "m", "s", "u"]
+                .filter(id => document.getElementById(id).checked)
+                .join("");
+
+            const izvirnik = besedilo.value;
+            let workerURL = null;
+
+            try {
+                workerURL = URL.createObjectURL(
+                    new Blob([workerKoda], {
+                        type: "text/javascript"
+                    })
+                );
+
+                worker = new Worker(workerURL);
+                URL.revokeObjectURL(workerURL);
+                workerURL = null;
+
+                preveri.disabled = true;
+                status.textContent = "Preverjam izraz…";
+
+                worker.onmessage = event => {
+                    const podatki = event.data;
+                    ustavi();
+
+                    if (podatki.napaka) {
+                        napaka.textContent =
+                            "Neveljaven izraz: " + podatki.napaka;
+                        return;
+                    }
+
+                    prikazi(podatki, izvirnik);
+                };
+
+                worker.onerror = event => {
+                    event.preventDefault();
+                    ustavi();
+                    napaka.textContent =
+                        "Obdelave ni mogoče izvesti. Brskalnik ali " +
+                        "nastavitve strani morda blokirajo Web Worker.";
+                };
+
+                casovnik = setTimeout(() => {
+                    ustavi();
+                    napaka.textContent =
+                        "Izračun je presegel dve sekundi in je bil ustavljen. " +
+                        "Poenostavi izraz ali skrajšaj besedilo.";
+                }, 2000);
+
+                worker.postMessage({
+                    vzorec: vzorec.value,
+                    zastavice,
+                    besedilo: izvirnik
+                });
+            } catch {
+                if (workerURL) URL.revokeObjectURL(workerURL);
+                ustavi();
+                napaka.textContent =
+                    "Brskalnik ne omogoča izvajanja v ločenem delavcu.";
+            }
+        });
+
+        document.getElementById("primer").addEventListener("click", () => {
+            vzorec.value = "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}";
+
+            besedilo.value =
+                "Piši na ana@example.com ali podpora@example.org.";
+
+            document.getElementById("g").checked = true;
+            document.getElementById("i").checked = true;
+            document.getElementById("m").checked = false;
+            document.getElementById("s").checked = false;
+            document.getElementById("u").checked = true;
+
+            // En backslash v dejanskem vzorcu pred piko.
+            vzorec.value = vzorec.value.replace("\\\\.", "\\.");
+
+            obrazec.requestSubmit();
+        });
+
+        vzorec.addEventListener("input", pocisti);
+        besedilo.addEventListener("input", pocisti);
+
+        for (const id of ["g", "i", "m", "s", "u"]) {
+            document.getElementById(id).addEventListener("change", pocisti);
+        }
+
+        obrazec.addEventListener("reset", pocisti);
+        window.addEventListener("pagehide", ustavi);
+    </script>
+</body>
+</html>

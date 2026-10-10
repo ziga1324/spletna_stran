@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Točkovanje namiznih iger | Sidebit</title>
+    <meta name="description"
+          content="Beleži točke igralcev po krogih in spremljaj razvrstitev pri namiznih igrah.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Točkovanje namiznih iger</h1>
+        <p>Točke vseh igralcev in krogov na enem mestu.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Nastavitve igre</h2>
+
+            <label for="igra-ime">Ime igre — neobvezno</label>
+            <input id="igra-ime" type="text" maxlength="100"
+                   placeholder="Na primer: večer namiznih iger">
+
+            <label for="igra-pravilo">Razvrstitev</label>
+            <select id="igra-pravilo">
+                <option value="vec">Zmaga več točk</option>
+                <option value="manj">Zmaga manj točk</option>
+            </select>
+
+            <form id="igra-igralec-obrazec">
+                <label for="igra-igralec">Ime igralca</label>
+                <input id="igra-igralec" type="text"
+                       maxlength="40" required
+                       placeholder="Vnesi ime igralca">
+
+                <button type="submit" id="igra-dodaj">
+                    Dodaj igralca
+                </button>
+            </form>
+
+            <p class="igra-navodilo">
+                Dodaj od 2 do 12 igralcev pred prvim krogom.
+                Ko začneš beležiti kroge, se seznam igralcev zaklene.
+            </p>
+
+            <div id="igra-igralci"></div>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Dodaj krog</h2>
+
+            <form id="igra-krog-obrazec">
+                <div id="igra-vnosi"></div>
+                <button type="submit" id="igra-shrani-krog" disabled>
+                    Shrani krog
+                </button>
+            </form>
+
+            <p class="igra-navodilo">
+                Vnesi cele pozitivne ali negativne točke za vsakega igralca.
+                Dovoljena je tudi ničla.
+            </p>
+
+            <p id="igra-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="kalkulator">
+            <h2 id="igra-naslov">Razvrstitev</h2>
+            <ol id="igra-razvrstitev"></ol>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Pregled krogov</h2>
+
+            <div class="igra-tabela-ovitek"
+                 tabindex="0" aria-label="Tabela rezultatov, vodoravno pomična">
+                <table id="igra-tabela"></table>
+            </div>
+
+            <div class="gumbi">
+                <button type="button" id="igra-razveljavi" disabled>
+                    Odstrani zadnji krog
+                </button>
+                <button type="button" id="igra-izvoz">
+                    Prenesi CSV
+                </button>
+                <button type="button" id="igra-nova">
+                    Nova igra
+                </button>
+            </div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Točke se seštevajo skozi vse kroge.
+                Izberi, ali je boljši višji ali nižji skupni rezultat.
+                Igralci z enakim rezultatom si delijo mesto.
+                Točkovanje je splošno; pravila posamezne igre določite sami.
+            </p>
+            <p>
+                Podatki se shranijo v ta brskalnik, če je lokalno shranjevanje
+                omogočeno. Ne sinhronizirajo se med napravami.
+                Pred novo igro lahko rezultate preneseš v CSV.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const KLJUC = "sidebit-tockovanje-iger-v1";
+        const status = document.getElementById("igra-status");
+        const imeIgre = document.getElementById("igra-ime");
+        const pravilo = document.getElementById("igra-pravilo");
+        const imeIgralca = document.getElementById("igra-igralec");
+
+        let stanje = {
+            ime: "",
+            pravilo: "vec",
+            igralci: [],
+            krogi: []
+        };
+
+        let shrambaNaVoljo = true;
+
+        function veljavnoStanje(p) {
+            return p &&
+                typeof p.ime === "string" && p.ime.length <= 100 &&
+                ["vec", "manj"].includes(p.pravilo) &&
+                Array.isArray(p.igralci) && p.igralci.length <= 12 &&
+                p.igralci.every(ime =>
+                    typeof ime === "string" &&
+                    ime.trim().length > 0 && ime.length <= 40
+                ) &&
+                new Set(p.igralci.map(
+                    ime => ime.trim().toLocaleLowerCase("sl-SI")
+                )).size === p.igralci.length &&
+                Array.isArray(p.krogi) && p.krogi.length <= 1000 &&
+                (p.krogi.length === 0 || p.igralci.length >= 2) &&
+                p.krogi.every(krog =>
+                    Array.isArray(krog) &&
+                    krog.length === p.igralci.length &&
+                    krog.every(t =>
+                        Number.isInteger(t) && Math.abs(t) <= 1000000
+                    )
+                );
+        }
+
+        try {
+            const shranjeno = localStorage.getItem(KLJUC);
+
+            if (shranjeno !== null) {
+                const podatki = JSON.parse(shranjeno);
+                if (!veljavnoStanje(podatki)) {
+                    throw new Error("Neveljavni podatki.");
+                }
+
+                stanje = podatki;
+            }
+        } catch {
+            shrambaNaVoljo = false;
+            status.textContent =
+                "Shranjeni podatki niso dostopni. Novo igro lahko " +
+                "uporabljaš do zaprtja strani in izvoziš rezultate.";
+        }
+
+        function shrani(sporocilo) {
+            if (shrambaNaVoljo) {
+                try {
+                    localStorage.setItem(KLJUC, JSON.stringify(stanje));
+                } catch {
+                    shrambaNaVoljo = false;
+                }
+            }
+
+            status.textContent = shrambaNaVoljo
+                ? sporocilo
+                : `${sporocilo} Shranjevanje ni na voljo; izvozi rezultate.`;
+        }
+
+        function skupneTocke() {
+            return stanje.igralci.map((_, indeks) =>
+                stanje.krogi.reduce((vsota, krog) => vsota + krog[indeks], 0)
+            );
+        }
+
+        function narisiRazvrstitev() {
+            const seznam = document.getElementById("igra-razvrstitev");
+            seznam.replaceChildren();
+
+            document.getElementById("igra-naslov").textContent =
+                stanje.ime ? `Razvrstitev: ${stanje.ime}` : "Razvrstitev";
+
+            const vsote = skupneTocke();
+            const razvrsceni = stanje.igralci.map((ime, indeks) => ({
+                ime,
+                tocke: vsote[indeks]
+            })).sort((a, b) =>
+                stanje.pravilo === "vec"
+                    ? b.tocke - a.tocke
+                    : a.tocke - b.tocke
+            );
+
+            if (!razvrsceni.length) {
+                const li = document.createElement("li");
+                li.textContent = "Najprej dodaj igralce.";
+                seznam.appendChild(li);
+                return;
+            }
+
+            let mesto = 1;
+
+            razvrsceni.forEach((igralec, indeks) => {
+                if (indeks === 0 ||
+                    igralec.tocke !== razvrsceni[indeks - 1].tocke) {
+                    mesto = indeks + 1;
+                }
+
+                const li = document.createElement("li");
+                li.className = "igra-uvrstitev";
+
+                const naziv = document.createElement("strong");
+                naziv.textContent = `${mesto}. ${igralec.ime}`;
+
+                const tocke = document.createElement("span");
+                tocke.textContent =
+                    `${igralec.tocke.toLocaleString("sl-SI")} točk`;
+
+                li.append(naziv, tocke);
+                seznam.appendChild(li);
+            });
+        }
+
+        function narisiTabelo() {
+            const tabela = document.getElementById("igra-tabela");
+            tabela.replaceChildren();
+
+            if (!stanje.igralci.length) return;
+
+            const caption = document.createElement("caption");
+            caption.textContent = "Točke po krogih";
+
+            const thead = document.createElement("thead");
+            const glava = document.createElement("tr");
+
+            for (const naziv of ["Krog", ...stanje.igralci]) {
+                const th = document.createElement("th");
+                th.scope = "col";
+                th.textContent = naziv;
+                glava.appendChild(th);
+            }
+
+            thead.appendChild(glava);
+            const tbody = document.createElement("tbody");
+
+            stanje.krogi.forEach((krog, indeks) => {
+                const tr = document.createElement("tr");
+                const th = document.createElement("th");
+                th.scope = "row";
+                th.textContent = indeks + 1;
+                tr.appendChild(th);
+
+                for (const tocke of krog) {
+                    const td = document.createElement("td");
+                    td.textContent = tocke.toLocaleString("sl-SI");
+                    tr.appendChild(td);
+                }
+
+                tbody.appendChild(tr);
+            });
+
+            const tfoot = document.createElement("tfoot");
+            const skupaj = document.createElement("tr");
+            const naslov = document.createElement("th");
+            naslov.scope = "row";
+            naslov.textContent = "Skupaj";
+            skupaj.appendChild(naslov);
+
+            for (const tocke of skupneTocke()) {
+                const td = document.createElement("td");
+                td.textContent = tocke.toLocaleString("sl-SI");
+                skupaj.appendChild(td);
+            }
+
+            tfoot.appendChild(skupaj);
+            tabela.append(caption, thead, tbody, tfoot);
+        }
+
+        function narisi() {
+            imeIgre.value = stanje.ime;
+            pravilo.value = stanje.pravilo;
+
+            const zaklenjeno = stanje.krogi.length > 0;
+            imeIgralca.disabled = zaklenjeno;
+            document.getElementById("igra-dodaj").disabled =
+                zaklenjeno || stanje.igralci.length >= 12;
+
+            const igralci = document.getElementById("igra-igralci");
+            igralci.replaceChildren();
+
+            stanje.igralci.forEach((ime, indeks) => {
+                const oznaka = document.createElement("div");
+                oznaka.className = "igra-igralec-oznaka";
+
+                const span = document.createElement("span");
+                span.textContent = ime;
+                oznaka.appendChild(span);
+
+                if (!zaklenjeno) {
+                    const odstrani = document.createElement("button");
+                    odstrani.type = "button";
+                    odstrani.textContent = "Odstrani";
+                    odstrani.setAttribute("aria-label", `Odstrani igralca: ${ime}`);
+
+                    odstrani.addEventListener("click", () => {
+                        stanje.igralci.splice(indeks, 1);
+                        narisi();
+                        shrani("Igralec je odstranjen.");
+                    });
+
+                    oznaka.appendChild(odstrani);
+                }
+
+                igralci.appendChild(oznaka);
+            });
+
+            const vnosi = document.getElementById("igra-vnosi");
+            vnosi.replaceChildren();
+
+            stanje.igralci.forEach((ime, indeks) => {
+                const ovitek = document.createElement("div");
+                const label = document.createElement("label");
+                const input = document.createElement("input");
+
+                input.id = `igra-tocke-${indeks}`;
+                input.type = "number";
+                input.min = "-1000000";
+                input.max = "1000000";
+                input.step = "1";
+                input.value = "0";
+                input.required = true;
+
+                label.htmlFor = input.id;
+                label.textContent = ime;
+                ovitek.append(label, input);
+                vnosi.appendChild(ovitek);
+            });
+
+            document.getElementById("igra-shrani-krog").disabled =
+                stanje.igralci.length < 2 || stanje.krogi.length >= 1000;
+
+            document.getElementById("igra-razveljavi").disabled =
+                stanje.krogi.length === 0;
+
+            narisiRazvrstitev();
+            narisiTabelo();
+        }
+
+        document.getElementById("igra-igralec-obrazec")
+            .addEventListener("submit", event => {
+                event.preventDefault();
+
+                if (stanje.krogi.length || stanje.igralci.length >= 12) return;
+
+                const ime = imeIgralca.value.trim();
+
+                if (!ime) {
+                    status.textContent = "Vnesi ime igralca.";
+                    return;
+                }
+
+                if (stanje.igralci.some(
+                    i => i.toLocaleLowerCase("sl-SI") ===
+                        ime.toLocaleLowerCase("sl-SI")
+                )) {
+                    status.textContent = "Igralec s tem imenom že obstaja.";
+                    return;
+                }
+
+                stanje.igralci.push(ime);
+                imeIgralca.value = "";
+                narisi();
+                shrani("Igralec je dodan.");
+                imeIgralca.focus();
+            });
+
+        document.getElementById("igra-krog-obrazec")
+            .addEventListener("submit", event => {
+                event.preventDefault();
+
+                if (stanje.igralci.length < 2 || stanje.krogi.length >= 1000) return;
+
+                const tocke = stanje.igralci.map((_, indeks) =>
+                    document.getElementById(`igra-tocke-${indeks}`).valueAsNumber
+                );
+
+                if (!tocke.every(t =>
+                    Number.isInteger(t) && Math.abs(t) <= 1000000
+                )) {
+                    status.textContent =
+                        "Za vse igralce vnesi cele točke med −1.000.000 in 1.000.000.";
+                    return;
+                }
+
+                stanje.krogi.push(tocke);
+                narisi();
+                shrani(`Krog ${stanje.krogi.length} je shranjen.`);
+            });
+
+        imeIgre.addEventListener("input", () => {
+            stanje.ime = imeIgre.value.trim();
+            narisiRazvrstitev();
+            shrani("Ime igre je posodobljeno.");
+        });
+
+        pravilo.addEventListener("change", () => {
+            stanje.pravilo = pravilo.value;
+            narisiRazvrstitev();
+            shrani("Pravilo razvrstitve je posodobljeno.");
+        });
+
+        document.getElementById("igra-razveljavi")
+            .addEventListener("click", () => {
+                if (!stanje.krogi.length) return;
+                if (!confirm("Odstranim zadnji shranjeni krog?")) return;
+
+                stanje.krogi.pop();
+                narisi();
+                shrani("Zadnji krog je odstranjen.");
+            });
+
+        document.getElementById("igra-nova")
+            .addEventListener("click", () => {
+                if ((stanje.igralci.length || stanje.krogi.length) &&
+                    !confirm("Začnem novo igro in izbrišem trenutne rezultate?")) {
+                    return;
+                }
+
+                stanje = { ime: "", pravilo: "vec", igralci: [], krogi: [] };
+                narisi();
+                shrani("Nova igra je pripravljena.");
+            });
+
+        function csvPolje(vrednost, besedilo = false) {
+            let v = String(vrednost);
+
+            if (besedilo && /^\s*[=+\-@]/.test(v)) {
+                v = "'" + v;
+            }
+
+            return `"${v.replace(/"/g, '""')}"`;
+        }
+
+        document.getElementById("igra-izvoz")
+            .addEventListener("click", () => {
+                if (!stanje.igralci.length) {
+                    status.textContent = "Najprej dodaj igralce.";
+                    return;
+                }
+
+                const vrstice = [
+                    [csvPolje("Igra"), csvPolje(stanje.ime, true)].join(";"),
+                    [
+                        csvPolje("Pravilo"),
+                        csvPolje(stanje.pravilo === "vec"
+                            ? "Zmaga več točk"
+                            : "Zmaga manj točk")
+                    ].join(";"),
+                    ["Krog", ...stanje.igralci]
+                        .map(v => csvPolje(v, true)).join(";"),
+                    ...stanje.krogi.map((krog, indeks) =>
+                        [indeks + 1, ...krog].map(v => csvPolje(v)).join(";")
+                    ),
+                    ["Skupaj", ...skupneTocke()]
+                        .map(v => csvPolje(v)).join(";")
+                ];
+
+                const blob = new Blob(
+                    ["\uFEFF", vrstice.join("\r\n")],
+                    { type: "text/csv;charset=utf-8" }
+                );
+
+                const url = URL.createObjectURL(blob);
+                const povezava = document.createElement("a");
+                povezava.href = url;
+                povezava.download = "tockovanje-namiznih-iger.csv";
+                document.body.appendChild(povezava);
+                povezava.click();
+                povezava.remove();
+
+                setTimeout(() => URL.revokeObjectURL(url), 30000);
+                status.textContent = "Rezultati so pripravljeni za prenos.";
+            });
+
+        narisi();
+    </script>
+</body>
+</html>

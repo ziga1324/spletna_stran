@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Načrt varčevalnega cilja | Sidebit</title>
+    <meta name="description"
+          content="Izračunaj mesečni prihranek in čas, potreben za dosego varčevalnega cilja.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Načrt varčevalnega cilja</h1>
+        <p>Preveri, koliko moraš prihraniti in kdaj lahko dosežeš svoj cilj.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Podatki o cilju</h2>
+
+            <form id="varcevanje-obrazec">
+                <label for="varcevanje-ime">Naziv cilja — neobvezno</label>
+                <input id="varcevanje-ime" type="text" maxlength="100"
+                       placeholder="Na primer: nov računalnik">
+
+                <label for="varcevanje-cilj">Ciljni znesek (€)</label>
+                <input id="varcevanje-cilj" type="text"
+                       inputmode="decimal" maxlength="20"
+                       placeholder="Na primer: 1500" required>
+
+                <label for="varcevanje-zacetek">Že privarčevano (€)</label>
+                <input id="varcevanje-zacetek" type="text"
+                       inputmode="decimal" maxlength="20" value="0" required>
+
+                <label for="varcevanje-nacin">Kaj želiš izračunati?</label>
+                <select id="varcevanje-nacin">
+                    <option value="mesecni">
+                        Potrebni mesečni prihranek
+                    </option>
+                    <option value="trajanje">
+                        Čas do dosege cilja
+                    </option>
+                </select>
+
+                <div id="varcevanje-meseci-polje">
+                    <label for="varcevanje-meseci">
+                        Število mesecev do cilja
+                    </label>
+                    <input id="varcevanje-meseci" type="number"
+                           min="1" max="1200" step="1"
+                           value="12" required>
+                </div>
+
+                <div id="varcevanje-vplacilo-polje" hidden>
+                    <label for="varcevanje-vplacilo">
+                        Mesečni prihranek (€)
+                    </label>
+                    <input id="varcevanje-vplacilo" type="text"
+                           inputmode="decimal" maxlength="20"
+                           placeholder="Na primer: 100" disabled>
+                </div>
+
+                <p class="varcevanje-navodilo">
+                    Zneske vnesi brez ločil tisočic.
+                    Uporabi decimalno vejico ali piko in največ dve decimalni mesti.
+                </p>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Ponastavi</button>
+                </div>
+            </form>
+
+            <p id="varcevanje-napaka" class="napaka" role="alert"></p>
+            <div id="varcevanje-rezultat" class="rezultat"
+                 aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako poteka izračun?</h2>
+            <p>
+                Od ciljnega zneska odštejemo že privarčevani denar.
+                Preostanek delimo s številom mesecev ali z mesečnim
+                prihrankom. Mesečni prihranek zaokrožimo navzgor na cent,
+                čas do cilja pa navzgor na cel mesec.
+            </p>
+            <p>
+                Predpostavljamo eno vplačilo ob koncu vsakega meseca,
+                prvo čez en mesec. Zadnje vplačilo je lahko manjše.
+                Izračun ne vključuje obresti, stroškov ali inflacije.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("varcevanje-obrazec");
+        const nacin = document.getElementById("varcevanje-nacin");
+        const meseciPolje = document.getElementById("varcevanje-meseci-polje");
+        const vplaciloPolje = document.getElementById("varcevanje-vplacilo-polje");
+        const meseciVnos = document.getElementById("varcevanje-meseci");
+        const vplaciloVnos = document.getElementById("varcevanje-vplacilo");
+        const napaka = document.getElementById("varcevanje-napaka");
+        const rezultat = document.getElementById("varcevanje-rezultat");
+
+        const valuta = new Intl.NumberFormat("sl-SI", {
+            style: "currency",
+            currency: "EUR"
+        });
+
+        function denar(centi) {
+            return valuta.format(centi / 100);
+        }
+
+        function preberiCente(besedilo) {
+            const vrednost = besedilo.trim();
+
+            if (!/^\d+(?:[.,]\d{1,2})?$/.test(vrednost)) return null;
+
+            const [celi, decimalni = ""] = vrednost.replace(",", ".").split(".");
+            const centi =
+                Number(celi) * 100 + Number(decimalni.padEnd(2, "0"));
+
+            return Number.isSafeInteger(centi) &&
+                centi >= 0 && centi <= 10000000000
+                    ? centi
+                    : null;
+        }
+
+        function pocisti() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function prilagodiNacin() {
+            const mesecni = nacin.value === "mesecni";
+
+            meseciPolje.hidden = !mesecni;
+            vplaciloPolje.hidden = mesecni;
+
+            meseciVnos.disabled = !mesecni;
+            meseciVnos.required = mesecni;
+
+            vplaciloVnos.disabled = mesecni;
+            vplaciloVnos.required = !mesecni;
+        }
+
+        function dodajOdstavek(besedilo) {
+            const p = document.createElement("p");
+            p.textContent = besedilo;
+            rezultat.appendChild(p);
+        }
+
+        function dodajNaslov(besedilo) {
+            const h2 = document.createElement("h2");
+            h2.textContent = besedilo;
+            rezultat.appendChild(h2);
+        }
+
+        function datumCilja(meseci) {
+            const danes = new Date();
+            const prviDan = new Date(
+                danes.getFullYear(),
+                danes.getMonth() + meseci,
+                1
+            );
+
+            const zadnjiDan = new Date(
+                prviDan.getFullYear(),
+                prviDan.getMonth() + 1,
+                0
+            ).getDate();
+
+            prviDan.setDate(Math.min(danes.getDate(), zadnjiDan));
+
+            return new Intl.DateTimeFormat("sl-SI", {
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+            }).format(prviDan);
+        }
+
+        nacin.addEventListener("change", prilagodiNacin);
+        obrazec.addEventListener("input", pocisti);
+
+        obrazec.addEventListener("reset", () => {
+            pocisti();
+            requestAnimationFrame(prilagodiNacin);
+        });
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            const cilj = preberiCente(
+                document.getElementById("varcevanje-cilj").value
+            );
+
+            const zacetek = preberiCente(
+                document.getElementById("varcevanje-zacetek").value
+            );
+
+            const ime = document.getElementById("varcevanje-ime").value.trim();
+
+            if (cilj === null || cilj <= 0 || zacetek === null) {
+                napaka.textContent =
+                    "Vnesi veljavna zneska do 100.000.000 €. " +
+                    "Ciljni znesek mora biti večji od 0.";
+                return;
+            }
+
+            const manjka = Math.max(0, cilj - zacetek);
+
+            if (manjka === 0) {
+                dodajNaslov("Cilj je že dosežen");
+                if (ime) dodajOdstavek(`Cilj: ${ime}`);
+                dodajOdstavek(
+                    `Privarčevano: ${denar(zacetek)}. Cilj: ${denar(cilj)}.`
+                );
+                return;
+            }
+
+            let meseci;
+            let mesecniPrihranek;
+
+            if (nacin.value === "mesecni") {
+                meseci = meseciVnos.valueAsNumber;
+
+                if (!Number.isInteger(meseci) || meseci < 1 || meseci > 1200) {
+                    napaka.textContent =
+                        "Vnesi celo število mesecev med 1 in 1200.";
+                    return;
+                }
+
+                mesecniPrihranek = Math.ceil(manjka / meseci);
+
+                // Zaokroževanje na cent lahko omogoči nekoliko zgodnejši cilj.
+                meseci = Math.ceil(manjka / mesecniPrihranek);
+            } else {
+                mesecniPrihranek = preberiCente(vplaciloVnos.value);
+
+                if (mesecniPrihranek === null || mesecniPrihranek <= 0) {
+                    napaka.textContent =
+                        "Mesečni prihranek mora biti večji od 0 " +
+                        "in največ 100.000.000 €.";
+                    return;
+                }
+
+                meseci = Math.ceil(manjka / mesecniPrihranek);
+            }
+
+            dodajNaslov(
+                nacin.value === "mesecni"
+                    ? `Mesečno prihrani ${denar(mesecniPrihranek)}`
+                    : `Do cilja: ${meseci.toLocaleString("sl-SI")} mes.`
+            );
+
+            if (ime) dodajOdstavek(`Cilj: ${ime}`);
+
+            dodajOdstavek(`Ciljni znesek: ${denar(cilj)}.`);
+            dodajOdstavek(`Že privarčevano: ${denar(zacetek)}.`);
+            dodajOdstavek(`Do cilja manjka: ${denar(manjka)}.`);
+
+            dodajOdstavek(
+                `Mesečni prihranek: ${denar(mesecniPrihranek)}. ` +
+                `Število vplačil: ${meseci.toLocaleString("sl-SI")}.`
+            );
+
+            const zadnjeVplacilo =
+                manjka - mesecniPrihranek * (meseci - 1);
+
+            dodajOdstavek(`Zadnje vplačilo: ${denar(zadnjeVplacilo)}.`);
+
+            if (meseci <= 1200) {
+                dodajOdstavek(`Predvideni datum dosege cilja: ${datumCilja(meseci)}.`);
+            } else {
+                dodajOdstavek(
+                    "Pri tem mesečnem prihranku bi potreboval več kot " +
+                    "100 let. Poskusi povečati prihranek ali prilagoditi cilj."
+                );
+            }
+
+            const napredek = document.createElement("progress");
+            napredek.max = cilj;
+            napredek.value = zacetek;
+            napredek.setAttribute("aria-label", "Trenutni napredek do cilja");
+            rezultat.appendChild(napredek);
+
+            const odstotek = new Intl.NumberFormat("sl-SI", {
+                maximumFractionDigits: 1
+            }).format(zacetek / cilj * 100);
+
+            dodajOdstavek(`Trenutno dosežen delež cilja: ${odstotek} %.`);
+        });
+
+        prilagodiNacin();
+    </script>
+</body>
+</html>

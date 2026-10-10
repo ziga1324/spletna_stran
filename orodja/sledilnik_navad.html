@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sledilnik navad | Sidebit</title>
+    <meta name="description"
+          content="Spremljaj svoje dnevne navade in mesečni napredek.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Sledilnik navad</h1>
+        <p>Majhni koraki vsak dan. Spremljaj, kako dosledno jih opravljaš.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Dodaj navado</h2>
+
+            <form id="navade-obrazec">
+                <label for="navada-ime">Naziv navade</label>
+                <input id="navada-ime" type="text"
+                       maxlength="100" required
+                       placeholder="Na primer: 20 minut branja">
+
+                <button type="submit">Dodaj navado</button>
+            </form>
+
+            <p id="navade-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Mesečni pregled</h2>
+
+            <div class="navade-navigacija">
+                <button type="button" id="navade-prejsnji"
+                        aria-label="Prejšnji mesec">Prejšnji</button>
+
+                <p id="navade-mesec" aria-live="polite"></p>
+
+                <button type="button" id="navade-naslednji"
+                        aria-label="Naslednji mesec">Naslednji</button>
+            </div>
+
+            <div class="gumbi">
+                <button type="button" id="navade-danes">Trenutni mesec</button>
+                <button type="button" id="navade-izvoz">Prenesi podatke</button>
+            </div>
+
+            <p class="navade-navodilo">
+                Klikni dan, da označiš navado kot opravljeno.
+                Ponovni klik odstrani oznako. Prihodnjih dni ni mogoče označiti.
+            </p>
+
+            <div id="navade-seznam"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako se računa napredek?</h2>
+            <p>
+                Vsaka navada predstavlja dnevno dejavnost. Napredek je delež
+                opravljenih dni od dneva dodajanja navade do danes oziroma
+                do konca izbranega preteklega meseca.
+                Dnevi pred dodajanjem navade se ne štejejo.
+            </p>
+            <p>
+                Podatki ostanejo v tem brskalniku, če je lokalno shranjevanje
+                omogočeno. Ne sinhronizirajo se med napravami.
+                S prenosom dobiš kopijo podatkov v obliki JSON.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const KLJUC = "sidebit-sledilnik-navad-v1";
+        const obrazec = document.getElementById("navade-obrazec");
+        const imeVnos = document.getElementById("navada-ime");
+        const status = document.getElementById("navade-status");
+        const seznam = document.getElementById("navade-seznam");
+        const mesecNaslov = document.getElementById("navade-mesec");
+
+        let navade = [];
+        let shrambaNaVoljo = true;
+
+        const zdaj = new Date();
+        let leto = zdaj.getFullYear();
+        let mesec = zdaj.getMonth();
+
+        function datumKljuc(datum) {
+            return [
+                String(datum.getFullYear()).padStart(4, "0"),
+                String(datum.getMonth() + 1).padStart(2, "0"),
+                String(datum.getDate()).padStart(2, "0")
+            ].join("-");
+        }
+
+        function danesKljuc() {
+            return datumKljuc(new Date());
+        }
+
+        function veljavenDatum(vrednost) {
+            if (typeof vrednost !== "string" ||
+                !/^\d{4}-\d{2}-\d{2}$/.test(vrednost)) {
+                return false;
+            }
+
+            const [l, m, d] = vrednost.split("-").map(Number);
+            if (l < 1900 || l > 9999) return false;
+
+            const datum = new Date(l, m - 1, d);
+            return datumKljuc(datum) === vrednost;
+        }
+
+        function veljavnaNavada(navada) {
+            return navada &&
+                typeof navada.id === "string" &&
+                typeof navada.ime === "string" &&
+                navada.ime.trim().length > 0 &&
+                navada.ime.length <= 100 &&
+                veljavenDatum(navada.zacetek) &&
+                Array.isArray(navada.dnevi) &&
+                navada.dnevi.length <= 100000 &&
+                navada.dnevi.every(dan =>
+                    veljavenDatum(dan) && dan >= navada.zacetek
+                );
+        }
+
+        try {
+            const shranjeno = localStorage.getItem(KLJUC);
+
+            if (shranjeno !== null) {
+                const podatki = JSON.parse(shranjeno);
+
+                if (!Array.isArray(podatki) ||
+                    podatki.length > 100 ||
+                    !podatki.every(veljavnaNavada) ||
+                    new Set(podatki.map(n => n.id)).size !== podatki.length) {
+                    throw new Error("Neveljavni podatki.");
+                }
+
+                navade = podatki.map(n => ({
+                    id: n.id,
+                    ime: n.ime,
+                    zacetek: n.zacetek,
+                    dnevi: [...new Set(n.dnevi)]
+                }));
+            }
+        } catch {
+            shrambaNaVoljo = false;
+            status.textContent =
+                "Shranjeni podatki niso dostopni. Nove podatke lahko " +
+                "uporabljaš do zaprtja strani in jih preneseš.";
+        }
+
+        function shrani(sporocilo) {
+            if (shrambaNaVoljo) {
+                try {
+                    localStorage.setItem(KLJUC, JSON.stringify(navade));
+                } catch {
+                    shrambaNaVoljo = false;
+                }
+            }
+
+            status.textContent = shrambaNaVoljo
+                ? sporocilo
+                : `${sporocilo} Shranjevanje ni na voljo; prenesi podatke.`;
+        }
+
+        function ustvariId() {
+            return globalThis.crypto?.randomUUID
+                ? crypto.randomUUID()
+                : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        }
+
+        function narisi() {
+            const danes = danesKljuc();
+            const steviloDni = new Date(leto, mesec + 1, 0).getDate();
+
+            mesecNaslov.textContent = new Intl.DateTimeFormat("sl-SI", {
+                month: "long",
+                year: "numeric"
+            }).format(new Date(leto, mesec, 1));
+
+            document.getElementById("navade-prejsnji").disabled =
+                leto === 1900 && mesec === 0;
+
+            document.getElementById("navade-naslednji").disabled =
+                leto === 9999 && mesec === 11;
+
+            seznam.replaceChildren();
+
+            if (!navade.length) {
+                const prazno = document.createElement("p");
+                prazno.className = "navade-prazno";
+                prazno.textContent = "Dodaj prvo navado in začni spremljati napredek.";
+                seznam.appendChild(prazno);
+                return;
+            }
+
+            for (const navada of navade) {
+                const kartica = document.createElement("article");
+                kartica.className = "navada-kartica";
+
+                const glava = document.createElement("div");
+                glava.className = "navada-glava";
+
+                const naslov = document.createElement("h3");
+                naslov.textContent = navada.ime;
+
+                const izbrisi = document.createElement("button");
+                izbrisi.type = "button";
+                izbrisi.textContent = "Izbriši";
+                izbrisi.setAttribute("aria-label", `Izbriši navado: ${navada.ime}`);
+
+                izbrisi.addEventListener("click", () => {
+                    if (!confirm(
+                        `Izbrišem navado »${navada.ime}« in vse njene oznake?`
+                    )) return;
+
+                    navade = navade.filter(n => n.id !== navada.id);
+                    narisi();
+                    shrani("Navada je izbrisana.");
+                    imeVnos.focus();
+                });
+
+                glava.append(naslov, izbrisi);
+
+                const mreza = document.createElement("div");
+                mreza.className = "navada-dnevi";
+
+                const opravljeniDnevi = new Set(navada.dnevi);
+                const gumbi = [];
+                let moznih = 0;
+                let opravljenih = 0;
+
+                for (let dan = 1; dan <= steviloDni; dan++) {
+                    const datum = new Date(leto, mesec, dan);
+                    const kljuc = datumKljuc(datum);
+                    const dovoljeno =
+                        kljuc >= navada.zacetek && kljuc <= danes;
+
+                    if (dovoljeno) moznih++;
+                    if (dovoljeno && opravljeniDnevi.has(kljuc)) opravljenih++;
+
+                    const gumb = document.createElement("button");
+                    gumb.type = "button";
+                    gumb.textContent = dan;
+                    gumb.disabled = !dovoljeno;
+
+                    const oznakaDatuma = new Intl.DateTimeFormat("sl-SI", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric"
+                    }).format(datum);
+
+                    gumb.setAttribute(
+                        "aria-label",
+                        `${navada.ime}, ${oznakaDatuma}`
+                    );
+
+                    if (kljuc === danes) {
+                        gumb.classList.add("navada-danes");
+                    }
+
+                    function oznaciGumb() {
+                        const opravljeno = opravljeniDnevi.has(kljuc);
+                        gumb.classList.toggle("navada-opravljeno", opravljeno);
+                        gumb.setAttribute("aria-pressed", String(opravljeno));
+                        gumb.title = `${oznakaDatuma} — ${
+                            opravljeno ? "opravljeno" : "ni označeno"
+                        }`;
+                    }
+
+                    oznaciGumb();
+                    gumbi.push({ gumb, kljuc, dovoljeno });
+
+                    gumb.addEventListener("click", () => {
+                        // Datum ponovno preverimo tudi po dalj časa odprti strani.
+                        if (kljuc > danesKljuc() || kljuc < navada.zacetek) return;
+
+                        if (opravljeniDnevi.has(kljuc)) {
+                            opravljeniDnevi.delete(kljuc);
+                        } else {
+                            opravljeniDnevi.add(kljuc);
+                        }
+
+                        navada.dnevi = [...opravljeniDnevi].sort();
+                        oznaciGumb();
+                        posodobiNapredek();
+                        shrani("Oznaka dneva je posodobljena.");
+                    });
+
+                    mreza.appendChild(gumb);
+                }
+
+                const napredek = document.createElement("progress");
+                napredek.max = 100;
+                napredek.setAttribute(
+                    "aria-label",
+                    `Mesečni napredek: ${navada.ime}`
+                );
+
+                const povzetek = document.createElement("p");
+                povzetek.className = "navada-povzetek";
+
+                function posodobiNapredek() {
+                    opravljenih = gumbi.filter(
+                        d => d.dovoljeno && opravljeniDnevi.has(d.kljuc)
+                    ).length;
+
+                    const odstotek = moznih
+                        ? Math.round(opravljenih / moznih * 100)
+                        : 0;
+
+                    napredek.value = odstotek;
+                    povzetek.textContent = moznih
+                        ? `${opravljenih} od ${moznih} dni — ${odstotek} %`
+                        : "V tem mesecu še ni dni za spremljanje.";
+                }
+
+                posodobiNapredek();
+                kartica.append(glava, mreza, napredek, povzetek);
+                seznam.appendChild(kartica);
+            }
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            const ime = imeVnos.value.trim();
+
+            if (!ime) {
+                status.textContent = "Vnesi naziv navade.";
+                imeVnos.focus();
+                return;
+            }
+
+            if (navade.length >= 100) {
+                status.textContent = "Dosežena je omejitev 100 navad.";
+                return;
+            }
+
+            navade.push({
+                id: ustvariId(),
+                ime,
+                zacetek: danesKljuc(),
+                dnevi: []
+            });
+
+            const datum = new Date();
+            leto = datum.getFullYear();
+            mesec = datum.getMonth();
+
+            narisi();
+            shrani("Navada je dodana.");
+            imeVnos.value = "";
+            imeVnos.focus();
+        });
+
+        function premakniMesec(odmik) {
+            const datum = new Date(leto, mesec + odmik, 1);
+            if (datum.getFullYear() < 1900 || datum.getFullYear() > 9999) return;
+
+            leto = datum.getFullYear();
+            mesec = datum.getMonth();
+            narisi();
+        }
+
+        document.getElementById("navade-prejsnji")
+            .addEventListener("click", () => premakniMesec(-1));
+
+        document.getElementById("navade-naslednji")
+            .addEventListener("click", () => premakniMesec(1));
+
+        document.getElementById("navade-danes")
+            .addEventListener("click", () => {
+                const datum = new Date();
+                leto = datum.getFullYear();
+                mesec = datum.getMonth();
+                narisi();
+            });
+
+        document.getElementById("navade-izvoz")
+            .addEventListener("click", () => {
+                const blob = new Blob(
+                    [JSON.stringify({
+                        verzija: 1,
+                        izvozeno: new Date().toISOString(),
+                        navade
+                    }, null, 2)],
+                    { type: "application/json;charset=utf-8" }
+                );
+
+                const url = URL.createObjectURL(blob);
+                const povezava = document.createElement("a");
+                povezava.href = url;
+                povezava.download = `sledilnik-navad-${danesKljuc()}.json`;
+                document.body.appendChild(povezava);
+                povezava.click();
+                povezava.remove();
+
+                setTimeout(() => URL.revokeObjectURL(url), 30000);
+                status.textContent = "Podatki so pripravljeni za prenos.";
+            });
+
+        // Ob vrnitvi na stran osvežimo današnji datum.
+        document.addEventListener("visibilitychange", () => {
+            if (!document.hidden) narisi();
+        });
+
+        narisi();
+    </script>
+</body>
+</html>

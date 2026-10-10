@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Razpored vsak z vsakim | Sidebit</title>
+    <meta name="description"
+          content="Ustvari turnirski razpored vsak z vsakim z možnostjo povratnih tekem.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Razpored vsak z vsakim</h1>
+        <p>Organiziraj turnir, v katerem se vsak pomeri z vsakim.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Udeleženci turnirja</h2>
+
+            <form id="turnir-obrazec">
+                <label for="turnir-imena">
+                    Imena igralcev ali ekip — vsako v svojo vrstico
+                </label>
+
+                <textarea id="turnir-imena" rows="8"
+                          maxlength="10000" required
+                          placeholder="Ekipa A&#10;Ekipa B&#10;Ekipa C&#10;Ekipa D"></textarea>
+
+                <label class="turnir-potrditveno" for="turnir-povratne">
+                    <input id="turnir-povratne" type="checkbox">
+                    Dodaj povratne tekme
+                </label>
+
+                <div class="gumbi">
+                    <button type="submit">Ustvari razpored</button>
+                    <button type="reset">Ponastavi</button>
+                </div>
+            </form>
+
+            <p class="turnir-navodilo">
+                Vnesi od 2 do 40 različnih imen, dolgih največ 60 znakov.
+                Pri lihem številu udeležencev je v vsakem krogu eden prost.
+            </p>
+
+            <p id="turnir-napaka" class="napaka" role="alert"></p>
+        </section>
+
+        <section id="turnir-rezultat" class="kalkulator" hidden>
+            <h2>Tvoj razpored</h2>
+
+            <p id="turnir-povzetek" role="status" aria-live="polite"></p>
+
+            <div class="gumbi turnir-izvoz">
+                <button type="button" id="turnir-kopiraj">
+                    Kopiraj razpored
+                </button>
+                <button type="button" id="turnir-csv">
+                    Prenesi CSV
+                </button>
+                <button type="button" id="turnir-tisk">
+                    Natisni / shrani PDF
+                </button>
+            </div>
+
+            <p id="turnir-status" role="status" aria-live="polite"></p>
+
+            <textarea id="turnir-kopija" rows="8" readonly hidden
+                      aria-label="Razpored za ročno kopiranje"></textarea>
+
+            <div id="turnir-krogi"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Vsak par se sreča enkrat. Pri povratnih tekmah se vsak par
+                sreča dvakrat, v drugem delu razporeda pa se vrstni red
+                udeležencev v paru zamenja.
+            </p>
+            <p>
+                Posamezen udeleženec ima največ eno tekmo v krogu.
+                Pri sodem številu udeležencev prvi del vsebuje n − 1 krogov,
+                pri lihem pa n krogov. Skupno število tekem prvega dela
+                je n × (n − 1) / 2.
+            </p>
+            <p>
+                Razpored ne določa ur, igrišč ali dolžine odmorov.
+                Vrstni red udeležencev v paru ni zagotovilo enakomerne
+                razporeditve domačih in gostujočih tekem v prvem delu.
+                Razpored ostane na strani do ponovnega nalaganja.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("turnir-obrazec");
+        const imenaVnos = document.getElementById("turnir-imena");
+        const povratneVnos = document.getElementById("turnir-povratne");
+        const napaka = document.getElementById("turnir-napaka");
+        const rezultat = document.getElementById("turnir-rezultat");
+        const vsebnik = document.getElementById("turnir-krogi");
+        const povzetek = document.getElementById("turnir-povzetek");
+        const status = document.getElementById("turnir-status");
+        const kopija = document.getElementById("turnir-kopija");
+
+        let krogi = [];
+        let udelezeneci = [];
+
+        function pocisti() {
+            napaka.textContent = "";
+            status.textContent = "";
+            rezultat.hidden = true;
+            kopija.hidden = true;
+            kopija.value = "";
+            vsebnik.replaceChildren();
+            krogi = [];
+            udelezeneci = [];
+        }
+
+        function ustvariKroge(imena) {
+            const rotacija = [...imena];
+
+            // null predstavlja prost termin pri lihem številu igralcev.
+            if (rotacija.length % 2 !== 0) {
+                rotacija.push(null);
+            }
+
+            const rezultat = [];
+            const velikost = rotacija.length;
+
+            for (let krog = 0; krog < velikost - 1; krog++) {
+                const tekme = [];
+                let prost = null;
+
+                for (let i = 0; i < velikost / 2; i++) {
+                    let prvi = rotacija[i];
+                    let drugi = rotacija[velikost - 1 - i];
+
+                    if (prvi === null || drugi === null) {
+                        prost = prvi === null ? drugi : prvi;
+                        continue;
+                    }
+
+                    if ((krog + i) % 2 !== 0) {
+                        [prvi, drugi] = [drugi, prvi];
+                    }
+
+                    tekme.push({ prvi, drugi });
+                }
+
+                rezultat.push({ tekme, prost, povratni: false });
+
+                // Prvi igralec ostane na mestu; ostale zavrtimo.
+                rotacija.splice(1, 0, rotacija.pop());
+            }
+
+            return rezultat;
+        }
+
+        function razporedBesedilo() {
+            const vrstice = [
+                "RAZPORED VSAK Z VSAKIM",
+                `Udeleženci: ${udelezeneci.length}`,
+                `Krogi: ${krogi.length}`,
+                ""
+            ];
+
+            krogi.forEach((krog, indeks) => {
+                vrstice.push(
+                    `${indeks + 1}. KROG${krog.povratni ? " — POVRATNE TEKME" : ""}`
+                );
+
+                for (const tekma of krog.tekme) {
+                    vrstice.push(`${tekma.prvi} — ${tekma.drugi}`);
+                }
+
+                if (krog.prost !== null) {
+                    vrstice.push(`Prost: ${krog.prost}`);
+                }
+
+                vrstice.push("");
+            });
+
+            return vrstice.join("\n");
+        }
+
+        function narisi() {
+            vsebnik.replaceChildren();
+
+            const steviloTekem = krogi.reduce(
+                (vsota, krog) => vsota + krog.tekme.length,
+                0
+            );
+
+            povzetek.textContent =
+                `Udeleženci: ${udelezeneci.length} · ` +
+                `Krogi: ${krogi.length} · Tekme: ${steviloTekem}`;
+
+            krogi.forEach((krog, indeks) => {
+                const kartica = document.createElement("section");
+                kartica.className = "turnir-krog";
+
+                const naslov = document.createElement("h3");
+                naslov.textContent =
+                    `${indeks + 1}. krog${krog.povratni ? " — povratne tekme" : ""}`;
+
+                const seznam = document.createElement("ul");
+
+                for (const tekma of krog.tekme) {
+                    const li = document.createElement("li");
+
+                    const prvi = document.createElement("span");
+                    prvi.textContent = tekma.prvi;
+
+                    const locilo = document.createElement("span");
+                    locilo.className = "turnir-proti";
+                    locilo.textContent = "proti";
+
+                    const drugi = document.createElement("span");
+                    drugi.textContent = tekma.drugi;
+
+                    li.append(prvi, locilo, drugi);
+                    seznam.appendChild(li);
+                }
+
+                kartica.append(naslov, seznam);
+
+                if (krog.prost !== null) {
+                    const prost = document.createElement("p");
+                    prost.className = "turnir-prost";
+                    prost.textContent = `Prost v tem krogu: ${krog.prost}`;
+                    kartica.appendChild(prost);
+                }
+
+                vsebnik.appendChild(kartica);
+            });
+
+            rezultat.hidden = false;
+        }
+
+        obrazec.addEventListener("input", pocisti);
+        obrazec.addEventListener("reset", pocisti);
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            const imena = imenaVnos.value
+                .split(/\r?\n/)
+                .map(ime => ime.trim())
+                .filter(Boolean);
+
+            if (imena.length < 2 || imena.length > 40) {
+                napaka.textContent = "Vnesi od 2 do 40 udeležencev.";
+                return;
+            }
+
+            if (imena.some(ime => ime.length > 60)) {
+                napaka.textContent =
+                    "Vsako ime je lahko dolgo največ 60 znakov.";
+                return;
+            }
+
+            const normalizirana = imena.map(
+                ime => ime.normalize("NFC").toLocaleLowerCase("sl-SI")
+            );
+
+            if (new Set(normalizirana).size !== imena.length) {
+                napaka.textContent =
+                    "Imena se podvajajo. Vsakemu udeležencu določi drugačno ime.";
+                return;
+            }
+
+            udelezeneci = imena;
+            krogi = ustvariKroge(imena);
+
+            if (povratneVnos.checked) {
+                const povratni = krogi.map(krog => ({
+                    tekme: krog.tekme.map(tekma => ({
+                        prvi: tekma.drugi,
+                        drugi: tekma.prvi
+                    })),
+                    prost: krog.prost,
+                    povratni: true
+                }));
+
+                krogi = [...krogi, ...povratni];
+            }
+
+            narisi();
+        });
+
+        document.getElementById("turnir-kopiraj")
+            .addEventListener("click", async () => {
+                if (!krogi.length) return;
+
+                const besedilo = razporedBesedilo();
+
+                try {
+                    await navigator.clipboard.writeText(besedilo);
+                    status.textContent = "Razpored je kopiran.";
+                } catch {
+                    kopija.value = besedilo;
+                    kopija.hidden = false;
+                    kopija.focus();
+                    kopija.select();
+
+                    status.textContent =
+                        "Besedilo je označeno. Kopiraj ga s Ctrl+C oziroma Cmd+C.";
+                }
+            });
+
+        function csvPolje(vrednost) {
+            let besedilo = String(vrednost);
+
+            if (/^\s*[=+\-@]/.test(besedilo)) {
+                besedilo = "'" + besedilo;
+            }
+
+            return `"${besedilo.replace(/"/g, '""')}"`;
+        }
+
+        document.getElementById("turnir-csv")
+            .addEventListener("click", () => {
+                if (!krogi.length) return;
+
+                const vrstice = [
+                    ["Krog", "Del", "Prvi udeleženec", "Drugi udeleženec", "Prost"]
+                ];
+
+                krogi.forEach((krog, indeks) => {
+                    const del = krog.povratni ? "Povratne tekme" : "Prvi del";
+
+                    for (const tekma of krog.tekme) {
+                        vrstice.push([
+                            indeks + 1, del, tekma.prvi, tekma.drugi, ""
+                        ]);
+                    }
+
+                    if (krog.prost !== null) {
+                        vrstice.push([
+                            indeks + 1, del, "", "", krog.prost
+                        ]);
+                    }
+                });
+
+                const csv = vrstice.map(
+                    vrstica => vrstica.map(csvPolje).join(";")
+                ).join("\r\n");
+
+                const blob = new Blob(
+                    ["\uFEFF", csv],
+                    { type: "text/csv;charset=utf-8" }
+                );
+
+                const url = URL.createObjectURL(blob);
+                const povezava = document.createElement("a");
+                povezava.href = url;
+                povezava.download = "razpored-vsak-z-vsakim.csv";
+                document.body.appendChild(povezava);
+                povezava.click();
+                povezava.remove();
+
+                setTimeout(() => URL.revokeObjectURL(url), 30000);
+                status.textContent = "CSV je pripravljen za prenos.";
+            });
+
+        document.getElementById("turnir-tisk")
+            .addEventListener("click", () => {
+                if (krogi.length) window.print();
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Pretvori besedilo v Base64 ali dekodiraj Base64 v besedilo UTF-8.">
+    <title>Kodiranje in dekodiranje Base64</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>Kodiranje in dekodiranje Base64</h1>
+        <p>Pretvori besedilo v Base64 in nazaj.</p>
+        <a href="../index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Pretvornik Base64</h2>
+
+            <form id="obrazec">
+                <label for="nacin">Vrsta pretvorbe</label>
+                <select id="nacin">
+                    <option value="kodiraj">Besedilo → Base64</option>
+                    <option value="dekodiraj">Base64 → besedilo</option>
+                </select>
+
+                <label for="vnos" id="oznaka-vnosa">Besedilo za kodiranje</label>
+                <textarea id="vnos" rows="7" maxlength="200000"
+                          spellcheck="false"
+                          placeholder="Vnesi besedilo"></textarea>
+
+                <div class="gumbi">
+                    <button type="submit">Pretvori</button>
+                    <button id="primer" type="button">Vstavi primer</button>
+                    <button type="reset">Počisti</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <p id="status" role="status" aria-live="polite"></p>
+
+            <div id="izhod" hidden>
+                <label for="rezultat-base64">Rezultat</label>
+                <textarea id="rezultat-base64" rows="7"
+                          readonly spellcheck="false"></textarea>
+
+                <div class="gumbi">
+                    <button id="kopiraj" type="button">Kopiraj rezultat</button>
+                    <button id="obrni" type="button">
+                        Pretvori rezultat nazaj
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kaj je Base64?</h2>
+            <p>
+                Base64 predstavlja bajte z besedilnimi znaki.
+                Uporablja se pri prenosu in shranjevanju podatkov
+                v sistemih, ki pričakujejo besedilo.
+            </p>
+            <p>
+                Primer: besedilo Pozdrav se kodira v UG96ZHJhdg==.
+                Ta pretvornik besedilo najprej pretvori v bajte UTF-8.
+            </p>
+            <p>
+                Base64 ni šifriranje in ne zaščiti občutljivih podatkov.
+                Običajno je tudi daljši od izvirnih podatkov.
+            </p>
+            <p>
+                Podprt je standardni Base64, ne različica Base64URL.
+                Pri dekodiranju se presledki in prelomi vrstic prezrejo.
+                Manjkajoči zaključni znaki = se po potrebi dopolnijo.
+                Binarne datoteke, ki niso besedilo UTF-8, niso podprte.
+            </p>
+            <p>
+                Obdelava poteka v tvojem brskalniku.
+                Prazno besedilo je veljavno in da prazen rezultat.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Pretvornik Base64</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const nacin = document.getElementById("nacin");
+        const vnos = document.getElementById("vnos");
+        const oznaka = document.getElementById("oznaka-vnosa");
+        const napaka = document.getElementById("napaka");
+        const status = document.getElementById("status");
+        const izhod = document.getElementById("izhod");
+        const rezultat = document.getElementById("rezultat-base64");
+
+        let zadnjiNacin = null;
+
+        function pocistiRezultat() {
+            napaka.textContent = "";
+            status.textContent = "";
+            rezultat.value = "";
+            izhod.hidden = true;
+            zadnjiNacin = null;
+        }
+
+        function posodobiNacin() {
+            const kodiranje = nacin.value === "kodiraj";
+
+            oznaka.textContent = kodiranje
+                ? "Besedilo za kodiranje"
+                : "Base64 za dekodiranje";
+
+            vnos.placeholder = kodiranje
+                ? "Vnesi besedilo"
+                : "Na primer UG96ZHJhdg==";
+
+            pocistiRezultat();
+        }
+
+        function kodiraj(besedilo) {
+            const bajti = new TextEncoder().encode(besedilo);
+            const deli = [];
+
+            for (let i = 0; i < bajti.length; i += 8192) {
+                deli.push(String.fromCharCode(
+                    ...bajti.subarray(i, i + 8192)
+                ));
+            }
+
+            return btoa(deli.join(""));
+        }
+
+        function dekodiraj(besedilo) {
+            let zapis = besedilo.replace(/\s/g, "");
+
+            if (zapis === "") return "";
+
+            if (!/^[A-Za-z0-9+/]*={0,2}$/.test(zapis)) {
+                throw new Error(
+                    "Vnos vsebuje nedovoljene znake ali napačno postavljene =."
+                );
+            }
+
+            const brezDopolnitve = zapis.replace(/=+$/, "");
+            const ostanek = brezDopolnitve.length % 4;
+
+            if (ostanek === 1) {
+                throw new Error("Dolžina zapisa Base64 ni veljavna.");
+            }
+
+            const potrebno = (4 - ostanek) % 4;
+            const dopolnjen = brezDopolnitve + "=".repeat(potrebno);
+
+            if (zapis.includes("=") && zapis !== dopolnjen) {
+                throw new Error(
+                    "Število zaključnih znakov = ni pravilno."
+                );
+            }
+
+            zapis = dopolnjen;
+
+            let binarno;
+            try {
+                binarno = atob(zapis);
+            } catch {
+                throw new Error("Vnos ni veljaven zapis Base64.");
+            }
+
+            // Preveri tudi pravilnost neuporabljenih zaključnih bitov.
+            if (btoa(binarno) !== zapis) {
+                throw new Error("Vnos ni pravilno kodiran standardni Base64.");
+            }
+
+            const bajti = Uint8Array.from(
+                binarno,
+                znak => znak.charCodeAt(0)
+            );
+
+            try {
+                return new TextDecoder("utf-8", {
+                    fatal: true,
+                    ignoreBOM: true
+                }).decode(bajti);
+            } catch {
+                throw new Error(
+                    "Dekodirani podatki niso veljavno besedilo UTF-8. " +
+                    "Lahko predstavljajo binarno datoteko."
+                );
+            }
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocistiRezultat();
+
+            try {
+                if (vnos.value.length > 200000) {
+                    throw new Error("Vnesi največ 200.000 znakov.");
+                }
+
+                const kodiranje = nacin.value === "kodiraj";
+
+                rezultat.value = kodiranje
+                    ? kodiraj(vnos.value)
+                    : dekodiraj(vnos.value);
+
+                zadnjiNacin = nacin.value;
+                izhod.hidden = false;
+
+                status.textContent = rezultat.value === ""
+                    ? "Pretvorba je končana. Rezultat je prazen."
+                    : "Pretvorba je končana.";
+            } catch (error) {
+                napaka.textContent = error.message;
+            }
+        });
+
+        document.getElementById("kopiraj").addEventListener("click", async () => {
+            try {
+                await navigator.clipboard.writeText(rezultat.value);
+                status.textContent = "Rezultat je kopiran.";
+            } catch {
+                rezultat.focus();
+                rezultat.select();
+                status.textContent =
+                    "Samodejno kopiranje ni uspelo. " +
+                    "Rezultat je označen; kopiraj ga ročno.";
+            }
+        });
+
+        document.getElementById("obrni").addEventListener("click", () => {
+            const besedilo = rezultat.value;
+            const novNacin = zadnjiNacin === "kodiraj"
+                ? "dekodiraj"
+                : "kodiraj";
+
+            if (besedilo.length > 200000) {
+                napaka.textContent =
+                    "Rezultat presega omejitev vnosa 200.000 znakov.";
+                return;
+            }
+
+            nacin.value = novNacin;
+            vnos.value = besedilo;
+            posodobiNacin();
+            obrazec.requestSubmit();
+        });
+
+        document.getElementById("primer").addEventListener("click", () => {
+            vnos.value = nacin.value === "kodiraj"
+                ? "Pozdrav! Čez čas pridejo še šumniki: č, š, ž."
+                : "UG96ZHJhdg==";
+
+            obrazec.requestSubmit();
+        });
+
+        nacin.addEventListener("change", posodobiNacin);
+        vnos.addEventListener("input", pocistiRezultat);
+
+        obrazec.addEventListener("reset", () => {
+            pocistiRezultat();
+            setTimeout(posodobiNacin, 0);
+        });
+
+        posodobiNacin();
+    </script>
+</body>
+</html>

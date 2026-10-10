@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Generator kartic za bingo | Sidebit</title>
+    <meta name="description"
+          content="Ustvari bingo kartice s številkami od 1 do 75 in jih natisni.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Generator kartic za bingo</h1>
+        <p>Ustvari kartice, označuj izžrebane številke in preveri bingo.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator bingo-nastavitve">
+            <h2>Nastavitve kartic</h2>
+
+            <form id="bingo-obrazec">
+                <label for="bingo-stevilo">Število kartic</label>
+                <input id="bingo-stevilo" type="number"
+                       min="1" max="30" step="1" value="4" required>
+
+                <label class="bingo-potrditveno" for="bingo-prosto">
+                    <input id="bingo-prosto" type="checkbox" checked>
+                    Prosto sredinsko polje
+                </label>
+
+                <div class="gumbi">
+                    <button type="submit">Ustvari kartice</button>
+                    <button type="button" id="bingo-tisk" disabled>
+                        Natisni / shrani PDF
+                    </button>
+                    <button type="button" id="bingo-pocisti" disabled>
+                        Počisti oznake
+                    </button>
+                </div>
+            </form>
+
+            <p id="bingo-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <div id="bingo-kartice"></div>
+
+        <section class="razlaga">
+            <h2>Pravila kartic</h2>
+            <p>
+                Vsaka kartica ima 5 × 5 polj. Stolpci vsebujejo številke
+                B: 1–15, I: 16–30, N: 31–45, G: 46–60 in O: 61–75.
+                Številke se znotraj kartice ne ponavljajo.
+            </p>
+            <p>
+                Klikni številko, da jo označiš. Ponovni klik oznako odstrani.
+                Bingo nastane, ko označiš celotno vrstico, stolpec
+                ali eno od obeh diagonal. Prosto sredinsko polje je že označeno.
+            </p>
+            <p>
+                Za PDF izberi gumb za tiskanje in nato možnost
+                »Shrani kot PDF« v tiskalnem oknu brskalnika.
+                Natisnejo se kartice s trenutnimi oznakami.
+                Pred tiskanjem praznih kartic uporabi »Počisti oznake«.
+            </p>
+            <p>
+                Kartice ostanejo na voljo do osvežitve ali zaprtja strani.
+                Ponovno ustvarjanje zamenja vse obstoječe kartice.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("bingo-obrazec");
+        const vsebnik = document.getElementById("bingo-kartice");
+        const status = document.getElementById("bingo-status");
+        const tisk = document.getElementById("bingo-tisk");
+        const pocisti = document.getElementById("bingo-pocisti");
+
+        let kartice = [];
+
+        function nakljucnoStevilo(meja) {
+            // Zavračanje presežnih vrednosti prepreči pristranskost ostanka.
+            const vrednost = new Uint32Array(1);
+            const obseg = 4294967296;
+            const prag = obseg - obseg % meja;
+
+            do {
+                crypto.getRandomValues(vrednost);
+            } while (vrednost[0] >= prag);
+
+            return vrednost[0] % meja;
+        }
+
+        function premesaj(seznam) {
+            for (let i = seznam.length - 1; i > 0; i--) {
+                const j = nakljucnoStevilo(i + 1);
+                [seznam[i], seznam[j]] = [seznam[j], seznam[i]];
+            }
+
+            return seznam;
+        }
+
+        function novaKartica(prosto) {
+            const polja = Array(25);
+
+            for (let stolpec = 0; stolpec < 5; stolpec++) {
+                const stevila = premesaj(
+                    Array.from(
+                        { length: 15 },
+                        (_, i) => stolpec * 15 + i + 1
+                    )
+                ).slice(0, 5);
+
+                for (let vrstica = 0; vrstica < 5; vrstica++) {
+                    polja[vrstica * 5 + stolpec] = stevila[vrstica];
+                }
+            }
+
+            if (prosto) polja[12] = null;
+
+            return {
+                polja,
+                oznacena: new Set(prosto ? [12] : []),
+                gumbi: [],
+                obvestilo: null,
+                element: null
+            };
+        }
+
+        function imaBingo(kartica) {
+            const oznake = kartica.oznacena;
+
+            for (let i = 0; i < 5; i++) {
+                const vrstica = Array.from(
+                    { length: 5 }, (_, j) => i * 5 + j
+                );
+
+                const stolpec = Array.from(
+                    { length: 5 }, (_, j) => j * 5 + i
+                );
+
+                if (vrstica.every(x => oznake.has(x)) ||
+                    stolpec.every(x => oznake.has(x))) {
+                    return true;
+                }
+            }
+
+            return [0, 6, 12, 18, 24].every(x => oznake.has(x)) ||
+                [4, 8, 12, 16, 20].every(x => oznake.has(x));
+        }
+
+        function posodobiKartico(kartica) {
+            kartica.gumbi.forEach((gumb, indeks) => {
+                const oznaceno = kartica.oznacena.has(indeks);
+                gumb.classList.toggle("bingo-oznaceno", oznaceno);
+                gumb.setAttribute("aria-pressed", String(oznaceno));
+            });
+
+            const bingo = imaBingo(kartica);
+            kartica.element.classList.toggle("bingo-zmaga", bingo);
+            kartica.obvestilo.textContent = bingo
+                ? "Bingo!"
+                : "Označi izžrebane številke.";
+        }
+
+        function narisi() {
+            vsebnik.replaceChildren();
+
+            kartice.forEach((kartica, indeks) => {
+                const element = document.createElement("section");
+                element.className = "bingo-kartica";
+                kartica.element = element;
+
+                const naslov = document.createElement("h2");
+                naslov.textContent = `Kartica ${indeks + 1}`;
+
+                const tabela = document.createElement("table");
+                tabela.className = "bingo-tabela";
+
+                const caption = document.createElement("caption");
+                caption.className = "bingo-skrito";
+                caption.textContent = `Bingo kartica ${indeks + 1}`;
+
+                const glava = document.createElement("thead");
+                const naslovnaVrstica = document.createElement("tr");
+
+                for (const crka of ["B", "I", "N", "G", "O"]) {
+                    const th = document.createElement("th");
+                    th.scope = "col";
+                    th.textContent = crka;
+                    naslovnaVrstica.appendChild(th);
+                }
+
+                glava.appendChild(naslovnaVrstica);
+                const telo = document.createElement("tbody");
+
+                kartica.gumbi = [];
+
+                for (let vrstica = 0; vrstica < 5; vrstica++) {
+                    const tr = document.createElement("tr");
+
+                    for (let stolpec = 0; stolpec < 5; stolpec++) {
+                        const indeksPolja = vrstica * 5 + stolpec;
+                        const vrednost = kartica.polja[indeksPolja];
+
+                        const td = document.createElement("td");
+                        const gumb = document.createElement("button");
+                        gumb.type = "button";
+                        gumb.textContent = vrednost === null ? "PROSTO" : vrednost;
+
+                        gumb.setAttribute(
+                            "aria-label",
+                            `Kartica ${indeks + 1}, ${
+                                vrednost === null
+                                    ? "prosto sredinsko polje"
+                                    : "številka " + vrednost
+                            }`
+                        );
+
+                        if (vrednost === null) {
+                            gumb.disabled = true;
+                            gumb.classList.add("bingo-prosto");
+                        } else {
+                            gumb.addEventListener("click", () => {
+                                if (kartica.oznacena.has(indeksPolja)) {
+                                    kartica.oznacena.delete(indeksPolja);
+                                } else {
+                                    kartica.oznacena.add(indeksPolja);
+                                }
+
+                                posodobiKartico(kartica);
+                            });
+                        }
+
+                        kartica.gumbi.push(gumb);
+                        td.appendChild(gumb);
+                        tr.appendChild(td);
+                    }
+
+                    telo.appendChild(tr);
+                }
+
+                tabela.append(caption, glava, telo);
+
+                const obvestilo = document.createElement("p");
+                obvestilo.className = "bingo-obvestilo";
+                obvestilo.setAttribute("role", "status");
+                kartica.obvestilo = obvestilo;
+
+                element.append(naslov, tabela, obvestilo);
+                vsebnik.appendChild(element);
+                posodobiKartico(kartica);
+            });
+
+            tisk.disabled = kartice.length === 0;
+            pocisti.disabled = kartice.length === 0;
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+
+            const stevilo = document.getElementById("bingo-stevilo")
+                .valueAsNumber;
+            const prosto = document.getElementById("bingo-prosto").checked;
+
+            if (!Number.isInteger(stevilo) || stevilo < 1 || stevilo > 30) {
+                status.textContent = "Izberi od 1 do 30 kartic.";
+                return;
+            }
+
+            try {
+                const nove = [];
+                const uporabljene = new Set();
+
+                // V isti zbirki ne ustvarimo dveh enakih postavitev.
+                let poskusi = 0;
+
+                while (nove.length < stevilo && poskusi < 10000) {
+                    poskusi++;
+                    const kartica = novaKartica(prosto);
+                    const kljuc = JSON.stringify(kartica.polja);
+
+                    if (uporabljene.has(kljuc)) continue;
+
+                    uporabljene.add(kljuc);
+                    nove.push(kartica);
+                }
+
+                if (nove.length !== stevilo) {
+                    throw new Error("Kartic ni mogoče ustvariti.");
+                }
+
+                kartice = nove;
+                narisi();
+                status.textContent = `Ustvarjene kartice: ${kartice.length}.`;
+            } catch {
+                status.textContent =
+                    "Ustvarjanje ni uspelo. Poskusi ponovno v sodobnem brskalniku.";
+            }
+        });
+
+        pocisti.addEventListener("click", () => {
+            for (const kartica of kartice) {
+                kartica.oznacena = new Set(
+                    kartica.polja[12] === null ? [12] : []
+                );
+                posodobiKartico(kartica);
+            }
+
+            status.textContent = "Oznake so počiščene. Prosta polja ostanejo označena.";
+        });
+
+        tisk.addEventListener("click", () => {
+            if (kartice.length) window.print();
+        });
+    </script>
+</body>
+</html>

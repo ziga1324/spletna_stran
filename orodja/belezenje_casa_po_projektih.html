@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Beleženje časa po projektih | Sidebit</title>
+    <meta name="description"
+          content="Meri čas dela, dodajaj ročne vnose in spremljaj porabljen čas po projektih.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Beleženje časa po projektih</h1>
+        <p>Spremljaj, koliko časa nameniš posameznemu projektu.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Časovnik</h2>
+
+            <form id="cas-obrazec">
+                <label for="cas-projekt">Ime projekta</label>
+                <input id="cas-projekt" type="text" maxlength="100"
+                       placeholder="Na primer: spletna stran"
+                       list="cas-projekti" required>
+
+                <label for="cas-opis">Opis dela — neobvezno</label>
+                <input id="cas-opis" type="text" maxlength="200"
+                       placeholder="Na primer: izdelava začetne strani">
+
+                <div id="cas-prikaz" aria-label="Pretečeni čas">00:00:00</div>
+
+                <div class="gumbi">
+                    <button type="submit" id="cas-zacni">Začni merjenje</button>
+                    <button type="button" id="cas-ustavi" disabled>
+                        Ustavi in shrani
+                    </button>
+                </div>
+            </form>
+
+            <p id="cas-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Ročni vnos</h2>
+
+            <form id="cas-rocni-obrazec">
+                <label for="cas-rocni-projekt">Ime projekta</label>
+                <input id="cas-rocni-projekt" type="text" maxlength="100"
+                       list="cas-projekti" required>
+
+                <label for="cas-datum">Datum dela</label>
+                <input id="cas-datum" type="date" required>
+
+                <div class="cas-polja">
+                    <div>
+                        <label for="cas-ure">Ure</label>
+                        <input id="cas-ure" type="number"
+                               min="0" max="1000" step="1" value="0" required>
+                    </div>
+
+                    <div>
+                        <label for="cas-minute">Minute</label>
+                        <input id="cas-minute" type="number"
+                               min="0" max="59" step="1" value="30" required>
+                    </div>
+                </div>
+
+                <label for="cas-rocni-opis">Opis dela — neobvezno</label>
+                <input id="cas-rocni-opis" type="text" maxlength="200">
+
+                <button type="submit">Dodaj čas</button>
+            </form>
+
+            <datalist id="cas-projekti"></datalist>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Pregled po projektih</h2>
+            <p id="cas-skupaj"></p>
+            <div id="cas-povzetek"></div>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Zgodovina vnosov</h2>
+
+            <div class="gumbi">
+                <button type="button" id="cas-izvoz">Prenesi CSV</button>
+            </div>
+
+            <div id="cas-zgodovina"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Časovnik meri čas od začetka do ustavitve, tudi ko je zavihek
+                v ozadju. Ves izmerjeni čas se pripiše datumu začetka.
+                Premore zaključi z gumbom »Ustavi in shrani« in nato začni
+                novo merjenje.
+            </p>
+            <p>
+                Vnosi in tekoče merjenje se shranijo v ta brskalnik, če je
+                lokalno shranjevanje omogočeno. Po ponovnem odprtju strani
+                se tekoče merjenje nadaljuje in vključuje tudi čas, ko je bila
+                stran zaprta. Sprememba sistemske ure lahko vpliva na meritev.
+            </p>
+            <p>
+                Podatki se ne sinhronizirajo med napravami. Za kopijo
+                zaključenih vnosov uporabi izvoz CSV.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const KLJUC = "sidebit-belezenje-casa-v1";
+        const MAX_VNOSOV = 5000;
+
+        const status = document.getElementById("cas-status");
+        const projekt = document.getElementById("cas-projekt");
+        const opis = document.getElementById("cas-opis");
+        const zacni = document.getElementById("cas-zacni");
+        const ustavi = document.getElementById("cas-ustavi");
+        const prikaz = document.getElementById("cas-prikaz");
+        const datumVnos = document.getElementById("cas-datum");
+
+        let vnosi = [];
+        let aktivno = null;
+        let shrambaNaVoljo = true;
+
+        function lokalniDatum(datum = new Date()) {
+            return [
+                String(datum.getFullYear()).padStart(4, "0"),
+                String(datum.getMonth() + 1).padStart(2, "0"),
+                String(datum.getDate()).padStart(2, "0")
+            ].join("-");
+        }
+
+        function veljavenDatum(vrednost) {
+            if (typeof vrednost !== "string" ||
+                !/^\d{4}-\d{2}-\d{2}$/.test(vrednost)) return false;
+
+            const [l, m, d] = vrednost.split("-").map(Number);
+            return l >= 1900 && l <= 9999 &&
+                lokalniDatum(new Date(l, m - 1, d)) === vrednost;
+        }
+
+        function veljavnoBesedilo(p, o) {
+            return typeof p === "string" &&
+                p.trim().length > 0 && p.length <= 100 &&
+                typeof o === "string" && o.length <= 200;
+        }
+
+        function veljavenVnos(v) {
+            return v &&
+                typeof v.id === "string" &&
+                veljavnoBesedilo(v.projekt, v.opis) &&
+                veljavenDatum(v.datum) &&
+                Number.isSafeInteger(v.sekunde) && v.sekunde > 0;
+        }
+
+        function veljavnoAktivno(a) {
+            return a === null || (
+                a &&
+                veljavnoBesedilo(a.projekt, a.opis) &&
+                veljavenDatum(a.datum) &&
+                Number.isSafeInteger(a.zacetek) &&
+                a.zacetek > 0 &&
+                a.zacetek <= 8640000000000000
+            );
+        }
+
+        try {
+            const shranjeno = localStorage.getItem(KLJUC);
+
+            if (shranjeno !== null) {
+                const podatki = JSON.parse(shranjeno);
+
+                if (!podatki ||
+                    !Array.isArray(podatki.vnosi) ||
+                    podatki.vnosi.length > MAX_VNOSOV ||
+                    !podatki.vnosi.every(veljavenVnos) ||
+                    !veljavnoAktivno(podatki.aktivno) ||
+                    new Set(podatki.vnosi.map(v => v.id)).size !==
+                        podatki.vnosi.length) {
+                    throw new Error("Neveljavni podatki.");
+                }
+
+                vnosi = podatki.vnosi;
+                aktivno = podatki.aktivno;
+            }
+        } catch {
+            shrambaNaVoljo = false;
+            status.textContent =
+                "Shranjeni podatki niso dostopni. Nove vnose lahko " +
+                "uporabljaš do zaprtja strani in jih izvoziš.";
+        }
+
+        function shrani(sporocilo) {
+            if (shrambaNaVoljo) {
+                try {
+                    localStorage.setItem(
+                        KLJUC,
+                        JSON.stringify({ vnosi, aktivno })
+                    );
+                } catch {
+                    shrambaNaVoljo = false;
+                }
+            }
+
+            status.textContent = shrambaNaVoljo
+                ? sporocilo
+                : `${sporocilo} Shranjevanje ni na voljo; izvozi podatke.`;
+        }
+
+        function ustvariId() {
+            return globalThis.crypto?.randomUUID
+                ? crypto.randomUUID()
+                : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        }
+
+        function oblikujCas(sekunde) {
+            const ure = Math.floor(sekunde / 3600);
+            const minute = Math.floor(sekunde % 3600 / 60);
+            const ostanek = sekunde % 60;
+
+            return [
+                String(ure).padStart(2, "0"),
+                String(minute).padStart(2, "0"),
+                String(ostanek).padStart(2, "0")
+            ].join(":");
+        }
+
+        function preteceneSekunde() {
+            return aktivno
+                ? Math.max(0, Math.floor((Date.now() - aktivno.zacetek) / 1000))
+                : 0;
+        }
+
+        function posodobiCasovnik() {
+            prikaz.textContent = oblikujCas(preteceneSekunde());
+        }
+
+        function posodobiKontrole() {
+            projekt.disabled = Boolean(aktivno);
+            opis.disabled = Boolean(aktivno);
+            zacni.disabled = Boolean(aktivno);
+            ustavi.disabled = !aktivno;
+
+            if (aktivno) {
+                projekt.value = aktivno.projekt;
+                opis.value = aktivno.opis;
+            }
+
+            posodobiCasovnik();
+        }
+
+        function narisi() {
+            const povzetek = document.getElementById("cas-povzetek");
+            const zgodovina = document.getElementById("cas-zgodovina");
+            const predlogi = document.getElementById("cas-projekti");
+
+            povzetek.replaceChildren();
+            zgodovina.replaceChildren();
+            predlogi.replaceChildren();
+
+            const projekti = new Map();
+            let skupaj = 0;
+
+            for (const vnos of vnosi) {
+                skupaj += vnos.sekunde;
+                projekti.set(
+                    vnos.projekt,
+                    (projekti.get(vnos.projekt) || 0) + vnos.sekunde
+                );
+            }
+
+            document.getElementById("cas-skupaj").textContent =
+                `Skupaj zabeležen čas: ${oblikujCas(skupaj)}`;
+
+            for (const [ime, sekunde] of [...projekti.entries()]
+                .sort((a, b) => b[1] - a[1])) {
+                const kartica = document.createElement("div");
+                kartica.className = "cas-projekt-kartica";
+
+                const naslov = document.createElement("h3");
+                naslov.textContent = ime;
+
+                const trajanje = document.createElement("p");
+                trajanje.textContent = oblikujCas(sekunde);
+
+                kartica.append(naslov, trajanje);
+                povzetek.appendChild(kartica);
+            }
+
+            const imena = new Set(projekti.keys());
+            if (aktivno) imena.add(aktivno.projekt);
+
+            for (const ime of [...imena].sort()) {
+                const option = document.createElement("option");
+                option.value = ime;
+                predlogi.appendChild(option);
+            }
+
+            if (!vnosi.length) {
+                const prazno = document.createElement("p");
+                prazno.textContent = "Za zdaj ni zaključenih vnosov.";
+                zgodovina.appendChild(prazno);
+            }
+
+            for (const vnos of [...vnosi].reverse()) {
+                const vrstica = document.createElement("article");
+                vrstica.className = "cas-vnos";
+
+                const vsebina = document.createElement("div");
+                const naslov = document.createElement("h3");
+                naslov.textContent = vnos.projekt;
+
+                const podatki = document.createElement("p");
+                podatki.textContent =
+                    `${vnos.datum} · ${oblikujCas(vnos.sekunde)}`;
+
+                vsebina.append(naslov, podatki);
+
+                if (vnos.opis) {
+                    const opisVnosa = document.createElement("p");
+                    opisVnosa.textContent = vnos.opis;
+                    vsebina.appendChild(opisVnosa);
+                }
+
+                const izbrisi = document.createElement("button");
+                izbrisi.type = "button";
+                izbrisi.textContent = "Izbriši";
+                izbrisi.setAttribute(
+                    "aria-label",
+                    `Izbriši vnos: ${vnos.projekt}, ${vnos.datum}`
+                );
+
+                izbrisi.addEventListener("click", () => {
+                    vnosi = vnosi.filter(v => v.id !== vnos.id);
+                    narisi();
+                    shrani("Vnos je izbrisan.");
+                });
+
+                vrstica.append(vsebina, izbrisi);
+                zgodovina.appendChild(vrstica);
+            }
+        }
+
+        document.getElementById("cas-obrazec")
+            .addEventListener("submit", event => {
+                event.preventDefault();
+                if (aktivno) return;
+
+                const ime = projekt.value.trim();
+
+                if (!ime) {
+                    status.textContent = "Vnesi ime projekta.";
+                    projekt.focus();
+                    return;
+                }
+
+                if (vnosi.length >= MAX_VNOSOV) {
+                    status.textContent =
+                        "Dosežena je omejitev 5000 vnosov. " +
+                        "Izvozi podatke in odstrani nepotrebne vnose.";
+                    return;
+                }
+
+                aktivno = {
+                    projekt: ime,
+                    opis: opis.value.trim(),
+                    datum: lokalniDatum(),
+                    zacetek: Date.now()
+                };
+
+                posodobiKontrole();
+                shrani("Merjenje časa je začeto.");
+            });
+
+        ustavi.addEventListener("click", () => {
+            if (!aktivno) return;
+
+            const sekunde = preteceneSekunde();
+
+            if (sekunde < 1) {
+                status.textContent =
+                    "Za shranjevanje počakaj vsaj eno sekundo.";
+                return;
+            }
+
+            if (vnosi.length >= MAX_VNOSOV) {
+                status.textContent =
+                    "Najprej odstrani en vnos, da lahko shraniš merjenje.";
+                return;
+            }
+
+            vnosi.push({
+                id: ustvariId(),
+                projekt: aktivno.projekt,
+                opis: aktivno.opis,
+                datum: aktivno.datum,
+                sekunde
+            });
+
+            aktivno = null;
+            posodobiKontrole();
+            narisi();
+            shrani(`Merjenje je shranjeno: ${oblikujCas(sekunde)}.`);
+        });
+
+        document.getElementById("cas-rocni-obrazec")
+            .addEventListener("submit", event => {
+                event.preventDefault();
+
+                const ime = document.getElementById("cas-rocni-projekt")
+                    .value.trim();
+                const ure = document.getElementById("cas-ure").valueAsNumber;
+                const minute = document.getElementById("cas-minute")
+                    .valueAsNumber;
+                const datum = datumVnos.value;
+
+                if (!ime || !veljavenDatum(datum) ||
+                    !Number.isInteger(ure) || ure < 0 || ure > 1000 ||
+                    !Number.isInteger(minute) || minute < 0 || minute > 59 ||
+                    ure * 60 + minute === 0) {
+                    status.textContent =
+                        "Vnesi projekt, veljaven datum in trajanje nad 0 minut.";
+                    return;
+                }
+
+                // Med merjenjem pustimo prostor za vnos časovnika.
+                if (vnosi.length >= MAX_VNOSOV - (aktivno ? 1 : 0)) {
+                    status.textContent = "Dosežena je omejitev vnosov.";
+                    return;
+                }
+
+                vnosi.push({
+                    id: ustvariId(),
+                    projekt: ime,
+                    opis: document.getElementById("cas-rocni-opis").value.trim(),
+                    datum,
+                    sekunde: ure * 3600 + minute * 60
+                });
+
+                narisi();
+                shrani("Ročni vnos je dodan.");
+            });
+
+        function csvPolje(vrednost) {
+            let besedilo = String(vrednost);
+
+            // Prepreči obravnavo besedila kot formule v preglednicah.
+            if (/^\s*[=+\-@]/.test(besedilo)) {
+                besedilo = "'" + besedilo;
+            }
+
+            return `"${besedilo.replace(/"/g, '""')}"`;
+        }
+
+        document.getElementById("cas-izvoz")
+            .addEventListener("click", () => {
+                if (!vnosi.length) {
+                    status.textContent = "Za izvoz najprej dodaj vnos.";
+                    return;
+                }
+
+                const vrstice = [
+                    ["Datum", "Projekt", "Opis", "Sekunde", "Trajanje"],
+                    ...vnosi.map(v => [
+                        v.datum,
+                        v.projekt,
+                        v.opis,
+                        v.sekunde,
+                        oblikujCas(v.sekunde)
+                    ])
+                ];
+
+                const csv = vrstice.map(
+                    vrstica => vrstica.map(csvPolje).join(";")
+                ).join("\r\n");
+
+                const blob = new Blob(
+                    ["\uFEFF", csv],
+                    { type: "text/csv;charset=utf-8" }
+                );
+
+                const url = URL.createObjectURL(blob);
+                const povezava = document.createElement("a");
+                povezava.href = url;
+                povezava.download = `cas-po-projektih-${lokalniDatum()}.csv`;
+                document.body.appendChild(povezava);
+                povezava.click();
+                povezava.remove();
+
+                setTimeout(() => URL.revokeObjectURL(url), 30000);
+                status.textContent = "CSV je pripravljen za prenos.";
+            });
+
+        datumVnos.value = lokalniDatum();
+        narisi();
+        posodobiKontrole();
+
+        if (aktivno) {
+            status.textContent = "Obnovljeno je tekoče merjenje časa.";
+        }
+
+        setInterval(posodobiCasovnik, 1000);
+    </script>
+</body>
+</html>

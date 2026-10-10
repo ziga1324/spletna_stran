@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Strošek goriva za pot | Sidebit</title>
+    <meta name="description"
+          content="Izračunaj strošek goriva, povratne poti in strošek na osebo.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Strošek goriva za pot</h1>
+        <p>Preveri predvideni strošek vožnje in ga razdeli med potnike.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Podatki o poti</h2>
+
+            <form id="gorivo-obrazec">
+                <label for="gorivo-razdalja">
+                    Razdalja v eno smer (km)
+                </label>
+                <input id="gorivo-razdalja" type="text"
+                       inputmode="decimal" maxlength="20"
+                       placeholder="Na primer: 120" required>
+
+                <label class="gorivo-potrditveno" for="gorivo-povratna">
+                    <input id="gorivo-povratna" type="checkbox">
+                    Vključi povratno pot enake dolžine
+                </label>
+
+                <label for="gorivo-poraba">
+                    Povprečna poraba (l/100 km)
+                </label>
+                <input id="gorivo-poraba" type="text"
+                       inputmode="decimal" maxlength="20"
+                       placeholder="Na primer: 6,5" required>
+
+                <label for="gorivo-cena">Cena goriva (€/l)</label>
+                <input id="gorivo-cena" type="text"
+                       inputmode="decimal" maxlength="20"
+                       placeholder="Vnesi ceno na liter" required>
+
+                <label for="gorivo-dodatni">
+                    Dodatni stroški za celotno pot (€)
+                </label>
+                <input id="gorivo-dodatni" type="text"
+                       inputmode="decimal" maxlength="20"
+                       value="0" required>
+
+                <p class="gorivo-navodilo">
+                    Na primer: parkirnina in cestnine.
+                    Ta znesek se prišteje enkrat, tudi pri povratni poti.
+                </p>
+
+                <label for="gorivo-osebe">
+                    Število oseb, ki si delijo strošek
+                </label>
+                <input id="gorivo-osebe" type="number"
+                       min="1" max="1000" step="1"
+                       value="1" required>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Ponastavi</button>
+                </div>
+            </form>
+
+            <p id="gorivo-napaka" class="napaka" role="alert"></p>
+
+            <div id="gorivo-rezultat" class="rezultat"
+                 aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako poteka izračun?</h2>
+            <p>
+                Porabo goriva izračunamo tako, da skupno razdaljo
+                pomnožimo s povprečno porabo in delimo s 100.
+                Dobljene litre pomnožimo s ceno goriva na liter.
+            </p>
+            <p>
+                Strošku goriva prištejemo dodatne stroške.
+                Skupni znesek nato razdelimo med izbrano število oseb.
+                Če izbereš povratno pot, se razdalja podvoji.
+            </p>
+            <p>
+                Rezultat je ocena na podlagi vnesene porabe in cene.
+                Dejanska poraba je odvisna tudi od hitrosti, prometa,
+                obremenitve vozila in razmer na cesti.
+                Obraba vozila in drugi stroški niso vključeni,
+                razen če jih vneseš med dodatne stroške.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("gorivo-obrazec");
+        const napaka = document.getElementById("gorivo-napaka");
+        const rezultat = document.getElementById("gorivo-rezultat");
+
+        const valuta = new Intl.NumberFormat("sl-SI", {
+            style: "currency",
+            currency: "EUR"
+        });
+
+        const stevilo = new Intl.NumberFormat("sl-SI", {
+            maximumFractionDigits: 2
+        });
+
+        function preberiStevilo(id) {
+            const besedilo = document.getElementById(id).value.trim();
+
+            if (!/^\d+(?:[.,]\d+)?$/.test(besedilo)) return null;
+
+            const vrednost = Number(besedilo.replace(",", "."));
+
+            return Number.isFinite(vrednost) ? vrednost : null;
+        }
+
+        function pocisti() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function kartica(naslov, vrednost, poudarjena = false) {
+            const element = document.createElement("div");
+            element.className = "gorivo-kartica";
+
+            if (poudarjena) {
+                element.classList.add("gorivo-poudarek");
+            }
+
+            const h3 = document.createElement("h3");
+            h3.textContent = naslov;
+
+            const p = document.createElement("p");
+            p.textContent = vrednost;
+
+            element.append(h3, p);
+            return element;
+        }
+
+        obrazec.addEventListener("input", pocisti);
+        obrazec.addEventListener("reset", pocisti);
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            const razdalja = preberiStevilo("gorivo-razdalja");
+            const poraba = preberiStevilo("gorivo-poraba");
+            const cena = preberiStevilo("gorivo-cena");
+            const dodatni = preberiStevilo("gorivo-dodatni");
+
+            const osebe = document.getElementById("gorivo-osebe")
+                .valueAsNumber;
+
+            const povratna = document.getElementById("gorivo-povratna")
+                .checked;
+
+            if (razdalja === null || razdalja <= 0 || razdalja > 100000) {
+                napaka.textContent =
+                    "Vnesi razdaljo nad 0 in največ 100.000 km.";
+                return;
+            }
+
+            if (poraba === null || poraba <= 0 || poraba > 1000) {
+                napaka.textContent =
+                    "Vnesi porabo nad 0 in največ 1000 l/100 km.";
+                return;
+            }
+
+            if (cena === null || cena <= 0 || cena > 1000) {
+                napaka.textContent =
+                    "Vnesi ceno goriva nad 0 in največ 1000 €/l.";
+                return;
+            }
+
+            if (dodatni === null || dodatni < 0 || dodatni > 1000000) {
+                napaka.textContent =
+                    "Dodatni stroški morajo biti med 0 in 1.000.000 €.";
+                return;
+            }
+
+            if (!Number.isInteger(osebe) || osebe < 1 || osebe > 1000) {
+                napaka.textContent =
+                    "Število oseb mora biti celo število med 1 in 1000.";
+                return;
+            }
+
+            const skupnaRazdalja = razdalja * (povratna ? 2 : 1);
+            const litri = skupnaRazdalja * poraba / 100;
+            const strosekGoriva = litri * cena;
+            const skupaj = strosekGoriva + dodatni;
+            const naOsebo = skupaj / osebe;
+
+            const naslov = document.createElement("h2");
+            naslov.textContent = "Predvideni strošek poti";
+
+            const mreza = document.createElement("div");
+            mreza.className = "gorivo-mreza";
+
+            mreza.append(
+                kartica("Skupna razdalja", `${stevilo.format(skupnaRazdalja)} km`),
+                kartica("Porabljeno gorivo", `${stevilo.format(litri)} l`),
+                kartica("Strošek goriva", valuta.format(strosekGoriva)),
+                kartica("Dodatni stroški", valuta.format(dodatni)),
+                kartica("Skupaj", valuta.format(skupaj), true),
+                kartica("Na osebo", valuta.format(naOsebo), true)
+            );
+
+            const opomba = document.createElement("p");
+            opomba.className = "gorivo-opomba";
+            opomba.textContent =
+                `${povratna ? "Vključena je povratna pot." : "Izračun velja za eno smer."} ` +
+                `Strošek se deli med ${osebe} oseb. ` +
+                "Prikazani denarni zneski so zaokroženi na dva decimalna mesta.";
+
+            rezultat.append(naslov, mreza, opomba);
+        });
+    </script>
+</body>
+</html>

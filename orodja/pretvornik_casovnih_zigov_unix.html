@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Pretvori časovni žig Unix v datum in datum v časovni žig.">
+    <title>Pretvornik časovnih žigov Unix</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>Pretvornik časovnih žigov Unix</h1>
+        <p>Pretvori časovni žig v datum ali datum v časovni žig.</p>
+        <a href="../index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Pretvornik časa</h2>
+
+            <form id="obrazec">
+                <label for="nacin">Vrsta pretvorbe</label>
+                <select id="nacin">
+                    <option value="v-datum">Unix → datum</option>
+                    <option value="v-unix">Datum → Unix</option>
+                </select>
+
+                <div id="unix-ovoj">
+                    <label for="unix">Časovni žig</label>
+                    <input id="unix" type="text" inputmode="numeric"
+                           maxlength="20" value="0"
+                           autocomplete="off" required>
+
+                    <label for="enota">Enota časovnega žiga</label>
+                    <select id="enota">
+                        <option value="sekunde">Sekunde</option>
+                        <option value="milisekunde">Milisekunde</option>
+                    </select>
+                </div>
+
+                <div id="datum-ovoj" hidden>
+                    <label for="datum">Datum in čas</label>
+                    <input id="datum" type="datetime-local"
+                           min="0001-01-01T00:00"
+                           max="9999-12-31T23:59:59.999"
+                           step="0.001" disabled>
+
+                    <label for="obmocje">Časovno območje vnosa</label>
+                    <select id="obmocje" disabled>
+                        <option value="lokalno">Lokalni čas brskalnika</option>
+                        <option value="utc">UTC</option>
+                    </select>
+
+                    <p id="lokalno-obmocje"></p>
+                </div>
+
+                <div class="gumbi">
+                    <button type="submit">Pretvori</button>
+                    <button id="zdaj" type="button">Uporabi trenutni čas</button>
+                    <button type="reset">Ponastavi</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <div id="rezultat" class="rezultat" aria-live="polite"></div>
+
+            <button id="kopiraj" type="button" hidden>
+                Kopiraj rezultat
+            </button>
+            <p id="status" role="status"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kaj je časovni žig Unix?</h2>
+            <p>
+                Časovni žig Unix šteje čas od 1. januarja 1970
+                ob 00:00:00 UTC. Vrednost 0 zato predstavlja ta trenutek.
+                Negativne vrednosti predstavljajo čas pred njim.
+            </p>
+            <p>
+                Časovni žig predstavlja isti trenutek ne glede na
+                časovno območje. Lokalni prikaz datuma pa je odvisen
+                od nastavitev brskalnika in poletnega časa.
+            </p>
+            <p>
+                Orodje sprejme cela števila sekund ali milisekund.
+                Pri pretvorbi datuma so sekunde zaokrožene navzdol,
+                milisekunde pa ohranijo natančnost vnosa.
+            </p>
+            <p>
+                Ob jesenskem premiku ure se lokalni čas lahko pojavi
+                dvakrat. Brskalnik pri takem vnosu izbere zgodnejši
+                trenutek. Za nedvoumen vnos uporabi UTC.
+                Prestopne sekunde niso podprte.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Pretvornik časovnih žigov Unix</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const nacin = document.getElementById("nacin");
+        const unix = document.getElementById("unix");
+        const enota = document.getElementById("enota");
+        const datum = document.getElementById("datum");
+        const obmocje = document.getElementById("obmocje");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+        const kopiraj = document.getElementById("kopiraj");
+        const status = document.getElementById("status");
+
+        let besediloRezultata = "";
+
+        document.getElementById("lokalno-obmocje").textContent =
+            "Časovno območje brskalnika: " +
+            Intl.DateTimeFormat().resolvedOptions().timeZone + ".";
+
+        function pocisti() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+            status.textContent = "";
+            kopiraj.hidden = true;
+            besediloRezultata = "";
+        }
+
+        function posodobi() {
+            const vDatum = nacin.value === "v-datum";
+
+            document.getElementById("unix-ovoj").hidden = !vDatum;
+            document.getElementById("datum-ovoj").hidden = vDatum;
+
+            unix.disabled = !vDatum;
+            unix.required = vDatum;
+            enota.disabled = !vDatum;
+
+            datum.disabled = vDatum;
+            datum.required = !vDatum;
+            obmocje.disabled = vDatum;
+
+            pocisti();
+        }
+
+        function preberiUnix() {
+            const zapis = unix.value.trim();
+
+            if (!/^[+-]?\d+$/.test(zapis)) {
+                throw new Error("Vnesi cel časovni žig brez decimalnih mest.");
+            }
+
+            const vrednost = BigInt(zapis);
+            const ms = enota.value === "sekunde"
+                ? vrednost * 1000n
+                : vrednost;
+
+            const meja = 8640000000000000n;
+
+            if (ms < -meja || ms > meja) {
+                throw new Error("Časovni žig presega podprti obseg datumov.");
+            }
+
+            return new Date(Number(ms));
+        }
+
+        function preberiDatum() {
+            const ujemanje = datum.value.match(
+                /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?$/
+            );
+
+            if (!ujemanje) {
+                throw new Error("Vnesi datum in čas med letoma 1 in 9999.");
+            }
+
+            const deli = [
+                Number(ujemanje[1]),
+                Number(ujemanje[2]) - 1,
+                Number(ujemanje[3]),
+                Number(ujemanje[4]),
+                Number(ujemanje[5]),
+                Number(ujemanje[6] || 0),
+                Number((ujemanje[7] || "").padEnd(3, "0"))
+            ];
+
+            const [leto, mesec, dan, ura, minuta, sekunda, ms] = deli;
+
+            if (leto < 1 || leto > 9999) {
+                throw new Error("Podprta so leta od 1 do 9999.");
+            }
+
+            const d = new Date(0);
+            const utc = obmocje.value === "utc";
+
+            // setFullYear se izogne posebni obravnavi let 0–99.
+            if (utc) {
+                d.setUTCFullYear(leto, mesec, dan);
+                d.setUTCHours(ura, minuta, sekunda, ms);
+            } else {
+                d.setHours(0, 0, 0, 0);
+                d.setFullYear(leto, mesec, dan);
+                d.setHours(ura, minuta, sekunda, ms);
+            }
+
+            const dejanski = utc
+                ? [
+                    d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(),
+                    d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds(),
+                    d.getUTCMilliseconds()
+                ]
+                : [
+                    d.getFullYear(), d.getMonth(), d.getDate(),
+                    d.getHours(), d.getMinutes(), d.getSeconds(),
+                    d.getMilliseconds()
+                ];
+
+            if (!Number.isFinite(d.getTime()) ||
+                dejanski.some((v, i) => v !== deli[i])) {
+                throw new Error(
+                    "Datum ni veljaven ali lokalni čas ne obstaja " +
+                    "zaradi premika ure. Preveri vnos oziroma uporabi UTC."
+                );
+            }
+
+            return d;
+        }
+
+        function dodaj(ime, vrednost) {
+            const p = document.createElement("p");
+            const oznaka = document.createElement("strong");
+            oznaka.textContent = ime + ": ";
+            p.append(oznaka, document.createTextNode(vrednost));
+            rezultat.appendChild(p);
+        }
+
+        function prikazi(d) {
+            const ms = d.getTime();
+            const sekunde = Math.floor(ms / 1000);
+            const iso = d.toISOString();
+
+            const lokalni = d.toLocaleString("sl-SI", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                fractionalSecondDigits: 3,
+                timeZoneName: "short",
+                hourCycle: "h23"
+            });
+
+            dodaj("UTC (ISO 8601)", iso);
+            dodaj("Lokalni čas", lokalni);
+            dodaj("Unix v sekundah", String(sekunde));
+            dodaj("Unix v milisekundah", String(ms));
+
+            besediloRezultata = nacin.value === "v-datum"
+                ? iso
+                : String(ms);
+
+            kopiraj.textContent = nacin.value === "v-datum"
+                ? "Kopiraj datum UTC"
+                : "Kopiraj Unix v milisekundah";
+
+            kopiraj.hidden = false;
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            try {
+                const d = nacin.value === "v-datum"
+                    ? preberiUnix()
+                    : preberiDatum();
+
+                prikazi(d);
+            } catch (error) {
+                rezultat.replaceChildren();
+                napaka.textContent = error.message;
+            }
+        });
+
+        function datumZaVnos(d, utc) {
+            const predpona = utc ? "getUTC" : "get";
+            const del = ime => d[predpona + ime]();
+            const pad = (n, dolzina = 2) =>
+                String(n).padStart(dolzina, "0");
+
+            return (
+                pad(del("FullYear"), 4) + "-" +
+                pad(del("Month") + 1) + "-" +
+                pad(del("Date")) + "T" +
+                pad(del("Hours")) + ":" +
+                pad(del("Minutes")) + ":" +
+                pad(del("Seconds")) + "." +
+                pad(del("Milliseconds"), 3)
+            );
+        }
+
+        document.getElementById("zdaj").addEventListener("click", () => {
+            const d = new Date();
+
+            if (nacin.value === "v-datum") {
+                unix.value = enota.value === "sekunde"
+                    ? String(Math.floor(d.getTime() / 1000))
+                    : String(d.getTime());
+            } else {
+                datum.value = datumZaVnos(
+                    d,
+                    obmocje.value === "utc"
+                );
+            }
+
+            obrazec.requestSubmit();
+        });
+
+        kopiraj.addEventListener("click", async () => {
+            try {
+                await navigator.clipboard.writeText(besediloRezultata);
+                status.textContent = "Rezultat je kopiran.";
+            } catch {
+                status.textContent =
+                    "Samodejno kopiranje ni uspelo. Kopiraj rezultat ročno.";
+            }
+        });
+
+        nacin.addEventListener("change", posodobi);
+        unix.addEventListener("input", pocisti);
+        datum.addEventListener("input", pocisti);
+        enota.addEventListener("change", pocisti);
+        obmocje.addEventListener("change", pocisti);
+
+        obrazec.addEventListener("reset", () => {
+            pocisti();
+            setTimeout(posodobi, 0);
+        });
+
+        posodobi();
+    </script>
+</body>
+</html>

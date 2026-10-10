@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Material za pleskanje | Sidebit</title>
+    <meta name="description"
+          content="Izračunaj površino prostora in potrebno količino barve za pleskanje.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Material za pleskanje</h1>
+        <p>Preveri, koliko barve potrebuješ za pravokoten prostor.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Podatki o prostoru</h2>
+
+            <form id="pleskanje-obrazec">
+                <div class="pleskanje-polja">
+                    <div>
+                        <label for="pleskanje-dolzina">Dolžina prostora (m)</label>
+                        <input id="pleskanje-dolzina" type="text"
+                               inputmode="decimal" maxlength="20"
+                               placeholder="Na primer: 5" required>
+                    </div>
+
+                    <div>
+                        <label for="pleskanje-sirina">Širina prostora (m)</label>
+                        <input id="pleskanje-sirina" type="text"
+                               inputmode="decimal" maxlength="20"
+                               placeholder="Na primer: 4" required>
+                    </div>
+                </div>
+
+                <label for="pleskanje-visina">Višina prostora (m)</label>
+                <input id="pleskanje-visina" type="text"
+                       inputmode="decimal" maxlength="20"
+                       placeholder="Na primer: 2,5" required>
+
+                <label class="pleskanje-potrditveno" for="pleskanje-strop">
+                    <input id="pleskanje-strop" type="checkbox">
+                    Vključi tudi strop
+                </label>
+
+                <label for="pleskanje-odprtine">
+                    Skupna površina oken in vrat na stenah (m²)
+                </label>
+                <input id="pleskanje-odprtine" type="text"
+                       inputmode="decimal" maxlength="20"
+                       value="0" required>
+
+                <p class="pleskanje-navodilo">
+                    Seštej širino × višino vseh odprtin, ki jih ne boš barval.
+                    Ta površina se odšteje samo od sten.
+                </p>
+
+                <div class="pleskanje-polja">
+                    <div>
+                        <label for="pleskanje-nanosi">Število nanosov</label>
+                        <input id="pleskanje-nanosi" type="number"
+                               min="1" max="10" step="1" value="2" required>
+                    </div>
+
+                    <div>
+                        <label for="pleskanje-izdatnost">
+                            Izdatnost barve (m²/l na nanos)
+                        </label>
+                        <input id="pleskanje-izdatnost" type="text"
+                               inputmode="decimal" maxlength="20"
+                               placeholder="Podatek z embalaže" required>
+                    </div>
+                </div>
+
+                <label for="pleskanje-rezerva">Dodatna rezerva (%)</label>
+                <input id="pleskanje-rezerva" type="text"
+                       inputmode="decimal" maxlength="20"
+                       value="10" required>
+
+                <label for="pleskanje-embalaza">
+                    Velikost ene posode barve (l)
+                </label>
+                <input id="pleskanje-embalaza" type="text"
+                       inputmode="decimal" maxlength="20"
+                       value="5" required>
+
+                <p class="pleskanje-navodilo">
+                    Uporabi isto barvo in enako število nanosov za vse
+                    vključene površine. Za različni barvi sten in stropa
+                    naredi ločena izračuna.
+                </p>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Ponastavi</button>
+                </div>
+            </form>
+
+            <p id="pleskanje-napaka" class="napaka" role="alert"></p>
+            <div id="pleskanje-rezultat" class="rezultat"
+                 aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako poteka izračun?</h2>
+            <p>
+                Površina štirih sten je
+                2 × (dolžina + širina) × višina.
+                Od nje odštejemo okna in vrata.
+                Če vključiš strop, prištejemo dolžino × širino.
+            </p>
+            <p>
+                Površino pomnožimo s številom nanosov, delimo z izdatnostjo
+                barve in dodamo izbrano rezervo.
+                Število posod zaokrožimo navzgor na celo število.
+            </p>
+            <p>
+                Izdatnost preveri na embalaži za en nanos.
+                Dejanska poraba je odvisna tudi od vpojnosti, teksture
+                podlage in načina nanašanja.
+                Temeljni premaz in drugi materiali niso vključeni.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("pleskanje-obrazec");
+        const napaka = document.getElementById("pleskanje-napaka");
+        const rezultat = document.getElementById("pleskanje-rezultat");
+
+        const oblikovalnik = new Intl.NumberFormat("sl-SI", {
+            maximumFractionDigits: 2
+        });
+
+        function preberiStevilo(id) {
+            const besedilo = document.getElementById(id).value.trim();
+
+            if (!/^\d+(?:[.,]\d+)?$/.test(besedilo)) return null;
+
+            const vrednost = Number(besedilo.replace(",", "."));
+            return Number.isFinite(vrednost) ? vrednost : null;
+        }
+
+        function pocisti() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function kartica(naslov, vrednost, poudarek = false) {
+            const element = document.createElement("div");
+            element.className = "pleskanje-kartica";
+
+            if (poudarek) element.classList.add("pleskanje-poudarek");
+
+            const h3 = document.createElement("h3");
+            h3.textContent = naslov;
+
+            const p = document.createElement("p");
+            p.textContent = vrednost;
+
+            element.append(h3, p);
+            return element;
+        }
+
+        obrazec.addEventListener("input", pocisti);
+        obrazec.addEventListener("reset", pocisti);
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            const dolzina = preberiStevilo("pleskanje-dolzina");
+            const sirina = preberiStevilo("pleskanje-sirina");
+            const visina = preberiStevilo("pleskanje-visina");
+            const odprtine = preberiStevilo("pleskanje-odprtine");
+            const izdatnost = preberiStevilo("pleskanje-izdatnost");
+            const rezerva = preberiStevilo("pleskanje-rezerva");
+            const embalaza = preberiStevilo("pleskanje-embalaza");
+
+            const nanosi = document.getElementById("pleskanje-nanosi")
+                .valueAsNumber;
+
+            const vkljuciStrop = document.getElementById("pleskanje-strop")
+                .checked;
+
+            if ([dolzina, sirina, visina].some(
+                v => v === null || v <= 0 || v > 1000
+            )) {
+                napaka.textContent =
+                    "Dolžina, širina in višina morajo biti nad 0 in največ 1000 m.";
+                return;
+            }
+
+            const brutoStene = 2 * (dolzina + sirina) * visina;
+
+            if (odprtine === null || odprtine < 0 || odprtine > brutoStene) {
+                napaka.textContent =
+                    "Površina odprtin mora biti med 0 in površino vseh sten " +
+                    `(${oblikovalnik.format(brutoStene)} m²).`;
+                return;
+            }
+
+            if (!Number.isInteger(nanosi) || nanosi < 1 || nanosi > 10) {
+                napaka.textContent = "Število nanosov mora biti med 1 in 10.";
+                return;
+            }
+
+            if (izdatnost === null || izdatnost < 0.01 || izdatnost > 1000) {
+                napaka.textContent =
+                    "Izdatnost mora biti med 0,01 in 1000 m²/l na nanos.";
+                return;
+            }
+
+            if (rezerva === null || rezerva < 0 || rezerva > 100) {
+                napaka.textContent = "Rezerva mora biti med 0 in 100 %.";
+                return;
+            }
+
+            if (embalaza === null || embalaza < 0.01 || embalaza > 10000) {
+                napaka.textContent =
+                    "Velikost posode mora biti med 0,01 in 10.000 l.";
+                return;
+            }
+
+            const netoStene = brutoStene - odprtine;
+            const strop = vkljuciStrop ? dolzina * sirina : 0;
+            const povrsina = netoStene + strop;
+
+            if (povrsina <= 0) {
+                napaka.textContent = "Površina za pleskanje mora biti večja od 0.";
+                return;
+            }
+
+            const osnovnaBarva = povrsina * nanosi / izdatnost;
+            const barvaZRezervo = osnovnaBarva * (1 + rezerva / 100);
+
+            const razmerje = barvaZRezervo / embalaza;
+
+            // Odstranimo le drobno napako računanja z decimalnimi števili.
+            const najblizjeCelo = Math.round(razmerje);
+            const stabilnoRazmerje =
+                Math.abs(razmerje - najblizjeCelo) <=
+                Number.EPSILON * Math.max(1, razmerje) * 8
+                    ? najblizjeCelo
+                    : razmerje;
+
+            const posode = Math.max(1, Math.ceil(stabilnoRazmerje));
+            const kupljenaBarva = posode * embalaza;
+
+            // Potrebne litre za prikaz zaokrožimo navzgor na stotinko.
+            const prikazLitrov = Math.ceil(barvaZRezervo * 100) / 100;
+
+            const naslov = document.createElement("h2");
+            naslov.textContent = "Predvidena količina barve";
+
+            const mreza = document.createElement("div");
+            mreza.className = "pleskanje-mreza";
+
+            mreza.append(
+                kartica("Stene brez odprtin",
+                    `${oblikovalnik.format(netoStene)} m²`),
+                kartica("Vključeni strop",
+                    `${oblikovalnik.format(strop)} m²`),
+                kartica("Skupna površina",
+                    `${oblikovalnik.format(povrsina)} m²`),
+                kartica("Barva brez rezerve",
+                    `${oblikovalnik.format(osnovnaBarva)} l`),
+                kartica("Barva z rezervo",
+                    `${oblikovalnik.format(prikazLitrov)} l`, true),
+                kartica("Število posod",
+                    posode.toLocaleString("sl-SI"), true)
+            );
+
+            const opis = document.createElement("p");
+            opis.className = "pleskanje-opomba";
+            opis.textContent =
+                `Pri ${nanosi} nanosih in ${oblikovalnik.format(rezerva)} % ` +
+                `rezerve potrebuješ ${posode.toLocaleString("sl-SI")} ` +
+                `posod po ${oblikovalnik.format(embalaza)} l, ` +
+                `skupaj ${oblikovalnik.format(kupljenaBarva)} l barve. ` +
+                "Prikazana potrebna količina z rezervo je zaokrožena navzgor " +
+                "na 0,01 l; število posod je izračunano iz nezaokrožene količine.";
+
+            rezultat.append(naslov, mreza, opis);
+        });
+    </script>
+</body>
+</html>

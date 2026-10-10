@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Matrika prioritet | Sidebit</title>
+    <meta name="description"
+          content="Razvrsti naloge po pomembnosti in nujnosti ter organiziraj svoje delo.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Matrika prioritet</h1>
+        <p>Odloči se, katere naloge opraviti najprej in katere načrtovati.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Dodaj nalogo</h2>
+
+            <form id="prioritete-obrazec">
+                <label for="prioritete-naloga">Naziv naloge</label>
+                <input id="prioritete-naloga" type="text"
+                       maxlength="200" required
+                       placeholder="Na primer: priprava na izpit">
+
+                <label for="prioritete-skupina">Pomembnost in nujnost</label>
+                <select id="prioritete-skupina">
+                    <option value="naredi">
+                        Pomembno in nujno — naredi
+                    </option>
+                    <option value="nacrtuj">
+                        Pomembno, ni nujno — načrtuj
+                    </option>
+                    <option value="delegiraj">
+                        Ni pomembno, je nujno — delegiraj
+                    </option>
+                    <option value="opusti">
+                        Ni pomembno in ni nujno — opusti
+                    </option>
+                </select>
+
+                <button type="submit">Dodaj nalogo</button>
+            </form>
+
+            <p id="prioritete-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="kalkulator" aria-labelledby="matrika-naslov">
+            <h2 id="matrika-naslov">Tvoja matrika</h2>
+
+            <p id="prioritete-stevec" aria-live="polite"></p>
+
+            <div class="prioritete-matrika">
+                <section class="prioritete-kvadrant prioritete-naredi">
+                    <h3>1. Naredi</h3>
+                    <p>Pomembno in nujno. Tem nalogam se posveti najprej.</p>
+                    <ul id="seznam-naredi"></ul>
+                </section>
+
+                <section class="prioritete-kvadrant prioritete-nacrtuj">
+                    <h3>2. Načrtuj</h3>
+                    <p>Pomembno, vendar ni nujno. Določi čas za izvedbo.</p>
+                    <ul id="seznam-nacrtuj"></ul>
+                </section>
+
+                <section class="prioritete-kvadrant prioritete-delegiraj">
+                    <h3>3. Delegiraj</h3>
+                    <p>Nujno, vendar manj pomembno. Preveri, kdo lahko pomaga.</p>
+                    <ul id="seznam-delegiraj"></ul>
+                </section>
+
+                <section class="prioritete-kvadrant prioritete-opusti">
+                    <h3>4. Opusti</h3>
+                    <p>Ni pomembno in ni nujno. Razmisli, ali je sploh potrebno.</p>
+                    <ul id="seznam-opusti"></ul>
+                </section>
+            </div>
+
+            <div class="gumbi">
+                <button type="button" id="prioritete-pocisti">
+                    Odstrani opravljene
+                </button>
+                <button type="button" id="prioritete-izvozi">
+                    Prenesi seznam
+                </button>
+            </div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako določiš prioriteto?</h2>
+            <p>
+                Pomembne naloge prispevajo k tvojim ciljem.
+                Nujne naloge zahtevajo hitro ukrepanje ali imajo bližnji rok.
+                Naloga je lahko pomembna, tudi če je ni treba opraviti danes.
+            </p>
+            <p>
+                Nalogi lahko spremeniš skupino, jo označiš kot opravljeno
+                ali izbrišeš. Podatki se shranijo v ta brskalnik, če je lokalno
+                shranjevanje omogočeno. Za varnostno kopijo prenesi seznam.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const kljuc = "sidebit-matrika-prioritet-v1";
+
+        const skupine = {
+            naredi: "Naredi",
+            nacrtuj: "Načrtuj",
+            delegiraj: "Delegiraj",
+            opusti: "Opusti"
+        };
+
+        const obrazec = document.getElementById("prioritete-obrazec");
+        const naziv = document.getElementById("prioritete-naloga");
+        const skupinaVnos = document.getElementById("prioritete-skupina");
+        const status = document.getElementById("prioritete-status");
+        const stevec = document.getElementById("prioritete-stevec");
+
+        let naloge = [];
+        let shrambaNaVoljo = true;
+
+        function veljavnaNaloga(naloga) {
+            return naloga &&
+                typeof naloga.id === "string" &&
+                typeof naloga.naziv === "string" &&
+                naloga.naziv.trim().length > 0 &&
+                naloga.naziv.length <= 200 &&
+                Object.hasOwn(skupine, naloga.skupina) &&
+                typeof naloga.opravljeno === "boolean";
+        }
+
+        try {
+            const shranjeno = localStorage.getItem(kljuc);
+
+            if (shranjeno !== null) {
+                const podatki = JSON.parse(shranjeno);
+
+                if (!Array.isArray(podatki) ||
+                    podatki.length > 1000 ||
+                    !podatki.every(veljavnaNaloga) ||
+                    new Set(podatki.map(n => n.id)).size !== podatki.length) {
+                    throw new Error("Neveljavni podatki.");
+                }
+
+                naloge = podatki;
+            }
+        } catch {
+            shrambaNaVoljo = false;
+            status.textContent =
+                "Shranjene naloge niso dostopne. " +
+                "Nove naloge lahko uporabljaš do zaprtja strani in jih preneseš.";
+        }
+
+        function shrani(sporocilo) {
+            if (shrambaNaVoljo) {
+                try {
+                    localStorage.setItem(kljuc, JSON.stringify(naloge));
+                } catch {
+                    shrambaNaVoljo = false;
+                }
+            }
+
+            status.textContent = shrambaNaVoljo
+                ? sporocilo
+                : `${sporocilo} Samodejno shranjevanje ni na voljo; prenesi seznam.`;
+        }
+
+        function ustvariId() {
+            if (globalThis.crypto?.randomUUID) {
+                return crypto.randomUUID();
+            }
+
+            return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        }
+
+        function ustvariVrstico(naloga) {
+            const vrstica = document.createElement("li");
+            vrstica.className = "prioritete-vrstica";
+
+            if (naloga.opravljeno) {
+                vrstica.classList.add("je-opravljena");
+            }
+
+            const oznaka = document.createElement("label");
+            oznaka.className = "prioritete-oznaka";
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.checked = naloga.opravljeno;
+
+            const besedilo = document.createElement("span");
+            besedilo.textContent = naloga.naziv;
+
+            oznaka.append(checkbox, besedilo);
+
+            checkbox.addEventListener("change", () => {
+                naloga.opravljeno = checkbox.checked;
+                vrstica.classList.toggle("je-opravljena", naloga.opravljeno);
+                posodobiStevec();
+                shrani(
+                    naloga.opravljeno
+                        ? "Naloga je označena kot opravljena."
+                        : "Naloga je ponovno označena kot aktivna."
+                );
+            });
+
+            const dejanja = document.createElement("div");
+            dejanja.className = "prioritete-dejanja";
+
+            const premik = document.createElement("select");
+            premik.setAttribute(
+                "aria-label",
+                `Skupina za nalogo: ${naloga.naziv}`
+            );
+
+            for (const [vrednost, ime] of Object.entries(skupine)) {
+                const option = document.createElement("option");
+                option.value = vrednost;
+                option.textContent = ime;
+                premik.appendChild(option);
+            }
+
+            premik.value = naloga.skupina;
+
+            premik.addEventListener("change", () => {
+                naloga.skupina = premik.value;
+
+                // Premaknemo obstoječo vrstico, da ohranimo fokus.
+                const seznam = document.getElementById(
+                    `seznam-${naloga.skupina}`
+                );
+
+                seznam.querySelector(".prioritete-prazno")?.remove();
+                seznam.appendChild(vrstica);
+                posodobiPrazneSezname();
+                shrani("Naloga je premaknjena.");
+            });
+
+            const izbrisi = document.createElement("button");
+            izbrisi.type = "button";
+            izbrisi.textContent = "Izbriši";
+            izbrisi.setAttribute(
+                "aria-label",
+                `Izbriši nalogo: ${naloga.naziv}`
+            );
+
+            izbrisi.addEventListener("click", () => {
+                naloge = naloge.filter(n => n.id !== naloga.id);
+                vrstica.remove();
+                posodobiPrazneSezname();
+                posodobiStevec();
+                shrani("Naloga je izbrisana.");
+                naziv.focus();
+            });
+
+            dejanja.append(premik, izbrisi);
+            vrstica.append(oznaka, dejanja);
+
+            return vrstica;
+        }
+
+        function posodobiStevec() {
+            const opravljene = naloge.filter(n => n.opravljeno).length;
+            stevec.textContent =
+                `Skupaj: ${naloge.length} · ` +
+                `Aktivne: ${naloge.length - opravljene} · ` +
+                `Opravljene: ${opravljene}`;
+        }
+
+        function posodobiPrazneSezname() {
+            for (const skupina of Object.keys(skupine)) {
+                const seznam = document.getElementById(`seznam-${skupina}`);
+                const prazno = seznam.querySelector(".prioritete-prazno");
+                const imaNaloge = seznam.querySelector(".prioritete-vrstica");
+
+                if (imaNaloge) {
+                    prazno?.remove();
+                } else if (!prazno) {
+                    const obvestilo = document.createElement("li");
+                    obvestilo.className = "prioritete-prazno";
+                    obvestilo.textContent = "Za zdaj ni nalog.";
+                    seznam.appendChild(obvestilo);
+                }
+            }
+        }
+
+        function narisi() {
+            for (const skupina of Object.keys(skupine)) {
+                document.getElementById(`seznam-${skupina}`).replaceChildren();
+            }
+
+            for (const naloga of naloge) {
+                document.getElementById(`seznam-${naloga.skupina}`)
+                    .appendChild(ustvariVrstico(naloga));
+            }
+
+            posodobiPrazneSezname();
+            posodobiStevec();
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+
+            const besedilo = naziv.value.trim();
+
+            if (!besedilo) {
+                status.textContent = "Vnesi naziv naloge.";
+                naziv.focus();
+                return;
+            }
+
+            if (naloge.length >= 1000) {
+                status.textContent =
+                    "Dosežena je omejitev 1000 nalog. Odstrani nepotrebne naloge.";
+                return;
+            }
+
+            naloge.push({
+                id: ustvariId(),
+                naziv: besedilo,
+                skupina: skupinaVnos.value,
+                opravljeno: false
+            });
+
+            narisi();
+            shrani("Naloga je dodana.");
+            naziv.value = "";
+            naziv.focus();
+        });
+
+        document.getElementById("prioritete-pocisti")
+            .addEventListener("click", () => {
+                const stevilo = naloge.filter(n => n.opravljeno).length;
+
+                if (!stevilo) {
+                    status.textContent = "Ni opravljenih nalog za odstranitev.";
+                    return;
+                }
+
+                naloge = naloge.filter(n => !n.opravljeno);
+                narisi();
+                shrani(`Odstranjene opravljene naloge: ${stevilo}.`);
+            });
+
+        document.getElementById("prioritete-izvozi")
+            .addEventListener("click", () => {
+                const vrstice = ["MATRIKA PRIORITET", ""];
+
+                for (const [skupina, ime] of Object.entries(skupine)) {
+                    vrstice.push(ime.toUpperCase());
+
+                    const izbrane = naloge.filter(n => n.skupina === skupina);
+
+                    if (!izbrane.length) {
+                        vrstice.push("Ni nalog.");
+                    }
+
+                    for (const naloga of izbrane) {
+                        vrstice.push(
+                            `${naloga.opravljeno ? "[x]" : "[ ]"} ${naloga.naziv}`
+                        );
+                    }
+
+                    vrstice.push("");
+                }
+
+                const blob = new Blob(
+                    ["\uFEFF", vrstice.join("\n")],
+                    { type: "text/plain;charset=utf-8" }
+                );
+
+                const url = URL.createObjectURL(blob);
+                const povezava = document.createElement("a");
+                povezava.href = url;
+                povezava.download = "matrika-prioritet.txt";
+                document.body.appendChild(povezava);
+                povezava.click();
+                povezava.remove();
+
+                setTimeout(() => URL.revokeObjectURL(url), 30000);
+                status.textContent = "Seznam je pripravljen za prenos.";
+            });
+
+        narisi();
+    </script>
+</body>
+</html>

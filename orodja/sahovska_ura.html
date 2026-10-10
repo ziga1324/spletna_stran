@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Šahovska ura | Sidebit</title>
+    <meta name="description"
+          content="Šahovska ura za dva igralca z dodatkom časa po potezi.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Šahovska ura</h1>
+        <p>Nastavi čas, začni igro in po potezi preklopi na nasprotnika.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Nastavitve igre</h2>
+
+            <form id="sah-nastavitve">
+                <div class="sah-polja">
+                    <div>
+                        <label for="sah-minute">Čas na igralca (minute)</label>
+                        <input id="sah-minute" type="number"
+                               min="1" max="180" step="1" value="5" required>
+                    </div>
+
+                    <div>
+                        <label for="sah-dodatek">Dodatek po potezi (sekunde)</label>
+                        <input id="sah-dodatek" type="number"
+                               min="0" max="180" step="1" value="0" required>
+                    </div>
+                </div>
+
+                <label for="sah-prvi">Prvi igralec</label>
+                <select id="sah-prvi">
+                    <option value="0">Beli</option>
+                    <option value="1">Črni</option>
+                </select>
+
+                <button type="submit">Uporabi nastavitve</button>
+            </form>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Igralna ura</h2>
+
+            <div class="sah-uri">
+                <button type="button" id="sah-beli"
+                        class="sah-igralec" disabled>
+                    <span class="sah-ime">Beli</span>
+                    <span id="sah-cas-beli" class="sah-cas">05:00</span>
+                    <span class="sah-namig">Po potezi pritisni svojo uro</span>
+                </button>
+
+                <button type="button" id="sah-crni"
+                        class="sah-igralec" disabled>
+                    <span class="sah-ime">Črni</span>
+                    <span id="sah-cas-crni" class="sah-cas">05:00</span>
+                    <span class="sah-namig">Po potezi pritisni svojo uro</span>
+                </button>
+            </div>
+
+            <p id="sah-status" role="status" aria-live="polite"></p>
+
+            <div class="gumbi sah-dejanja">
+                <button type="button" id="sah-zacni">Začni</button>
+                <button type="button" id="sah-premor" disabled>Premor</button>
+                <button type="button" id="sah-ponastavi">Ponastavi</button>
+            </div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako uporabljaš uro?</h2>
+            <p>
+                Po začetku teče čas prvega igralca. Ko opravi potezo,
+                pritisne svojo aktivno uro ali preslednico.
+                Njegovemu času se prišteje dodatek, nato začne teči
+                nasprotnikova ura.
+            </p>
+            <p>
+                Premor ustavi obe uri. Nadaljevanje ne prišteje dodatka.
+                Ko igralcu zmanjka časa, se obe uri ustavita.
+                Ura prikazuje iztek časa; izid igre določita igralca.
+            </p>
+            <p>
+                Merjenje se nadaljuje tudi v ozadju zavihka, prikaz pa se
+                lahko osvežuje počasneje. Za uporabo imej stran odprto
+                in napravo budno. Osvežitev strani ponastavi igro.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const minute = document.getElementById("sah-minute");
+        const dodatekVnos = document.getElementById("sah-dodatek");
+        const prviVnos = document.getElementById("sah-prvi");
+        const status = document.getElementById("sah-status");
+        const zacni = document.getElementById("sah-zacni");
+        const premor = document.getElementById("sah-premor");
+
+        const gumbi = [
+            document.getElementById("sah-beli"),
+            document.getElementById("sah-crni")
+        ];
+
+        const prikazi = [
+            document.getElementById("sah-cas-beli"),
+            document.getElementById("sah-cas-crni")
+        ];
+
+        const imena = ["Beli", "Črni"];
+
+        let osnovniCas = 5 * 60 * 1000;
+        let dodatek = 0;
+        let prvi = 0;
+        let preostanek = [osnovniCas, osnovniCas];
+        let aktivni = prvi;
+        let tece = false;
+        let zaceta = false;
+        let koncana = false;
+        let zadnjiCas = 0;
+
+        function oblikujCas(ms) {
+            const sekunde = Math.ceil(Math.max(0, ms) / 1000);
+            const m = Math.floor(sekunde / 60);
+            const s = sekunde % 60;
+
+            return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+        }
+
+        function osveziPrikaz() {
+            for (let i = 0; i < 2; i++) {
+                prikazi[i].textContent = oblikujCas(preostanek[i]);
+                gumbi[i].classList.toggle("sah-aktivni", tece && aktivni === i);
+                gumbi[i].classList.toggle(
+                    "sah-iztek",
+                    koncana && preostanek[i] <= 0
+                );
+                gumbi[i].disabled = !tece || aktivni !== i;
+                gumbi[i].setAttribute(
+                    "aria-label",
+                    `${imena[i]}, preostali čas ${oblikujCas(preostanek[i])}. ` +
+                    (tece && aktivni === i
+                        ? "Pritisni za zaključek poteze."
+                        : "Ura trenutno ni aktivna.")
+                );
+            }
+
+            zacni.disabled = tece || koncana;
+            zacni.textContent = zaceta ? "Nadaljuj" : "Začni";
+            premor.disabled = !tece;
+        }
+
+        function posodobiCas() {
+            if (!tece) return;
+
+            const zdaj = performance.now();
+            const preteceno = Math.max(0, zdaj - zadnjiCas);
+            zadnjiCas = zdaj;
+            preostanek[aktivni] = Math.max(
+                0,
+                preostanek[aktivni] - preteceno
+            );
+
+            if (preostanek[aktivni] <= 0) {
+                tece = false;
+                koncana = true;
+                status.textContent = `${imena[aktivni]}: čas je potekel.`;
+                osveziPrikaz();
+            }
+        }
+
+        function ponastavi() {
+            tece = false;
+            zaceta = false;
+            koncana = false;
+            aktivni = prvi;
+            preostanek = [osnovniCas, osnovniCas];
+
+            status.textContent =
+                `Ura je pripravljena. Prvi igra: ${imena[prvi]}.`;
+            osveziPrikaz();
+        }
+
+        function preklopi(igralec) {
+            if (!tece || igralec !== aktivni) return;
+
+            // Najprej preverimo, ali je čas že potekel.
+            posodobiCas();
+            if (!tece) return;
+
+            preostanek[aktivni] += dodatek;
+            aktivni = 1 - aktivni;
+            zadnjiCas = performance.now();
+
+            status.textContent = `Na potezi: ${imena[aktivni]}.`;
+            osveziPrikaz();
+        }
+
+        gumbi.forEach((gumb, igralec) => {
+            gumb.addEventListener("click", () => preklopi(igralec));
+        });
+
+        zacni.addEventListener("click", () => {
+            if (tece || koncana) return;
+
+            tece = true;
+            zaceta = true;
+            zadnjiCas = performance.now();
+            status.textContent = `Na potezi: ${imena[aktivni]}.`;
+            osveziPrikaz();
+
+            // Fokus prestavimo na uro, da preslednica ne sproži gumba Začni.
+            gumbi[aktivni].focus();
+        });
+
+        premor.addEventListener("click", () => {
+            posodobiCas();
+            if (!tece) return;
+
+            tece = false;
+            status.textContent =
+                `Premor. Naslednji nadaljuje: ${imena[aktivni]}.`;
+            osveziPrikaz();
+        });
+
+        document.getElementById("sah-ponastavi")
+            .addEventListener("click", () => {
+                posodobiCas();
+
+                if (zaceta && !confirm("Ponastavim obe uri in začnem novo igro?")) {
+                    return;
+                }
+
+                ponastavi();
+            });
+
+        document.getElementById("sah-nastavitve")
+            .addEventListener("submit", event => {
+                event.preventDefault();
+
+                const m = minute.valueAsNumber;
+                const s = dodatekVnos.valueAsNumber;
+
+                if (!Number.isInteger(m) || m < 1 || m > 180 ||
+                    !Number.isInteger(s) || s < 0 || s > 180) {
+                    status.textContent =
+                        "Vnesi od 1 do 180 minut in od 0 do 180 sekund dodatka.";
+                    return;
+                }
+
+                posodobiCas();
+
+                if (zaceta && !confirm(
+                    "Uporabim nove nastavitve in ponastavim trenutno igro?"
+                )) return;
+
+                osnovniCas = m * 60 * 1000;
+                dodatek = s * 1000;
+                prvi = Number(prviVnos.value);
+                ponastavi();
+            });
+
+        document.addEventListener("keydown", event => {
+            if (event.code !== "Space" || !tece) return;
+
+            const element = event.target;
+
+            if (element instanceof Element &&
+                (element.closest("input, textarea, select") ||
+                 element.closest('[contenteditable="true"]') ||
+                 (element.closest("button") &&
+                  !element.closest(".sah-igralec")))) {
+                return;
+            }
+
+            event.preventDefault();
+
+            if (!event.repeat) {
+                preklopi(aktivni);
+            }
+        });
+
+        // Preprečimo še privzeti klik gumba ob sprostitvi preslednice.
+        document.addEventListener("keyup", event => {
+            if (event.code === "Space" &&
+                event.target instanceof Element &&
+                event.target.closest(".sah-igralec")) {
+                event.preventDefault();
+            }
+        });
+
+        setInterval(() => {
+            posodobiCas();
+            if (tece) osveziPrikaz();
+        }, 100);
+
+        document.addEventListener("visibilitychange", () => {
+            posodobiCas();
+            osveziPrikaz();
+        });
+
+        ponastavi();
+    </script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Generator CSS senc | Sidebit</title>
+    <meta name="description"
+          content="Ustvari CSS senco z nastavljanjem odmika, zameglitve, razširitve, barve in prosojnosti.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Generator CSS senc</h1>
+        <p>Nastavi senco, preveri njen videz in kopiraj CSS kodo.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="nastavitve-naslov">
+            <h2 id="nastavitve-naslov">Nastavitve sence</h2>
+
+            <form id="obrazec">
+                <label for="odmik-x">
+                    Vodoravni odmik:
+                    <output id="vrednost-x" for="odmik-x">8 px</output>
+                </label>
+                <input id="odmik-x" type="range"
+                       min="-80" max="80" value="8">
+
+                <label for="odmik-y">
+                    Navpični odmik:
+                    <output id="vrednost-y" for="odmik-y">8 px</output>
+                </label>
+                <input id="odmik-y" type="range"
+                       min="-80" max="80" value="8">
+
+                <label for="zameglitev">
+                    Zameglitev:
+                    <output id="vrednost-zameglitev" for="zameglitev">0 px</output>
+                </label>
+                <input id="zameglitev" type="range"
+                       min="0" max="100" value="0">
+
+                <label for="razsiritev">
+                    Razširitev:
+                    <output id="vrednost-razsiritev" for="razsiritev">0 px</output>
+                </label>
+                <input id="razsiritev" type="range"
+                       min="-40" max="40" value="0">
+
+                <label for="barva-sence">Barva sence</label>
+                <input id="barva-sence" type="color" value="#202333">
+
+                <label for="prosojnost">
+                    Neprosojnost:
+                    <output id="vrednost-prosojnost" for="prosojnost">100 %</output>
+                </label>
+                <input id="prosojnost" type="range"
+                       min="0" max="100" value="100">
+
+                <label class="senca-potrditveno" for="notranja">
+                    <input id="notranja" type="checkbox">
+                    Notranja senca (inset)
+                </label>
+
+                <label for="barva-kartice">Barva kartice</label>
+                <input id="barva-kartice" type="color" value="#ffe58c">
+
+                <label for="barva-ozadja">Barva ozadja predogleda</label>
+                <input id="barva-ozadja" type="color" value="#f4efff">
+
+                <div class="gumbi">
+                    <button type="button" id="risankasta">
+                        Risankasta senca
+                    </button>
+                    <button type="button" id="mehka">
+                        Mehka senca
+                    </button>
+                    <button type="reset">Ponastavi</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="kalkulator" aria-labelledby="predogled-naslov">
+            <h2 id="predogled-naslov">Predogled</h2>
+
+            <div id="senca-oder">
+                <div id="senca-kartica">
+                    <strong>Tvoja kartica</strong>
+                    <span>Senca se spreminja sproti.</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="kalkulator" aria-labelledby="koda-naslov">
+            <h2 id="koda-naslov">CSS koda</h2>
+
+            <label for="senca-koda">Kodo prilepi v izbrani CSS razred.</label>
+            <textarea id="senca-koda" rows="4" readonly
+                      spellcheck="false"></textarea>
+
+            <div class="gumbi">
+                <button type="button" id="kopiraj">Kopiraj CSS</button>
+            </div>
+
+            <p id="sporocilo" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Lastnost <code>box-shadow</code> določa vodoravni in navpični
+                odmik, zameglitev, razširitev ter barvo sence.
+                Negativni odmiki prestavijo senco levo oziroma navzgor.
+            </p>
+            <p>
+                Za risankast videz uporabi zameglitev 0 in temno barvo.
+                Za mehkejši videz povečaj zameglitev ter zmanjšaj neprosojnost.
+                Možnost <code>inset</code> ustvari senco znotraj kartice.
+                Barvi kartice in ozadja služita predogledu; ustvarjena koda
+                vsebuje samo lastnost sence.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const kartica = document.getElementById("senca-kartica");
+        const oder = document.getElementById("senca-oder");
+        const koda = document.getElementById("senca-koda");
+        const sporocilo = document.getElementById("sporocilo");
+
+        const polja = {
+            x: document.getElementById("odmik-x"),
+            y: document.getElementById("odmik-y"),
+            zameglitev: document.getElementById("zameglitev"),
+            razsiritev: document.getElementById("razsiritev"),
+            barva: document.getElementById("barva-sence"),
+            prosojnost: document.getElementById("prosojnost"),
+            notranja: document.getElementById("notranja"),
+            kartica: document.getElementById("barva-kartice"),
+            ozadje: document.getElementById("barva-ozadja")
+        };
+
+        function pretvoriBarvo(hex) {
+            return [
+                parseInt(hex.slice(1, 3), 16),
+                parseInt(hex.slice(3, 5), 16),
+                parseInt(hex.slice(5, 7), 16)
+            ];
+        }
+
+        function posodobi() {
+            const x = Number(polja.x.value);
+            const y = Number(polja.y.value);
+            const zameglitev = Number(polja.zameglitev.value);
+            const razsiritev = Number(polja.razsiritev.value);
+            const neprosojnost = Number(polja.prosojnost.value);
+            const [r, g, b] = pretvoriBarvo(polja.barva.value);
+
+            const inset = polja.notranja.checked ? "inset " : "";
+            const senca =
+                `${inset}${x}px ${y}px ${zameglitev}px ${razsiritev}px ` +
+                `rgba(${r}, ${g}, ${b}, ${neprosojnost / 100})`;
+
+            document.getElementById("vrednost-x").textContent = `${x} px`;
+            document.getElementById("vrednost-y").textContent = `${y} px`;
+
+            document.getElementById("vrednost-zameglitev").textContent =
+                `${zameglitev} px`;
+
+            document.getElementById("vrednost-razsiritev").textContent =
+                `${razsiritev} px`;
+
+            document.getElementById("vrednost-prosojnost").textContent =
+                `${neprosojnost} %`;
+
+            kartica.style.boxShadow = senca;
+            kartica.style.backgroundColor = polja.kartica.value;
+            oder.style.backgroundColor = polja.ozadje.value;
+
+            koda.value = `box-shadow: ${senca};`;
+            sporocilo.textContent = "";
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+        });
+
+        obrazec.addEventListener("input", posodobi);
+
+        obrazec.addEventListener("reset", () => {
+            // Počakamo, da brskalnik obnovi privzete vrednosti polj.
+            requestAnimationFrame(posodobi);
+        });
+
+        document.getElementById("risankasta").addEventListener("click", () => {
+            polja.x.value = 8;
+            polja.y.value = 8;
+            polja.zameglitev.value = 0;
+            polja.razsiritev.value = 0;
+            polja.barva.value = "#202333";
+            polja.prosojnost.value = 100;
+            polja.notranja.checked = false;
+            posodobi();
+        });
+
+        document.getElementById("mehka").addEventListener("click", () => {
+            polja.x.value = 0;
+            polja.y.value = 16;
+            polja.zameglitev.value = 35;
+            polja.razsiritev.value = -8;
+            polja.barva.value = "#202333";
+            polja.prosojnost.value = 25;
+            polja.notranja.checked = false;
+            posodobi();
+        });
+
+        document.getElementById("kopiraj").addEventListener("click", async () => {
+            const besedilo = koda.value;
+
+            try {
+                await navigator.clipboard.writeText(besedilo);
+                sporocilo.textContent = "CSS koda je kopirana.";
+            } catch {
+                koda.focus();
+                koda.select();
+                sporocilo.textContent =
+                    "Koda je označena. Kopiraj jo s Ctrl+C oziroma Cmd+C.";
+            }
+        });
+
+        posodobi();
+    </script>
+</body>
+</html>

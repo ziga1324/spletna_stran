@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Načrt mesečnega proračuna | Sidebit</title>
+    <meta name="description"
+          content="Načrtuj mesečne prihodke in odhodke ter preveri preostanek proračuna.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Načrt mesečnega proračuna</h1>
+        <p>Organiziraj prihodke, stroške in načrtovano varčevanje.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Izberi mesec</h2>
+
+            <label for="proracun-mesec">Mesec proračuna</label>
+            <input id="proracun-mesec" type="month" required>
+
+            <p class="proracun-navodilo">
+                Vsak mesec ima svoj seznam postavk.
+                Zneske vnašaj v evrih, na primer 125,50.
+            </p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Dodaj postavko</h2>
+
+            <form id="proracun-obrazec">
+                <label for="proracun-vrsta">Vrsta postavke</label>
+                <select id="proracun-vrsta">
+                    <option value="prihodek">Prihodek</option>
+                    <option value="odhodek">Odhodek</option>
+                </select>
+
+                <label for="proracun-naziv">Naziv</label>
+                <input id="proracun-naziv" type="text"
+                       maxlength="100" required
+                       placeholder="Na primer: plača, najemnina ali hrana">
+
+                <label for="proracun-znesek">Znesek (€)</label>
+                <input id="proracun-znesek" type="text"
+                       inputmode="decimal" maxlength="20"
+                       placeholder="Na primer: 125,50" required>
+
+                <button type="submit">Dodaj postavko</button>
+            </form>
+
+            <p id="proracun-napaka" class="napaka" role="alert"></p>
+            <p id="proracun-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Mesečni povzetek</h2>
+
+            <div class="proracun-povzetek">
+                <div class="proracun-kartica proracun-prihodki">
+                    <h3>Prihodki</h3>
+                    <p id="proracun-prihodki">0,00 €</p>
+                </div>
+
+                <div class="proracun-kartica proracun-odhodki">
+                    <h3>Odhodki</h3>
+                    <p id="proracun-odhodki">0,00 €</p>
+                </div>
+
+                <div class="proracun-kartica proracun-preostanek">
+                    <h3>Preostanek</h3>
+                    <p id="proracun-preostanek">0,00 €</p>
+                </div>
+            </div>
+
+            <p id="proracun-razmerje" aria-live="polite"></p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Postavke izbranega meseca</h2>
+
+            <div class="gumbi">
+                <button type="button" id="proracun-izvoz">
+                    Prenesi mesec CSV
+                </button>
+            </div>
+
+            <div id="proracun-seznam"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako uporabiš proračun?</h2>
+            <p>
+                Dodaj pričakovane prihodke in načrtovane odhodke.
+                Preostanek je razlika med prihodki in odhodki.
+                Negativen preostanek pomeni, da načrtovani odhodki
+                presegajo prihodke.
+            </p>
+            <p>
+                Če želiš denar nameniti varčevanju, ga dodaj kot odhodek
+                z nazivom »Varčevanje«. Tako preostanek pokaže denar,
+                ki še ni razporejen.
+            </p>
+            <p>
+                Podatki se shranijo v ta brskalnik, če je lokalno shranjevanje
+                omogočeno. Ne sinhronizirajo se med napravami.
+                Z izvozom CSV preneseš postavke izbranega meseca.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const KLJUC = "sidebit-mesecni-proracun-v1";
+        const MAX_POSTAVK = 5000;
+        const MAX_CENTOV = 100000000;
+
+        const mesecVnos = document.getElementById("proracun-mesec");
+        const vrstaVnos = document.getElementById("proracun-vrsta");
+        const nazivVnos = document.getElementById("proracun-naziv");
+        const znesekVnos = document.getElementById("proracun-znesek");
+        const napaka = document.getElementById("proracun-napaka");
+        const status = document.getElementById("proracun-status");
+        const seznam = document.getElementById("proracun-seznam");
+
+        const valuta = new Intl.NumberFormat("sl-SI", {
+            style: "currency",
+            currency: "EUR"
+        });
+
+        let postavke = [];
+        let shrambaNaVoljo = true;
+
+        function veljavenMesec(vrednost) {
+            return typeof vrednost === "string" &&
+                /^\d{4}-(0[1-9]|1[0-2])$/.test(vrednost) &&
+                Number(vrednost.slice(0, 4)) >= 1900;
+        }
+
+        function veljavnaPostavka(p) {
+            return p &&
+                typeof p.id === "string" &&
+                veljavenMesec(p.mesec) &&
+                (p.vrsta === "prihodek" || p.vrsta === "odhodek") &&
+                typeof p.naziv === "string" &&
+                p.naziv.trim().length > 0 &&
+                p.naziv.length <= 100 &&
+                Number.isSafeInteger(p.centi) &&
+                p.centi > 0 && p.centi <= MAX_CENTOV;
+        }
+
+        try {
+            const shranjeno = localStorage.getItem(KLJUC);
+
+            if (shranjeno !== null) {
+                const podatki = JSON.parse(shranjeno);
+
+                if (!Array.isArray(podatki) ||
+                    podatki.length > MAX_POSTAVK ||
+                    !podatki.every(veljavnaPostavka) ||
+                    new Set(podatki.map(p => p.id)).size !== podatki.length) {
+                    throw new Error("Neveljavni podatki.");
+                }
+
+                postavke = podatki;
+            }
+        } catch {
+            shrambaNaVoljo = false;
+            status.textContent =
+                "Shranjeni podatki niso dostopni. Nove postavke lahko " +
+                "uporabljaš do zaprtja strani in jih izvoziš.";
+        }
+
+        function shrani(sporocilo) {
+            if (shrambaNaVoljo) {
+                try {
+                    localStorage.setItem(KLJUC, JSON.stringify(postavke));
+                } catch {
+                    shrambaNaVoljo = false;
+                }
+            }
+
+            status.textContent = shrambaNaVoljo
+                ? sporocilo
+                : `${sporocilo} Shranjevanje ni na voljo; izvozi podatke.`;
+        }
+
+        function ustvariId() {
+            return globalThis.crypto?.randomUUID
+                ? crypto.randomUUID()
+                : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        }
+
+        function preberiCente(besedilo) {
+            const vrednost = besedilo.trim();
+
+            // Brez ločil tisočic; največ dve decimalni mesti.
+            if (!/^\d+(?:[.,]\d{1,2})?$/.test(vrednost)) return null;
+
+            const [celi, decimalni = ""] = vrednost.replace(",", ".").split(".");
+            const centi =
+                Number(celi) * 100 + Number(decimalni.padEnd(2, "0"));
+
+            return Number.isSafeInteger(centi) &&
+                centi > 0 && centi <= MAX_CENTOV
+                    ? centi
+                    : null;
+        }
+
+        function izbranePostavke() {
+            return postavke.filter(p => p.mesec === mesecVnos.value);
+        }
+
+        function narisi() {
+            seznam.replaceChildren();
+
+            const izbrane = veljavenMesec(mesecVnos.value)
+                ? izbranePostavke()
+                : [];
+
+            let prihodki = 0;
+            let odhodki = 0;
+
+            for (const postavka of izbrane) {
+                if (postavka.vrsta === "prihodek") {
+                    prihodki += postavka.centi;
+                } else {
+                    odhodki += postavka.centi;
+                }
+            }
+
+            const preostanek = prihodki - odhodki;
+
+            document.getElementById("proracun-prihodki").textContent =
+                valuta.format(prihodki / 100);
+
+            document.getElementById("proracun-odhodki").textContent =
+                valuta.format(odhodki / 100);
+
+            const preostanekElement =
+                document.getElementById("proracun-preostanek");
+
+            preostanekElement.textContent = valuta.format(preostanek / 100);
+            preostanekElement.parentElement.classList.toggle(
+                "proracun-negativno",
+                preostanek < 0
+            );
+
+            const razmerje = document.getElementById("proracun-razmerje");
+
+            if (prihodki > 0) {
+                const odstotek = new Intl.NumberFormat("sl-SI", {
+                    maximumFractionDigits: 1
+                }).format(odhodki / prihodki * 100);
+
+                razmerje.textContent =
+                    `Odhodki predstavljajo ${odstotek} % prihodkov.` +
+                    (preostanek < 0
+                        ? " Načrtovani proračun je v primanjkljaju."
+                        : "");
+            } else {
+                razmerje.textContent = odhodki > 0
+                    ? "Dodani so odhodki, prihodkov pa še ni."
+                    : "Dodaj prihodke in odhodke za izbrani mesec.";
+            }
+
+            if (!izbrane.length) {
+                const prazno = document.createElement("p");
+                prazno.textContent = "Za ta mesec še ni postavk.";
+                seznam.appendChild(prazno);
+                return;
+            }
+
+            for (const postavka of [...izbrane].reverse()) {
+                const vrstica = document.createElement("article");
+                vrstica.className = "proracun-postavka";
+
+                const vsebina = document.createElement("div");
+
+                const naslov = document.createElement("h3");
+                naslov.textContent = postavka.naziv;
+
+                const vrsta = document.createElement("p");
+                vrsta.textContent = postavka.vrsta === "prihodek"
+                    ? "Prihodek"
+                    : "Odhodek";
+
+                vsebina.append(naslov, vrsta);
+
+                const znesek = document.createElement("strong");
+                znesek.className = "proracun-znesek";
+                znesek.textContent =
+                    `${postavka.vrsta === "prihodek" ? "+" : "−"} ` +
+                    valuta.format(postavka.centi / 100);
+
+                const izbrisi = document.createElement("button");
+                izbrisi.type = "button";
+                izbrisi.textContent = "Izbriši";
+                izbrisi.setAttribute(
+                    "aria-label",
+                    `Izbriši postavko: ${postavka.naziv}`
+                );
+
+                izbrisi.addEventListener("click", () => {
+                    postavke = postavke.filter(p => p.id !== postavka.id);
+                    narisi();
+                    shrani("Postavka je izbrisana.");
+                });
+
+                vrstica.append(vsebina, znesek, izbrisi);
+                seznam.appendChild(vrstica);
+            }
+        }
+
+        document.getElementById("proracun-obrazec")
+            .addEventListener("submit", event => {
+                event.preventDefault();
+                napaka.textContent = "";
+
+                if (!veljavenMesec(mesecVnos.value)) {
+                    napaka.textContent = "Izberi veljaven mesec od leta 1900 naprej.";
+                    mesecVnos.focus();
+                    return;
+                }
+
+                const naziv = nazivVnos.value.trim();
+                const centi = preberiCente(znesekVnos.value);
+
+                if (!naziv) {
+                    napaka.textContent = "Vnesi naziv postavke.";
+                    nazivVnos.focus();
+                    return;
+                }
+
+                if (centi === null) {
+                    napaka.textContent =
+                        "Vnesi znesek nad 0 in največ 1.000.000 €, " +
+                        "z največ dvema decimalnima mestoma in brez ločil tisočic.";
+                    znesekVnos.focus();
+                    return;
+                }
+
+                if (postavke.length >= MAX_POSTAVK) {
+                    napaka.textContent =
+                        "Dosežena je omejitev 5000 postavk. " +
+                        "Izvozi podatke in odstrani nepotrebne postavke.";
+                    return;
+                }
+
+                postavke.push({
+                    id: ustvariId(),
+                    mesec: mesecVnos.value,
+                    vrsta: vrstaVnos.value,
+                    naziv,
+                    centi
+                });
+
+                narisi();
+                shrani("Postavka je dodana.");
+                nazivVnos.value = "";
+                znesekVnos.value = "";
+                nazivVnos.focus();
+            });
+
+        mesecVnos.addEventListener("change", () => {
+            napaka.textContent = "";
+            status.textContent = "";
+            narisi();
+        });
+
+        function csvPolje(vrednost) {
+            let besedilo = String(vrednost);
+
+            if (/^\s*[=+\-@]/.test(besedilo)) {
+                besedilo = "'" + besedilo;
+            }
+
+            return `"${besedilo.replace(/"/g, '""')}"`;
+        }
+
+        document.getElementById("proracun-izvoz")
+            .addEventListener("click", () => {
+                if (!veljavenMesec(mesecVnos.value)) {
+                    napaka.textContent = "Najprej izberi veljaven mesec.";
+                    return;
+                }
+
+                const izbrane = izbranePostavke();
+
+                if (!izbrane.length) {
+                    status.textContent = "Ta mesec nima postavk za izvoz.";
+                    return;
+                }
+
+                const vrstice = [
+                    ["Mesec", "Vrsta", "Naziv", "Znesek EUR"],
+                    ...izbrane.map(p => [
+                        p.mesec,
+                        p.vrsta === "prihodek" ? "Prihodek" : "Odhodek",
+                        p.naziv,
+                        (p.centi / 100).toFixed(2).replace(".", ",")
+                    ])
+                ];
+
+                const csv = vrstice.map(
+                    vrstica => vrstica.map(csvPolje).join(";")
+                ).join("\r\n");
+
+                const blob = new Blob(
+                    ["\uFEFF", csv],
+                    { type: "text/csv;charset=utf-8" }
+                );
+
+                const url = URL.createObjectURL(blob);
+                const povezava = document.createElement("a");
+                povezava.href = url;
+                povezava.download = `proracun-${mesecVnos.value}.csv`;
+                document.body.appendChild(povezava);
+                povezava.click();
+                povezava.remove();
+
+                setTimeout(() => URL.revokeObjectURL(url), 30000);
+                status.textContent = "CSV je pripravljen za prenos.";
+            });
+
+        const danes = new Date();
+        mesecVnos.value =
+            `${danes.getFullYear()}-` +
+            String(danes.getMonth() + 1).padStart(2, "0");
+
+        narisi();
+    </script>
+</body>
+</html>

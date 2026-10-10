@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Obrezovanje slike | Sidebit</title>
+    <meta name="description"
+          content="Obreži sliko neposredno v brskalniku in prenesi rezultat kot PNG.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Obrezovanje slike</h1>
+        <p>Naloži sliko, označi želeno območje in prenesi izrez.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="nastavitve-naslov">
+            <h2 id="nastavitve-naslov">Izberi sliko</h2>
+
+            <label for="slika-datoteka">Slika PNG, JPEG ali WebP</label>
+            <input id="slika-datoteka" type="file"
+                   accept="image/png,image/jpeg,image/webp">
+
+            <p id="slika-podatki" class="obrez-navodilo">
+                Največja velikost datoteke je 20 MB.
+            </p>
+
+            <div id="obrez-delavnica" hidden>
+                <p class="obrez-navodilo" id="obrez-navodilo">
+                    Povleci po sliki, da označiš izrez. Koordinate lahko
+                    nastaviš tudi s spodnjimi polji.
+                </p>
+
+                <canvas id="obrez-platno"
+                        aria-label="Predogled slike z označenim območjem izreza"
+                        aria-describedby="obrez-navodilo">
+                    Za izbiro izreza uporabi spodnja številčna polja.
+                </canvas>
+
+                <form id="obrez-obrazec">
+                    <div class="obrez-polja">
+                        <div>
+                            <label for="obrez-x">Odmik z leve (px)</label>
+                            <input id="obrez-x" type="number"
+                                   min="0" step="1" required>
+                        </div>
+
+                        <div>
+                            <label for="obrez-y">Odmik od vrha (px)</label>
+                            <input id="obrez-y" type="number"
+                                   min="0" step="1" required>
+                        </div>
+
+                        <div>
+                            <label for="obrez-sirina">Širina izreza (px)</label>
+                            <input id="obrez-sirina" type="number"
+                                   min="1" step="1" required>
+                        </div>
+
+                        <div>
+                            <label for="obrez-visina">Višina izreza (px)</label>
+                            <input id="obrez-visina" type="number"
+                                   min="1" step="1" required>
+                        </div>
+                    </div>
+
+                    <div class="gumbi">
+                        <button type="submit" id="obrez-prenesi">
+                            Prenesi izrez PNG
+                        </button>
+                        <button type="button" id="obrez-cela">
+                            Izberi celo sliko
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <p id="obrez-napaka" class="napaka" role="alert"></p>
+            <p id="obrez-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako deluje?</h2>
+            <p>
+                Koordinate in dimenzije se nanašajo na originalno sliko,
+                čeprav je predogled pomanjšan. Z vlečenjem označiš pravokotni
+                izrez, s številčnimi polji pa ga natančneje nastaviš.
+            </p>
+            <p>
+                Slika se obdeluje v tvojem brskalniku. Orodje je ne pošilja
+                na strežnik. Rezultat je PNG, ki ohrani morebitno prosojnost.
+                Obrezovanje ne poveča ločljivosti slike.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const datoteka = document.getElementById("slika-datoteka");
+        const podatki = document.getElementById("slika-podatki");
+        const delavnica = document.getElementById("obrez-delavnica");
+        const platno = document.getElementById("obrez-platno");
+        const ctx = platno.getContext("2d");
+        const obrazec = document.getElementById("obrez-obrazec");
+        const napaka = document.getElementById("obrez-napaka");
+        const status = document.getElementById("obrez-status");
+        const prenesi = document.getElementById("obrez-prenesi");
+        const cela = document.getElementById("obrez-cela");
+
+        const polja = {
+            x: document.getElementById("obrez-x"),
+            y: document.getElementById("obrez-y"),
+            sirina: document.getElementById("obrez-sirina"),
+            visina: document.getElementById("obrez-visina")
+        };
+
+        let slika = null;
+        let imeSlike = "slika";
+        let izrez = null;
+        let vlecenje = null;
+        let nalaganje = 0;
+
+        function omeji(vrednost, minimum, maksimum) {
+            return Math.max(minimum, Math.min(maksimum, vrednost));
+        }
+
+        function posodobiPolja() {
+            polja.x.value = izrez.x;
+            polja.y.value = izrez.y;
+            polja.sirina.value = izrez.sirina;
+            polja.visina.value = izrez.visina;
+
+            polja.x.max = slika.naturalWidth - 1;
+            polja.y.max = slika.naturalHeight - 1;
+            polja.sirina.max = slika.naturalWidth - izrez.x;
+            polja.visina.max = slika.naturalHeight - izrez.y;
+        }
+
+        function narisi() {
+            if (!slika || !izrez) return;
+
+            const faktorX = platno.width / slika.naturalWidth;
+            const faktorY = platno.height / slika.naturalHeight;
+
+            const x = izrez.x * faktorX;
+            const y = izrez.y * faktorY;
+            const sirina = izrez.sirina * faktorX;
+            const visina = izrez.visina * faktorY;
+
+            ctx.clearRect(0, 0, platno.width, platno.height);
+            ctx.drawImage(slika, 0, 0, platno.width, platno.height);
+
+            // Zatemnimo območje zunaj izreza.
+            ctx.fillStyle = "rgba(32, 35, 51, 0.55)";
+            ctx.fillRect(0, 0, platno.width, y);
+            ctx.fillRect(0, y + visina, platno.width,
+                         platno.height - y - visina);
+            ctx.fillRect(0, y, x, visina);
+            ctx.fillRect(x + sirina, y,
+                         platno.width - x - sirina, visina);
+
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 3;
+            ctx.setLineDash([]);
+            ctx.strokeRect(x, y, sirina, visina);
+
+            ctx.strokeStyle = "#202333";
+            ctx.lineWidth = 1;
+            ctx.setLineDash([6, 6]);
+            ctx.strokeRect(x, y, sirina, visina);
+            ctx.setLineDash([]);
+        }
+
+        function izberiCelo() {
+            if (!slika) return;
+
+            izrez = {
+                x: 0,
+                y: 0,
+                sirina: slika.naturalWidth,
+                visina: slika.naturalHeight
+            };
+
+            napaka.textContent = "";
+            status.textContent = "";
+            posodobiPolja();
+            narisi();
+        }
+
+        datoteka.addEventListener("change", async () => {
+            const trenutniPoskus = ++nalaganje;
+            const file = datoteka.files[0];
+
+            slika = null;
+            izrez = null;
+            vlecenje = null;
+            delavnica.hidden = true;
+            napaka.textContent = "";
+            status.textContent = "";
+            podatki.textContent = "Največja velikost datoteke je 20 MB.";
+
+            if (!file) return;
+
+            const dovoljeniTipi = [
+                "image/png",
+                "image/jpeg",
+                "image/webp"
+            ];
+
+            if (!dovoljeniTipi.includes(file.type)) {
+                napaka.textContent = "Izberi sliko PNG, JPEG ali WebP.";
+                return;
+            }
+
+            if (file.size > 20 * 1024 * 1024) {
+                napaka.textContent = "Datoteka je prevelika. Omejitev je 20 MB.";
+                return;
+            }
+
+            const url = URL.createObjectURL(file);
+
+            try {
+                const novaSlika = new Image();
+
+                await new Promise((resolve, reject) => {
+                    novaSlika.onload = resolve;
+                    novaSlika.onerror = reject;
+                    novaSlika.src = url;
+                });
+
+                if (trenutniPoskus !== nalaganje) return;
+
+                const sirina = novaSlika.naturalWidth;
+                const visina = novaSlika.naturalHeight;
+
+                if (!sirina || !visina ||
+                    sirina * visina > 25000000 ||
+                    sirina > 16000 || visina > 16000) {
+                    throw new Error(
+                        "Slika je prevelika. Uporabi največ 25 milijonov " +
+                        "slikovnih pik in največ 16.000 px na posamezni stranici."
+                    );
+                }
+
+                slika = novaSlika;
+                imeSlike = file.name.replace(/\.[^.]+$/, "") || "slika";
+
+                // Predogled omejimo; izvoz uporablja originalno sliko.
+                const merilo = Math.min(1, 1000 / sirina, 700 / visina);
+                platno.width = Math.max(1, Math.round(sirina * merilo));
+                platno.height = Math.max(1, Math.round(visina * merilo));
+
+                podatki.textContent = `${file.name} — ${sirina} × ${visina} px`;
+                delavnica.hidden = false;
+                izberiCelo();
+            } catch (error) {
+                if (trenutniPoskus !== nalaganje) return;
+
+                napaka.textContent = error instanceof Error
+                    ? error.message
+                    : "Slike ni mogoče odpreti. Poskusi z drugo datoteko.";
+            } finally {
+                URL.revokeObjectURL(url);
+            }
+        });
+
+        function tockaNaSliki(event) {
+            const rect = platno.getBoundingClientRect();
+
+            return {
+                x: omeji(
+                    Math.round(
+                        (event.clientX - rect.left) /
+                        rect.width * slika.naturalWidth
+                    ),
+                    0,
+                    slika.naturalWidth
+                ),
+                y: omeji(
+                    Math.round(
+                        (event.clientY - rect.top) /
+                        rect.height * slika.naturalHeight
+                    ),
+                    0,
+                    slika.naturalHeight
+                )
+            };
+        }
+
+        platno.addEventListener("pointerdown", event => {
+            if (!slika || prenesi.disabled || !event.isPrimary) return;
+            if (event.pointerType === "mouse" && event.button !== 0) return;
+
+            event.preventDefault();
+
+            vlecenje = {
+                id: event.pointerId,
+                zacetek: tockaNaSliki(event)
+            };
+
+            platno.setPointerCapture(event.pointerId);
+            napaka.textContent = "";
+            status.textContent = "";
+        });
+
+        function posodobiVlecenje(event) {
+            if (!vlecenje || event.pointerId !== vlecenje.id || !slika) return;
+
+            const konec = tockaNaSliki(event);
+            const zacetek = vlecenje.zacetek;
+
+            const x = Math.min(
+                Math.min(zacetek.x, konec.x),
+                slika.naturalWidth - 1
+            );
+
+            const y = Math.min(
+                Math.min(zacetek.y, konec.y),
+                slika.naturalHeight - 1
+            );
+
+            izrez = {
+                x,
+                y,
+                sirina: omeji(
+                    Math.abs(konec.x - zacetek.x),
+                    1,
+                    slika.naturalWidth - x
+                ),
+                visina: omeji(
+                    Math.abs(konec.y - zacetek.y),
+                    1,
+                    slika.naturalHeight - y
+                )
+            };
+
+            posodobiPolja();
+            narisi();
+        }
+
+        platno.addEventListener("pointermove", posodobiVlecenje);
+
+        platno.addEventListener("pointerup", event => {
+            if (!vlecenje || event.pointerId !== vlecenje.id) return;
+            posodobiVlecenje(event);
+            vlecenje = null;
+        });
+
+        platno.addEventListener("pointercancel", () => {
+            vlecenje = null;
+        });
+
+        platno.addEventListener("lostpointercapture", () => {
+            vlecenje = null;
+        });
+
+        function preberiPolja() {
+            if (!slika) return false;
+
+            const vrednosti = Object.values(polja).map(
+                polje => polje.valueAsNumber
+            );
+
+            if (!vrednosti.every(Number.isInteger)) {
+                napaka.textContent = "V vsa polja vnesi cela števila.";
+                return false;
+            }
+
+            const [x, y, sirina, visina] = vrednosti;
+
+            if (x < 0 || y < 0 || sirina < 1 || visina < 1 ||
+                x + sirina > slika.naturalWidth ||
+                y + visina > slika.naturalHeight) {
+                napaka.textContent =
+                    "Izrez mora biti znotraj slike in velik najmanj 1 × 1 px.";
+                return false;
+            }
+
+            izrez = { x, y, sirina, visina };
+            napaka.textContent = "";
+            status.textContent = "";
+            posodobiPolja();
+            narisi();
+            return true;
+        }
+
+        Object.values(polja).forEach(polje => {
+            polje.addEventListener("input", preberiPolja);
+        });
+
+        cela.addEventListener("click", izberiCelo);
+
+        obrazec.addEventListener("submit", async event => {
+            event.preventDefault();
+
+            if (!preberiPolja()) return;
+
+            prenesi.disabled = true;
+            cela.disabled = true;
+            datoteka.disabled = true;
+            Object.values(polja).forEach(polje => polje.disabled = true);
+            status.textContent = "Pripravljam izrez …";
+
+            const izvoz = document.createElement("canvas");
+
+            try {
+                izvoz.width = izrez.sirina;
+                izvoz.height = izrez.visina;
+
+                const izvozCtx = izvoz.getContext("2d");
+                if (!izvozCtx) throw new Error("Izreza ni mogoče ustvariti.");
+
+                izvozCtx.drawImage(
+                    slika,
+                    izrez.x,
+                    izrez.y,
+                    izrez.sirina,
+                    izrez.visina,
+                    0,
+                    0,
+                    izrez.sirina,
+                    izrez.visina
+                );
+
+                const blob = await new Promise(resolve => {
+                    izvoz.toBlob(resolve, "image/png");
+                });
+
+                if (!blob) throw new Error("Izvoz slike ni uspel.");
+
+                const url = URL.createObjectURL(blob);
+                const povezava = document.createElement("a");
+                povezava.href = url;
+                povezava.download = `${imeSlike}-izrez.png`;
+                document.body.appendChild(povezava);
+                povezava.click();
+                povezava.remove();
+
+                setTimeout(() => URL.revokeObjectURL(url), 30000);
+                status.textContent =
+                    `Izrez ${izrez.sirina} × ${izrez.visina} px je pripravljen.`;
+            } catch (error) {
+                napaka.textContent = error.message || "Izvoz slike ni uspel.";
+                status.textContent = "";
+            } finally {
+                izvoz.width = 0;
+                izvoz.height = 0;
+                prenesi.disabled = false;
+                cela.disabled = false;
+                datoteka.disabled = false;
+                Object.values(polja).forEach(polje => polje.disabled = false);
+            }
+        });
+    </script>
+</body>
+</html>

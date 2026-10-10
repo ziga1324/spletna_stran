@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Preveri kontrast med barvo besedila in ozadja ter prikaži rezultat za ravni AA in AAA.">
+    <title>Preverjanje barvnega kontrasta</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>Preverjanje barvnega kontrasta</h1>
+        <p>Preveri, kako dobro se besedilo loči od ozadja.</p>
+        <a href="../index.html">← Nazaj na začetno stran</a>
+    </header>
+
+    <main>
+        <section class="kalkulator" aria-labelledby="naslov">
+            <h2 id="naslov">Izberi barvi</h2>
+
+            <form id="obrazec">
+                <label for="besedilo-hex">Barva besedila — HEX</label>
+                <div class="kontrast-vnos">
+                    <input id="besedilo-hex" type="text"
+                           value="#202333" maxlength="7"
+                           autocomplete="off" spellcheck="false" required>
+                    <input id="besedilo-barva" type="color"
+                           value="#202333" aria-label="Izberi barvo besedila">
+                </div>
+
+                <label for="ozadje-hex">Barva ozadja — HEX</label>
+                <div class="kontrast-vnos">
+                    <input id="ozadje-hex" type="text"
+                           value="#fff5bf" maxlength="7"
+                           autocomplete="off" spellcheck="false" required>
+                    <input id="ozadje-barva" type="color"
+                           value="#fff5bf" aria-label="Izberi barvo ozadja">
+                </div>
+
+                <div class="gumbi">
+                    <button type="submit">Preveri kontrast</button>
+                    <button id="zamenjaj" type="button">Zamenjaj barvi</button>
+                    <button type="reset">Ponastavi</button>
+                </div>
+            </form>
+
+            <p id="napaka" class="napaka" role="alert"></p>
+            <div id="rezultat" class="rezultat" aria-live="polite"></div>
+
+            <div id="predogled" class="kontrast-predogled" hidden>
+                <p class="kontrast-veliko">Primer velikega besedila</p>
+                <p>
+                    To je primer običajnega besedila z izbranima barvama.
+                    Preveri, ali ga lahko udobno prebereš.
+                </p>
+            </div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kaj pomeni rezultat?</h2>
+            <p>
+                Kontrastno razmerje je med 1 : 1 in 21 : 1.
+                Večja vrednost pomeni večjo razliko v relativni
+                svetilnosti barv.
+            </p>
+
+            <ul>
+                <li><strong>AA — običajno besedilo:</strong> najmanj 4,5 : 1.</li>
+                <li><strong>AA — veliko besedilo:</strong> najmanj 3 : 1.</li>
+                <li><strong>AAA — običajno besedilo:</strong> najmanj 7 : 1.</li>
+                <li><strong>AAA — veliko besedilo:</strong> najmanj 4,5 : 1.</li>
+            </ul>
+
+            <p>
+                Veliko besedilo pomeni najmanj 18 pt oziroma 24 CSS px
+                ali najmanj 14 pt oziroma približno 18,67 CSS px,
+                kadar je krepko.
+            </p>
+
+            <p>
+                Podprte so neprosojne barve sRGB v zapisu HEX:
+                #RGB ali #RRGGBB. Prosojnost, slike in prelivi niso
+                vključeni v izračun.
+                Rezultat preverja kontrast, ne celotne dostopnosti strani.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Preverjanje barvnega kontrasta</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("obrazec");
+        const besediloHex = document.getElementById("besedilo-hex");
+        const besediloBarva = document.getElementById("besedilo-barva");
+        const ozadjeHex = document.getElementById("ozadje-hex");
+        const ozadjeBarva = document.getElementById("ozadje-barva");
+        const napaka = document.getElementById("napaka");
+        const rezultat = document.getElementById("rezultat");
+        const predogled = document.getElementById("predogled");
+
+        function normaliziraj(vnos) {
+            let zapis = vnos.trim().replace(/^#/, "");
+
+            if (/^[a-f0-9]{3}$/i.test(zapis)) {
+                zapis = [...zapis].map(znak => znak + znak).join("");
+            }
+
+            if (!/^[a-f0-9]{6}$/i.test(zapis)) {
+                throw new Error(
+                    "Vnesi veljavno barvo HEX, na primer #202333 ali #fff."
+                );
+            }
+
+            return "#" + zapis.toLowerCase();
+        }
+
+        function svetilnost(hex) {
+            const rgb = [1, 3, 5].map(polozaj =>
+                parseInt(hex.slice(polozaj, polozaj + 2), 16) / 255
+            );
+
+            const linearno = rgb.map(v =>
+                v <= 0.04045
+                    ? v / 12.92
+                    : ((v + 0.055) / 1.055) ** 2.4
+            );
+
+            return (
+                0.2126 * linearno[0] +
+                0.7152 * linearno[1] +
+                0.0722 * linearno[2]
+            );
+        }
+
+        function pocisti() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+            predogled.hidden = true;
+        }
+
+        function prikazi() {
+            pocisti();
+
+            try {
+                const barvaBesedila = normaliziraj(besediloHex.value);
+                const barvaOzadja = normaliziraj(ozadjeHex.value);
+
+                besediloBarva.value = barvaBesedila;
+                ozadjeBarva.value = barvaOzadja;
+
+                const l1 = svetilnost(barvaBesedila);
+                const l2 = svetilnost(barvaOzadja);
+
+                const razmerje =
+                    (Math.max(l1, l2) + 0.05) /
+                    (Math.min(l1, l2) + 0.05);
+
+                const naslov = document.createElement("p");
+                naslov.className = "kontrast-razmerje";
+                naslov.textContent =
+                    razmerje.toLocaleString("sl-SI", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }) + " : 1";
+
+                const opomba = document.createElement("p");
+                opomba.textContent =
+                    "Prikaz je zaokrožen; preverjanje pragov uporablja " +
+                    "nezaokroženo vrednost.";
+
+                const tabela = document.createElement("table");
+                tabela.className = "kontrast-tabela";
+                const telo = document.createElement("tbody");
+
+                const pravila = [
+                    ["AA — običajno besedilo", 4.5],
+                    ["AA — veliko besedilo", 3],
+                    ["AAA — običajno besedilo", 7],
+                    ["AAA — veliko besedilo", 4.5]
+                ];
+
+                for (const [ime, prag] of pravila) {
+                    const tr = document.createElement("tr");
+                    const th = document.createElement("th");
+                    const td = document.createElement("td");
+                    const ustreza = razmerje >= prag;
+
+                    th.scope = "row";
+                    th.textContent = ime;
+                    td.textContent = ustreza ? "Ustreza" : "Ne ustreza";
+                    td.className = ustreza
+                        ? "kontrast-uspeh"
+                        : "kontrast-neuspeh";
+
+                    tr.append(th, td);
+                    telo.appendChild(tr);
+                }
+
+                tabela.appendChild(telo);
+                rezultat.append(naslov, opomba, tabela);
+
+                predogled.style.color = barvaBesedila;
+                predogled.style.backgroundColor = barvaOzadja;
+                predogled.hidden = false;
+            } catch (error) {
+                napaka.textContent = error.message;
+            }
+        }
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+
+            prikazi();
+
+            if (!napaka.textContent) {
+                besediloHex.value = normaliziraj(besediloHex.value);
+                ozadjeHex.value = normaliziraj(ozadjeHex.value);
+            }
+        });
+
+        besediloBarva.addEventListener("input", () => {
+            besediloHex.value = besediloBarva.value;
+            prikazi();
+        });
+
+        ozadjeBarva.addEventListener("input", () => {
+            ozadjeHex.value = ozadjeBarva.value;
+            prikazi();
+        });
+
+        // Med pisanjem skrij stari rezultat.
+        besediloHex.addEventListener("input", pocisti);
+        ozadjeHex.addEventListener("input", pocisti);
+
+        document.getElementById("zamenjaj").addEventListener("click", () => {
+            [besediloHex.value, ozadjeHex.value] =
+                [ozadjeHex.value, besediloHex.value];
+
+            prikazi();
+        });
+
+        obrazec.addEventListener("reset", () => {
+            pocisti();
+            setTimeout(prikazi, 0);
+        });
+
+        prikazi();
+    </script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Količina talne obloge | Sidebit</title>
+    <meta name="description"
+          content="Izračunaj potrebno količino talne obloge, število paketov in strošek materiala.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Količina talne obloge</h1>
+        <p>Preveri, koliko paketov laminata, parketa ali druge obloge potrebuješ.</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Podatki za izračun</h2>
+
+            <form id="tla-obrazec">
+                <label for="tla-nacin">Način vnosa površine</label>
+                <select id="tla-nacin">
+                    <option value="mere">Dolžina in širina prostora</option>
+                    <option value="povrsina">Skupna površina tal</option>
+                </select>
+
+                <div id="tla-mere" class="tla-polja">
+                    <div>
+                        <label for="tla-dolzina">Dolžina prostora (m)</label>
+                        <input id="tla-dolzina" type="text"
+                               inputmode="decimal" maxlength="20"
+                               placeholder="Na primer: 5" required>
+                    </div>
+
+                    <div>
+                        <label for="tla-sirina">Širina prostora (m)</label>
+                        <input id="tla-sirina" type="text"
+                               inputmode="decimal" maxlength="20"
+                               placeholder="Na primer: 4" required>
+                    </div>
+                </div>
+
+                <div id="tla-povrsina-polje" hidden>
+                    <label for="tla-povrsina">Skupna površina (m²)</label>
+                    <input id="tla-povrsina" type="text"
+                           inputmode="decimal" maxlength="20"
+                           placeholder="Na primer: 32,5" disabled>
+                </div>
+
+                <label for="tla-rezerva">Rezerva za odrezke (%)</label>
+                <input id="tla-rezerva" type="text"
+                       inputmode="decimal" maxlength="20"
+                       value="10" required>
+
+                <label for="tla-paket">Površina v enem paketu (m²)</label>
+                <input id="tla-paket" type="text"
+                       inputmode="decimal" maxlength="20"
+                       placeholder="Podatek z embalaže, na primer: 2,2"
+                       required>
+
+                <label for="tla-cena">
+                    Cena za m² (€) — neobvezno
+                </label>
+                <input id="tla-cena" type="text"
+                       inputmode="decimal" maxlength="20"
+                       placeholder="Na primer: 18,90">
+
+                <p class="tla-navodilo">
+                    Uporabi decimalno vejico ali piko, brez ločil tisočic.
+                    Pri več prostorih lahko vneseš njihovo skupno površino.
+                </p>
+
+                <div class="gumbi">
+                    <button type="submit">Izračunaj</button>
+                    <button type="reset">Ponastavi</button>
+                </div>
+            </form>
+
+            <p id="tla-napaka" class="napaka" role="alert"></p>
+
+            <div id="tla-rezultat" class="rezultat"
+                 aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako poteka izračun?</h2>
+            <p>
+                Površino pravokotnega prostora izračunamo kot dolžina × širina.
+                Prištejemo izbrano rezervo in dobljeno količino delimo
+                s površino v enem paketu. Število paketov zaokrožimo navzgor.
+            </p>
+            <p>
+                Če vneseš ceno za m², jo pomnožimo s površino vseh kupljenih
+                paketov. Strošek tako vključuje tudi material, ki ostane
+                zaradi zaokroževanja na cele pakete.
+            </p>
+            <p>
+                Privzeta rezerva je nastavljiva. Prilagodi jo obliki prostora,
+                načinu polaganja in navodilom proizvajalca.
+                Izračun ne načrtuje posameznih odrezkov in ne vključuje
+                podlage, lepil, zaključnih letev ali polaganja.
+                Za obloge v roli je treba preveriti tudi širino role
+                in razporeditev kosov.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const obrazec = document.getElementById("tla-obrazec");
+        const nacin = document.getElementById("tla-nacin");
+        const mere = document.getElementById("tla-mere");
+        const povrsinaPolje = document.getElementById("tla-povrsina-polje");
+        const dolzinaVnos = document.getElementById("tla-dolzina");
+        const sirinaVnos = document.getElementById("tla-sirina");
+        const povrsinaVnos = document.getElementById("tla-povrsina");
+        const napaka = document.getElementById("tla-napaka");
+        const rezultat = document.getElementById("tla-rezultat");
+
+        const stevilo = new Intl.NumberFormat("sl-SI", {
+            maximumFractionDigits: 3
+        });
+
+        const valuta = new Intl.NumberFormat("sl-SI", {
+            style: "currency",
+            currency: "EUR"
+        });
+
+        function preberiStevilo(id) {
+            const besedilo = document.getElementById(id).value.trim();
+
+            if (!/^\d+(?:[.,]\d+)?$/.test(besedilo)) return null;
+
+            const vrednost = Number(besedilo.replace(",", "."));
+            return Number.isFinite(vrednost) ? vrednost : null;
+        }
+
+        function pocisti() {
+            napaka.textContent = "";
+            rezultat.replaceChildren();
+        }
+
+        function prilagodiNacin() {
+            const vnosMer = nacin.value === "mere";
+
+            mere.hidden = !vnosMer;
+            povrsinaPolje.hidden = vnosMer;
+
+            dolzinaVnos.disabled = !vnosMer;
+            sirinaVnos.disabled = !vnosMer;
+            dolzinaVnos.required = vnosMer;
+            sirinaVnos.required = vnosMer;
+
+            povrsinaVnos.disabled = vnosMer;
+            povrsinaVnos.required = !vnosMer;
+        }
+
+        function kartica(naslov, vrednost, poudarek = false) {
+            const element = document.createElement("div");
+            element.className = "tla-kartica";
+
+            if (poudarek) element.classList.add("tla-poudarek");
+
+            const h3 = document.createElement("h3");
+            h3.textContent = naslov;
+
+            const p = document.createElement("p");
+            p.textContent = vrednost;
+
+            element.append(h3, p);
+            return element;
+        }
+
+        nacin.addEventListener("change", () => {
+            prilagodiNacin();
+            pocisti();
+        });
+
+        obrazec.addEventListener("input", pocisti);
+
+        obrazec.addEventListener("reset", () => {
+            pocisti();
+            requestAnimationFrame(prilagodiNacin);
+        });
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            pocisti();
+
+            let povrsina;
+
+            if (nacin.value === "mere") {
+                const dolzina = preberiStevilo("tla-dolzina");
+                const sirina = preberiStevilo("tla-sirina");
+
+                if ([dolzina, sirina].some(
+                    v => v === null || v <= 0 || v > 1000
+                )) {
+                    napaka.textContent =
+                        "Dolžina in širina morata biti nad 0 in največ 1000 m.";
+                    return;
+                }
+
+                povrsina = dolzina * sirina;
+            } else {
+                povrsina = preberiStevilo("tla-povrsina");
+            }
+
+            if (povrsina === null || povrsina <= 0 || povrsina > 1000000) {
+                napaka.textContent =
+                    "Površina mora biti nad 0 in največ 1.000.000 m².";
+                return;
+            }
+
+            const rezerva = preberiStevilo("tla-rezerva");
+            const paket = preberiStevilo("tla-paket");
+
+            const cenaBesedilo = document.getElementById("tla-cena")
+                .value.trim();
+            const cena = cenaBesedilo ? preberiStevilo("tla-cena") : null;
+
+            if (rezerva === null || rezerva < 0 || rezerva > 100) {
+                napaka.textContent = "Rezerva mora biti med 0 in 100 %.";
+                return;
+            }
+
+            if (paket === null || paket < 0.001 || paket > 10000) {
+                napaka.textContent =
+                    "Površina paketa mora biti med 0,001 in 10.000 m².";
+                return;
+            }
+
+            if (cenaBesedilo &&
+                (cena === null || cena < 0 || cena > 1000000)) {
+                napaka.textContent =
+                    "Cena mora biti med 0 in 1.000.000 € za m².";
+                return;
+            }
+
+            const potrebnaPovrsina = povrsina * (1 + rezerva / 100);
+            const razmerje = potrebnaPovrsina / paket;
+
+            // Preprečimo dodaten paket zaradi drobne računske napake.
+            const najblizjeCelo = Math.round(razmerje);
+            const stabilnoRazmerje =
+                Math.abs(razmerje - najblizjeCelo) <=
+                Number.EPSILON * Math.max(1, razmerje) * 8
+                    ? najblizjeCelo
+                    : razmerje;
+
+            const paketi = Math.max(1, Math.ceil(stabilnoRazmerje));
+            const kupljenaPovrsina = paketi * paket;
+            const visek = Math.max(0, kupljenaPovrsina - povrsina);
+
+            const naslov = document.createElement("h2");
+            naslov.textContent = "Potrebna količina obloge";
+
+            const mreza = document.createElement("div");
+            mreza.className = "tla-mreza";
+
+            mreza.append(
+                kartica("Površina tal",
+                    `${stevilo.format(povrsina)} m²`),
+                kartica("Površina z rezervo",
+                    `${stevilo.format(potrebnaPovrsina)} m²`),
+                kartica("Število paketov",
+                    paketi.toLocaleString("sl-SI"), true),
+                kartica("Kupljena površina",
+                    `${stevilo.format(kupljenaPovrsina)} m²`, true),
+                kartica("Material nad površino tal",
+                    `${stevilo.format(visek)} m²`)
+            );
+
+            if (cena !== null) {
+                mreza.appendChild(
+                    kartica(
+                        "Strošek obloge",
+                        valuta.format(kupljenaPovrsina * cena),
+                        true
+                    )
+                );
+            }
+
+            const opis = document.createElement("p");
+            opis.className = "tla-opomba";
+            opis.textContent =
+                `Potrebuješ ${paketi.toLocaleString("sl-SI")} paketov ` +
+                `po ${stevilo.format(paket)} m². ` +
+                "Material nad površino tal vključuje rezervo za odrezke " +
+                "in dodatno količino zaradi celih paketov. " +
+                "Prikazane površine so zaokrožene; število paketov je " +
+                "izračunano iz nezaokroženih vrednosti.";
+
+            rezultat.append(naslov, mreza, opis);
+        });
+
+        prilagodiNacin();
+    </script>
+</body>
+</html>
