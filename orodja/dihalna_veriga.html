@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dihalna veriga — razlaga in naloge | Sidebit</title>
+    <meta name="description"
+          content="Gimnazijska razlaga dihalne verige, protonskega gradienta, kemiosmoze in nastajanja ATP.">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">Nazaj na vsa orodja</a>
+        <h1>Dihalna veriga</h1>
+        <p>Kako prenos elektronov omogoči nastajanje ATP?</p>
+    </header>
+
+    <main>
+        <section class="kalkulator">
+            <h2>Kaj je dihalna veriga?</h2>
+
+            <p>
+                Dihalna veriga je zaporedje prenašalcev elektronov.
+                V evkariontskih celicah je na notranji membrani
+                mitohondrija. Elektrone prejema iz NADH in prek
+                kompleksa II tudi iz oksidacije sukcinata, pri kateri
+                sodeluje FAD.
+            </p>
+
+            <p>
+                Pri prenosu elektronov se sprošča energija.
+                Kompleksi I, III in IV jo uporabijo za premikanje
+                protonov H⁺ iz matriksa v medmembranski prostor.
+                Kompleks II protonov ne črpa.
+            </p>
+
+            <div class="dv-poudarek">
+                <strong>Dihalna veriga ustvari protonski gradient.</strong>
+                <p>
+                    ATP-sintaza nato izkoristi vračanje H⁺ v matriks
+                    za nastajanje ATP.
+                </p>
+            </div>
+
+            <p>
+                Dihalna veriga in kemiosmoza skupaj sestavljata
+                oksidativno fosforilacijo.
+            </p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Razišči prenos elektronov</h2>
+
+            <label for="dv-vstop">Izberi pot elektronov</label>
+            <select id="dv-vstop">
+                <option value="nadh">Iz NADH — vstop pri kompleksu I</option>
+                <option value="fad">Prek kompleksa II — pot, povezana s FAD</option>
+            </select>
+
+            <div class="dv-pot" id="dv-pot" aria-live="polite"></div>
+
+            <p class="dv-opomba">
+                Q pomeni ubikinon, citokrom c pa je majhen proteinski
+                prenašalec elektronov. ATP-sintaza ni člen te poti elektronov.
+            </p>
+
+            <div class="dv-kompleksi">
+                <button type="button" data-del="I" aria-pressed="true">
+                    Kompleks I
+                </button>
+                <button type="button" data-del="II" aria-pressed="false">
+                    Kompleks II
+                </button>
+                <button type="button" data-del="III" aria-pressed="false">
+                    Kompleks III
+                </button>
+                <button type="button" data-del="IV" aria-pressed="false">
+                    Kompleks IV
+                </button>
+                <button type="button" data-del="ATP" aria-pressed="false">
+                    ATP-sintaza
+                </button>
+            </div>
+
+            <article class="dv-predogled">
+                <h3 id="dv-naslov"></h3>
+                <p id="dv-opis" role="status"></p>
+                <strong id="dv-vloga"></strong>
+            </article>
+        </section>
+
+        <section class="razlaga">
+            <h2>Protonski gradient in kemiosmoza</h2>
+
+            <div class="dv-membrana">
+                <div class="dv-prostor">
+                    <h3>Medmembranski prostor</h3>
+                    <p>Več H⁺; glede na matriks bolj pozitivna stran.</p>
+                    <div class="dv-protoni" aria-hidden="true">
+                        <span>H⁺</span><span>H⁺</span><span>H⁺</span>
+                        <span>H⁺</span><span>H⁺</span><span>H⁺</span>
+                    </div>
+                </div>
+
+                <div class="dv-meja">
+                    Notranja membrana mitohondrija
+                </div>
+
+                <div class="dv-tokovi">
+                    <div>
+                        <strong>↑ Črpanje H⁺</strong>
+                        <span>Kompleksi I, III in IV</span>
+                    </div>
+                    <div>
+                        <strong>↓ Vračanje H⁺</strong>
+                        <span>Skozi ATP-sintazo</span>
+                    </div>
+                </div>
+
+                <div class="dv-matriks">
+                    <h3>Matriks</h3>
+                    <p>Manj H⁺; glede na medmembranski prostor bolj negativna stran.</p>
+                    <strong>ADP + Pᵢ → ATP</strong>
+                </div>
+            </div>
+
+            <p class="dv-opomba">
+                Prikaz je shematski. Število krogcev ne predstavlja
+                dejanske koncentracije ali razmerja protonov.
+                Pᵢ pomeni anorganski fosfat.
+            </p>
+
+            <p>
+                Elektrokemijski gradient ima dva dela:
+                razliko v koncentraciji H⁺ in razliko v električnem potencialu.
+                Notranja membrana omejuje prost prehod protonov,
+                zato se gradient lahko vzdržuje.
+            </p>
+
+            <p>
+                Vračanje H⁺ skozi ATP-sintazo v smeri gradienta
+                poganja njeno delovanje. Tako se energija gradienta
+                uporabi za sintezo ATP. Ta povezava se imenuje kemiosmoza.
+            </p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Zakaj potrebujemo kisik?</h2>
+
+            <div class="dv-poudarek">
+                Kisik je končni sprejemnik elektronov.
+            </div>
+
+            <p>
+                Na kompleksu IV kisik sprejme elektrone in se skupaj
+                s protoni pretvori v vodo:
+            </p>
+
+            <div class="dv-enacba">
+                O₂ + 4 e⁻ + 4 H⁺ → 2 H₂O
+            </div>
+
+            <p>
+                Če kisika ni, se prenos elektronov ustavi.
+                Obnova NAD⁺ in oksidiranih prenašalcev je motena,
+                črpanje protonov preneha in oksidativna fosforilacija
+                ne more vzdrževati tvorbe ATP.
+            </p>
+
+            <p>
+                Glikoliza lahko še poteka, če se NAD⁺ obnavlja
+                po drugi poti, na primer pri mlečnokislinskem vrenju.
+            </p>
+        </section>
+
+        <section class="razlaga">
+            <h2>Zakaj NADH omogoči več ATP kot pot prek FAD?</h2>
+
+            <div class="dv-primerjava">
+                <article>
+                    <h3>NADH</h3>
+                    <p>
+                        Elektroni vstopijo pri kompleksu I in prehajajo
+                        mimo treh mest črpanja protonov: I, III in IV.
+                    </p>
+                    <strong>Približno 2,5 ATP na mitohondrijski NADH.</strong>
+                </article>
+
+                <article>
+                    <h3>Pot prek kompleksa II</h3>
+                    <p>
+                        Elektroni obidejo kompleks I.
+                        Za črpanje protonov sodelujeta kompleksa III in IV.
+                    </p>
+                    <strong>Približno 1,5 ATP na par elektronov iz te poti.</strong>
+                </article>
+            </div>
+
+            <p class="dv-opomba">
+                To sta približni vrednosti. FAD v kompleksu II je vezan
+                na encim, zato ne potuje po celici kot prosti NADH.
+                V šolski bilanci se njegov prispevek pogosto označuje
+                kot prispevek FADH₂.
+            </p>
+
+            <p>
+                Pri popolni aerobni razgradnji ene glukoze nastane
+                približno 30–32 ATP skupaj, od tega približno 26–28
+                pri oksidativni fosforilaciji. Razlika je med drugim
+                povezana s prenosom elektronov citosolnega NADH
+                v mitohondrij.
+            </p>
+        </section>
+
+        <section class="kalkulator">
+            <h2>Preveri znanje</h2>
+
+            <form id="dv-naloge">
+                <label for="dv-q1">
+                    1. Kje je dihalna veriga v evkariontski celici?
+                </label>
+                <select id="dv-q1" required>
+                    <option value="">Izberi</option>
+                    <option value="notranja">Na notranji membrani mitohondrija</option>
+                    <option value="zunanja">Na zunanji membrani mitohondrija</option>
+                    <option value="jedro">V jedru</option>
+                </select>
+
+                <label for="dv-q2">
+                    2. Kateri kompleks ne črpa protonov?
+                </label>
+                <select id="dv-q2" required>
+                    <option value="">Izberi</option>
+                    <option value="I">Kompleks I</option>
+                    <option value="II">Kompleks II</option>
+                    <option value="III">Kompleks III</option>
+                    <option value="IV">Kompleks IV</option>
+                </select>
+
+                <label for="dv-q3">
+                    3. Kam kompleksi črpajo H⁺?
+                </label>
+                <select id="dv-q3" required>
+                    <option value="">Izberi</option>
+                    <option value="ven">Iz matriksa v medmembranski prostor</option>
+                    <option value="noter">Iz medmembranskega prostora v matriks</option>
+                </select>
+
+                <label for="dv-q4">
+                    4. Kaj neposredno poganja ATP-sintazo?
+                </label>
+                <select id="dv-q4" required>
+                    <option value="">Izberi</option>
+                    <option value="glukoza">Neposredna vezava glukoze</option>
+                    <option value="protoni">Tok H⁺ v smeri elektrokemijskega gradienta</option>
+                    <option value="co2">Sproščanje CO₂</option>
+                </select>
+
+                <label for="dv-q5">
+                    5. Kaj nastane pri redukciji kisika?
+                </label>
+                <select id="dv-q5" required>
+                    <option value="">Izberi</option>
+                    <option value="voda">Voda</option>
+                    <option value="co2">Ogljikov dioksid</option>
+                    <option value="piruvat">Piruvat</option>
+                </select>
+
+                <label for="dv-q6">
+                    6. Zakaj elektroni iz NADH praviloma omogočijo več ATP?
+                </label>
+                <select id="dv-q6" required>
+                    <option value="">Izberi</option>
+                    <option value="vec">
+                        Njihova pot vključuje tudi kompleks I, ki črpa H⁺
+                    </option>
+                    <option value="kisik">
+                        NADH neposredno ustvari kisik
+                    </option>
+                </select>
+
+                <div class="gumbi">
+                    <button type="submit">Preveri odgovore</button>
+                    <button type="reset">Poskusi znova</button>
+                </div>
+            </form>
+
+            <div id="dv-rezultat" class="rezultat" aria-live="polite"></div>
+        </section>
+
+        <section class="razlaga">
+            <h2>Naloga za razmislek</h2>
+            <p>
+                Snov omogoči prost prehod H⁺ skozi notranjo membrano,
+                mimo ATP-sintaze. Ali lahko prenos elektronov še poteka?
+                Kaj se zgodi z nastajanjem ATP?
+            </p>
+
+            <details class="dv-resitev">
+                <summary>Prikaži razlago</summary>
+                <p>
+                    Prenos elektronov lahko še poteka, če so na voljo
+                    elektroni in kisik. Protonski gradient pa se
+                    razprši, zato ATP-sintaza proizvede manj ATP.
+                    Prenos elektronov in sinteza ATP sta razklopljena;
+                    več energije se sprosti kot toplota.
+                </p>
+            </details>
+        </section>
+
+        <section class="razlaga">
+            <h2>Povezane razlage in viri</h2>
+            <ul>
+                <li><a href="glikoliza.html">Glikoliza</a></li>
+                <li><a href="krebsov_cikel.html">Krebsov cikel</a></li>
+                <li><a href="celicno_dihanje.html">Celično dihanje</a></li>
+                <li>
+                    <a href="https://www.ncbi.nlm.nih.gov/books/NBK26904/"
+                       target="_blank" rel="noopener noreferrer">
+                        NCBI Bookshelf: dihalna veriga in protonske črpalke
+                    </a>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>Sidebit — razlage in uporabna spletna orodja.</p>
+    </footer>
+
+    <script>
+        "use strict";
+
+        const deli = {
+            I: {
+                naslov: "Kompleks I",
+                opis:
+                    "Sprejme elektrone iz NADH in jih prenese na ubikinon Q. " +
+                    "NADH se oksidira v NAD⁺.",
+                vloga: "Črpa H⁺ iz matriksa v medmembranski prostor."
+            },
+            II: {
+                naslov: "Kompleks II",
+                opis:
+                    "Je tudi encim sukcinat-dehidrogenaza v Krebsovem ciklu. " +
+                    "Pri oksidaciji sukcinata v fumarat elektroni prek " +
+                    "vezanega FAD preidejo na ubikinon Q.",
+                vloga: "Ne črpa H⁺."
+            },
+            III: {
+                naslov: "Kompleks III",
+                opis:
+                    "Elektrone iz reducirane oblike ubikinona prenese " +
+                    "na citokrom c.",
+                vloga: "Prispeva k prenosu H⁺ v medmembranski prostor."
+            },
+            IV: {
+                naslov: "Kompleks IV",
+                opis:
+                    "Sprejme elektrone iz citokroma c in jih prenese " +
+                    "na kisik. Pri redukciji kisika nastane voda.",
+                vloga: "Črpa H⁺; kisik je končni sprejemnik elektronov."
+            },
+            ATP: {
+                naslov: "ATP-sintaza",
+                opis:
+                    "Protoni se skozi ta encim vračajo iz medmembranskega " +
+                    "prostora v matriks. Energija toka omogoča tvorbo ATP " +
+                    "iz ADP in anorganskega fosfata.",
+                vloga: "Uporablja gradient H⁺; ne prenaša elektronov po verigi."
+            }
+        };
+
+        function prikaziDel(kljuc) {
+            const del = deli[kljuc];
+            document.getElementById("dv-naslov").textContent = del.naslov;
+            document.getElementById("dv-opis").textContent = del.opis;
+            document.getElementById("dv-vloga").textContent = del.vloga;
+
+            document.querySelectorAll("[data-del]").forEach(gumb => {
+                gumb.setAttribute(
+                    "aria-pressed",
+                    String(gumb.dataset.del === kljuc)
+                );
+            });
+        }
+
+        document.querySelectorAll("[data-del]").forEach(gumb => {
+            gumb.addEventListener("click", () => {
+                prikaziDel(gumb.dataset.del);
+            });
+        });
+
+        function prikaziPot() {
+            const nadh = document.getElementById("dv-vstop").value === "nadh";
+
+            const koraki = nadh
+                ? ["NADH", "I", "Q", "III", "citokrom c", "IV", "O₂ → H₂O"]
+                : ["Sukcinat / FAD", "II", "Q", "III", "citokrom c", "IV", "O₂ → H₂O"];
+
+            const pot = document.getElementById("dv-pot");
+            pot.replaceChildren();
+
+            koraki.forEach((korak, indeks) => {
+                if (indeks > 0) {
+                    const puscica = document.createElement("span");
+                    puscica.textContent = "→";
+                    puscica.setAttribute("aria-hidden", "true");
+                    pot.appendChild(puscica);
+                }
+
+                const oznaka = document.createElement("strong");
+                oznaka.textContent = korak;
+                pot.appendChild(oznaka);
+            });
+        }
+
+        document.getElementById("dv-vstop")
+            .addEventListener("change", prikaziPot);
+
+        const obrazec = document.getElementById("dv-naloge");
+        const rezultat = document.getElementById("dv-rezultat");
+
+        obrazec.addEventListener("input", () => rezultat.replaceChildren());
+        obrazec.addEventListener("reset", () => rezultat.replaceChildren());
+
+        obrazec.addEventListener("submit", event => {
+            event.preventDefault();
+            rezultat.replaceChildren();
+
+            const odgovori = [
+                [
+                    document.getElementById("dv-q1").value === "notranja",
+                    "Dihalna veriga je na notranji membrani mitohondrija."
+                ],
+                [
+                    document.getElementById("dv-q2").value === "II",
+                    "Kompleks II prenaša elektrone, vendar ne črpa H⁺."
+                ],
+                [
+                    document.getElementById("dv-q3").value === "ven",
+                    "H⁺ se črpajo iz matriksa v medmembranski prostor."
+                ],
+                [
+                    document.getElementById("dv-q4").value === "protoni",
+                    "ATP-sintazo poganja tok H⁺ v smeri elektrokemijskega gradienta."
+                ],
+                [
+                    document.getElementById("dv-q5").value === "voda",
+                    "Kisik sprejme elektrone in se s H⁺ pretvori v vodo."
+                ],
+                [
+                    document.getElementById("dv-q6").value === "vec",
+                    "Pot iz NADH vključuje kompleks I, zato omogoča več črpanja H⁺."
+                ]
+            ];
+
+            const naslov = document.createElement("h2");
+            naslov.textContent =
+                `Rezultat: ${odgovori.filter(o => o[0]).length} od 6`;
+
+            const seznam = document.createElement("ol");
+            seznam.className = "dv-odgovori";
+
+            for (const [pravilno, razlaga] of odgovori) {
+                const li = document.createElement("li");
+                li.className = pravilno ? "dv-pravilno" : "dv-napacno";
+                li.textContent =
+                    `${pravilno ? "Pravilno." : "Ni pravilno."} ${razlaga}`;
+                seznam.appendChild(li);
+            }
+
+            rezultat.append(naslov, seznam);
+        });
+
+        prikaziDel("I");
+        prikaziPot();
+    </script>
+</body>
+</html>
