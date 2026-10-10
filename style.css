@@ -2082,3 +2082,65 @@ caption { margin-bottom: 12px; text-align: left; font-weight: bold; }
  .turnir-krog { margin-bottom:20px; box-shadow:none; break-inside:avoid; }
  .prioritete-kvadrant,.navada-kartica,.cas-projekt-kartica,.proracun-kartica,.pot-skupina { box-shadow:none; break-inside:avoid; }
 }
+
+
+/* Dodatki po pregledu dejanskih HTML datotek */
+.mreza,.primerjava-vnosi { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+.ocena-vrstica { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px; }
+.ocena-vrstica .ocena,.ocena-vrstica .utez { flex:1 1 130px; min-width:0; }
+.ocena-vrstica .odstrani { min-height:42px; padding:8px 12px; background:#ffd4df; }
+.urnik-ovoj,.skloni-ovoj,.matrika-ovoj,.molska-ovoj,.kemijska-ovoj,.igra-tabela-ovitek { max-width:100%; overflow:auto; margin-block:18px; }
+.urnik { min-width:760px; table-layout:fixed; }
+.urnik th,.urnik td { vertical-align:top; }
+.urnik input { padding:8px; margin-top:8px; }
+.urnik .barva-vnos { height:38px; }
+.samo-tisk,.samo-bralniki { display:none; }
+.matrika-tabela,.molska-tabela,.kemijska-tabela,.ohm-tabela,.poraba-tabela,.statistika-tabela,.skloni-tabela { width:100%; }
+.molska-vrednost,.gostota-vrednost,.redcenje-vrednost,.razpad-vrednost,.upor-vrednost { font-size:clamp(22px,4vw,32px); font-weight:bold; }
+.elektricni-vnos,.gostota-vnos,.redcenje-vnos,.kontrast-vnos { display:flex; align-items:center; gap:12px; }
+.elektricni-vnos input,.gostota-vnos input,.redcenje-vnos input,.kontrast-vnos input[type="text"] { flex:1; min-width:0; }
+.elektricni-vnos select,.gostota-vnos select,.redcenje-vnos select { flex:0 1 150px; }
+.kontrast-vnos input[type="color"] { flex:0 0 64px; width:64px; }
+.kontrast-predogled { margin-top:24px; padding:24px; border:3px solid #202333; border-radius:18px; }
+.kontrast-predogled p { color:inherit; }
+.kontrast-veliko { font-size:26px; font-weight:bold; }
+.kontrast-razmerje { font-size:32px; text-align:center; }
+.kontrast-tabela { margin-top:18px; }
+.kontrast-tabela td,.kontrast-tabela th { text-align:center; }
+.regex-besedilo { margin-top:24px; padding:20px; border:2px solid #202333; border-radius:14px; background:#fff9ed; white-space:pre-wrap; overflow-wrap:anywhere; font-family:monospace; }
+.regex-besedilo mark { background:#ffe58c; color:#202333; border-radius:3px; }
+.pdf-seznam,.pdf-strani,.slike-pdf-seznam { display:flex; flex-direction:column; gap:16px; padding:0; margin:20px 0; list-style:none; }
+.pdf-seznam li,.pdf-strani li,.slike-pdf-seznam li { padding:18px; border:2px solid #202333; border-radius:14px; background:#fff5bf; overflow-wrap:anywhere; }
+.pdf-seznam li:nth-child(even),.pdf-strani li:nth-child(even),.slike-pdf-seznam li:nth-child(even) { background:#dfd5ff; }
+.pdf-seznam .gumbi,.pdf-strani .gumbi,.slike-pdf-seznam .gumbi { margin-top:14px; }
+.primerjava-izpis { margin-top:20px; }
+.primerjava-vrstica { padding:12px; margin-bottom:8px; border:2px solid #202333; border-radius:10px; white-space:pre-wrap; overflow-wrap:anywhere; }
+.primerjava-vrstica.dodano { background:#c7f1e4; }
+.primerjava-vrstica.odstranjeno { background:#ffd4df; }
+.primerjava-vrstica.enako { background:#fff; }
+.primerjava-oznaka { display:block; margin-bottom:6px; font-size:12px; font-weight:bold; }
+.matematicni-zapis,.angleska-poved,.besedisce-poved,.nepravilni-glagol,.skloni-poved,.kemijska-enacba { margin:20px 0; padding:20px; border:2px solid #202333; border-radius:14px; background:#fff9ed; font-size:clamp(18px,3vw,26px); text-align:center; }
+.skloni-beseda { padding:2px 6px; background:#ffe58c; border-radius:6px; font-weight:bold; }
+.upor-prikaz { position:relative; display:flex; justify-content:center; align-items:center; min-height:120px; margin:24px 0; }
+.upor-zica { position:absolute; width:90%; height:8px; border:2px solid #202333; background:#bbb; }
+.upor-telo { position:relative; display:flex; align-items:stretch; justify-content:space-evenly; gap:12px; width:min(100%,300px); height:80px; padding:0 24px; border:3px solid #202333; border-radius:24px; background:#e6c79b; }
+.upor-obrocek { flex:0 1 22px; min-width:10px; border-inline:1px solid #202333; }
+.upor-toleranca { margin-left:24px; }
+#prenos:not([hidden]) { display:inline-block; margin-top:18px; padding:12px 18px; border:2px solid #202333; border-radius:12px; color:#202333; background:#c7f1e4; font-weight:bold; text-decoration:none; box-shadow:3px 3px 0 #202333; }
+#odtis,#rezultat-base64,#rezultat-url { font-family:monospace; overflow-wrap:anywhere; }
+#predogled-preliva { height:260px; }
+#navade-status,#pot-status,#cas-status,#proracun-status { overflow-wrap:anywhere; }
+input[type="checkbox"],input[type="radio"] { flex:0 0 20px; }
+@media (max-width:600px) {
+ .mreza,.primerjava-vnosi { grid-template-columns:1fr; }
+ .elektricni-vnos,.gostota-vnos,.redcenje-vnos { flex-wrap:wrap; }
+ .elektricni-vnos select,.gostota-vnos select,.redcenje-vnos select { flex:1 1 100%; }
+}
+@media print {
+ .urnik input,.urnik .barva-vnos { display:none; }
+ .urnik .samo-tisk { display:block; white-space:pre-wrap; }
+ .urnik { min-width:0; }
+ .urnik-sekcija { border:0; box-shadow:none; }
+ .urnik-ovoj { overflow:visible; }
+ .urnik-sekcija .samo-bralniki { display:none; }
+}
