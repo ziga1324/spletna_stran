@@ -1,695 +1,1265 @@
 <!DOCTYPE html>
+
 <html lang="sl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brezplačna spletna orodja</title>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Brezplačna spletna orodja</title>
+<script async="" crossorigin="anonymous" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6461788165201508"></script>
+<style>
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6461788165201508"
-     crossorigin="anonymous"></script>
-    <style>
 
-/* ZAČETNA STRAN */
+
+
+
+
 
 body.zacetna {
+
     --crta: #202333;
+
     --pointer-x: 0px;
+
     --pointer-y: 0px;
 
+
+
     position: relative;
+
     isolation: isolate;
+
     min-height: 100vh;
+
     margin: 0;
+
     color: var(--crta);
+
     background: #fff9ed;
+
 }
+
+
 
 .zacetna *,
+
 .zacetna *::before,
+
 .zacetna *::after {
+
     box-sizing: border-box;
+
 }
 
+
+
 .zacetna header,
+
 .zacetna main,
+
 .zacetna footer {
+
     width: min(calc(100% - 40px), 1120px);
+
     margin-inline: auto;
+
 }
+
+
 
 /* ANIMIRANO OZADJE */
 
+
+
 .zacetna::before,
+
 .zacetna::after {
+
     content: "";
+
     position: fixed;
+
     pointer-events: none;
+
 }
+
+
 
 .zacetna::before {
+
     inset: -20%;
+
     z-index: -2;
+
     opacity: 0.8;
+
     background:
+
         radial-gradient(
+
             circle at 18% 25%,
+
             #ffe58c 0,
+
             transparent 35%
+
         ),
+
         radial-gradient(
+
             circle at 80% 22%,
+
             #c8baff 0,
+
             transparent 38%
+
         ),
+
         radial-gradient(
+
             circle at 65% 75%,
+
             #a9ebdd 0,
+
             transparent 35%
+
         ),
+
         radial-gradient(
+
             circle at 15% 85%,
+
             #ffc7d5 0,
+
             transparent 32%
+
         );
 
+
+
     animation: zacetna-barve 16s ease-in-out infinite alternate;
+
     transition: filter 0.8s ease;
+
 }
+
+
 
 .zacetna::after {
+
     inset: 0;
+
     z-index: -1;
+
     background-image: radial-gradient(
+
         circle,
+
         rgb(32 35 51 / 16%) 1.5px,
+
         transparent 1.5px
+
     );
+
     background-size: 26px 26px;
+
     mask-image: none;
+
     opacity: 0.55;
+
 }
+
+
 
 .zacetna:has(.orodje:hover)::before {
+
     filter: hue-rotate(25deg) saturate(1.2);
+
 }
+
+
 
 @keyframes zacetna-barve {
+
     from {
+
         transform: translate(-3%, -2%) rotate(-4deg);
+
     }
 
+
+
     to {
+
         transform: translate(3%, 3%) rotate(5deg) scale(1.08);
+
     }
+
 }
+
+
 
 /* NASLOV IN UVOD */
 
+
+
 .zacetna header {
+
     padding: 48px 0 32px;
+
     text-align: center;
+
 }
+
+
 
 .zacetna header a {
+
     display: inline-block;
+
     padding: 10px 16px;
+
     border: 2px solid var(--crta);
+
     border-radius: 12px;
+
     background: #fff;
+
     color: var(--crta);
+
     box-shadow: 3px 3px 0 var(--crta);
+
     text-decoration: none;
+
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+
 }
+
+
 
 .zacetna header a:hover {
+
     transform: translate(-2px, -2px);
+
     box-shadow: 5px 5px 0 var(--crta);
+
 }
+
+
 
 .zacetna .uvod {
+
     position: relative;
+
     max-width: 850px;
+
     margin-inline: auto;
+
     padding: 40px 0 56px;
+
     text-align: center;
+
 }
+
+
 
 .zacetna .nalepka {
+
     display: inline-block;
+
     margin-bottom: 26px;
+
     padding: 9px 17px;
+
     border: 3px solid var(--crta);
+
     border-radius: 12px;
+
     background: #ffe58c;
+
     box-shadow: 4px 4px 0 var(--crta);
+
     font-size: 14px;
+
     font-weight: 800;
+
     transform: rotate(-3deg);
+
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+
 }
+
+
 
 .zacetna .nalepka:hover {
+
     transform: rotate(2deg) translateY(-3px);
+
     box-shadow: 5px 7px 0 var(--crta);
+
 }
+
+
 
 .zacetna h1 {
+
     margin: 0 0 24px;
+
     color: var(--crta);
+
     background: none;
+
     -webkit-text-fill-color: currentColor;
+
     font-size: clamp(42px, 7vw, 80px);
+
     letter-spacing: -0.055em;
+
     line-height: 1.08;
+
     text-align: center;
+
     text-wrap: balance;
+
 }
 
+
+
 .zacetna header p,
+
 .zacetna .uvod > p {
+
     max-width: 580px;
+
     margin: 24px auto 0;
+
     font-size: clamp(17px, 2vw, 21px);
+
     color: #46506a;
+
 }
+
+
 
 /* KATEGORIJE IN KARTICE */
 
+
+
 .zacetna .kategorija {
+
     margin-bottom: 44px;
+
 }
+
+
 
 .zacetna .kategorija > h2 {
+
     margin-bottom: 24px;
+
     text-align: center;
+
     font-size: clamp(23px, 3vw, 30px);
+
     line-height: 1.3;
+
 }
+
+
 
 .zacetna .orodja {
+
     display: grid;
+
     grid-template-columns: repeat(3, minmax(0, 1fr));
+
     gap: 28px;
+
     padding-bottom: 24px;
+
 }
+
+
 
 .zacetna .orodje {
+
     --kartica: #fff5bf;
 
+
+
     position: relative;
+
     display: flex;
+
     flex-direction: column;
+
     align-items: center;
+
     justify-content: center;
+
     min-width: 0;
+
     min-height: 220px;
+
     padding: 28px 24px;
+
     overflow: hidden;
+
     border: 3px solid var(--crta);
+
     border-radius: 22px;
+
     color: var(--crta);
+
     background: var(--kartica);
+
     box-shadow: 7px 7px 0 var(--crta);
+
     text-align: center;
+
     text-decoration: none;
+
     transform-origin: center;
 
+
+
     transition:
+
         transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+
         box-shadow 0.3s ease;
+
 }
+
+
 
 .zacetna .orodje:nth-child(6n + 2) {
+
     --kartica: #dfd5ff;
+
 }
+
+
 
 .zacetna .orodje:nth-child(6n + 3) {
+
     --kartica: #c7f1e4;
+
 }
+
+
 
 .zacetna .orodje:nth-child(6n + 4) {
+
     --kartica: #ffd4df;
+
 }
+
+
 
 .zacetna .orodje:nth-child(6n + 5) {
+
     --kartica: #cde9ff;
+
 }
+
+
 
 .zacetna .orodje:nth-child(6n + 6) {
+
     --kartica: #ffdfbf;
+
 }
+
+
 
 /* Svetlobni odsev ob prehodu miške */
+
 .zacetna .orodje::after {
+
     content: "";
+
     position: absolute;
+
     inset: -50%;
+
     pointer-events: none;
+
     background: linear-gradient(
+
         110deg,
+
         transparent 40%,
+
         rgb(255 255 255 / 65%) 50%,
+
         transparent 60%
+
     );
+
     transform: translateX(-100%);
+
     transition: transform 0.65s ease;
+
 }
+
+
 
 .zacetna .orodje h2,
+
 .zacetna .orodje h3 {
+
     position: relative;
+
     z-index: 1;
+
     margin: 0 0 20px;
+
     font-size: 23px;
+
     line-height: 1.3;
+
     overflow-wrap: anywhere;
+
     transition: transform 0.3s ease;
+
 }
+
+
 
 .zacetna .orodje p {
+
     position: relative;
+
     z-index: 1;
+
     margin-bottom: 24px;
+
     color: #41475b;
+
     font-size: 15px;
+
 }
+
+
 
 .zacetna .odpri {
+
     position: relative;
+
     z-index: 1;
+
     align-self: center;
+
     margin-top: auto;
+
     padding: 8px 14px;
+
     border: 2px solid var(--crta);
+
     border-radius: 9px;
+
     background: rgb(255 255 255 / 75%);
+
     font-size: 13px;
+
     font-weight: 800;
 
+
+
     transition:
+
         transform 0.3s ease,
+
         background-color 0.3s ease,
+
         box-shadow 0.3s ease;
+
 }
+
+
 
 @media (hover: hover) and (pointer: fine) {
+
     .zacetna .orodje:hover {
+
         z-index: 2;
+
         transform: translateY(-9px) rotate(-2deg);
+
         box-shadow: 10px 15px 0 var(--crta);
+
     }
+
+
 
     .zacetna .orodje:nth-child(even):hover {
+
         transform: translateY(-9px) rotate(2deg);
+
     }
+
+
 
     .zacetna .orodje:hover::after {
+
         transform: translateX(100%);
+
     }
+
+
 
     .zacetna .orodje:hover h2,
+
     .zacetna .orodje:hover h3 {
+
         transform: translateY(-3px);
+
     }
+
+
 
     .zacetna .orodje:hover .odpri {
+
         transform: translateY(-3px);
+
         background: #fff;
+
         box-shadow: 3px 3px 0 var(--crta);
+
     }
+
 }
+
+
 
 .zacetna .orodje:active {
+
     transform: translate(3px, 3px) scale(0.98);
+
     box-shadow: 3px 3px 0 var(--crta);
+
 }
+
+
 
 .zacetna .orodje:focus-visible {
+
     outline: 4px solid #7958df;
+
     outline-offset: 7px;
+
 }
 
+
+
 .zacetna .orodje:focus-visible .odpri {
+
     background: #fff;
+
     box-shadow: 3px 3px 0 var(--crta);
+
 }
+
+
 
 /* DEKORACIJE — podpora obema prejšnjima različicama HTML-ja */
 
+
+
 .zacetna .risankasto-ozadje {
+
     position: fixed;
+
     inset: 0;
+
     z-index: -1;
+
     overflow: hidden;
+
     pointer-events: none;
+
 }
+
+
 
 .zacetna .risankasto-ozadje > span {
+
     position: absolute;
+
     width: 130px;
+
     height: 130px;
+
     border: 3px solid var(--crta);
+
     border-radius: 50%;
+
     background: #ffe58c;
+
     box-shadow: 7px 7px 0 rgb(32 35 51 / 18%);
+
     opacity: 0.65;
 
+
+
     /* --mx in --my uporablja prej poslana datoteka index.html. */
+
     transform: translate(
+
         var(--mx, var(--pointer-x)),
+
         var(--my, var(--pointer-y))
+
     );
 
+
+
     transition: transform 0.25s ease-out;
+
     animation: zacetna-plavanje 9s ease-in-out infinite alternate;
+
 }
+
+
 
 .zacetna .risankasto-ozadje > span::after {
+
     content: "";
+
     position: absolute;
+
     inset: 15px;
+
     border-top: 3px solid rgb(255 255 255 / 85%);
+
     border-radius: inherit;
+
 }
+
+
 
 .zacetna .risankasto-ozadje > span:nth-child(1) {
+
     top: 12%;
+
     left: -45px;
+
 }
+
+
 
 .zacetna .risankasto-ozadje > span:nth-child(2) {
+
     top: 45%;
+
     right: -50px;
+
     width: 180px;
+
     height: 180px;
+
     border-radius: 35px;
+
     background: #c8baff;
+
     animation-duration: 12s;
+
     animation-delay: -4s;
+
 }
+
+
 
 .zacetna .risankasto-ozadje > span:nth-child(3) {
+
     bottom: 5%;
+
     left: 8%;
+
     width: 75px;
+
     height: 75px;
+
     border-radius: 20px;
+
     background: #a9ebdd;
+
     animation-duration: 11s;
+
     animation-delay: -6s;
+
     animation-direction: alternate-reverse;
+
 }
+
+
 
 @keyframes zacetna-plavanje {
+
     from {
+
         translate: -8px -20px;
+
         rotate: -12deg;
+
     }
+
+
 
     to {
+
         translate: 12px 25px;
+
         rotate: 14deg;
+
     }
+
 }
 
+
+
 .zacetna footer {
+
     padding: 24px 0 40px;
+
     text-align: center;
+
     color: #46506a;
+
 }
+
+
 
 /* MOBILNI PRIKAZ */
 
+
+
 @media (max-width: 850px) {
+
     .zacetna .orodja {
+
         grid-template-columns: repeat(2, minmax(0, 1fr));
+
     }
+
 }
+
+
 
 @media (max-width: 540px) {
+
     .zacetna header,
+
     .zacetna main,
+
     .zacetna footer {
+
         width: calc(100% - 36px);
+
     }
+
+
 
     .zacetna header {
+
         padding-top: 32px;
+
     }
+
+
 
     .zacetna .uvod {
+
         padding: 24px 0 36px;
+
     }
+
+
 
     .zacetna .orodja {
+
         grid-template-columns: 1fr;
+
         gap: 24px;
+
     }
+
+
 
     .zacetna .orodje {
+
         min-height: 190px;
+
         padding: 24px;
+
     }
 
+
+
     .zacetna .risankasto-ozadje > span {
+
         opacity: 0.3;
+
     }
+
 }
+
+
 
 /* ZMANJŠANO GIBANJE */
 
+
+
 @media (prefers-reduced-motion: reduce) {
+
     .zacetna::before,
+
     .zacetna::after,
+
     .zacetna *,
+
     .zacetna *::before,
+
     .zacetna *::after {
+
         animation: none !important;
+
         transition: none !important;
+
     }
+
+
 
     .zacetna .orodje,
+
     .zacetna .orodje h2,
+
     .zacetna .orodje h3,
+
     .zacetna .odpri,
+
     .zacetna .risankasto-ozadje > span {
+
         transform: none !important;
+
     }
 
+
+
     .zacetna .orodje::after {
+
         display: none;
+
     }
+
 }
+
+
 
 /* TISKANJE */
 
+
+
 @media print {
+
     body.zacetna {
+
         background: #fff;
+
     }
+
+
 
     .zacetna::before,
+
     .zacetna::after,
+
     .zacetna .risankasto-ozadje {
+
         display: none;
+
     }
+
+
 
     .zacetna .orodje {
+
         background: #fff;
+
         box-shadow: none;
+
         transform: none;
+
         break-inside: avoid;
+
     }
+
 }
-    </style>
+
+    
+/* Spustni seznam poglavij */
+html { scroll-behavior: smooth; }
+.zacetna .kategorija > h2 { scroll-margin-top: 110px; }
+.zacetna .poglavja-nav { position: sticky; top: 12px; z-index: 30; width: min(calc(100% - 40px), 1120px); margin: 0 auto 32px; pointer-events: none; }
+.zacetna .poglavja-dropdown { position: relative; width: fit-content; margin-inline: auto; pointer-events: auto; color: #202333; font-family: Arial, sans-serif; }
+.zacetna .poglavja-dropdown summary { display: flex; align-items: center; gap: 18px; list-style: none; padding: 12px 22px; border: 3px solid #202333; border-radius: 14px; background: #ffe58c; box-shadow: 4px 4px 0 #202333; font-weight: 800; cursor: pointer; }
+.zacetna .poglavja-dropdown summary::-webkit-details-marker { display: none; }
+.zacetna .poglavja-dropdown summary::after { content: ''; width: 9px; height: 9px; border-right: 3px solid currentColor; border-bottom: 3px solid currentColor; transform: rotate(45deg); transition: transform .2s; }
+.zacetna .poglavja-dropdown[open] summary::after { transform: rotate(225deg); }
+.zacetna .poglavja-seznam { position: absolute; top: calc(100% + 12px); left: 50%; transform: translateX(-50%); width: min(380px, calc(100vw - 40px)); max-height: min(60vh, 450px); overflow-y: auto; overscroll-behavior: contain; margin: 0; padding: 8px; list-style: none; border: 3px solid #202333; border-radius: 16px; background: #fff9ed; box-shadow: 6px 6px 0 #202333; text-align: left; }
+.zacetna .poglavja-seznam a { display: block; padding: 10px 12px; border-radius: 8px; color: #202333; text-decoration: none; font-weight: 700; line-height: 1.4; }
+.zacetna .poglavja-seznam a:hover { background: #dfd5ff; }
+.zacetna .poglavja-dropdown summary:focus-visible, .zacetna .poglavja-seznam a:focus-visible { outline: 3px solid #7958df; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .zacetna .poglavja-dropdown summary::after { transition: none; } }
+@media print { .zacetna .poglavja-nav { display: none; } }
+</style>
 </head>
-
-<div class="risankasto-ozadje" aria-hidden="true">
-    <span class="risankasta-oblika"></span>
-    <span class="risankasta-oblika"></span>
-    <span class="risankasta-oblika"></span>
-</div>
-
-
-
-<script>
-    (() => {
-        const telo = document.body;
-        const manjGibanja = window.matchMedia(
-            "(prefers-reduced-motion: reduce)"
-        );
-        const miska = window.matchMedia(
-            "(hover: hover) and (pointer: fine)"
-        );
-
-        let frame = null;
-        let x = 0;
-        let y = 0;
-
-        function posodobi() {
-            telo.style.setProperty("--pointer-x", x + "px");
-            telo.style.setProperty("--pointer-y", y + "px");
-            frame = null;
-        }
-
-        function ponastavi() {
-            if (frame !== null) cancelAnimationFrame(frame);
-            frame = null;
-            x = 0;
-            y = 0;
-            posodobi();
-        }
-
-        window.addEventListener("pointermove", event => {
-            if (manjGibanja.matches || !miska.matches) return;
-
-            x = (event.clientX / window.innerWidth - 0.5) * 50;
-            y = (event.clientY / window.innerHeight - 0.5) * 40;
-
-            if (frame === null) {
-                frame = requestAnimationFrame(posodobi);
-            }
-        }, { passive: true });
-
-        document.documentElement.addEventListener(
-            "pointerleave",
-            ponastavi
-        );
-
-        window.addEventListener("blur", ponastavi);
-        manjGibanja.addEventListener("change", ponastavi);
-        miska.addEventListener("change", ponastavi);
-    })();
-</script>
-
 <body class="zacetna">
-<div class="risankasto-ozadje" aria-hidden="true"><span></span><span></span><span></span></div>
-<header><span class="nalepka">Izračunaj · Ustvari · Nauči se</span><h1>Brezplačna<br>spletna orodja.</h1><p>Majhna orodja za velike in majhne vsakdanje izzive.</p></header><main><section class="kategorija" aria-labelledby="k0"><h2 id="k0">Ocene in šola</h2><div class="orodja"><a class="orodje" href="orodja/povprecje_ocen.html"><h3>Kalkulator povprečja ocen</h3><span class="odpri">Odpri orodje →</span></a>
+<div aria-hidden="true" class="risankasto-ozadje"><span class="risankasta-oblika"></span><span class="risankasta-oblika"></span><span class="risankasta-oblika"></span></div>
+<header><span class="nalepka">Izračunaj · Ustvari · Nauči se</span><h1>Brezplačna<br/>spletna orodja.</h1><p>Majhna orodja za velike in majhne vsakdanje izzive.</p></header><nav aria-label="Poglavja na strani" class="poglavja-nav"><details class="poglavja-dropdown"><summary>Poglavja</summary><ul class="poglavja-seznam"><li><a href="#poglavje-1">Ocene in šola</a></li><li><a href="#poglavje-2">Učenje in organizacija</a></li><li><a href="#poglavje-3">Besedilo in pisanje</a></li><li><a href="#poglavje-4">Odstotki in vsakdanji izračuni</a></li><li><a href="#poglavje-5">Matematika</a></li><li><a href="#poglavje-6">Enote in pretvorbe</a></li><li><a href="#poglavje-7">Čas in datumi</a></li><li><a href="#poglavje-8">Računalništvo in programiranje</a></li><li><a href="#poglavje-9">Orodja za spletne vsebine</a></li><li><a href="#poglavje-10">Naključje in skupinsko delo</a></li><li><a href="#poglavje-11">Matematične naloge in raziskovanje</a></li><li><a href="#poglavje-12">Fizika in elektrotehnika</a></li><li><a href="#poglavje-13">Kemija in naravoslovje</a></li><li><a href="#poglavje-14">Jeziki in razumevanje besedila</a></li><li><a href="#poglavje-15">Dokumenti in PDF</a></li><li><a href="#poglavje-16">Spletna in razvojna orodja</a></li><li><a href="#poglavje-17">Oblikovanje in dostopnost</a></li><li><a href="#poglavje-18">Osebna organizacija</a></li><li><a href="#poglavje-19">Praktični vsakdanji izračuni</a></li><li><a href="#poglavje-20">Igre in skupinske dejavnosti</a></li><li><a href="#poglavje-21">Biologija</a></li></ul></details></nav><main><section aria-labelledby="poglavje-1" class="kategorija"><h2 id="poglavje-1" tabindex="-1">Ocene in šola</h2><div class="orodja"><a class="orodje" href="orodja/povprecje_ocen.html"><h3>Kalkulator povprečja ocen</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/katero_oceno_potrebujem.html"><h3>Katero oceno potrebujem?</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/tocke_v_odstotke.html"><h3>Točke v odstotke in oceno</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/kalkulator_koncne_ocene.html"><h3>Kalkulator končne ocene</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/kalkulator_prisotnosti.html"><h3>Kalkulator prisotnosti</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k1"><h2 id="k1">Učenje in organizacija</h2><div class="orodja"><a class="orodje" href="orodja/nacrt_ucenja.html"><h3>Načrt učenja do testa</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-2" class="kategorija"><h2 id="poglavje-2" tabindex="-1">Učenje in organizacija</h2><div class="orodja"><a class="orodje" href="orodja/nacrt_ucenja.html"><h3>Načrt učenja do testa</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/pomodoro.html"><h3>Pomodoro časovnik</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/ucne_kartice.html"><h3>Izdelovalnik učnih kartic</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/kviz_iz_vprasanj.html"><h3>Kviz iz lastnih vprašanj</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/solski_urnik.html"><h3>Izdelovalnik šolskega urnika</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k2"><h2 id="k2">Besedilo in pisanje</h2><div class="orodja"><a class="orodje" href="orodja/stevec_besed.html"><h3>Števec besed in znakov</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-3" class="kategorija"><h2 id="poglavje-3" tabindex="-1">Besedilo in pisanje</h2><div class="orodja"><a class="orodje" href="orodja/stevec_besed.html"><h3>Števec besed in znakov</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/cas_branja.html"><h3>Čas branja in govora</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/velike_male_crke.html"><h3>Velike in male črke</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/ciscenje_besedila.html"><h3>Čiščenje besedila</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/navedbe_virov.html"><h3>Oblikovalnik bibliografskih navedb</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k3"><h2 id="k3">Odstotki in vsakdanji izračuni</h2><div class="orodja"><a class="orodje" href="orodja/odstotki.html"><h3>Kalkulator odstotkov</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-4" class="kategorija"><h2 id="poglavje-4" tabindex="-1">Odstotki in vsakdanji izračuni</h2><div class="orodja"><a class="orodje" href="orodja/odstotki.html"><h3>Kalkulator odstotkov</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/odstotna_sprememba.html"><h3>Odstotna sprememba</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/popust.html"><h3>Kalkulator popusta</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/delitev_racuna.html"><h3>Delitev računa</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/cena_na_enoto.html"><h3>Cena na enoto</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k4"><h2 id="k4">Matematika</h2><div class="orodja"><a class="orodje" href="orodja/ulomki.html"><h3>Kalkulator ulomkov</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-5" class="kategorija"><h2 id="poglavje-5" tabindex="-1">Matematika</h2><div class="orodja"><a class="orodje" href="orodja/ulomki.html"><h3>Kalkulator ulomkov</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/linearna_enacba.html"><h3>Reševalnik linearne enačbe</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/kvadratna_enacba.html"><h3>Reševalnik kvadratne enačbe</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/pitagorov_izrek.html"><h3>Pitagorov izrek</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/ploscina_obseg.html"><h3>Ploščina in obseg likov</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k5"><h2 id="k5">Enote in pretvorbe</h2><div class="orodja"><a class="orodje" href="orodja/dolzina.html"><h3>Pretvornik dolžine</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-6" class="kategorija"><h2 id="poglavje-6" tabindex="-1">Enote in pretvorbe</h2><div class="orodja"><a class="orodje" href="orodja/dolzina.html"><h3>Pretvornik dolžine</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/masa.html"><h3>Pretvornik mase</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/temperatura.html"><h3>Pretvornik temperature</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/hitrost.html"><h3>Pretvornik hitrosti</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/podatkovne_enote.html"><h3>Pretvornik podatkovnih enot</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k6"><h2 id="k6">Čas in datumi</h2><div class="orodja"><a class="orodje" href="orodja/razlika_datumov.html"><h3>Razlika med datumoma</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-7" class="kategorija"><h2 id="poglavje-7" tabindex="-1">Čas in datumi</h2><div class="orodja"><a class="orodje" href="orodja/razlika_datumov.html"><h3>Razlika med datumoma</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/pristej_dneve.html"><h3>Prištevanje dni datumu</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/sestevanje_casa.html"><h3>Seštevanje ur in minut</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/trajanje_spanja.html"><h3>Koliko časa bom spal?</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/odstevalnik.html"><h3>Odštevalnik do dogodka</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k7"><h2 id="k7">Računalništvo in programiranje</h2><div class="orodja"><a class="orodje" href="orodja/sql_formatter.html"><h3>Oblikovalnik SQL</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-8" class="kategorija"><h2 id="poglavje-8" tabindex="-1">Računalništvo in programiranje</h2><div class="orodja"><a class="orodje" href="orodja/sql_formatter.html"><h3>Oblikovalnik SQL</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/json_validator.html"><h3>Oblikovalnik in preverjanje JSON</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/stevilski_sistemi.html"><h3>Pretvornik številskih sistemov</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/ipv4_podomrezja.html"><h3>Kalkulator IPv4 podomrežij</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/cas_prenosa.html"><h3>Čas prenosa datoteke</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k8"><h2 id="k8">Orodja za spletne vsebine</h2><div class="orodja"><a class="orodje" href="orodja/qr_koda.html"><h3>Generator QR kode</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-9" class="kategorija"><h2 id="poglavje-9" tabindex="-1">Orodja za spletne vsebine</h2><div class="orodja"><a class="orodje" href="orodja/qr_koda.html"><h3>Generator QR kode</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/stiskanje_slik.html"><h3>Stiskanje slik</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/velikost_slike.html"><h3>Spreminjanje velikosti slike</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/format_slike.html"><h3>Pretvornik formatov slik</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/barve.html"><h3>Barvni pretvornik HEX in RGB</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k9"><h2 id="k9">Naključje in skupinsko delo</h2><div class="orodja"><a class="orodje" href="orodja/nakljucna_stevila.html"><h3>Generator naključnih števil</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-10" class="kategorija"><h2 id="poglavje-10" tabindex="-1">Naključje in skupinsko delo</h2><div class="orodja"><a class="orodje" href="orodja/nakljucna_stevila.html"><h3>Generator naključnih števil</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/izbira_imena.html"><h3>Naključna izbira imena</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/generator_ekip.html"><h3>Generator ekip</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/kovanec_kocke.html"><h3>Met kovanca in kock</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/turnirski_razpored.html"><h3>Izdelovalnik turnirskega razporeda</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k10"><h2 id="k10">Matematične naloge in raziskovanje</h2><div class="orodja"><a class="orodje" href="orodja/generator_matematicnih_racunov.html"><h3>Generator matematičnih računov in nalog</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-11" class="kategorija"><h2 id="poglavje-11" tabindex="-1">Matematične naloge in raziskovanje</h2><div class="orodja"><a class="orodje" href="orodja/generator_matematicnih_racunov.html"><h3>Generator matematičnih računov in nalog</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/risanje_grafov.html"><h3>Risanje grafov funkcij</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/racunanje_z_matrikami.html"><h3>Računanje z matrikami</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/statistika_podatkovnega_niza.html"><h3>Statistika podatkovnega niza</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/kombinatorika_inerjetnost.html"><h3>Kombinatorika in verjetnosti</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k11"><h2 id="k11">Fizika in elektrotehnika</h2><div class="orodja"><a class="orodje" href="orodja/ohmov_zakon_in_elektricna_moc.html"><h3>Ohmov zakon in električna moč</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-12" class="kategorija"><h2 id="poglavje-12" tabindex="-1">Fizika in elektrotehnika</h2><div class="orodja"><a class="orodje" href="orodja/ohmov_zakon_in_elektricna_moc.html"><h3>Ohmov zakon in električna moč</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/barve_oznake_uporov.html"><h3>Barvne oznake uporov</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/zaporedni_in_vzporedni.html"><h3>Zaporedni in vzporedni upori</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/poraba_elektricne_energije.html"><h3>Poraba električne energije</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/simulacija_posevnega_meta.html"><h3>Simulacija poševnega meta</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k12"><h2 id="k12">Kemija in naravoslovje</h2><div class="orodja"><a class="orodje" href="orodja/molska_masa_spojine.html"><h3>Molska masa spojine</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-13" class="kategorija"><h2 id="poglavje-13" tabindex="-1">Kemija in naravoslovje</h2><div class="orodja"><a class="orodje" href="orodja/molska_masa_spojine.html"><h3>Molska masa spojine</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/uravnotezenje_kemijskih_enacb.html"><h3>Uravnoteženje kemijskih enačb</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/redcenje_spojin.html"><h3>Redčenje spojin</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/izracun_gostote.html"><h3>Izračun gostote</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/razpolovilni_cas.html"><h3>Razpolovilni čas</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k13"><h2 id="k13">Jeziki in razumevanje besedila</h2><div class="orodja"><a class="orodje" href="orodja/vaje_angleskih_casov.html"><h3>Vaje angleških časov</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-14" class="kategorija"><h2 id="poglavje-14" tabindex="-1">Jeziki in razumevanje besedila</h2><div class="orodja"><a class="orodje" href="orodja/vaje_angleskih_casov.html"><h3>Vaje angleških časov</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/trener_nepravilnih_glagolov.html"><h3>Trener nepravilnih glagolov</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/trener_slovenskih_sklonov.html"><h3>Trener slovenskih sklonov</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/trener_besedisca_v_kontekstih.html"><h3>Trener besedišča v kontekstu</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/primerjava_dveh_besedil.html"><h3>Primerjava vseh besedil</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k14"><h2 id="k14">Dokumenti in PDF</h2><div class="orodja"><a class="orodje" href="orodja/zdruzevanje_pdf-jev.html"><h3>Združevanje PDF-jev</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-15" class="kategorija"><h2 id="poglavje-15" tabindex="-1">Dokumenti in PDF</h2><div class="orodja"><a class="orodje" href="orodja/zdruzevanje_pdf-jev.html"><h3>Združevanje PDF-jev</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/razdelitev_pdf-jev.html"><h3>Razdelitev PDF-jev</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/preurejanje_in_vrtenje_strani_pdf.html"><h3>Preurejanje in vrtenje strani PDF</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/slike_v_pdf.html"><h3>Slike v PDF</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/dodajanje_vodnega_ziga_v_pdf.html"><h3>Dodajanje vodnega žiga v PDF-ju</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k15"><h2 id="k15">Spletna in razvojna orodja</h2><div class="orodja"><a class="orodje" href="orodja/preizkuševalnik_regularnih_izrazov.html"><h3>Preizkuševalnik regularnih izrazov</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-16" class="kategorija"><h2 id="poglavje-16" tabindex="-1">Spletna in razvojna orodja</h2><div class="orodja"><a class="orodje" href="orodja/preizkuševalnik_regularnih_izrazov.html"><h3>Preizkuševalnik regularnih izrazov</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/kodiranje_in_dekodiranje_base_64.html"><h3>Kodiranje in dekodiranje Base64</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/kodiranje_in_dekodiranje_URL.html"><h3>Kodiranje in dekodiranje URL</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/izracun_HSA.html"><h3>Izračun SHA-256</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/pretvornik_casovnih_zigov_unix.html"><h3>Pretvornik časovnih žigov Unix</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k16"><h2 id="k16">Oblikovanje in dostopnost</h2><div class="orodja"><a class="orodje" href="orodja/pretvarjanje_barvnega_kontrasta.html"><h3>Pretvarjanje barvnega kontrasta</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-17" class="kategorija"><h2 id="poglavje-17" tabindex="-1">Oblikovanje in dostopnost</h2><div class="orodja"><a class="orodje" href="orodja/pretvarjanje_barvnega_kontrasta.html"><h3>Pretvarjanje barvnega kontrasta</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/generator_css_preelivov.html"><h3>Generator CSS prelivov</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/generator_css_senc.html"><h3>Generator CSS senc</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/obrezovanje_slike.html"><h3>Obrezovanje slike</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/predogled_odzivne_postavitve.html"><h3>Predogled odzivne postavitve</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k17"><h2 id="k17">Osebna organizacija</h2><div class="orodja"><a class="orodje" href="orodja/matrika_prioritet.html"><h3>Matrika prioritet</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-18" class="kategorija"><h2 id="poglavje-18" tabindex="-1">Osebna organizacija</h2><div class="orodja"><a class="orodje" href="orodja/matrika_prioritet.html"><h3>Matrika prioritet</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/sledilnik_navad.html"><h3>Sledilnik navad</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/belezenje_casa_po_projektih.html"><h3>Beleženje časa po projektih</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/nacrt_mesecnega_proracuna.html"><h3>Načrt mesečnega proračuna</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/nacrt_varcevalnega_cilja.html"><h3>Načrt varčevalnega cilja</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k18"><h2 id="k18">Praktični vsakdanji izračuni</h2><div class="orodja"><a class="orodje" href="orodja/prilagajanje_kolicin_recepta.html"><h3>Prilagajanje količin recepta</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-19" class="kategorija"><h2 id="poglavje-19" tabindex="-1">Praktični vsakdanji izračuni</h2><div class="orodja"><a class="orodje" href="orodja/prilagajanje_kolicin_recepta.html"><h3>Prilagajanje količin recepta</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/strosek_goriva_za_pot.html"><h3>Strošek goriva za pot</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/material_za_pleskanje.html"><h3>Material za pleskanje</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/kolicina_talne_obloge.html"><h3>Količina talne obloge</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/seznam_za_potovanje.html"><h3>Seznam za potovanje</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k19"><h2 id="k19">Igre in skupinske dejavnosti</h2><div class="orodja"><a class="orodje" href="orodja/semafor_rezultatov.html"><h3>Semafor rezultatov</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-20" class="kategorija"><h2 id="poglavje-20" tabindex="-1">Igre in skupinske dejavnosti</h2><div class="orodja"><a class="orodje" href="orodja/semafor_rezultatov.html"><h3>Semafor rezultatov</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/sahovska_ura.html"><h3>Šahovska ura</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/generator_kartic_za_bingo.html"><h3>Generator kartic za bingo</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/tockovanje_namiznih_iger.html"><h3>Točkovanje namiznih iger</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/razpored_vsak_z_vsakim.html"><h3>Razpored vsak z vsakim</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section>
-<section class="kategorija" aria-labelledby="k19"><h2 id="k19">Igre in skupinske dejavnosti</h2><div class="orodja"><a class="orodje" href="orodja/glikoliza.html"><h3>Glikoliza</h3><span class="odpri">Odpri orodje →</span></a>
+<section aria-labelledby="poglavje-21" class="kategorija"><h2 id="poglavje-21" tabindex="-1">Biologija</h2><div class="orodja"><a class="orodje" href="orodja/glikoliza.html"><h3>Glikoliza</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/vrenje.html"><h3>Vrenje</h3><span class="odpri">Odpri orodje →</span></a>
-<a class="orodje" href="orodja/celicno_deihanje.html"><h3>Celično deihanje</h3><span class="odpri">Odpri orodje →</span></a>
+<a class="orodje" href="orodja/celicno_deihanje.html"><h3>Celično dihanje</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/krebsov_cikel.html"><h3>Krebsov cikel</h3><span class="odpri">Odpri orodje →</span></a>
 <a class="orodje" href="orodja/dihalna_veriga.html"><h3>Dihalna veriga</h3><span class="odpri">Odpri orodje →</span></a>
 </div></section></main><footer><p>Brezplačna spletna orodja</p></footer>
-</body>
+<script>
+
+    (() => {
+
+        const telo = document.body;
+
+        const manjGibanja = window.matchMedia(
+
+            "(prefers-reduced-motion: reduce)"
+
+        );
+
+        const miska = window.matchMedia(
+
+            "(hover: hover) and (pointer: fine)"
+
+        );
+
+
+
+        let frame = null;
+
+        let x = 0;
+
+        let y = 0;
+
+
+
+        function posodobi() {
+
+            telo.style.setProperty("--pointer-x", x + "px");
+
+            telo.style.setProperty("--pointer-y", y + "px");
+
+            frame = null;
+
+        }
+
+
+
+        function ponastavi() {
+
+            if (frame !== null) cancelAnimationFrame(frame);
+
+            frame = null;
+
+            x = 0;
+
+            y = 0;
+
+            posodobi();
+
+        }
+
+
+
+        window.addEventListener("pointermove", event => {
+
+            if (manjGibanja.matches || !miska.matches) return;
+
+
+
+            x = (event.clientX / window.innerWidth - 0.5) * 50;
+
+            y = (event.clientY / window.innerHeight - 0.5) * 40;
+
+
+
+            if (frame === null) {
+
+                frame = requestAnimationFrame(posodobi);
+
+            }
+
+        }, { passive: true });
+
+
+
+        document.documentElement.addEventListener(
+
+            "pointerleave",
+
+            ponastavi
+
+        );
+
+
+
+        window.addEventListener("blur", ponastavi);
+
+        manjGibanja.addEventListener("change", ponastavi);
+
+        miska.addEventListener("change", ponastavi);
+
+    })();
+
+</script>
+<script>
+(() => {
+ const dropdown = document.querySelector('.poglavja-dropdown');
+ const button = dropdown.querySelector('summary');
+ dropdown.addEventListener('click', event => {
+  const link = event.target.closest('a[href^="#"]');
+  if (!link) return;
+  const target = document.getElementById(link.hash.slice(1));
+  if (!target) return;
+  dropdown.open = false;
+  target.focus({preventScroll: true});
+ });
+ document.addEventListener('click', event => {
+  if (!dropdown.contains(event.target)) dropdown.open = false;
+ });
+ document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && dropdown.open) {
+   dropdown.open = false;
+   button.focus();
+  }
+ });
+})();
+</script></body>
 </html>
