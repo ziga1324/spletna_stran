@@ -3,19 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Generator matematičnih nalog</title>
-
     <link rel="stylesheet" href="../style.css">
-</head>
-
+<style>[hidden]{display:none!important}select{width:100%;padding:12px;border:2px solid #202333;border-radius:8px;font:inherit;background:white}.pdf-moznost{display:flex;gap:10px;align-items:center}.pdf-moznost input{width:20px;min-height:20px;flex:0 0 20px}.pdf-prenos{display:inline-block;padding:12px 20px;margin:10px 0 20px;background:#087f8c;color:white;border:2px solid #202333;border-radius:10px;font-weight:bold;text-decoration:none}#seznam-nalog li{padding:10px 0;white-space:pre-wrap}#pomoc{white-space:pre-wrap}button:disabled{opacity:.6;cursor:wait}</style></head>
 <body>
     <header>
         <a href="../index.html">← Vsa orodja</a>
         <h1>Generator matematičnih nalog</h1>
-        <p>Izberi raven in temo ter preveri svoje znanje.</p>
+        <p>Izberi raven, temo, težavnost in število nalog. Ustvari zbirko, rešuj naloge v brskalniku ali prenesi delovni list v PDF.</p>
     </header>
-
     <main>
         <section class="kalkulator">
             <form id="nastavitve">
@@ -27,25 +23,20 @@
                     <option value="fakulteta">Fakulteta – temeljne vsebine</option>
                     <option value="napredna">Fakulteta – napredne vsebine</option>
                 </select>
-
                 <label for="tema">Tema</label>
                 <select id="tema"></select>
-
                 <label for="tezavnost">Težavnost</label>
                 <select id="tezavnost">
                     <option value="1">Lažja</option>
                     <option value="2">Srednja</option>
                     <option value="3">Težja</option>
                 </select>
-
-                <button type="submit">Ustvari novo nalogo</button>
+                <label for="stevilo-nalog">Število nalog</label><input id="stevilo-nalog" type="number" min="1" max="200" step="1" value="10" required aria-describedby="stevilo-navodilo"><p id="stevilo-navodilo">Vnesi od 1 do 200 nalog. Naloge se ustvarjajo naključno; lahko se ponovijo.</p><button type="submit" id="ustvari-zbirko">Ustvari naloge in PDF</button>
             </form>
         </section>
-
-        <section id="naloga-blok" class="kalkulator" hidden>
-            <h2>Naloga</h2>
+        <section class="kalkulator" id="zbirka-blok" hidden><h2>Ustvarjene naloge in PDF</h2><label class="pdf-moznost"><input type="checkbox" id="vkljuci-resitve"> V PDF vključi tudi rešitve na ločenih straneh</label><p id="pdf-status" role="status" aria-live="polite"></p><a id="prenos-pdf" class="pdf-prenos" hidden>Prenesi PDF</a><details><summary>Prikaži vse ustvarjene naloge</summary><ol id="seznam-nalog"></ol></details></section><section id="naloga-blok" class="kalkulator" hidden>
+            <h2>Reševanje nalog</h2><label for="izbor-naloge">Izberi nalogo iz zbirke</label><select id="izbor-naloge"></select>
             <p id="naloga" class="matematicni-zapis"></p>
-
             <form id="odgovor-obrazec">
                 <label for="odgovor">Tvoj odgovor</label>
                 <input
@@ -56,12 +47,10 @@
                     aria-describedby="navodilo"
                     required
                 >
-
                 <p id="navodilo">
                     Vnesi številčni rezultat ali ulomek.
                     Za decimalke lahko uporabiš vejico ali piko.
                 </p>
-
                 <div class="gumbi">
                     <button type="submit">Preveri odgovor</button>
                     <button type="button" id="namig-gumb">Namig</button>
@@ -70,51 +59,41 @@
                     </button>
                 </div>
             </form>
-
             <p id="sporocilo" role="status"></p>
-
             <div id="pomoc" class="rezultat" hidden></div>
         </section>
-
         <section class="kalkulator">
             <h2>Napredek</h2>
             <p id="napredek">Pravilno: 0 | Preverjenih nalog: 0</p>
             <button type="button" id="ponastavi">Ponastavi napredek</button>
         </section>
-
         <section class="razlaga">
-            <h2>Kako deluje?</h2>
-
+            <h2>Kako deluje?</h2><p>Po ustvarjanju zbirke se PDF pripravi samodejno. Klikni »Prenesi PDF«, da ga shraniš. Če želiš tudi odgovore in postopke, označi možnost za rešitve; PDF se bo pripravil znova. PDF vsebuje vse naloge iz zadnje ustvarjene zbirke, tudi če nato spremeniš izbiro ravni ali teme.</p><p>PDF se ustvari v tvojem brskalniku brez pošiljanja nalog strežniku. Besedilo v PDF-ju je shranjeno kot slika, zato ga ni mogoče označevati ali iskati. Za novo zbirko klikni »Ustvari naloge in PDF«.</p>
             <p>
                 Naloge nastanejo iz pripravljenih matematičnih predlog.
                 Težavnost spreminja velikost števil oziroma stopnjo potence.
             </p>
-
             <p>
                 Pri fakultetnih nalogah računaš vrednost odvoda,
                 določenega integrala ali rešitve začetnega problema.
                 Odgovor zato vedno vneseš kot število.
             </p>
-
             <p>
                 Približen odgovor velja, če odstopa največ za
                 0,01 % oziroma 0,000001 pri majhnih rezultatih.
                 Pri eksponentnih rezultatih uporabi dovolj decimalnih mest.
             </p>
-
             <p>
                 Statistika šteje samo prvi poskus pri posamezni nalogi.
                 Naloga, pri kateri najprej pokažeš rešitev, se ne točkuje.
                 Napredek se ob osvežitvi strani izgubi.
             </p>
-
             <p>
                 To je začetna zbirka izbranih tem,
                 ne celotna pokritost šolskih in fakultetnih programov.
             </p>
         </section>
     </main>
-
     <script>
         const raven = document.getElementById("raven");
         const tema = document.getElementById("tema");
@@ -122,13 +101,11 @@
         const odgovor = document.getElementById("odgovor");
         const sporocilo = document.getElementById("sporocilo");
         const pomoc = document.getElementById("pomoc");
-
         let trenutna = null;
         let ocenjena = false;
         let razkrita = false;
         let pravilno = 0;
         let preverjenih = 0;
-
         const teme = {
             osnovna: [
                 ["sestevanje", "Seštevanje"],
@@ -153,30 +130,23 @@
                 ["diferencialna", "Diferencialna enačba y′ = ky"]
             ]
         };
-
         const oblikovanje = new Intl.NumberFormat("sl-SI", {
             maximumSignificantDigits: 12
         });
-
         function zapis(vrednost) {
             return oblikovanje.format(vrednost);
         }
-
         function nakljucno(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
-
         function nsd(a, b) {
             while (b !== 0) {
                 [a, b] = [b, a % b];
             }
-
             return a;
         }
-
         function prikaziTeme() {
             tema.replaceChildren();
-
             teme[raven.value].forEach(function ([id, ime]) {
                 const moznost = document.createElement("option");
                 moznost.value = id;
@@ -184,23 +154,19 @@
                 tema.appendChild(moznost);
             });
         }
-
         function skrijNalogo() {
             trenutna = null;
             document.getElementById("naloga-blok").hidden = true;
         }
-
         function posodobiNapredek() {
             document.getElementById("napredek").textContent =
                 "Pravilno: " + pravilno +
                 " | Preverjenih nalog: " + preverjenih;
         }
-
         function ustvariNalogo(tip, stopnja) {
             const meja = [10, 30, 100][stopnja - 1];
             const a = nakljucno(1, meja);
             const b = nakljucno(1, meja);
-
             switch (tip) {
                 case "sestevanje":
                     return {
@@ -209,11 +175,9 @@
                         namig: "Seštej obe števili.",
                         postopek: `${a} + ${b} = ${a + b}`
                     };
-
                 case "odstevanje": {
                     const vecje = Math.max(a, b);
                     const manjse = Math.min(a, b);
-
                     return {
                         vprasanje: `${vecje} − ${manjse} = ?`,
                         odgovor: vecje - manjse,
@@ -222,7 +186,6 @@
                             `${vecje} − ${manjse} = ${vecje - manjse}`
                     };
                 }
-
                 case "mnozenje":
                     return {
                         vprasanje: `${a} × ${b} = ?`,
@@ -230,7 +193,6 @@
                         namig: "Uporabi poštevanko ali razčleni množenje.",
                         postopek: `${a} × ${b} = ${a * b}`
                     };
-
                 case "deljenje":
                     return {
                         vprasanje: `${a * b} ÷ ${b} = ?`,
@@ -238,17 +200,14 @@
                         namig: `Katero število, pomnoženo z ${b}, da ${a * b}?`,
                         postopek: `${a * b} ÷ ${b} = ${a}`
                     };
-
                 case "ulomki": {
                     const d1 = nakljucno(2, 5 + stopnja * 5);
                     const d2 = nakljucno(2, 5 + stopnja * 5);
                     const n1 = nakljucno(1, d1 - 1);
                     const n2 = nakljucno(1, d2 - 1);
-
                     const imenovalec = d1 * d2;
                     const stevec = n1 * d2 + n2 * d1;
                     const delitelj = nsd(stevec, imenovalec);
-
                     return {
                         vprasanje: `${n1}/${d1} + ${n2}/${d2} = ?`,
                         odgovor: stevec / imenovalec,
@@ -259,12 +218,10 @@
                             `${stevec / delitelj}/${imenovalec / delitelj}`
                     };
                 }
-
                 case "odstotki": {
                     const odstotek = nakljucno(1, 20) * 5;
                     const celota = nakljucno(1, meja) * 10;
                     const rezultat = odstotek / 100 * celota;
-
                     return {
                         vprasanje: `Koliko je ${odstotek} % od ${celota}?`,
                         odgovor: rezultat,
@@ -273,11 +230,9 @@
                             `${odstotek} ÷ 100 × ${celota} = ${zapis(rezultat)}`
                     };
                 }
-
                 case "potence": {
                     const osnova = nakljucno(2, 5 + stopnja * 2);
                     const eksponent = nakljucno(2, stopnja + 2);
-
                     return {
                         vprasanje: `${osnova}^${eksponent} = ?`,
                         odgovor: osnova ** eksponent,
@@ -287,13 +242,11 @@
                             " = " + zapis(osnova ** eksponent)
                     };
                 }
-
                 case "linearna": {
                     const k = nakljucno(1, meja);
                     const x = nakljucno(-meja, meja);
                     const konstanta = nakljucno(-meja, meja);
                     const desna = k * x + konstanta;
-
                     return {
                         vprasanje: `Reši: ${k}x + (${konstanta}) = ${desna}`,
                         odgovor: x,
@@ -303,13 +256,11 @@
                             `x = ${k * x} ÷ ${k} = ${x}`
                     };
                 }
-
                 case "kvadratna": {
                     const x1 = nakljucno(-meja, meja);
                     const x2 = nakljucno(-meja, meja);
                     const B = -(x1 + x2);
                     const C = x1 * x2;
-
                     return {
                         vprasanje:
                             `Reši x² + (${B})x + (${C}) = 0. ` +
@@ -322,14 +273,12 @@
                             `Manjša rešitev: ${Math.min(x1, x2)}.`
                     };
                 }
-
                 case "odvod": {
                     const k = nakljucno(1, 5 * stopnja);
                     const n = nakljucno(2, stopnja + 3);
                     const x = nakljucno(1, stopnja + 2);
                     const konstanta = nakljucno(1, meja);
                     const rezultat = k * n * x ** (n - 1);
-
                     return {
                         vprasanje:
                             `f(x) = ${k}x^${n} + ${konstanta}. ` +
@@ -341,14 +290,12 @@
                             `f′(${x}) = ${k * n} × ${x}^${n - 1} = ${rezultat}`
                     };
                 }
-
                 case "integral": {
                     const k = nakljucno(1, 5 * stopnja);
                     const n = nakljucno(1, stopnja + 2);
                     const mejaIntegrala = nakljucno(1, stopnja + 2);
                     const rezultat =
                         k * mejaIntegrala ** (n + 1) / (n + 1);
-
                     return {
                         vprasanje:
                             `Izračunaj določeni integral funkcije ` +
@@ -362,13 +309,11 @@
                             ` ≈ ${zapis(rezultat)}`
                     };
                 }
-
                 case "diferencialna": {
                     const k = nakljucno(1, stopnja + 1);
                     const y0 = nakljucno(1, 5 * stopnja);
                     const t = nakljucno(1, stopnja + 1);
                     const rezultat = y0 * Math.exp(k * t);
-
                     return {
                         vprasanje:
                             `y′(t) = ${k}y(t), y(0) = ${y0}. ` +
@@ -383,92 +328,54 @@
                 }
             }
         }
-
         function preberiOdgovor(vnos) {
             const deli = vnos.trim().split("/");
             const vzorec = /^[+-]?(?:\d+(?:[.,]\d+)?|[.,]\d+)(?:e[+-]?\d+)?$/i;
-
             if (
                 deli.length > 2 ||
                 !deli.every(del => vzorec.test(del.trim()))
             ) {
                 throw new Error("Vnesi število ali ulomek, na primer 0,5 ali 1/2.");
             }
-
             const stevila = deli.map(del =>
                 Number(del.trim().replace(",", "."))
             );
-
             if (
                 !stevila.every(Number.isFinite) ||
                 (stevila.length === 2 && stevila[1] === 0)
             ) {
                 throw new Error("Vnesi veljavna števila. Imenovalec ne sme biti 0.");
             }
-
             const vrednost = stevila.length === 2
                 ? stevila[0] / stevila[1]
                 : stevila[0];
-
             if (!Number.isFinite(vrednost)) {
                 throw new Error("Odgovor je zunaj podprtega obsega.");
             }
-
             return vrednost;
         }
-
-        document.getElementById("nastavitve").addEventListener(
-            "submit",
-            function (dogodek) {
-                dogodek.preventDefault();
-
-                trenutna = ustvariNalogo(
-                    tema.value,
-                    Number(tezavnost.value)
-                );
-
-                ocenjena = false;
-                razkrita = false;
-                odgovor.value = "";
-                sporocilo.textContent = "";
-                pomoc.replaceChildren();
-                pomoc.hidden = true;
-
-                document.getElementById("naloga").textContent =
-                    trenutna.vprasanje;
-
-                document.getElementById("naloga-blok").hidden = false;
-                odgovor.focus();
-            }
-        );
-
         document.getElementById("odgovor-obrazec").addEventListener(
             "submit",
             function (dogodek) {
                 dogodek.preventDefault();
                 if (!trenutna) return;
-
                 try {
                     const vrednost = preberiOdgovor(odgovor.value);
                     const toleranca = Math.max(
                         0.000001,
                         Math.abs(trenutna.odgovor) * 0.0001
                     );
-
                     const uspeh =
                         Math.abs(vrednost - trenutna.odgovor) <= toleranca;
-
                     if (!ocenjena && !razkrita) {
                         preverjenih++;
                         if (uspeh) pravilno++;
                         ocenjena = true;
                         posodobiNapredek();
                     }
-
                     sporocilo.textContent = uspeh
                         ? "Pravilno!"
                         : "Odgovor ni pravilen. Poskusi znova ali uporabi namig.";
-
                     if (razkrita) {
                         sporocilo.textContent +=
                             " Ta naloga se ne točkuje, ker je bila rešitev razkrita.";
@@ -478,7 +385,6 @@
                 }
             }
         );
-
         document.getElementById("namig-gumb").addEventListener(
             "click",
             function () {
@@ -487,19 +393,16 @@
                 pomoc.hidden = false;
             }
         );
-
         document.getElementById("resitev-gumb").addEventListener(
             "click",
             function () {
                 if (!trenutna) return;
-
                 razkrita = true;
                 pomoc.textContent = trenutna.postopek;
                 pomoc.hidden = false;
                 sporocilo.textContent = "Rešitev je prikazana.";
             }
         );
-
         document.getElementById("ponastavi").addEventListener(
             "click",
             function () {
@@ -508,15 +411,121 @@
                 posodobiNapredek();
             }
         );
-
         raven.addEventListener("change", function () {
             prikaziTeme();
             skrijNalogo();
         });
-
         tema.addEventListener("change", skrijNalogo);
         tezavnost.addEventListener("change", skrijNalogo);
-
+let zbirka = [], izbrana = 0, pdfURL = null;
+const prenosPDF = document.getElementById('prenos-pdf');
+const pdfStatus = document.getElementById('pdf-status');
+const izborNaloge = document.getElementById('izbor-naloge');
+function shraniStanje() {
+ if (!zbirka[izbrana]) return;
+ Object.assign(zbirka[izbrana], {ocenjena, razkrita, vnos:odgovor.value});
+}
+function odpriNalogo(index) {
+ shraniStanje(); izbrana=index; trenutna=zbirka[index];
+ ocenjena=trenutna.ocenjena; razkrita=trenutna.razkrita;
+ odgovor.value=trenutna.vnos; sporocilo.textContent=''; pomoc.replaceChildren(); pomoc.hidden=true;
+ document.getElementById('naloga').textContent=trenutna.vprasanje;
+ document.getElementById('naloga-blok').hidden=false;
+ izborNaloge.value=String(index);
+}
+function pocistiPDF() {
+ if (pdfURL) URL.revokeObjectURL(pdfURL);
+ pdfURL=null; prenosPDF.hidden=true; prenosPDF.removeAttribute('href');
+}
+// JPEG pages in a standard PDF container; canvas preserves Slovenian letters and math symbols.
+function sestaviPDF(slike) {
+ const enc=new TextEncoder(), deli=[], offsets=[0];let size=0;
+ const dodaj=data=>{const bytes=typeof data==='string'?enc.encode(data):data;deli.push(bytes);size+=bytes.length;};
+ const objekt=(id,body)=>{offsets[id]=size;dodaj(id+' 0 obj\n');dodaj(body);dodaj('\nendobj\n');};
+ dodaj('%PDF-1.4\n');
+ objekt(1,'<< /Type /Catalog /Pages 2 0 R >>');
+ objekt(2,'<< /Type /Pages /Count '+slike.length+' /Kids ['+slike.map((_,i)=>(3+i*3)+' 0 R').join(' ')+'] >>');
+ slike.forEach((data,i)=>{
+  const id=3+i*3, imageId=id+1,contentId=id+2;
+  objekt(id,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 '+imageId+' 0 R >> >> /Contents '+contentId+' 0 R >>');
+  const binary=atob(data.split(',')[1]);const jpg=Uint8Array.from(binary,c=>c.charCodeAt(0));
+  offsets[imageId]=size;dodaj(imageId+' 0 obj\n<< /Type /XObject /Subtype /Image /Width 1240 /Height 1754 /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+jpg.length+' >>\nstream\n');dodaj(jpg);dodaj('\nendstream\nendobj\n');
+  const content='q\n595.28 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n';
+  objekt(contentId,'<< /Length '+enc.encode(content).length+' >>\nstream\n'+content+'endstream');
+ });
+ const start=size;dodaj('xref\n0 '+offsets.length+'\n0000000000 65535 f \n');
+ for(let i=1;i<offsets.length;i++)dodaj(String(offsets[i]).padStart(10,'0')+' 00000 n \n');
+ dodaj('trailer\n<< /Size '+offsets.length+' /Root 1 0 R >>\nstartxref\n'+start+'\n%%EOF');
+ return new Blob(deli,{type:'application/pdf'});
+}
+function vykresliStrani(naloge,meta,resitve) {
+ const pages=[];let canvas,ctx,y,page=0;
+ function novaStran(naslov) {
+  canvas=document.createElement('canvas');canvas.width=1240;canvas.height=1754;ctx=canvas.getContext('2d');
+  if(!ctx)throw new Error('Brskalnik ne podpira priprave PDF-ja.');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,1240,1754);ctx.fillStyle='#142c43';ctx.font='bold 38px Arial';ctx.fillText(naslov,80,85);
+  ctx.font='22px Arial';ctx.fillText(meta.raven+' · '+meta.tema+' · '+meta.tezavnost,80,128);
+  ctx.fillText('Število nalog: '+naloge.length,80,164);y=225;page++;
+ }
+ function koncaj() {ctx.font='20px Arial';ctx.fillStyle='#536575';ctx.fillText('Sidebit · Stran '+page,80,1695);pages.push(canvas.toDataURL('image/jpeg',0.92));}
+ function vrstice(text,font) {
+  ctx.font=font;const output=[];
+  for(const odstavek of text.split('\n')){
+   let line='';for(const word of odstavek.split(/\s+/)){
+    const next=line?line+' '+word:word;
+    if(ctx.measureText(next).width>1080 && line){output.push(line);line=word;}else line=next;
+   }output.push(line);
+  }return output;
+ }
+ function odsek(naslov,solutions) {
+  novaStran(naslov);
+  naloge.forEach((n,i)=>{
+   const lines=vrstice((i+1)+'. '+n.vprasanje,'bold 26px Arial');
+   const answer=solutions?vrstice(n.postopek,'24px Arial'):[];
+   const height=lines.length*36+answer.length*34+(solutions?36:115);
+   if(y+height>1620){koncaj();novaStran(naslov+' – nadaljevanje');}
+   ctx.fillStyle='#142c43';ctx.font='bold 26px Arial';lines.forEach(line=>{ctx.fillText(line,80,y);y+=36;});
+   if(solutions){ctx.font='24px Arial';answer.forEach(line=>{ctx.fillText(line,80,y);y+=34;});y+=36;}
+   else {ctx.strokeStyle='#dce5ea';ctx.beginPath();ctx.moveTo(80,y+65);ctx.lineTo(1160,y+65);ctx.stroke();y+=115;}
+  });koncaj();
+ }
+ odsek('Matematične naloge',false);
+ if(resitve)odsek('Rešitve in postopki',true);
+ return pages;
+}
+let metadata=null, pripravlja=false;
+async function pripraviPDF() {
+ if(!zbirka.length||pripravlja)return;
+ pripravlja=true;pocistiPDF();pdfStatus.textContent='Pripravljam PDF …';
+ document.getElementById('vkljuci-resitve').disabled=true;
+ document.getElementById('ustvari-zbirko').disabled=true;
+ try {
+  await new Promise(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));
+  const blob=sestaviPDF(vykresliStrani(zbirka,metadata,document.getElementById('vkljuci-resitve').checked));
+  pdfURL=URL.createObjectURL(blob);prenosPDF.href=pdfURL;
+  prenosPDF.download='matematicne-naloge-'+zbirka.length+'.pdf';prenosPDF.hidden=false;
+  pdfStatus.textContent='PDF z vsemi '+zbirka.length+' nalogami je pripravljen za prenos.';
+ }catch(error){pdfStatus.textContent='PDF-ja ni bilo mogoče pripraviti. '+error.message;}
+ finally{pripravlja=false;document.getElementById('vkljuci-resitve').disabled=false;document.getElementById('ustvari-zbirko').disabled=false;}
+}
+document.getElementById('nastavitve').addEventListener('submit',async event=>{
+ event.preventDefault();if(pripravlja)return;
+ const count=Number(document.getElementById('stevilo-nalog').value);
+ if(!Number.isInteger(count)||count<1||count>200){pdfStatus.textContent='Vnesi celo število od 1 do 200.';return;}
+ trenutna=null;zbirka=Array.from({length:count},()=>({...ustvariNalogo(tema.value,Number(tezavnost.value)),ocenjena:false,razkrita:false,vnos:''}));
+ izbrana=0;ocenjena=false;razkrita=false;odgovor.value='';
+ metadata={raven:raven.selectedOptions[0].textContent,tema:tema.selectedOptions[0].textContent,tezavnost:tezavnost.selectedOptions[0].textContent};
+ izborNaloge.replaceChildren();const list=document.getElementById('seznam-nalog');list.replaceChildren();
+ zbirka.forEach((n,i)=>{
+  const option=document.createElement('option');option.value=i;option.textContent='Naloga '+(i+1);izborNaloge.append(option);
+  const li=document.createElement('li');li.textContent=n.vprasanje;list.append(li);
+ });
+ document.getElementById('zbirka-blok').hidden=false;odpriNalogo(0);await pripraviPDF();
+});
+izborNaloge.addEventListener('change',()=>odpriNalogo(Number(izborNaloge.value)));
+document.getElementById('vkljuci-resitve').addEventListener('change',pripraviPDF);
+window.addEventListener('pagehide',()=>{if(pdfURL)URL.revokeObjectURL(pdfURL);});
+window.addEventListener('pageshow',event=>{if(event.persisted&&zbirka.length)pripraviPDF();});
         prikaziTeme();
     </script>
 </body>
