@@ -1,234 +1,101 @@
 <!DOCTYPE html>
-<html lang="sl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="sl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Generator QR kode</title><link rel="stylesheet" href="../style.css"><script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0/lib/qr-code-styling.js" defer></script></head><body>
+<header><a href="../index.html">← Vsa orodja</a><h1>Generator QR kode</h1><p>Ustvari QR-kodo z logotipom, barvami in izbranimi oblikami ter jo prenesi kot PNG ali SVG.</p></header><main>
+<section class="kalkulator"><form id="obrazec">
+<label for="besedilo">Povezava ali besedilo</label><textarea id="besedilo" rows="5" maxlength="500" placeholder="Na primer: https://example.com" aria-describedby="navodilo" required></textarea><p id="navodilo">Za spletno povezavo vnesi celoten naslov, vključno s https://. Vneseš lahko največ 500 znakov.</p>
+<label for="velikost">Velikost celotne slike z robom</label><select id="velikost"><option value="256">256 × 256 pik</option><option value="512" selected>512 × 512 pik</option><option value="1024">1024 × 1024 pik</option><option value="2048">2048 × 2048 pik</option></select>
+<details open><summary>Barve in prelivi</summary>
+<p><label for="paleta">Pripravljena barvna kombinacija</label><select id="paleta"><option value="custom">Lastna izbira</option><option value="classic" selected>Klasična črno-bela</option><option value="ocean">Morska modra</option><option value="violet">Vijolična</option><option value="forest">Gozdna zelena</option><option value="rose">Temno rožnata</option><option value="night">Nočno modra</option></select></p>
+<p><label for="barvni-nacin">Barvanje znakov QR-kode</label><select id="barvni-nacin"><option value="solid">Enotna barva</option><option value="linear">Linearni preliv</option><option value="radial">Radialni preliv</option></select></p>
+<p><label for="barva">Osnovna barva znakov</label><input type="color" id="barva" value="#000000"></p><div id="preliv-nastavitve" hidden><p><label for="barva2">Druga barva preliva</label><input type="color" id="barva2" value="#5b248c"></p><p><label for="kot">Smer linearnega preliva</label><select id="kot"><option value="0">Vodoravno</option><option value="45">Diagonalno 45°</option><option value="90">Navpično</option><option value="135">Diagonalno 135°</option></select></p></div>
+<p><label for="barva-ozadja">Barva ozadja QR-kode</label><input type="color" id="barva-ozadja" value="#ffffff"></p><label for="prozorno">Prosojno ozadje QR-kode</label><input id="prozorno" type="checkbox"><p>Prosojnost velja za izvoženo sliko QR-kode; izgled spletne strani se ne spreminja.</p>
+</details>
+<details><summary>Oblike znakov in vogalov</summary><p><label for="oblika">Oblika znakov</label><select id="oblika"><option value="square">Kvadrati</option><option value="dots">Krožne pike</option><option value="rounded">Zaobljeni znaki</option><option value="extra-rounded">Močno zaobljeni znaki</option><option value="classy">Kombinirani ostri znaki</option><option value="classy-rounded">Kombinirani zaobljeni znaki</option></select></p>
+<p><label for="vogal-oblika">Oblika zunanjih oznak v vogalih</label><select id="vogal-oblika"><option value="square">Kvadratne</option><option value="dot">Krožne</option><option value="extra-rounded">Zaobljene</option></select></p><p><label for="vogal-barva">Barva zunanjih oznak</label><input id="vogal-barva" type="color" value="#000000"></p>
+<p><label for="sredina-oblika">Oblika sredine vogalnih oznak</label><select id="sredina-oblika"><option value="square">Kvadrat</option><option value="dot">Krog</option></select></p><p><label for="sredina-barva">Barva sredine vogalnih oznak</label><input id="sredina-barva" type="color" value="#000000"></p>
+<p><label for="rob">Prazen rob okoli QR-kode</label><select id="rob"><option value="0.14" selected>Običajen rob</option><option value="0.18">Širši rob</option><option value="0.22">Zelo širok rob</option></select></p><p><label for="popravljanje">Popravljanje napak brez logotipa</label><select id="popravljanje"><option value="M">Srednje – M</option><option value="Q">Višje – Q</option><option value="H" selected>Najvišje – H</option></select></p></details>
+<details open><summary>Slika oziroma logotip na sredini</summary><p><label for="logo">Naloži sliko (neobvezno)</label><input id="logo" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="logo-navodilo"></p><p id="logo-navodilo">PNG, JPG ali WebP, največ 5 MB. Slika se obdela v tvojem brskalniku. Pri dodanem logotipu se samodejno uporabi popravljanje napak H.</p><img id="logo-predogled" width="96" height="96" alt="Predogled naloženega logotipa" hidden><div id="logo-nastavitve" hidden>
+<p><label for="logo-velikost">Velikost logotipa v kodi</label><select id="logo-velikost"><option value="0.18">Majhen – priporočeno</option><option value="0.25" selected>Srednji</option><option value="0.32">Večji – obvezno preveri skeniranje</option></select></p><p><label for="logo-oblika">Oblika podlage logotipa</label><select id="logo-oblika"><option value="square">Kvadrat</option><option value="rounded" selected>Zaobljen kvadrat</option><option value="circle">Krog</option></select></p><p><label for="logo-podlaga">Barva podlage logotipa</label><input type="color" id="logo-podlaga" value="#ffffff"></p><p><label for="logo-odmik">Notranji odmik slike od roba podlage</label><select id="logo-odmik"><option value="4">Majhen</option><option value="10" selected>Srednji</option><option value="18">Večji</option></select></p><button type="button" id="odstrani-logo">Odstrani logotip</button></div></details>
+<div class="gumbi"><button type="submit" id="ustvari">Ustvari QR-kodo</button><button type="reset">Počisti</button></div></form>
+<p id="napaka" class="napaka" role="alert"></p><div id="izhod" class="rezultat" hidden><h2>Tvoja QR-koda</h2><canvas id="predogled" role="img" aria-label="Ustvarjena QR-koda" style="display: block; max-width: 100%; height: auto; margin: 16px auto;"></canvas><div class="gumbi"><button type="button" id="prenesi">Prenesi PNG</button><button type="button" id="prenesi-svg">Prenesi SVG</button></div><p id="opozorilo"></p></div><p id="status" role="status" aria-live="polite"></p></section>
+<section class="razlaga"><h2>Kako deluje?</h2><p>QR-koda vsebuje vneseno besedilo ali povezavo. Oblikuj znake, izberi barve in po želji dodaj sliko v sredino. Sprememba nastavitev skrije star rezultat; nato ponovno klikni Ustvari QR-kodo.</p><p>PNG je primeren za običajno uporabo, SVG pa za povečavo in pripravo za tisk. Logotip je vključen tudi v datoteko SVG. Izbrana velikost je velikost celotne slike, skupaj s praznim robom.</p><p>Temni znaki na svetlem ozadju so najboljša izhodiščna izbira. Daljše besedilo ustvari gostejšo kodo. Prevelik logotip, svetli prelivi ali prosojnost na neustrezni podlagi lahko preprečijo branje.</p><p>Pred uporabo preveri preneseno QR-kodo s telefonom. Generator ne preverja skeniranja in ne zagotavlja, da bo vsaka kombinacija barv in oblik berljiva.</p><p>Vsebina in logotip se obdelata v brskalniku in se s tem generatorjem ne nalagata na strežnik. Zunanja knjižnica se naloži s storitve jsDelivr, zato je za njeno nalaganje potrebna internetna povezava.</p><p>To je statična QR-koda: vsebina v preneseni sliki ostane enaka. Delovanje povezave je odvisno od ciljne strani.</p></section></main><script>
+(() => {
+ 'use strict';
+ const $=id=>document.getElementById(id),form=$('obrazec'),preview=$('predogled');
+ let logoImage=null,logoToken=0,loadingLogo=false,version=0,rendering=false,ready=null;
+ const presets={classic:['#000000','#000000','#ffffff','square','square','square'],ocean:['#065f73','#073b4c','#ffffff','rounded','extra-rounded','dot'],violet:['#5b248c','#30124d','#ffffff','dots','dot','dot'],forest:['#165738','#123b29','#f5fff8','classy-rounded','extra-rounded','dot'],rose:['#8b2350','#541331','#fff7fa','extra-rounded','extra-rounded','dot'],night:['#18233d','#18233d','#f1f5ff','classy','square','square']};
+ function invalidate(){version++;ready=null;$('izhod').hidden=true;$('napaka').textContent='';$('opozorilo').textContent='';$('status').textContent='';preview.width=0;preview.height=0;}
+ function dependents(){const gradient=$('barvni-nacin').value!=='solid';$('preliv-nastavitve').hidden=!gradient;$('kot').disabled=$('barvni-nacin').value!=='linear';$('barva-ozadja').disabled=$('prozorno').checked;$('logo-nastavitve').hidden=!logoImage;$('popravljanje').disabled=Boolean(logoImage);if(logoImage)$('popravljanje').value='H';}
+ form.addEventListener('input',()=>{invalidate();dependents();});
+ form.addEventListener('change',e=>{if(e.target.id!=='logo'){invalidate();dependents();if(logoImage&&['logo-oblika','logo-podlaga','logo-odmik'].includes(e.target.id))$('logo-predogled').src=makeLogo();}});
+ $('paleta').addEventListener('change',()=>{const p=presets[$('paleta').value];if(!p)return;[$('barva'),$('vogal-barva'),$('barva-ozadja'),$('oblika'),$('vogal-oblika'),$('sredina-oblika')].forEach((el,i)=>el.value=p[i]);$('sredina-barva').value=p[1];$('barvni-nacin').value='solid';$('prozorno').checked=false;invalidate();dependents();});
+ function imageFrom(src){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('Slike ni mogoče prebrati. Uporabi PNG, JPG ali WebP.'));image.src=src;});}
+ function readFile(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('Branje datoteke ni uspelo.'));r.readAsDataURL(file);});}
+ $('logo').addEventListener('change',async()=>{
+  const token=++logoToken;invalidate();logoImage=null;$('logo-predogled').hidden=true;$('logo-predogled').removeAttribute('src');dependents();
+  const file=$('logo').files[0];if(!file){loadingLogo=false;return;}
+  loadingLogo=true;$('status').textContent='Nalagam logotip …';
+  try{
+   if(!['image/png','image/jpeg','image/webp'].includes(file.type))throw new Error('Izberi PNG, JPG ali WebP. SVG in animirane slike niso podprti.');
+   if(file.size>5*1024*1024)throw new Error('Slika je lahko velika največ 5 MB.');
+   const image=await imageFrom(await readFile(file));
+   if(image.naturalWidth*image.naturalHeight>20000000)throw new Error('Slika ima preveč pik. Pred nalaganjem jo pomanjšaj na največ 20 milijonov pik.');
+   if(token!==logoToken)return;
+   logoImage=image;$('logo-predogled').src=makeLogo();$('logo-predogled').hidden=false;$('status').textContent='Logotip je pripravljen. Klikni Ustvari QR-kodo.';
+  }catch(error){if(token===logoToken){$('napaka').textContent=error.message;$('status').textContent='';}}
+  finally{if(token===logoToken){loadingLogo=false;dependents();}}
+ });
+ $('odstrani-logo').addEventListener('click',()=>{logoToken++;loadingLogo=false;logoImage=null;$('logo').value='';$('logo-predogled').hidden=true;$('logo-predogled').removeAttribute('src');invalidate();dependents();});
+ function makeLogo(){
+  if(!logoImage)return undefined;
+  const c=document.createElement('canvas');c.width=512;c.height=512;const ctx=c.getContext('2d');if(!ctx)throw new Error('Brskalnik ne podpira izrisa slike.');
+  const shape=$('logo-oblika').value;ctx.save();ctx.beginPath();
+  if(shape==='circle')ctx.arc(256,256,256,0,2*Math.PI);
+  else if(shape==='rounded'){const r=75;ctx.moveTo(r,0);ctx.arcTo(512,0,512,512,r);ctx.arcTo(512,512,0,512,r);ctx.arcTo(0,512,0,0,r);ctx.arcTo(0,0,512,0,r);ctx.closePath();}
+  else ctx.rect(0,0,512,512);
+  ctx.clip();ctx.fillStyle=$('logo-podlaga').value;ctx.fillRect(0,0,512,512);
+  const padding=Number($('logo-odmik').value)*512/100;
+  const scale=(512-2*padding)/Math.max(logoImage.naturalWidth,logoImage.naturalHeight);
+  const w=logoImage.naturalWidth*scale,h=logoImage.naturalHeight*scale;
+  ctx.drawImage(logoImage,(512-w)/2,(512-h)/2,w,h);ctx.restore();return c.toDataURL('image/png');
+ }
+ function luminance(hex){const channels=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return channels[0]*.2126+channels[1]*.7152+channels[2]*.0722;}
+ function warnings(){const result=[],bg=$('prozorno').checked?'#ffffff':$('barva-ozadja').value;
+  const colors=[$('barva').value,$('vogal-barva').value,$('sredina-barva').value];if($('barvni-nacin').value!=='solid')colors.push($('barva2').value);
+  if(colors.some(c=>(luminance(bg)+.05)/(luminance(c)+.05)<4.5))result.push('Izbrane barve imajo lahko prenizek kontrast ali svetle znake na temni podlagi. Za zanesljivejše branje uporabi temno kodo na svetlem ozadju.');
+  if($('prozorno').checked)result.push('Prosojno QR-kodo postavi na enotno svetlo podlago; kontrast je tu ocenjen glede na belo.');
+  if(logoImage)result.push('Logotip prekrije del kode. Uporabljena je najvišja raven popravljanja napak H, vendar moraš kodo vseeno preizkusiti s telefonom.');
+  result.push('Oblike in kontrast vplivajo na branje. Preizkusi končno izvoženo sliko, tudi v dejanski velikosti za tisk.');return result.join(' ');
+ }
+ function buildOptions(content){
+  const size=Number($('velikost').value);if(![256,512,1024,2048].includes(size))throw new Error('Izberi veljavno velikost.');
+  const dots={type:$('oblika').value,color:$('barva').value};
+  if($('barvni-nacin').value!=='solid')dots.gradient={type:$('barvni-nacin').value,rotation:Number($('kot').value)*Math.PI/180,colorStops:[{offset:0,color:$('barva').value},{offset:1,color:$('barva2').value}]};
+  return {width:size,height:size,type:'svg',data:content,margin:Math.ceil(size*Number($('rob').value)),qrOptions:{errorCorrectionLevel:logoImage?'H':$('popravljanje').value},dotsOptions:dots,cornersSquareOptions:{type:$('vogal-oblika').value,color:$('vogal-barva').value},cornersDotOptions:{type:$('sredina-oblika').value,color:$('sredina-barva').value},backgroundOptions:{color:$('prozorno').checked?'transparent':$('barva-ozadja').value},image:makeLogo(),imageOptions:{hideBackgroundDots:true,imageSize:Number($('logo-velikost').value),margin:Math.max(2,Math.round(size*.01)),saveAsBlob:true}};
+ }
+ async function drawPreview(blob,token){const url=URL.createObjectURL(blob);try{const image=await imageFrom(url);if(token!==version)return;preview.width=image.naturalWidth;preview.height=image.naturalHeight;const ctx=preview.getContext('2d');if(!ctx)throw new Error('Izris predogleda ni uspel.');ctx.clearRect(0,0,preview.width,preview.height);ctx.drawImage(image,0,0);}finally{URL.revokeObjectURL(url);}}
+ form.addEventListener('submit',async event=>{
+  event.preventDefault();if(rendering)return;invalidate();const token=version;const content=$('besedilo').value.trim();
+  if(!content){$('napaka').textContent='Vnesi povezavo ali besedilo.';$('besedilo').focus();return;}
+  if(content.length>500){$('napaka').textContent='Vnesi največ 500 znakov.';return;}
+  if(loadingLogo){$('napaka').textContent='Počakaj, da se logotip naloži.';return;}
+  if(typeof QRCodeStyling==='undefined'){$('napaka').textContent='Knjižnica za QR-kode se ni naložila. Preveri internetno povezavo in osveži stran.';return;}
+  rendering=true;$('ustvari').disabled=true;$('status').textContent='Pripravljam QR-kodo …';
+  try{
+   const qr=new QRCodeStyling(buildOptions(content));
+   const rawSVG=await qr.getRawData('svg');if(!rawSVG)throw new Error('Izvoz SVG ni uspel.');
+   const markup=(await rawSVG.text()).replace(/url\('#([^']+)'\)/g,'url(#$1)');
+   const svg=new Blob([markup],{type:'image/svg+xml;charset=utf-8'});
+   await drawPreview(svg,token);if(token!==version)return;
+   const png=await new Promise((resolve,reject)=>preview.toBlob(blob=>blob?resolve(blob):reject(new Error('Izvoz PNG ni uspel.')),'image/png'));if(token!==version)return;
+   ready={png,svg};$('izhod').hidden=false;$('status').textContent='QR-koda je pripravljena.';$('opozorilo').textContent=warnings();
+  }catch(error){if(token===version){$('izhod').hidden=true;ready=null;$('napaka').textContent='QR-kode ni bilo mogoče ustvariti. Poskusi krajše besedilo ali manjšo sliko logotipa.';$('status').textContent='';}}
+  finally{rendering=false;$('ustvari').disabled=false;}
+ });
+ function download(type){if(!ready)return;const url=URL.createObjectURL(ready[type]);const a=document.createElement('a');a.href=url;a.download='qr_koda.'+type;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),15000);$('status').textContent='Datoteka '+type.toUpperCase()+' je pripravljena za prenos.';}
+ $('prenesi').addEventListener('click',()=>download('png'));$('prenesi-svg').addEventListener('click',()=>download('svg'));
+ form.addEventListener('reset',()=>{logoToken++;logoImage=null;loadingLogo=false;invalidate();$('logo-predogled').hidden=true;$('logo-predogled').removeAttribute('src');setTimeout(dependents,0);});
+ dependents();
+})();
 
-    <title>Generator QR kode</title>
-
-    <link rel="stylesheet" href="../style.css">
-
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
-        defer
-    ></script>
-</head>
-
-<body>
-    <header>
-        <a href="../index.html">← Vsa orodja</a>
-        <h1>Generator QR kode</h1>
-        <p>Ustvari QR-kodo iz povezave ali besedila in prenesi sliko.</p>
-    </header>
-
-    <main>
-        <section class="kalkulator">
-            <form id="obrazec">
-                <label for="besedilo">Povezava ali besedilo</label>
-                <textarea
-                    id="besedilo"
-                    rows="5"
-                    maxlength="500"
-                    placeholder="Na primer: https://example.com"
-                    aria-describedby="navodilo"
-                    required
-                ></textarea>
-
-                <p id="navodilo">
-                    Za spletno povezavo vnesi celoten naslov,
-                    vključno s https://. Vneseš lahko največ 500 znakov.
-                </p>
-
-                <label for="velikost">Velikost QR-kode</label>
-                <select id="velikost">
-                    <option value="256">256 × 256 pik</option>
-                    <option value="512" selected>512 × 512 pik</option>
-                    <option value="1024">1024 × 1024 pik</option>
-                </select>
-
-                <div class="gumbi">
-                    <button type="submit">Ustvari QR-kodo</button>
-                    <button type="reset">Počisti</button>
-                </div>
-            </form>
-
-            <p id="napaka" class="napaka" role="alert"></p>
-
-            <div id="izhod" class="rezultat" hidden>
-                <h2>Tvoja QR-koda</h2>
-
-                <canvas
-                    id="predogled"
-                    role="img"
-                    aria-label="Ustvarjena QR-koda"
-                    style="display: block; max-width: 100%;
-                           height: auto; margin: 16px auto;"
-                ></canvas>
-
-                <button type="button" id="prenesi">
-                    Prenesi PNG
-                </button>
-            </div>
-
-            <p id="status" role="status"></p>
-
-            <!-- Skriti prostor za izris zunanje knjižnice. -->
-            <div id="generator" hidden></div>
-        </section>
-
-        <section class="razlaga">
-            <h2>Kako deluje?</h2>
-
-            <p>
-                QR-koda vsebuje vneseno besedilo ali povezavo.
-                Prebereš jo lahko s kamero telefona.
-            </p>
-
-            <p>
-                Slika vsebuje tudi bel rob, potreben za lažje
-                prepoznavanje. Prenesena slika je zato nekoliko
-                večja od izbrane velikosti same kode.
-            </p>
-
-            <p>
-                Pred uporabo preveri QR-kodo s telefonom.
-                Daljše besedilo ustvari gostejšo kodo, zato je
-                priporočljiva večja velikost.
-            </p>
-
-            <p>
-                Vsebina se kodira v brskalniku.
-                Povezava v QR-kodi ostane enaka; njeno delovanje
-                je odvisno od ciljne spletne strani.
-            </p>
-        </section>
-    </main>
-
-    <script>
-        const obrazec = document.getElementById("obrazec");
-        const besedilo = document.getElementById("besedilo");
-        const velikost = document.getElementById("velikost");
-
-        const generator = document.getElementById("generator");
-        const predogled = document.getElementById("predogled");
-        const izhod = document.getElementById("izhod");
-        const napaka = document.getElementById("napaka");
-        const status = document.getElementById("status");
-
-        function pocistiRezultat() {
-            generator.replaceChildren();
-            izhod.hidden = true;
-            napaka.textContent = "";
-            status.textContent = "";
-
-            predogled.width = 0;
-            predogled.height = 0;
-        }
-
-        obrazec.addEventListener("input", pocistiRezultat);
-
-        obrazec.addEventListener("submit", function (dogodek) {
-            dogodek.preventDefault();
-            pocistiRezultat();
-
-            const vsebina = besedilo.value.trim();
-
-            if (!vsebina) {
-                napaka.textContent = "Vnesi povezavo ali besedilo.";
-                besedilo.focus();
-                return;
-            }
-
-            if (vsebina.length > 500) {
-                napaka.textContent = "Vnesi največ 500 znakov.";
-                return;
-            }
-
-            if (typeof QRCode === "undefined") {
-                napaka.textContent =
-                    "Knjižnica za QR-kode se ni naložila. " +
-                    "Preveri internetno povezavo in osveži stran.";
-                return;
-            }
-
-            try {
-                const dimenzija = Number(velikost.value);
-
-                new QRCode(generator, {
-                    text: vsebina,
-                    width: dimenzija,
-                    height: dimenzija,
-                    colorDark: "#000000",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.M
-                });
-
-                const izvor = generator.querySelector("canvas");
-
-                if (!izvor) {
-                    throw new Error("Izris kode ni uspel.");
-                }
-
-                // Širok bel rob okoli kode za lažje skeniranje.
-                const rob = Math.ceil(dimenzija * 0.2);
-
-                predogled.width = dimenzija + rob * 2;
-                predogled.height = dimenzija + rob * 2;
-
-                const kontekst = predogled.getContext("2d");
-
-                kontekst.fillStyle = "#ffffff";
-                kontekst.fillRect(
-                    0,
-                    0,
-                    predogled.width,
-                    predogled.height
-                );
-
-                kontekst.drawImage(izvor, rob, rob);
-
-                izhod.hidden = false;
-                status.textContent = "QR-koda je pripravljena.";
-            } catch {
-                pocistiRezultat();
-
-                napaka.textContent =
-                    "QR-kode ni bilo mogoče ustvariti. " +
-                    "Poskusi s krajšim besedilom.";
-            }
-        });
-
-        document.getElementById("prenesi").addEventListener(
-            "click",
-            function () {
-                if (izhod.hidden) return;
-
-                predogled.toBlob(function (datoteka) {
-                    if (!datoteka) {
-                        napaka.textContent = "Prenos slike ni uspel.";
-                        return;
-                    }
-
-                    const url = URL.createObjectURL(datoteka);
-                    const povezava = document.createElement("a");
-
-                    povezava.href = url;
-                    povezava.download = "qr_koda.png";
-
-                    document.body.appendChild(povezava);
-                    povezava.click();
-                    povezava.remove();
-
-                    setTimeout(function () {
-                        URL.revokeObjectURL(url);
-                    }, 1000);
-
-                    status.textContent = "Slika je pripravljena za prenos.";
-                }, "image/png");
-            }
-        );
-
-        obrazec.addEventListener("reset", pocistiRezultat);
-    </script>
-</body>
-</html>
+</script></body></html>
