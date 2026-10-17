@@ -1,0 +1,9 @@
+Po uspešni verifikaciji naredi naslednje:
+1. Objavi popravljeni HTML na svoji spletni strani, če ga še nisi.
+2. Oddaj zemljevid strani. Iz zadnjega ZIP-a naloži sitemap-generator.xml v isto mapo kot index.html. Nato v Search Console odpri Zemljevidi spletnega mesta / Sitemaps, vnesi:
+   https://sidebit.si/sitemap-generator.xml
+   
+   Klikni Pošlji / Submit. Ta datoteka vsebuje samo generator; za vse podstrani potrebuješ skupni zemljevid. developers.google.com
+3. Zahtevaj indeksiranje začetne strani. V zgornjo vrstico Search Console prilepi https://sidebit.si/, pritisni Enter in klikni Zahtevaj indeksiranje / Request indexing. Enako naredi za objavljeni generator. Če Google sporoči napako, uporabi Preizkusi dejanski URL / Test live URL. Search Console Help
+4. Počakaj na obdelavo. Zahteva ne zagotavlja takojšnjega indeksiranja. Za večje število strani uporabi zemljevid, namesto da vsako pošiljaš ročno. developers.google.com
+To je postopek za prikazovanje v Googlovem iskalniku. Odobritev AdSense se obravnava ločeno.
