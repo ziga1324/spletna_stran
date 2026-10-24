@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator ocen: povprečje, uteži in potrebna ocena – Sidebit</title>
+    <meta name="description" content="Izračunaj povprečje ocen, tehtano povprečje ali oceno, ki jo potrebuješ za želeni cilj. Tri šolska orodja na eni strani z razlago in primeri.">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html">← Vsa orodja</a>
+        <h1>Kalkulator ocen</h1>
+        <p>Izračunaj povprečje, upoštevaj uteži ali preveri, katero naslednjo oceno potrebuješ.</p>
+        <nav aria-label="Izberi kalkulator">
+            <a href="#povprecje">Povprečje ocen</a> ·
+            <a href="#tehtano">Tehtano povprečje</a> ·
+            <a href="#potrebna">Katero oceno potrebujem?</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- 1. Vse ocene imajo enako težo. -->
+        <section id="povprecje" class="kalkulator" aria-labelledby="povprecje-naslov">
+            <h2 id="povprecje-naslov">Povprečje ocen</h2>
+            <form id="povprecje-obrazec" novalidate>
+                <label for="povprecje-ocene">Tvoje ocene</label>
+                <input type="text" id="povprecje-ocene" placeholder="Na primer: 4, 5, 3, 4"
+                    aria-describedby="povprecje-navodilo povprecje-napaka" required>
+                <p id="povprecje-navodilo">Vnesi cele ocene od 1 do 5, ločene z vejico ali presledkom.</p>
+                <div class="gumbi">
+                    <button type="submit">Izračunaj povprečje</button>
+                    <button type="reset">Počisti</button>
+                </div>
+                <p id="povprecje-napaka" class="napaka" role="alert"></p>
+                <div id="povprecje-rezultat" class="rezultat" aria-live="polite"></div>
+            </form>
+        </section>
+
+        <!-- 2. Ocene z različno pomembnostjo. -->
+        <section id="tehtano" class="kalkulator" aria-labelledby="tehtano-naslov">
+            <h2 id="tehtano-naslov">Tehtano povprečje oziroma izračun končne ocene</h2>
+            <p>Vsaki oceni določi utež. Utež 2 pomeni dvakrat tolikšen vpliv kot utež 1.
+                Deleže lahko vneseš kot 50, 30 in 20; utežem ni treba dati vsote 100.</p>
+            <form id="tehtano-obrazec" novalidate>
+                <div id="tehtano-ocene"></div>
+                <button type="button" id="dodaj-oceno">Dodaj oceno</button>
+                <div class="gumbi">
+                    <button type="submit">Izračunaj tehtano povprečje</button>
+                    <button type="reset">Počisti</button>
+                </div>
+                <p id="tehtano-napaka" class="napaka" role="alert"></p>
+                <div id="tehtano-rezultat" class="rezultat" aria-live="polite"></div>
+            </form>
+        </section>
+
+        <!-- 3. Ena prihodnja ocena z enako težo kot obstoječe. -->
+        <section id="potrebna" class="kalkulator" aria-labelledby="potrebna-naslov">
+            <h2 id="potrebna-naslov">Katero oceno potrebujem?</h2>
+            <form id="potrebna-obrazec" novalidate>
+                <label for="potrebna-ocene">Trenutne ocene</label>
+                <input type="text" id="potrebna-ocene" placeholder="Na primer: 3, 4, 4"
+                    aria-describedby="potrebna-navodilo potrebna-napaka" required>
+                <p id="potrebna-navodilo">Cele ocene od 1 do 5, ločene z vejico ali presledkom.
+                    Vse ocene, tudi naslednja, imajo enako težo.</p>
+                <label for="cilj">Želeno povprečje</label>
+                <input type="text" inputmode="decimal" id="cilj" placeholder="Na primer: 4 ali 4,25"
+                    aria-describedby="potrebna-napaka" required>
+                <div class="gumbi">
+                    <button type="submit">Izračunaj potrebno oceno</button>
+                    <button type="reset">Počisti</button>
+                </div>
+                <p id="potrebna-napaka" class="napaka" role="alert"></p>
+                <div id="potrebna-rezultat" class="rezultat" aria-live="polite"></div>
+            </form>
+        </section>
+
+        <section class="razlaga">
+            <h2>Kako izbereš pravi izračun?</h2>
+            <h3>Navadno povprečje</h3>
+            <p>Vsoto ocen deli s številom ocen. Primer: (4 + 5 + 3 + 4) ÷ 4 = <strong>4,00</strong>.</p>
+            <h3>Tehtano povprečje</h3>
+            <p>Vsako oceno pomnoži z utežjo, produkte seštej in deli z vsoto uteži.
+                Primer: ocena 4 z utežjo 2 in ocena 5 z utežjo 1:
+                (4 × 2 + 5 × 1) ÷ (2 + 1) ≈ <strong>4,33</strong>.</p>
+            <h3>Potrebna naslednja ocena</h3>
+            <p>Za cilj c, število trenutnih ocen n in njihovo vsoto S mora naslednja ocena x
+                izpolnjevati x ≥ c × (n + 1) − S. Kalkulator poišče najmanjšo ustrezno celo oceno od 1 do 5.</p>
+            <p>Primer: z ocenami 3, 4 in 4 za povprečje 4 potrebuješ 5:
+                (3 + 4 + 4 + 5) ÷ 4 = <strong>4,00</strong>.</p>
+            <p><strong>Povprečje ni zagotovljena zaključna ocena.</strong> Dejanska ocena je odvisna
+                od pravil ocenjevanja. Prikaz je zaokrožen na dve decimalki; doseganje cilja se
+                preverja pred zaokroževanjem.</p>
+            <p>Izračuni potekajo v brskalniku. Ocene se ne shranjujejo in se ob osvežitvi izgubijo.</p>
+        </section>
+    </main>
+    <footer><p>Sidebit · Orodja za šolo</p></footer>
+
+    <script>
+        "use strict";
+
+        // Skupne funkcije: preverjanje podatkov in prikaz rezultatov.
+        const $ = (id) => document.getElementById(id);
+        const oblikovanje = new Intl.NumberFormat("sl-SI", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+        const prikaz = (stevilo) => oblikovanje.format(stevilo);
+        const vsota = (ocene) => ocene.reduce((skupaj, ocena) => skupaj + ocena, 0);
+
+        function preberiOcene(polje) {
+            const besedilo = polje.value.trim();
+            if (!/^[1-5](?:(?:\s*,\s*|\s+)[1-5])*$/.test(besedilo)) {
+                polje.setAttribute("aria-invalid", "true");
+                polje.focus();
+                throw new Error("Vnesi cele ocene od 1 do 5, ločene z vejico ali presledkom.");
+            }
+            return besedilo.split(/[\s,]+/).map(Number);
+        }
+
+        function decimalnoStevilo(polje, sporocilo) {
+            const besedilo = polje.value.trim();
+            const stevilo = Number(besedilo.replace(",", "."));
+            if (!/^[+-]?(?:\d+(?:[.,]\d+)?|[.,]\d+)$/.test(besedilo)
+                || !Number.isFinite(stevilo)) {
+                polje.setAttribute("aria-invalid", "true");
+                polje.focus();
+                throw new Error(sporocilo);
+            }
+            return stevilo;
+        }
+
+        function napacnoPolje(polje, sporocilo) {
+            polje.setAttribute("aria-invalid", "true");
+            polje.focus();
+            throw new Error(sporocilo);
+        }
+
+        function pocisti(ime) {
+            $(ime + "-napaka").textContent = "";
+            $(ime + "-rezultat").replaceChildren();
+            $(ime + "-obrazec").querySelectorAll('[aria-invalid="true"]').forEach(
+                (polje) => polje.removeAttribute("aria-invalid")
+            );
+        }
+
+        function pokazi(ime, naslov, besedilo) {
+            const h3 = document.createElement("h3");
+            const p = document.createElement("p");
+            h3.textContent = naslov;
+            p.textContent = besedilo;
+            $(ime + "-rezultat").replaceChildren(h3, p);
+        }
+
+        // Vsak obrazec samostojno počisti svoja sporočila.
+        for (const ime of ["povprecje", "tehtano", "potrebna"]) {
+            $(ime + "-obrazec").addEventListener("input", () => pocisti(ime));
+            $(ime + "-obrazec").addEventListener("reset", () => pocisti(ime));
+        }
+
+        $("povprecje-obrazec").addEventListener("submit", (dogodek) => {
+            dogodek.preventDefault();
+            pocisti("povprecje");
+            try {
+                const ocene = preberiOcene($("povprecje-ocene"));
+                const skupaj = vsota(ocene);
+                pokazi("povprecje", "Povprečje: " + prikaz(skupaj / ocene.length),
+                    "Število ocen: " + ocene.length + " | Vsota ocen: " + skupaj);
+            } catch (napaka) {
+                $("povprecje-napaka").textContent = napaka.message;
+            }
+        });
+
+        // Dinamične vrstice za tehtano povprečje imajo enolične identifikatorje.
+        let naslednjiId = 0;
+        function dodajOceno() {
+            naslednjiId++;
+            const vrstica = document.createElement("fieldset");
+            vrstica.className = "ocena-vrstica";
+            vrstica.innerHTML = `
+                <legend>Ocena in utež</legend>
+                <label for="tehtano-ocena-${naslednjiId}">Ocena (1–5)</label>
+                <input id="tehtano-ocena-${naslednjiId}" class="ocena" type="text"
+                    inputmode="numeric" placeholder="Na primer: 4" required>
+                <label for="tehtano-utez-${naslednjiId}">Utež (večja od 0)</label>
+                <input id="tehtano-utez-${naslednjiId}" class="utez" type="text"
+                    inputmode="decimal" value="1" required>
+                <button type="button" class="odstrani">Odstrani oceno</button>
+            `;
+            vrstica.querySelector(".odstrani").addEventListener("click", () => {
+                pocisti("tehtano");
+                if ($("tehtano-ocene").children.length === 1) {
+                    $("tehtano-napaka").textContent = "Za izračun potrebuješ vsaj eno oceno.";
+                    return;
+                }
+                const sosednja = vrstica.nextElementSibling || vrstica.previousElementSibling;
+                vrstica.remove();
+                sosednja.querySelector(".ocena").focus();
+            });
+            $("tehtano-ocene").append(vrstica);
+            pocisti("tehtano");
+            return vrstica;
+        }
+
+        $("dodaj-oceno").addEventListener("click", () => {
+            dodajOceno().querySelector(".ocena").focus();
+        });
+
+        $("tehtano-obrazec").addEventListener("submit", (dogodek) => {
+            dogodek.preventDefault();
+            pocisti("tehtano");
+            try {
+                const vrstice = [...$("tehtano-ocene").querySelectorAll(".ocena-vrstica")];
+                const podatki = vrstice.map((vrstica) => {
+                    const polje = vrstica.querySelector(".ocena");
+                    if (!/^[1-5]$/.test(polje.value.trim())) {
+                        napacnoPolje(polje, "Vse ocene morajo biti cela števila od 1 do 5.");
+                    }
+                    const utezPolje = vrstica.querySelector(".utez");
+                    const utez = decimalnoStevilo(utezPolje, "Utež mora biti število, večje od 0.");
+                    if (utez <= 0) napacnoPolje(utezPolje, "Utež mora biti večja od 0.");
+                    return { ocena: Number(polje.value.trim()), utez };
+                });
+                // Normalizacija uteži prepreči preliv pri zelo velikih vrednostih.
+                const najvecja = Math.max(...podatki.map((p) => p.utez));
+                let produkti = 0;
+                let utezi = 0;
+                for (const p of podatki) {
+                    const normalna = p.utez / najvecja;
+                    produkti += p.ocena * normalna;
+                    utezi += normalna;
+                }
+                const skupneUtezi = podatki.reduce((s, p) => s + p.utez, 0);
+                pokazi("tehtano", "Tehtano povprečje: " + prikaz(produkti / utezi),
+                    "Število ocen: " + podatki.length + " | Vsota uteži: " +
+                    (Number.isFinite(skupneUtezi) ? prikaz(skupneUtezi) : "prevelika za prikaz"));
+            } catch (napaka) {
+                $("tehtano-napaka").textContent = napaka.message;
+            }
+        });
+
+        $("tehtano-obrazec").addEventListener("reset", (dogodek) => {
+            dogodek.preventDefault();
+            $("tehtano-ocene").replaceChildren();
+            dodajOceno();
+            dodajOceno();
+        });
+
+        $("potrebna-obrazec").addEventListener("submit", (dogodek) => {
+            dogodek.preventDefault();
+            pocisti("potrebna");
+            try {
+                const ocene = preberiOcene($("potrebna-ocene"));
+                const cilj = decimalnoStevilo($("cilj"), "Vnesi želeno povprečje med 1 in 5.");
+                if (cilj < 1 || cilj > 5) napacnoPolje($("cilj"), "Želeno povprečje mora biti med 1 in 5.");
+                const skupaj = vsota(ocene);
+                const potrebna = [1, 2, 3, 4, 5].find(
+                    (ocena) => (skupaj + ocena) / (ocene.length + 1) >= cilj - 1e-10
+                );
+                if (potrebna === undefined) {
+                    pokazi("potrebna", "Z eno dodatno oceno cilj ni dosegljiv.",
+                        "Z oceno 5 bi bilo tvoje povprečje " + prikaz((skupaj + 5) / (ocene.length + 1)) + ".");
+                } else {
+                    pokazi("potrebna", "Potrebuješ najmanj oceno " + potrebna + ".",
+                        "S to oceno bi bilo tvoje povprečje " + prikaz((skupaj + potrebna) / (ocene.length + 1)) + ".");
+                }
+            } catch (napaka) {
+                $("potrebna-napaka").textContent = napaka.message;
+            }
+        });
+
+        dodajOceno();
+        dodajOceno();
+    </script>
+</body>
+</html>
