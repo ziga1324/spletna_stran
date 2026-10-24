@@ -1,0 +1,1082 @@
+<!doctype html>
+<html lang="sl">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Laboratorij enačb – linearne in kvadratne enačbe | Sidebit</title>
+        <meta
+            name="description"
+            content="Reši linearno ali kvadratno enačbo s postopkom. Razišči premico, parabolo, diskriminanto in realne ali kompleksne rešitve na interaktivnem prikazu."
+        />
+        <link rel="stylesheet" href="../style.css" />
+        <style>
+            /* Lokalni slog: obstoječih strani in skupnega CSS-ja ne spreminjamo. */
+            body.lab {
+                --ink: #252538;
+                --purple: #7653bf;
+                --teal: #087f8c;
+                background: #fff9ed;
+                color: var(--ink);
+            }
+            .lab header,
+            .lab main,
+            .lab footer {
+                width: min(1180px, calc(100% - 36px));
+                margin-inline: auto;
+            }
+            .lab header {
+                padding: 32px 0 24px;
+            }
+            .lab h1 {
+                font-size: clamp(36px, 6vw, 68px);
+                letter-spacing: -0.055em;
+                line-height: 1.05;
+                margin: 22px 0 16px;
+            }
+            .lab h1,
+            .lab h2,
+            .lab h3 {
+                color: var(--ink);
+                background: none;
+                -webkit-text-fill-color: currentColor;
+            }
+            .lab .badge {
+                display: inline-block;
+                background: #ffe28b;
+                border: 2px solid var(--ink);
+                border-radius: 8px;
+                padding: 5px 12px;
+                font-weight: 700;
+            }
+            .lab .layout {
+                display: grid;
+                grid-template-columns: 340px minmax(0, 1fr);
+                gap: 26px;
+                align-items: start;
+            }
+            .lab .panel {
+                background: white;
+                border: 3px solid var(--ink);
+                border-radius: 22px;
+                padding: 24px;
+                box-shadow: 6px 6px 0 var(--ink);
+                margin-bottom: 26px;
+                min-width: 0;
+            }
+            .lab .controls {
+                background: #eee7ff;
+            }
+            .lab .switch {
+                display: flex;
+                gap: 10px;
+                margin: 20px 0;
+            }
+            .lab button {
+                min-height: 44px;
+                padding: 10px 14px;
+                border: 2px solid var(--ink);
+                border-radius: 10px;
+                background: #fff;
+                color: var(--ink);
+                font: inherit;
+                font-weight: 700;
+                cursor: pointer;
+                box-shadow: 2px 2px 0 var(--ink);
+            }
+            .lab button:hover {
+                background: #fff0b7;
+            }
+            .lab button:active {
+                transform: translate(2px, 2px);
+                box-shadow: none;
+            }
+            .lab button[aria-pressed="true"] {
+                background: var(--ink);
+                color: white;
+            }
+            .lab button[type="submit"] {
+                background: #ffe28b;
+            }
+            .lab .switch button {
+                flex: 1;
+            }
+            .lab .actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin: 16px 0;
+            }
+            .lab input {
+                width: 100%;
+                min-width: 0;
+                font: inherit;
+                border: 2px solid #79758f;
+                border-radius: 10px;
+                background: white;
+                padding: 12px;
+                color: var(--ink);
+            }
+            .lab label {
+                display: block;
+                margin: 14px 0 6px;
+                font-weight: 700;
+            }
+            .lab .hint {
+                font-size: 14px;
+                color: #58596c;
+            }
+            .lab .equation {
+                font-size: clamp(23px, 3.5vw, 38px);
+                line-height: 1.35;
+                text-align: center;
+                padding: 22px 12px;
+                background: #fff0b8;
+                border: 2px solid var(--ink);
+                border-radius: 14px;
+                overflow-wrap: anywhere;
+                font-weight: 700;
+            }
+            .lab .answer {
+                font-size: clamp(26px, 4vw, 40px);
+                line-height: 1.3;
+                margin: 16px 0;
+                overflow-wrap: anywhere;
+            }
+            .lab .metrics {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+                margin: 18px 0;
+            }
+            .lab .metric {
+                padding: 12px;
+                border: 2px solid var(--ink);
+                border-radius: 12px;
+                background: #d5f0e6;
+                overflow-wrap: anywhere;
+            }
+            .lab .metric:nth-child(2) {
+                background: #e7dfff;
+            }
+            .lab .metric:nth-child(3) {
+                background: #ffe4cb;
+            }
+            .lab .metric strong {
+                display: block;
+                font-size: 20px;
+            }
+            .lab svg {
+                width: 100%;
+                height: auto;
+                display: block;
+                background: #fff;
+                border: 2px solid #d9d8e3;
+                border-radius: 14px;
+                touch-action: pan-y;
+            }
+            .lab .legend {
+                display: flex;
+                gap: 16px;
+                flex-wrap: wrap;
+                font-size: 14px;
+                margin: 12px 0;
+            }
+            .lab .legend span::before {
+                content: "";
+                display: inline-block;
+                width: 20px;
+                height: 4px;
+                background: var(--teal);
+                vertical-align: middle;
+                margin-right: 7px;
+            }
+            .lab .legend span:nth-child(2)::before {
+                background: var(--purple);
+            }
+            .lab .steps {
+                list-style: none;
+                padding: 0;
+                counter-reset: step;
+            }
+            .lab .steps li {
+                counter-increment: step;
+                padding: 16px 12px 16px 54px;
+                position: relative;
+                border-bottom: 1px solid #e3e0eb;
+                overflow-wrap: anywhere;
+            }
+            .lab .steps li::before {
+                content: counter(step);
+                position: absolute;
+                left: 5px;
+                top: 17px;
+                display: grid;
+                place-items: center;
+                width: 30px;
+                height: 30px;
+                background: #e7dfff;
+                border: 2px solid var(--ink);
+                border-radius: 50%;
+                font-weight: 700;
+            }
+            .lab .table-wrap {
+                overflow: auto;
+            }
+            .lab table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .lab td,
+            .lab th {
+                padding: 9px 12px;
+                border-bottom: 1px solid #ddd;
+                text-align: left;
+            }
+            .lab .error {
+                color: #a72121;
+                padding: 12px 0;
+            }
+            .lab .error:empty {
+                display: none;
+            }
+            .lab [hidden] {
+                display: none !important;
+            }
+            .lab :focus-visible {
+                outline: 3px solid var(--purple);
+                outline-offset: 4px;
+            }
+            .lab footer {
+                padding: 12px 0 32px;
+            }
+            @media (max-width: 850px) {
+                .lab .layout {
+                    grid-template-columns: 1fr;
+                }
+                .lab .fields {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 12px;
+                }
+            }
+            @media (max-width: 450px) {
+                .lab .panel {
+                    padding: 17px;
+                    box-shadow: 3px 3px 0 var(--ink);
+                }
+                .lab .metric {
+                    padding: 8px;
+                    font-size: 12px;
+                }
+                .lab .metric strong {
+                    font-size: 16px;
+                }
+                .lab .fields {
+                    gap: 8px;
+                }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .lab * {
+                    animation: none !important;
+                    transition: none !important;
+                }
+            }
+            @media print {
+                .lab .controls,
+                .lab .switch,
+                .lab .actions {
+                    display: none !important;
+                }
+                .lab .layout {
+                    display: block;
+                }
+                .lab .panel {
+                    box-shadow: none;
+                    break-inside: avoid;
+                }
+            }
+        </style>
+    </head>
+    <body class="lab">
+        <header>
+            <a href="../index.html">← Vsa orodja</a><br />
+            <span class="badge">IZRAČUNAJ · POGLEJ · RAZUMI</span>
+            <h1>Laboratorij enačb</h1>
+            <p>
+                Rešitev ni samo številka. Poglej, kje se premici srečata ali kje parabola doseže os
+                x.
+            </p>
+            <div class="switch" role="group" aria-label="Vrsta enačbe">
+                <button type="button" id="linear" aria-pressed="true">Linearna enačba</button>
+                <button type="button" id="quadratic" aria-pressed="false">Kvadratna enačba</button>
+            </div>
+        </header>
+        <main>
+            <div class="layout">
+                <section class="panel controls" aria-labelledby="settings-title">
+                    <h2 id="settings-title">Sestavi enačbo</h2>
+                    <p id="form-type" class="hint">Oblika: ax + b = c</p>
+                    <form id="form" novalidate>
+                        <div class="fields">
+                            <div>
+                                <label for="a">Koeficient a</label
+                                ><input
+                                    id="a"
+                                    type="text"
+                                    inputmode="decimal"
+                                    value="2"
+                                    maxlength="100"
+                                    required
+                                    aria-describedby="input-help error"
+                                />
+                            </div>
+                            <div>
+                                <label for="b">Koeficient b</label
+                                ><input
+                                    id="b"
+                                    type="text"
+                                    inputmode="decimal"
+                                    value="3"
+                                    maxlength="100"
+                                    required
+                                    aria-describedby="input-help error"
+                                />
+                            </div>
+                            <div>
+                                <label for="c" id="c-label">Desna stran c</label
+                                ><input
+                                    id="c"
+                                    type="text"
+                                    inputmode="decimal"
+                                    value="11"
+                                    maxlength="100"
+                                    required
+                                    aria-describedby="input-help error"
+                                />
+                            </div>
+                        </div>
+                        <p id="input-help" class="hint">
+                            Dovoljeni sta decimalna vejica in pika, tudi znanstveni zapis, npr. 1e3.
+                            Po spremembi ponovno klikni »Reši enačbo«.
+                        </p>
+                        <div class="actions">
+                            <button type="submit">Reši enačbo</button
+                            ><button type="reset">Ponastavi primer</button>
+                        </div>
+                    </form>
+                    <p id="error" class="error" role="alert"></p>
+                    <h3>Razišči primere</h3>
+                    <div id="examples" class="actions"></div>
+                    <p class="hint">
+                        Vsak primer takoj izračuna rezultat in izriše pripadajoči graf.
+                    </p>
+                </section>
+                <div>
+                    <section class="panel" aria-labelledby="result-title">
+                        <h2 id="result-title">Enačba in rešitev</h2>
+                        <div id="result" aria-live="polite">
+                            <p id="equation" class="equation"></p>
+                            <p id="classification" class="badge"></p>
+                            <h3 id="answer" class="answer"></h3>
+                            <p id="meaning"></p>
+                            <div class="metrics" id="metrics"></div>
+                        </div>
+                        <p id="stale" class="hint" hidden>
+                            Podatki so spremenjeni. Za nov rezultat ponovno reši enačbo.
+                        </p>
+                    </section>
+                    <section class="panel" aria-labelledby="graph-title">
+                        <h2 id="graph-title">Poglej enačbo</h2>
+                        <div class="legend">
+                            <span id="legend-function">y = ax + b</span
+                            ><span id="legend-target">y = c</span>
+                        </div>
+                        <svg
+                            id="graph"
+                            viewBox="0 0 760 480"
+                            role="img"
+                            aria-labelledby="svg-title svg-desc"
+                        >
+                            <title id="svg-title">Graf enačbe</title>
+                            <desc id="svg-desc"></desc>
+                        </svg>
+                        <p id="graph-note" class="hint"></p>
+                        <label for="probe">Razišči vrednost x</label
+                        ><input id="probe" type="range" min="0" max="1000" step="1" value="500" />
+                        <p id="probe-output" class="hint"></p>
+                        <div class="actions">
+                            <button type="button" id="zoom-in">Povečaj</button
+                            ><button type="button" id="zoom-out">Pomanjšaj</button
+                            ><button type="button" id="fit">Prikaži ključne točke</button>
+                        </div>
+                        <p class="hint">
+                            Premakni drsnik ali kazalec po grafu. Na telefonu se grafa dotakni.
+                            Merili osi sta lahko različni; za vrednosti uporabi oznake osi in
+                            spodnji izpis.
+                        </p>
+                    </section>
+                </div>
+            </div>
+            <section class="panel" aria-labelledby="steps-title">
+                <h2 id="steps-title">Od enačbe do rešitve</h2>
+                <ol id="steps" class="steps"></ol>
+                <p id="precision" class="hint"></p>
+                <details>
+                    <summary>Preverjanje z vstavljanjem in tabela vrednosti</summary>
+                    <p id="check"></p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">x</th>
+                                    <th scope="col" id="table-function">ax + b</th>
+                                    <th scope="col" id="table-target">c</th>
+                                </tr>
+                            </thead>
+                            <tbody id="values"></tbody>
+                        </table>
+                    </div>
+                </details>
+                <div class="actions">
+                    <button type="button" id="print">Natisni / shrani v PDF</button>
+                </div>
+            </section>
+            <section class="panel">
+                <h2>Kaj ti pove graf?</h2>
+                <h3>Linearna enačba: presečišče dveh premic</h3>
+                <p>
+                    Pri ax + b = c iščemo x, za katerega imata funkciji y = ax + b in y = c enako
+                    vrednost. Če je a ≠ 0, se sekata natanko enkrat. Če je a = 0, premici bodisi
+                    sovpadata bodisi sta vzporedni in različni.
+                </p>
+                <h3>Kvadratna enačba: ničle parabole</h3>
+                <p>
+                    Pri ax² + bx + c = 0 iščemo presečišča z osjo x. Za a ≠ 0 pove diskriminanta D =
+                    b² − 4ac, ali ima enačba dve različni realni rešitvi (D &gt; 0), eno dvojno
+                    realno rešitev (D = 0) ali dve kompleksni rešitvi (D &lt; 0). Kompleksnih
+                    rešitev ne označujemo na realni osi x.
+                </p>
+                <p>
+                    Če je pri kvadratnem zapisu a = 0, ostane linearna enačba bx + c = 0. Računanje
+                    poteka v brskalniku, brez pošiljanja koeficientov strežniku. Rezultati in graf
+                    so numerični približki, ne simbolni dokaz.
+                </p>
+            </section>
+        </main>
+        <footer>Sidebit · Razumi pot do rešitve.</footer>
+        <script>
+            "use strict";
+            // 1. Številski zapis in preverjanje vnosa.
+            const $ = (id) => document.getElementById(id),
+                NS = "http://www.w3.org/2000/svg";
+            const format = new Intl.NumberFormat("sl-SI", { maximumSignificantDigits: 10 });
+            const fmt = (n) =>
+                Math.abs(n) !== 0 && (Math.abs(n) < 1e-5 || Math.abs(n) >= 1e10)
+                    ? n.toExponential(5).replace(".", ",")
+                    : format.format(Object.is(n, -0) ? 0 : n);
+            let mode = "linear",
+                current = null,
+                view = null;
+            function finite(...a) {
+                if (!a.every(Number.isFinite))
+                    throw Error(
+                        "Izračun presega podprti številski obseg. Uporabi manj skrajne vrednosti.",
+                    );
+            }
+            function read(id) {
+                const s = $(id).value.trim();
+                if (!/^[+-]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:e[+-]?\d+)?$/i.test(s))
+                    throw Error("Vnesi tri veljavna števila.");
+                const n = Number(s.replace(",", "."));
+                if (!Number.isFinite(n)) throw Error("Vrednost je zunaj podprtega obsega.");
+                if (n === 0 && /[1-9]/.test(s.split(/e/i)[0]))
+                    throw Error("Vrednost je premajhna za podprti obseg.");
+                return n;
+            }
+            const term = (n, suffix, first = false) =>
+                first ? `${fmt(n)}${suffix}` : ` ${n < 0 ? "−" : "+"} ${fmt(Math.abs(n))}${suffix}`;
+            function equation(m, a, b, c) {
+                return m === "linear"
+                    ? `${term(a, "x", true)}${term(b, "")} = ${fmt(c)}`
+                    : `${term(a, "x²", true)}${term(b, "x")}${term(c, "")} = 0`;
+            }
+
+            // 2. Reševalnik. Normalizacija in stabilnejša formula ohranita majhen koren.
+            function solve(m, a, b, c) {
+                finite(a, b, c);
+                const r = { mode: m, a, b, c, roots: [], steps: [], vertex: null, complex: null };
+                if (m === "linear" || a === 0) {
+                    const slope = m === "linear" ? a : b,
+                        intercept = m === "linear" ? b : c,
+                        target = m === "linear" ? c : 0;
+                    r.slope = slope;
+                    r.intercept = intercept;
+                    r.target = target;
+                    r.steps.push(`Začetna enačba: ${equation(m, a, b, c)}.`);
+                    if (m === "quadratic")
+                        r.steps.push("Ker je a = 0, kvadratni člen izgine. Rešujemo bx + c = 0.");
+                    if (slope === 0) {
+                        r.kind = intercept === target ? "all" : "none";
+                        r.steps.push(
+                            `Ostane ${fmt(intercept)} = ${fmt(target)}. ${r.kind === "all" ? "Enakost velja za vsak realni x." : "Enakost ne velja za noben x."}`,
+                        );
+                        return r;
+                    }
+                    const diff = target - intercept,
+                        x = diff / slope;
+                    finite(diff, x);
+                    if (x === 0 && diff !== 0)
+                        throw Error("Rešitev je premajhna za podprti obseg.");
+                    r.kind = "one";
+                    r.roots = [x];
+                    r.steps.push(
+                        `Odštejemo konstantni člen: (${fmt(slope)})x = ${fmt(target)} − (${fmt(intercept)}) ≈ ${fmt(diff)}.`,
+                        `Delimo s ${fmt(slope)}: x = (${fmt(diff)}) ÷ (${fmt(slope)}) ≈ ${fmt(x)}.`,
+                    );
+                    return r;
+                }
+                const scale = Math.max(Math.abs(a), Math.abs(b), Math.abs(c)),
+                    A = a / scale,
+                    B = b / scale,
+                    C = c / scale;
+                if (A === 0 || (b !== 0 && B === 0) || (c !== 0 && C === 0))
+                    throw Error("Razmerje koeficientov je preveliko za zanesljiv izračun.");
+                const bb = B * B,
+                    ac = 4 * A * C;
+                if ((B !== 0 && bb === 0) || (C !== 0 && ac === 0))
+                    throw Error("Koeficienti se preveč razlikujejo po velikosti.");
+                let D = bb - ac;
+                // Pri običajnih koeficientih ohranimo natančno izničenje v diskriminanti.
+                const rawB = b * b,
+                    rawAC = 4 * a * c,
+                    rawD = rawB - rawAC;
+                if (
+                    Number.isFinite(rawB) &&
+                    Number.isFinite(rawAC) &&
+                    Number.isFinite(rawD) &&
+                    (b === 0 || rawB !== 0) &&
+                    (c === 0 || rawAC !== 0)
+                ) {
+                    const scaled = rawD / scale / scale;
+                    if (rawD === 0 || scaled !== 0) D = scaled;
+                }
+                r.D = D;
+                r.scale = scale;
+                r.normal = [A, B, C];
+                const original = b * b - 4 * a * c;
+                r.disc =
+                    Number.isFinite(original) && Math.sign(original) === Math.sign(D)
+                        ? original
+                        : null;
+                r.near =
+                    D !== 0 && Math.abs(D) < 64 * Number.EPSILON * (Math.abs(bb) + Math.abs(ac));
+                r.steps.push(
+                    `Začetna enačba: ${equation(m, a, b, c)}.`,
+                    `Diskriminanta: D = (${fmt(b)})² − 4 · (${fmt(a)}) · (${fmt(c)}).`,
+                );
+                r.steps.push(
+                    r.disc !== null
+                        ? `D ≈ ${fmt(r.disc)}.`
+                        : `Za stabilnejši izračun koeficiente delimo z ${fmt(scale)}. Diskriminanta normalizirane enačbe je D′ ≈ ${fmt(D)}; njen predznak je enak predznaku D.`,
+                );
+                if (D > 0) {
+                    const q = -0.5 * (B + (B >= 0 ? Math.sqrt(D) : -Math.sqrt(D))),
+                        x1 = q / A,
+                        x2 = C / q;
+                    finite(x1, x2);
+                    if (C !== 0 && (x1 === 0 || x2 === 0))
+                        throw Error("Eden od korenov je premajhen za podprti obseg.");
+                    r.kind = "two";
+                    r.roots = [x1, x2].sort((x, y) => x - y);
+                    r.steps.push(
+                        "Ker je D > 0, imamo dve realni rešitvi. Uporabimo x = (−b ± √D)/(2a).",
+                        `Dobimo x₁ ≈ ${fmt(r.roots[0])} in x₂ ≈ ${fmt(r.roots[1])}.`,
+                    );
+                } else if (D === 0) {
+                    const x = -B / (2 * A);
+                    finite(x);
+                    r.kind = "double";
+                    r.roots = [x];
+                    r.steps.push(`Ker je D = 0, dobimo dvojni koren: x = −b/(2a) ≈ ${fmt(x)}.`);
+                } else {
+                    const re = -B / (2 * A),
+                        im = Math.sqrt(-D) / (2 * Math.abs(A));
+                    finite(re, im);
+                    r.kind = "complex";
+                    r.complex = { re, im };
+                    r.steps.push(
+                        "Ker je D < 0, ni realnih ničel. Uporabimo √D = i√(−D), pri čemer je i² = −1.",
+                        `x₁,₂ ≈ ${fmt(re)} ± ${fmt(im)}i.`,
+                    );
+                }
+                const vx = -B / (2 * A),
+                    vy = (a * vx + b) * vx + c;
+                if (Number.isFinite(vx) && Number.isFinite(vy)) r.vertex = { x: vx, y: vy };
+                return r;
+            }
+            function f(r, x) {
+                return r.normal ? (r.a * x + r.b) * x + r.c : r.slope * x + r.intercept;
+            }
+            function add(tag, text, parent, cls) {
+                const n = document.createElement(tag);
+                n.textContent = text;
+                if (cls) n.className = cls;
+                parent.append(n);
+                return n;
+            }
+            function render(r) {
+                current = r;
+                $("stale").hidden = true;
+                $("error").textContent = "";
+                $("equation").textContent = equation(r.mode, r.a, r.b, r.c);
+                const titles = {
+                    one: "Ena realna rešitev",
+                    two: "Dve realni rešitvi",
+                    double: "Dvojna realna rešitev",
+                    complex: "Dve kompleksni rešitvi",
+                    all: "Neskončno realnih rešitev",
+                    none: "Brez rešitve",
+                };
+                $("classification").textContent = titles[r.kind];
+                $("answer").textContent = r.complex
+                    ? `x₁,₂ ≈ ${fmt(r.complex.re)} ± ${fmt(r.complex.im)}i`
+                    : r.kind === "all"
+                      ? "x ∈ ℝ"
+                      : r.kind === "none"
+                        ? "Množica rešitev je prazna"
+                        : r.roots
+                              .map(
+                                  (x, i) =>
+                                      `${r.kind === "two" ? "x" + ["₁", "₂"][i] : "x"} ≈ ${fmt(x)}`,
+                              )
+                              .join("   ·   ");
+                $("meaning").textContent = r.normal
+                    ? r.kind === "complex"
+                        ? "Parabola ne seka osi x. Kompleksni rešitvi sta prikazani zgoraj."
+                        : r.kind === "double"
+                          ? "Parabola se osi x dotakne v temenu."
+                          : "Označeni točki sta presečišči parabole z osjo x."
+                    : r.kind === "all"
+                      ? "Premici sovpadata. Vsaka vrednost x ustreza enačbi."
+                      : r.kind === "none"
+                        ? "Premici sta vzporedni in različni, zato nimata presečišča."
+                        : "Označena točka ima na obeh premicah enako vrednost y.";
+                $("metrics").replaceChildren();
+                const metrics = r.normal
+                    ? [
+                          ["Diskriminanta", r.disc !== null ? fmt(r.disc) : "D′ ≈ " + fmt(r.D)],
+                          ["Teme x", r.vertex ? fmt(r.vertex.x) : "zunaj obsega"],
+                          ["Odprtost", r.a > 0 ? "navzgor" : "navzdol"],
+                      ]
+                    : [
+                          ["Naklon", fmt(r.slope)],
+                          ["Začetna vrednost", fmt(r.intercept)],
+                          ["Ciljna vrednost y", fmt(r.target)],
+                      ];
+                metrics.forEach(([label, value]) => {
+                    const box = add("div", "", $("metrics"), "metric");
+                    add("span", label, box);
+                    add("strong", value, box);
+                });
+                $("steps").replaceChildren();
+                r.steps.forEach((s) => add("li", s, $("steps")));
+                $("precision").textContent =
+                    "Številke so prikazane z največ 10 pomembnimi števkami (pri znanstvenem zapisu s 6). Znak ≈ pomeni približek. Pri skoraj dvojnih korenih lahko zaokroževanje vpliva na število in vrednosti korenov." +
+                    (r.near
+                        ? " Pozor: diskriminanta je zelo blizu nič; rezultat je občutljiv na numerično zaokroževanje."
+                        : "");
+                const checks = r.roots.map((x) => {
+                    const y = f(r, x),
+                        target = r.normal ? 0 : r.target;
+                    return Number.isFinite(y)
+                        ? `x ≈ ${fmt(x)}: leva stran ≈ ${fmt(y)}, desna stran ${fmt(target)}.`
+                        : "Vstavljanje presega številski obseg.";
+                });
+                $("check").textContent =
+                    checks.join(" ") ||
+                    (r.complex
+                        ? "Kompleksna korena sta konjugirana: imata enak realni del in nasprotna imaginarna dela."
+                        : r.kind === "all"
+                          ? "Enakost velja za vsak realni x."
+                          : "Enakost ne velja za noben realni x.");
+                $("table-function").textContent = r.normal
+                    ? "ax² + bx + c"
+                    : r.mode === "linear"
+                      ? "ax + b"
+                      : "bx + c";
+                $("table-target").textContent = r.normal ? "Cilj: 0" : "Ciljna vrednost";
+                $("legend-function").textContent = r.normal
+                    ? "y = ax² + bx + c"
+                    : r.mode === "linear"
+                      ? "y = ax + b"
+                      : "y = bx + c";
+                $("legend-target").textContent = r.normal ? "y = 0 (os x)" : `y = ${fmt(r.target)}`;
+                fitView();
+            }
+
+            // 3. SVG-graf z lastnimi merili, izrisom ključnih točk in drsnikom za odčitavanje.
+            function svg(tag, attrs = {}, text) {
+                const n = document.createElementNS(NS, tag);
+                for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+                if (text !== undefined) n.textContent = text;
+                return n;
+            }
+            function fitView() {
+                const r = current;
+                if (!r) return;
+                let points = [...r.roots];
+                if (r.vertex) points.push(r.vertex.x);
+                points = points.filter(Number.isFinite);
+                let lo = Math.min(-2, ...points),
+                    hi = Math.max(2, ...points);
+                const pad = Math.max(2, (hi - lo) * 0.25);
+                lo -= pad;
+                hi += pad;
+                if (!Number.isFinite(hi - lo) || Math.max(Math.abs(lo), Math.abs(hi)) > 1e12) {
+                    view = null;
+                    drawGraph();
+                    return;
+                }
+                view = { lo, hi };
+                drawGraph();
+            }
+            function niceStep(span) {
+                const raw = span / 8,
+                    p = 10 ** Math.floor(Math.log10(raw)),
+                    v = raw / p;
+                return (v < 2 ? 1 : v < 5 ? 2 : 5) * p;
+            }
+            function drawGraph() {
+                const s = $("graph");
+                s.replaceChildren(
+                    svg("title", { id: "svg-title" }, "Graf enačbe"),
+                    svg("desc", { id: "svg-desc" }, $("meaning").textContent),
+                );
+                if (!view) {
+                    s.append(
+                        svg(
+                            "text",
+                            {
+                                x: 380,
+                                y: 220,
+                                "text-anchor": "middle",
+                                fill: "#555",
+                                "font-size": 18,
+                            },
+                            "Koeficienti so zunaj praktičnega obsega grafa.",
+                        ),
+                    );
+                    $("graph-note").textContent =
+                        "Rešitev je prikazana številčno. Za graf uporabi manj skrajne vrednosti.";
+                    $("probe").disabled = true;
+                    $("probe-output").textContent = "";
+                    $("values").replaceChildren();
+                    return;
+                }
+                const r = current,
+                    { lo, hi } = view,
+                    ys = [
+                        0,
+                        ...Array.from({ length: 101 }, (_, i) => f(r, lo + ((hi - lo) * i) / 100)),
+                    ];
+                if (!r.normal) ys.push(r.target);
+                if (r.vertex && r.vertex.x >= lo && r.vertex.x <= hi) ys.push(r.vertex.y);
+                if (ys.some((y) => !Number.isFinite(y))) {
+                    view = null;
+                    drawGraph();
+                    return;
+                }
+                let ymin = Math.min(...ys),
+                    ymax = Math.max(...ys),
+                    yp = Math.max(1, (ymax - ymin) * 0.15);
+                ymin -= yp;
+                ymax += yp;
+                if (!Number.isFinite(ymax - ymin)) {
+                    view = null;
+                    drawGraph();
+                    return;
+                }
+                Object.assign(view, { ymin, ymax });
+                const X = (x) => 65 + ((x - lo) / (hi - lo)) * 655,
+                    Y = (y) => 420 - ((y - ymin) / (ymax - ymin)) * 380;
+                view.X = X;
+                view.Y = Y;
+                s.append(svg("defs"));
+                const clip = svg("clipPath", { id: "plot-clip" });
+                clip.append(svg("rect", { x: 65, y: 40, width: 655, height: 380 }));
+                s.querySelector("defs").append(clip);
+                const step = niceStep(hi - lo),
+                    ystep = niceStep(ymax - ymin);
+                for (
+                    let i = 0, x = Math.ceil(lo / step) * step;
+                    i < 30 && x <= hi;
+                    i++, x += step
+                ) {
+                    s.append(
+                        svg("line", { x1: X(x), x2: X(x), y1: 40, y2: 420, stroke: "#e8e6ee" }),
+                        svg(
+                            "text",
+                            {
+                                x: X(x),
+                                y: 447,
+                                "text-anchor": "middle",
+                                "font-size": 13,
+                                fill: "#555",
+                            },
+                            fmt(x),
+                        ),
+                    );
+                }
+                for (
+                    let i = 0, y = Math.ceil(ymin / ystep) * ystep;
+                    i < 30 && y <= ymax;
+                    i++, y += ystep
+                ) {
+                    s.append(
+                        svg("line", { x1: 65, x2: 720, y1: Y(y), y2: Y(y), stroke: "#e8e6ee" }),
+                        svg(
+                            "text",
+                            {
+                                x: 56,
+                                y: Y(y) + 4,
+                                "text-anchor": "end",
+                                "font-size": 12,
+                                fill: "#555",
+                            },
+                            fmt(y),
+                        ),
+                    );
+                }
+                if (lo <= 0 && hi >= 0)
+                    s.append(
+                        svg("line", {
+                            x1: X(0),
+                            x2: X(0),
+                            y1: 40,
+                            y2: 420,
+                            stroke: "#737183",
+                            "stroke-width": 1.5,
+                        }),
+                    );
+                s.append(
+                    svg("line", {
+                        x1: 65,
+                        x2: 720,
+                        y1: Y(0),
+                        y2: Y(0),
+                        stroke: "#737183",
+                        "stroke-width": 1.5,
+                    }),
+                );
+                const group = svg("g", { "clip-path": "url(#plot-clip)" });
+                let path = "";
+                for (let i = 0; i <= 700; i++) {
+                    const x = lo + ((hi - lo) * i) / 700,
+                        y = f(r, x);
+                    path += (i ? " L" : "M") + X(x).toFixed(3) + " " + Y(y).toFixed(3);
+                }
+                group.append(
+                    svg("path", { d: path, fill: "none", stroke: "#087f8c", "stroke-width": 3.5 }),
+                );
+                const target = r.normal ? 0 : r.target;
+                group.append(
+                    svg("line", {
+                        x1: 65,
+                        x2: 720,
+                        y1: Y(target),
+                        y2: Y(target),
+                        stroke: "#7653bf",
+                        "stroke-width": 2.5,
+                        "stroke-dasharray": "8 5",
+                    }),
+                );
+                r.roots.forEach((x, i) => {
+                    if (x < lo || x > hi) return;
+                    group.append(
+                        svg("circle", {
+                            cx: X(x),
+                            cy: Y(target),
+                            r: 7,
+                            fill: "#ffe28b",
+                            stroke: "#252538",
+                            "stroke-width": 2,
+                        }),
+                    );
+                    s.append(
+                        svg(
+                            "text",
+                            {
+                                x: Math.max(135, Math.min(650, X(x))),
+                                y: Math.max(60, Math.min(400, Y(target) - 15)),
+                                "text-anchor": "middle",
+                                "font-size": 15,
+                                "font-weight": "bold",
+                            },
+                            `${r.roots.length > 1 ? "x" + (i + 1) : "x"} ≈ ${fmt(x)}`,
+                        ),
+                    );
+                });
+                if (r.vertex) {
+                    const v = r.vertex;
+                    if (v.x >= lo && v.x <= hi) {
+                        group.append(
+                            svg("line", {
+                                x1: X(v.x),
+                                x2: X(v.x),
+                                y1: 40,
+                                y2: 420,
+                                stroke: "#b8a5df",
+                                "stroke-dasharray": "3 5",
+                            }),
+                            svg("circle", { cx: X(v.x), cy: Y(v.y), r: 5, fill: "#7653bf" }),
+                        );
+                    }
+                }
+                s.append(
+                    group,
+                    svg("text", { x: 730, y: 447, "font-size": 16 }, "x"),
+                    svg("text", { x: 20, y: 25, "font-size": 16 }, "y"),
+                );
+                const marker = svg("g", { id: "probe-marker" });
+                s.append(marker);
+                $("probe").disabled = false;
+                $("graph-note").textContent = r.vertex
+                    ? `Teme T ≈ (${fmt(r.vertex.x)}; ${fmt(r.vertex.y)}). Navpična črtkana črta označuje os simetrije.`
+                    : "Rumena točka označuje rešitev; vijolična črtkana premica je ciljna vrednost.";
+                if (r.vertex)
+                    $("graph-note").textContent =
+                        `Teme T ≈ (${fmt(r.vertex.x)}; ${fmt(r.vertex.y)}). Svetlo vijolična navpična črta označuje os simetrije.`;
+                fillTable();
+                probe();
+            }
+            function probe() {
+                if (!view || !current) return;
+                const x = view.lo + ((view.hi - view.lo) * Number($("probe").value)) / 1000,
+                    y = f(current, x),
+                    target = current.normal ? 0 : current.target;
+                $("probe-output").textContent =
+                    `x ≈ ${fmt(x)} → leva stran ≈ ${fmt(y)} · desna stran ${fmt(target)} · razlika ≈ ${fmt(y - target)}`;
+                const g = $("probe-marker");
+                if (!g) return;
+                g.replaceChildren();
+                if (Number.isFinite(y) && y >= view.ymin && y <= view.ymax)
+                    g.append(
+                        svg("line", {
+                            x1: view.X(x),
+                            x2: view.X(x),
+                            y1: 40,
+                            y2: 420,
+                            stroke: "#b06729",
+                            "stroke-dasharray": "4 5",
+                        }),
+                        svg("circle", { cx: view.X(x), cy: view.Y(y), r: 5, fill: "#b06729" }),
+                    );
+            }
+            function fillTable() {
+                $("values").replaceChildren();
+                for (let i = 0; i < 5; i++) {
+                    const x = view.lo + ((view.hi - view.lo) * i) / 4,
+                        row = document.createElement("tr");
+                    [x, f(current, x), current.normal ? 0 : current.target].forEach((n) =>
+                        add("td", fmt(n), row),
+                    );
+                    $("values").append(row);
+                }
+            }
+            $("probe").addEventListener("input", probe);
+            $("graph").addEventListener("pointermove", (e) => {
+                if (e.pointerType === "touch") return;
+                probePointer(e);
+            });
+            $("graph").addEventListener("pointerdown", probePointer);
+            function probePointer(e) {
+                if (!view) return;
+                const box = $("graph").getBoundingClientRect(),
+                    px = ((e.clientX - box.left) * 760) / box.width;
+                $("probe").value = String(Math.max(0, Math.min(1000, ((px - 65) / 655) * 1000)));
+                probe();
+            }
+            function zoom(factor) {
+                if (!view) return;
+                const mid = (view.lo + view.hi) / 2,
+                    half = ((view.hi - view.lo) * factor) / 2;
+                if (half < 1e-8 || half > 1e12) return;
+                view = { lo: mid - half, hi: mid + half };
+                drawGraph();
+            }
+            $("zoom-in").addEventListener("click", () => zoom(0.6));
+            $("zoom-out").addEventListener("click", () => zoom(1.6));
+            $("fit").addEventListener("click", fitView);
+
+            // 4. Preklop ohrani ločene koeficiente obeh vrst enačb.
+            const defaults = { linear: [2, 3, 11], quadratic: [1, -5, 6] },
+                memory = { linear: [2, 3, 11], quadratic: [1, -5, 6] };
+            function calculate() {
+                try {
+                    const values = ["a", "b", "c"].map(read);
+                    render(solve(mode, ...values));
+                    memory[mode] = values;
+                } catch (err) {
+                    $("error").textContent = err.message;
+                    $("stale").hidden = false;
+                }
+            }
+            function setValues(v) {
+                ["a", "b", "c"].forEach((id, i) => ($(id).value = String(v[i])));
+                calculate();
+            }
+            function setMode(m) {
+                memory[mode] = ["a", "b", "c"].map((id) => $(id).value);
+                mode = m;
+                $("linear").setAttribute("aria-pressed", String(m === "linear"));
+                $("quadratic").setAttribute("aria-pressed", String(m === "quadratic"));
+                $("form-type").textContent =
+                    m === "linear" ? "Oblika: ax + b = c" : "Oblika: ax² + bx + c = 0";
+                $("c-label").textContent = m === "linear" ? "Desna stran c" : "Konstantni člen c";
+                examples();
+                setValues(memory[m]);
+            }
+            function examples() {
+                $("examples").replaceChildren();
+                const list =
+                    mode === "linear"
+                        ? [
+                              ["Ena rešitev", [2, 3, 11]],
+                              ["Vse rešitve", [0, 4, 4]],
+                              ["Brez rešitve", [0, 2, 5]],
+                          ]
+                        : [
+                              ["Dve ničli", [1, -5, 6]],
+                              ["Dvojna ničla", [1, -4, 4]],
+                              ["Kompleksni", [1, 0, 4]],
+                              ["Odprta navzdol", [-1, 2, 3]],
+                              ["a = 0", [0, 2, -8]],
+                          ];
+                for (const [name, values] of list) {
+                    const b = document.createElement("button");
+                    b.type = "button";
+                    b.textContent = name;
+                    b.addEventListener("click", () => setValues(values));
+                    $("examples").append(b);
+                }
+            }
+            $("linear").addEventListener("click", () => setMode("linear"));
+            $("quadratic").addEventListener("click", () => setMode("quadratic"));
+            $("form").addEventListener("submit", (e) => {
+                e.preventDefault();
+                calculate();
+            });
+            $("form").addEventListener("input", () => {
+                $("error").textContent = "";
+                $("stale").hidden = false;
+            });
+            $("form").addEventListener("reset", (e) => {
+                e.preventDefault();
+                setValues(defaults[mode]);
+            });
+            $("print").addEventListener("click", () => window.print());
+            examples();
+            calculate();
+        </script>
+    </body>
+</html>
