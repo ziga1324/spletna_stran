@@ -1,0 +1,1691 @@
+<!doctype html>
+<html lang="sl">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Učni studio – načrt, kartice, kviz in Pomodoro | Sidebit</title>
+        <meta
+            name="description"
+            content="Poveži načrt učenja do testa, učne kartice, lastni kviz in Pomodoro časovnik. Spremljaj teme in napredek ter izvozi svojo učno zbirko."
+        />
+        <link rel="stylesheet" href="../style.css" />
+        <style>
+            /* Dodatni slog je omejen na Učni studio. Skupni style.css ostane nespremenjen. */
+            body.studio {
+                --ink: #242536;
+                --paper: #fffaf0;
+                --violet: #dcd1ff;
+                color: var(--ink);
+                background: var(--paper);
+            }
+            .studio header,
+            .studio main,
+            .studio footer {
+                width: min(1180px, calc(100% - 36px));
+                margin-inline: auto;
+            }
+            .studio header {
+                padding: 32px 0 24px;
+            }
+            .studio h1 {
+                font-size: clamp(38px, 6vw, 72px);
+                letter-spacing: -0.055em;
+                line-height: 1.05;
+                margin: 18px 0;
+            }
+            .studio h1,
+            .studio h2,
+            .studio h3 {
+                color: var(--ink);
+                background: none;
+                -webkit-text-fill-color: currentColor;
+            }
+            .studio .eyebrow {
+                display: inline-block;
+                padding: 6px 12px;
+                background: #ffe28c;
+                border: 2px solid var(--ink);
+                border-radius: 8px;
+                font-weight: bold;
+                transform: rotate(-2deg);
+            }
+            .studio .lead {
+                max-width: 700px;
+                font-size: 18px;
+                color: #505267;
+            }
+            .studio .layout {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) 310px;
+                gap: 26px;
+                align-items: start;
+            }
+            .studio .panel,
+            .studio .timer {
+                padding: clamp(20px, 3vw, 32px);
+                border: 3px solid var(--ink);
+                border-radius: 22px;
+                background: white;
+                box-shadow: 6px 6px 0 var(--ink);
+                margin-bottom: 24px;
+            }
+            .studio .timer {
+                background: #e6defb;
+                position: sticky;
+                top: 20px;
+            }
+            .studio .nav {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin: 22px 0;
+            }
+            .studio button,
+            .studio .nav a,
+            .studio .linkbutton {
+                min-height: 44px;
+                border: 2px solid var(--ink);
+                border-radius: 10px;
+                padding: 10px 15px;
+                font: inherit;
+                font-weight: 700;
+                color: var(--ink);
+                background: #fff;
+                cursor: pointer;
+                box-shadow: 2px 2px 0 var(--ink);
+                text-decoration: none;
+            }
+            .studio button:hover,
+            .studio .nav a:hover {
+                background: #fff0b0;
+                transform: translateY(-2px);
+            }
+            .studio button:active {
+                transform: translate(2px, 2px);
+                box-shadow: none;
+            }
+            .studio button.primary,
+            .studio button[type="submit"] {
+                background: #ffe28c;
+            }
+            .studio .nav button[aria-pressed="true"] {
+                background: var(--ink);
+                color: white;
+            }
+            .studio button:disabled {
+                opacity: 0.45;
+                cursor: default;
+                transform: none;
+            }
+            .studio .actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin: 16px 0;
+            }
+            .studio input,
+            .studio textarea,
+            .studio select {
+                width: 100%;
+                min-width: 0;
+                padding: 11px 12px;
+                border: 2px solid #77788b;
+                border-radius: 9px;
+                font: inherit;
+                background: white;
+                color: var(--ink);
+            }
+            .studio input[type="checkbox"] {
+                width: 20px;
+                height: 20px;
+            }
+            .studio textarea {
+                min-height: 100px;
+                resize: vertical;
+            }
+            .studio label {
+                display: block;
+                margin: 12px 0 5px;
+                font-weight: 700;
+            }
+            .studio .two {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+            .studio .stats {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+                margin: 22px 0;
+            }
+            .studio .stat {
+                border: 2px solid var(--ink);
+                border-radius: 14px;
+                background: #d4f1e4;
+                padding: 16px;
+            }
+            .studio .stat:nth-child(2) {
+                background: #ffe9b4;
+            }
+            .studio .stat:nth-child(3) {
+                background: #e4dbff;
+            }
+            .studio .stat strong {
+                display: block;
+                font-size: 30px;
+                line-height: 1.2;
+            }
+            .studio .muted {
+                color: #56576c;
+                font-size: 14px;
+            }
+            .studio .item {
+                padding: 16px 0;
+                border-bottom: 1px solid #d9d7e1;
+                overflow-wrap: anywhere;
+            }
+            .studio .item:last-child {
+                border: 0;
+            }
+            .studio .item p {
+                margin: 5px 0;
+            }
+            .studio .tag {
+                display: inline-block;
+                border: 1px solid var(--ink);
+                border-radius: 6px;
+                padding: 2px 8px;
+                background: #fff0b0;
+                font-size: 12px;
+            }
+            .studio .flash {
+                width: 100%;
+                min-height: 260px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                text-align: center;
+                padding: 25px;
+                background: #fff1b9;
+                border: 3px solid var(--ink);
+                border-radius: 18px;
+                overflow-wrap: anywhere;
+                white-space: pre-wrap;
+            }
+            .studio #card-text {
+                font-size: clamp(22px, 3vw, 32px);
+                line-height: 1.4;
+                font-weight: 700;
+            }
+            .studio .clock {
+                font-size: 64px;
+                letter-spacing: -0.06em;
+                font-variant-numeric: tabular-nums;
+                font-weight: 800;
+                text-align: center;
+                margin: 20px 0;
+                line-height: 1;
+            }
+            .studio progress {
+                width: 100%;
+                height: 12px;
+                accent-color: #7252ba;
+            }
+            .studio .answer {
+                display: block;
+                width: 100%;
+                text-align: left;
+                margin: 12px 0;
+                white-space: pre-wrap;
+                overflow-wrap: anywhere;
+            }
+            .studio .good {
+                background: #cff1de !important;
+            }
+            .studio .bad {
+                background: #ffd7d6 !important;
+            }
+            .studio .message {
+                padding: 12px 16px;
+                border-radius: 10px;
+                background: #edf3ff;
+                overflow-wrap: anywhere;
+            }
+            .studio .message:empty {
+                display: none;
+            }
+            .studio .error {
+                color: #a62222;
+            }
+            .studio [hidden] {
+                display: none !important;
+            }
+            .studio :focus-visible {
+                outline: 3px solid #7252ba;
+                outline-offset: 4px;
+            }
+            .studio footer {
+                padding: 25px 0 40px;
+            }
+            .studio summary {
+                cursor: pointer;
+                font-weight: bold;
+            }
+            @media (max-width: 850px) {
+                .studio .layout {
+                    grid-template-columns: 1fr;
+                }
+                .studio .timer {
+                    position: static;
+                }
+                .studio aside {
+                    grid-row: 1;
+                }
+                .studio .clock {
+                    font-size: 50px;
+                }
+                .studio .timer .two {
+                    grid-template-columns: 1fr 1fr;
+                }
+            }
+            @media (max-width: 500px) {
+                .studio .two {
+                    grid-template-columns: 1fr;
+                }
+                .studio .stats {
+                    gap: 7px;
+                }
+                .studio .stat {
+                    padding: 10px;
+                }
+                .studio .stat strong {
+                    font-size: 24px;
+                }
+                .studio .panel,
+                .studio .timer {
+                    box-shadow: 3px 3px 0 var(--ink);
+                }
+                .studio .nav button {
+                    flex: 1 1 40%;
+                }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .studio * {
+                    animation: none !important;
+                    transition: none !important;
+                    scroll-behavior: auto !important;
+                }
+                .studio button:hover {
+                    transform: none;
+                }
+            }
+            @media print {
+                .studio aside,
+                .studio header .nav,
+                .studio button,
+                .studio form,
+                .studio #backup {
+                    display: none !important;
+                }
+                .studio .layout {
+                    display: block;
+                }
+                .studio .panel {
+                    box-shadow: none;
+                    border: 1px solid #aaa;
+                }
+                .studio [data-panel] {
+                    display: none !important;
+                }
+                .studio #plan {
+                    display: block !important;
+                }
+            }
+        </style>
+    </head>
+    <body class="studio">
+        <header>
+            <a href="../index.html">← Vsa orodja</a><br />
+            <span class="eyebrow">Tvoj prostor za zbrano učenje</span>
+            <h1>Manj kaosa.<br />Več znanja.</h1>
+            <p class="lead">
+                Načrtuj do testa, ponavljaj s karticami in preveri znanje. Časovnik ves čas ostane
+                ob tebi.
+            </p>
+            <nav class="nav" aria-label="Poglavja učnega studia">
+                <button data-tab="home" aria-pressed="true" aria-controls="home">Pregled</button>
+                <button data-tab="plan" aria-pressed="false" aria-controls="plan">
+                    Načrt učenja
+                </button>
+                <button data-tab="cards" aria-pressed="false" aria-controls="cards">
+                    Učne kartice
+                </button>
+                <button data-tab="quiz" aria-pressed="false" aria-controls="quiz">Kviz</button>
+            </nav>
+        </header>
+        <main>
+            <p id="message" class="message" role="status" aria-live="polite"></p>
+            <p id="storage-note" class="muted"></p>
+            <noscript
+                ><p class="message">Za delovanje učnega studia omogoči JavaScript.</p></noscript
+            >
+            <div class="layout">
+                <div>
+                    <section id="home" data-panel class="panel" aria-labelledby="home-title">
+                        <span class="tag">OD NAČRTA DO ZNANJA</span>
+                        <h2 id="home-title" tabindex="-1">Danes naredi en korak naprej.</h2>
+                        <p>
+                            Izberi temo. Najprej se uči, nato odgovor prikliči iz spomina in na
+                            koncu preveri znanje.
+                        </p>
+                        <div class="stats">
+                            <div class="stat">
+                                <strong id="stat-minutes">0</strong><span>minut zbranega dela</span>
+                            </div>
+                            <div class="stat">
+                                <strong id="stat-cards">0</strong><span>učnih kartic</span>
+                            </div>
+                            <div class="stat">
+                                <strong id="stat-quiz">—</strong><span>zadnji končani kviz</span>
+                            </div>
+                        </div>
+                        <h3>Predlagani naslednji korak</h3>
+                        <p id="next-step"></p>
+                        <div class="actions">
+                            <button id="next-action" class="primary">Nadaljuj</button
+                            ><button id="demo">Dodaj primer za preizkus</button>
+                        </div>
+                        <h3>Pregled tem</h3>
+                        <div id="topic-overview"></div>
+                    </section>
+
+                    <section id="plan" data-panel class="panel" hidden aria-labelledby="plan-title">
+                        <h2 id="plan-title" tabindex="-1">Tvoj načrt do testa</h2>
+                        <form id="plan-form">
+                            <div class="two">
+                                <div>
+                                    <label for="exam">Datum testa</label
+                                    ><input id="exam" type="date" required />
+                                </div>
+                                <div>
+                                    <label for="daily">Učenje na dan (minute)</label
+                                    ><input
+                                        id="daily"
+                                        type="number"
+                                        min="1"
+                                        max="1440"
+                                        step="1"
+                                        value="60"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <label for="topics">Teme, vsaka v svoji vrstici</label
+                            ><textarea
+                                id="topics"
+                                rows="5"
+                                maxlength="12000"
+                                placeholder="Ulomki&#10;Linearne enačbe&#10;Pitagorov izrek"
+                                required
+                            ></textarea>
+                            <p class="muted">
+                                Največ 100 tem. Do 365 dni vnaprej. Dnevni čas pomeni učenje brez
+                                odmorov.
+                            </p>
+                            <div class="actions">
+                                <button type="submit">Sestavi načrt</button
+                                ><button type="button" id="print-plan">
+                                    Natisni / shrani načrt v PDF
+                                </button>
+                            </div>
+                        </form>
+                        <p id="plan-summary" class="muted"></p>
+                        <div id="schedule"></div>
+                    </section>
+
+                    <section
+                        id="cards"
+                        data-panel
+                        class="panel"
+                        hidden
+                        aria-labelledby="cards-title"
+                    >
+                        <h2 id="cards-title" tabindex="-1">Vprašaj se. Prikliči. Preveri.</h2>
+                        <label for="card-filter">Tema kartic</label
+                        ><select id="card-filter"></select>
+                        <div class="actions">
+                            <button id="shuffle">Premešaj kartice</button
+                            ><button id="weak-only" aria-pressed="false">Samo za ponovitev</button>
+                        </div>
+                        <p id="card-count" class="muted"></p>
+                        <div class="flash">
+                            <span id="card-side" class="tag">VPRAŠANJE</span>
+                            <p id="card-text">Dodaj prvo kartico spodaj.</p>
+                        </div>
+                        <div class="actions">
+                            <button id="flip" class="primary">Pokaži odgovor</button
+                            ><button id="card-prev">Prejšnja</button
+                            ><button id="card-next">Naslednja</button>
+                        </div>
+                        <div id="card-rating" class="actions" hidden>
+                            <button id="card-again">Še ponovim</button
+                            ><button id="card-known">Znam</button>
+                        </div>
+                        <p class="muted">
+                            »Znam« je tvoja samopresoja, ne samodejno preverjanje odgovora.
+                        </p>
+                        <div class="actions">
+                            <button id="card-edit">Uredi trenutno</button
+                            ><button id="card-delete">Odstrani trenutno</button>
+                        </div>
+                        <details open>
+                            <summary>Dodaj ali uredi kartico</summary>
+                            <form id="card-form">
+                                <label for="card-topic">Tema</label
+                                ><input
+                                    id="card-topic"
+                                    maxlength="120"
+                                    placeholder="Na primer: Biologija"
+                                    required
+                                />
+                                <label for="card-question">Vprašanje</label
+                                ><textarea id="card-question" maxlength="1000" required></textarea>
+                                <label for="card-answer">Odgovor</label
+                                ><textarea id="card-answer" maxlength="3000" required></textarea>
+                                <div class="actions">
+                                    <button type="submit" id="card-save">Dodaj kartico</button
+                                    ><button type="button" id="card-cancel">Počisti vnos</button>
+                                </div>
+                            </form>
+                        </details>
+                    </section>
+
+                    <section id="quiz" data-panel class="panel" hidden aria-labelledby="quiz-title">
+                        <h2 id="quiz-title" tabindex="-1">Preveri, kaj že znaš.</h2>
+                        <div id="quiz-setup">
+                            <label for="quiz-filter">Tema kviza</label
+                            ><select id="quiz-filter"></select>
+                            <div class="actions">
+                                <button id="quiz-start" class="primary">Začni kviz</button>
+                            </div>
+                            <p id="quiz-count" class="muted"></p>
+                            <details>
+                                <summary>Dodaj vprašanje s štirimi odgovori</summary>
+                                <form id="quiz-form">
+                                    <label for="quiz-topic">Tema</label
+                                    ><input id="quiz-topic" maxlength="120" required />
+                                    <label for="quiz-question">Vprašanje</label
+                                    ><textarea
+                                        id="quiz-question"
+                                        maxlength="1000"
+                                        required
+                                    ></textarea>
+                                    <label for="option-0">Odgovor 1</label
+                                    ><input id="option-0" maxlength="500" required />
+                                    <label for="option-1">Odgovor 2</label
+                                    ><input id="option-1" maxlength="500" required />
+                                    <label for="option-2">Odgovor 3</label
+                                    ><input id="option-2" maxlength="500" required />
+                                    <label for="option-3">Odgovor 4</label
+                                    ><input id="option-3" maxlength="500" required />
+                                    <label for="correct">Pravilni odgovor</label
+                                    ><select id="correct">
+                                        <option value="0">Odgovor 1</option>
+                                        <option value="1">Odgovor 2</option>
+                                        <option value="2">Odgovor 3</option>
+                                        <option value="3">Odgovor 4</option>
+                                    </select>
+                                    <div class="actions">
+                                        <button type="submit" id="quiz-save">Dodaj vprašanje</button
+                                        ><button type="button" id="quiz-cancel">
+                                            Počisti vnos
+                                        </button>
+                                    </div>
+                                </form>
+                            </details>
+                            <details>
+                                <summary>Uredi zbirko vprašanj</summary>
+                                <div id="question-list"></div>
+                            </details>
+                        </div>
+                        <div id="quiz-run" hidden>
+                            <p id="quiz-progress"></p>
+                            <progress
+                                id="quiz-bar"
+                                max="1"
+                                value="0"
+                                aria-label="Napredek kviza"
+                            ></progress>
+                            <h3 id="quiz-prompt" tabindex="-1"></h3>
+                            <div id="quiz-options"></div>
+                            <p id="quiz-feedback" role="status"></p>
+                            <div class="actions">
+                                <button id="quiz-next" disabled>Naslednje vprašanje</button
+                                ><button id="quiz-stop">Prekini kviz</button>
+                            </div>
+                        </div>
+                        <div id="quiz-result" hidden>
+                            <h3 id="quiz-score" tabindex="-1"></h3>
+                            <div id="quiz-errors"></div>
+                            <div class="actions">
+                                <button id="errors-to-cards">Napake pretvori v kartice</button
+                                ><button id="quiz-repeat">Ponovi kviz</button
+                                ><button id="quiz-back">Nazaj na zbirko</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="backup" class="panel">
+                        <h2>Tvoja zbirka ostane tvoja.</h2>
+                        <p>
+                            Načrt, kartice, vprašanja in napredek se shranjujejo v tem brskalniku.
+                            Za prenos na drug računalnik ali varnostno kopijo izvozi datoteko.
+                        </p>
+                        <div class="actions"><button id="export">Izvozi učni studio</button></div>
+                        <label for="import">Uvozi studio ali stare kartice JSON</label
+                        ><input id="import" type="file" accept=".json,application/json" />
+                        <p class="muted">
+                            Uvoz studia zamenja celotno zbirko po potrditvi. Stare kartice se dodajo
+                            obstoječim. Podatki se ne sinhronizirajo med napravami. Aktivni časovnik
+                            se ne izvaža.
+                        </p>
+                    </section>
+                    <section class="panel">
+                        <h2>Kako povezati vse štiri korake?</h2>
+                        <ol>
+                            <li>Sestavi načrt do testa. Zadnji dan je za ponavljanje.</li>
+                            <li>
+                                Pri načrtovani temi klikni »Uči se«; studio izbere temo in pripravi
+                                časovnik.
+                            </li>
+                            <li>
+                                Dodaj kartice in vprašanja. Vsebino pripraviš sam; studio je ne
+                                ustvarja samodejno.
+                            </li>
+                            <li>
+                                Po učenju reši kviz. Napačne odgovore lahko pretvoriš v kartice za
+                                naslednjo ponovitev.
+                            </li>
+                        </ol>
+                        <p class="muted">
+                            Načrt enakomerno deli minute, ne ocenjuje zahtevnosti snovi. Označene
+                            naloge, samopresoja kartic in rezultati kviza so ločeni podatki.
+                            Časovnik ob zaprtju strani preneha teči; v ozadju lahko brskalnik
+                            zamakne zvok. Pregled minut šteje samo dokončane učne intervale, ne časa
+                            odmora ali prekinjenih intervalov.
+                        </p>
+                    </section>
+                </div>
+                <aside class="timer" aria-labelledby="timer-title">
+                    <span class="tag">PROSTOR ZA ZBRANOST</span>
+                    <h2 id="timer-title">Tvoj naslednji interval</h2>
+                    <label for="active-topic">Trenutna tema</label
+                    ><select id="active-topic"></select>
+                    <p id="timer-phase">Učenje</p>
+                    <p id="clock" class="clock" role="timer" aria-label="Preostali čas">25:00</p>
+                    <progress
+                        id="timer-progress"
+                        max="1"
+                        value="0"
+                        aria-label="Napredek intervala"
+                    ></progress>
+                    <div class="actions">
+                        <button id="timer-start" class="primary">Začni</button
+                        ><button id="timer-pause" disabled>Premor</button
+                        ><button id="timer-reset">Ponastavi</button>
+                    </div>
+                    <p id="timer-status" role="status">Pripravi mizo in izberi eno nalogo.</p>
+                    <details>
+                        <summary>Nastavitve intervalov</summary>
+                        <div class="two">
+                            <div>
+                                <label for="work">Učenje (min)</label
+                                ><input id="work" type="number" min="1" max="180" value="25" />
+                            </div>
+                            <div>
+                                <label for="break">Odmor (min)</label
+                                ><input id="break" type="number" min="1" max="60" value="5" />
+                            </div>
+                        </div>
+                        <label><input id="sound" type="checkbox" checked /> Zvok ob prehodu</label>
+                        <p class="muted">
+                            Po učenju se samodejno začne odmor in nato nov učni interval. Nastavitve
+                            odkleneš s ponastavitvijo.
+                        </p>
+                    </details>
+                    <p class="muted" id="session-count">V tej seji: 0 učnih intervalov.</p>
+                    <div class="actions">
+                        <button id="timer-cards">Kartice te teme</button
+                        ><button id="timer-quiz">Kviz te teme</button>
+                    </div>
+                </aside>
+            </div>
+        </main>
+        <footer>Sidebit · Učni studio · Načrtuj, prikliči, preveri.</footer>
+        <script>
+            "use strict";
+            // 1. Podatki in lokalno shranjevanje. Vnos uporabnika se izpisuje kot besedilo.
+            const $ = (id) => document.getElementById(id);
+            const KEY = "sidebit-ucni-studio-v1";
+            const uid = () =>
+                globalThis.crypto?.randomUUID?.() ||
+                Date.now().toString(36) + Math.random().toString(36).slice(2);
+            const fresh = () => ({
+                version: 1,
+                plan: null,
+                cards: [],
+                questions: [],
+                stats: { minutes: 0, sessions: 0, lastQuiz: null },
+            });
+            let state = fresh(),
+                cardIndex = 0,
+                flipped = false,
+                weak = false,
+                editingCard = null,
+                editingQuestion = null;
+            let cardOrder = [],
+                quizOrder = [],
+                quizIndex = 0,
+                quizAnswers = [],
+                quizLocked = false,
+                errors = [];
+            function message(text, bad = false) {
+                $("message").textContent = text;
+                $("message").classList.toggle("error", bad);
+            }
+            function save() {
+                try {
+                    localStorage.setItem(KEY, JSON.stringify(state));
+                    $("storage-note").textContent =
+                        "Samodejno shranjeno v tem brskalniku. Za varnostno kopijo uporabi izvoz.";
+                } catch {
+                    $("storage-note").textContent =
+                        "Shranjevanje v brskalnik ni na voljo ali je polno. Pred zapiranjem izvozi zbirko.";
+                }
+            }
+            const el = (tag, text, cls) => {
+                const n = document.createElement(tag);
+                if (text !== undefined) n.textContent = text;
+                if (cls) n.className = cls;
+                return n;
+            };
+            function button(text, fn) {
+                const b = el("button", text);
+                b.type = "button";
+                b.addEventListener("click", fn);
+                return b;
+            }
+            function shuffled(a) {
+                a = [...a];
+                for (let i = a.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [a[i], a[j]] = [a[j], a[i]];
+                }
+                return a;
+            }
+            function textOK(s, max) {
+                return typeof s === "string" && s.trim().length > 0 && s.length <= max;
+            }
+            function dateKey(date = new Date()) {
+                return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+            }
+            function dayNumber(s) {
+                if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) throw Error("Izberi veljaven datum.");
+                const [y, m, d] = s.split("-").map(Number);
+                const date = new Date(y, m - 1, d);
+                if (dateKey(date) !== s) throw Error("Izberi veljaven datum.");
+                return Date.UTC(y, m - 1, d) / 86400000;
+            }
+            function addDays(key, n) {
+                const [y, m, d] = key.split("-").map(Number);
+                return dateKey(new Date(y, m - 1, d + n));
+            }
+            function topicNames() {
+                return [
+                    ...new Set([
+                        ...(state.plan?.topics || []),
+                        ...state.cards.map((c) => c.topic),
+                        ...state.questions.map((q) => q.topic),
+                    ]),
+                ];
+            }
+            function fillSelect(id, topics, all = false) {
+                const s = $(id),
+                    v = s.value;
+                s.replaceChildren();
+                if (all) {
+                    const o = el("option", "Vse teme");
+                    o.value = "";
+                    s.append(o);
+                }
+                for (const t of topics) {
+                    const o = el("option", t);
+                    o.value = t;
+                    s.append(o);
+                }
+                if (!s.options.length) {
+                    const o = el("option", "Splošno");
+                    o.value = "Splošno";
+                    s.append(o);
+                }
+                if ([...s.options].some((o) => o.value === v)) s.value = v;
+            }
+            function navigate(id, focus = true) {
+                document.querySelectorAll("[data-panel]").forEach((p) => (p.hidden = p.id !== id));
+                document
+                    .querySelectorAll("[data-tab]")
+                    .forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.tab === id)));
+                if (focus) $(id + "-title").focus();
+            }
+            document
+                .querySelectorAll("[data-tab]")
+                .forEach((b) => b.addEventListener("click", () => navigate(b.dataset.tab)));
+
+            // 2. Načrt razporedi cele minute med teme in ohrani dan za ponavljanje.
+            function makePlan(exam, daily, topics, start = dateKey()) {
+                const days = dayNumber(exam) - dayNumber(start);
+                if (days < 1 || days > 365)
+                    throw Error("Test naj bo od jutri do največ 365 dni v prihodnosti.");
+                if (!Number.isInteger(daily) || daily < 1 || daily > 1440)
+                    throw Error("Vnesi od 1 do 1440 celih minut na dan.");
+                if (!topics.length || topics.length > 100 || topics.some((t) => !textOK(t, 120)))
+                    throw Error("Vnesi od 1 do 100 tem, vsako do 120 znakov.");
+                const studyDays = days > 1 ? days - 1 : 1,
+                    review = days === 1 && daily >= 2 ? Math.max(1, Math.round(daily * 0.2)) : 0;
+                const budget = studyDays * (daily - review);
+                if (budget < topics.length)
+                    throw Error("Za vsako temo potrebuješ vsaj minuto. Povečaj dnevni čas.");
+                const left = topics.map(
+                    (_, i) =>
+                        Math.floor(budget / topics.length) + (i < budget % topics.length ? 1 : 0),
+                );
+                const items = [];
+                let j = 0;
+                for (let d = 0; d < days; d++) {
+                    const date = addDays(start, d);
+                    if (days > 1 && d === days - 1) {
+                        items.push({
+                            id: uid(),
+                            date,
+                            topic: "Ponavljanje vseh tem",
+                            minutes: daily,
+                            done: false,
+                            review: true,
+                        });
+                        continue;
+                    }
+                    let free = daily - review;
+                    while (free > 0 && j < topics.length) {
+                        const n = Math.min(free, left[j]);
+                        items.push({
+                            id: uid(),
+                            date,
+                            topic: topics[j],
+                            minutes: n,
+                            done: false,
+                            review: false,
+                        });
+                        free -= n;
+                        left[j] -= n;
+                        if (left[j] === 0) j++;
+                    }
+                    if (review)
+                        items.push({
+                            id: uid(),
+                            date,
+                            topic: "Ponavljanje vseh tem",
+                            minutes: review,
+                            done: false,
+                            review: true,
+                        });
+                }
+                return { exam, daily, topics, items, start };
+            }
+            $("plan-form").addEventListener("submit", (e) => {
+                e.preventDefault();
+                try {
+                    const topics = [
+                        ...new Set(
+                            $("topics")
+                                .value.split(/\r?\n/)
+                                .map((t) => t.trim())
+                                .filter(Boolean),
+                        ),
+                    ];
+                    const p = makePlan($("exam").value, Number($("daily").value), topics);
+                    if (
+                        state.plan &&
+                        !confirm(
+                            "Nov načrt zamenja prejšnji načrt in oznake opravljenih nalog. Kartice in kviz ostanejo. Nadaljujem?",
+                        )
+                    )
+                        return;
+                    state.plan = p;
+                    save();
+                    render();
+                    message("Načrt je pripravljen. Klikni »Uči se« pri izbrani temi.");
+                } catch (err) {
+                    message(err.message, true);
+                }
+            });
+            function renderPlan() {
+                const box = $("schedule");
+                box.replaceChildren();
+                const p = state.plan;
+                $("plan-summary").textContent = p
+                    ? `${p.items.filter((i) => i.done).length}/${p.items.length} opravljenih nalog · ${p.items.reduce((s, i) => s + i.minutes, 0)} načrtovanih minut · brez odmorov.`
+                    : "Najprej sestavi svoj načrt.";
+                if (!p) return;
+                let last = "";
+                for (const item of p.items) {
+                    if (item.date !== last) {
+                        const [y, m, d] = item.date.split("-").map(Number);
+                        box.append(
+                            el(
+                                "h3",
+                                new Intl.DateTimeFormat("sl-SI", {
+                                    weekday: "long",
+                                    day: "numeric",
+                                    month: "long",
+                                }).format(new Date(y, m - 1, d)),
+                            ),
+                        );
+                        last = item.date;
+                    }
+                    const row = el("div", undefined, "item"),
+                        label = el("label"),
+                        check = document.createElement("input");
+                    check.type = "checkbox";
+                    check.checked = item.done;
+                    label.append(
+                        check,
+                        document.createTextNode(` ${item.topic} · ${item.minutes} min`),
+                    );
+                    check.addEventListener("change", () => {
+                        item.done = check.checked;
+                        save();
+                        renderHome();
+                        $("plan-summary").textContent =
+                            `${p.items.filter((i) => i.done).length}/${p.items.length} opravljenih nalog.`;
+                    });
+                    row.append(
+                        label,
+                        button("Uči se", () =>
+                            selectTopic(
+                                item.review ? p.topics[0] || "Splošno" : item.topic,
+                                "cards",
+                            ),
+                        ),
+                    );
+                    box.append(row);
+                }
+            }
+            $("print-plan").addEventListener("click", () => {
+                navigate("plan", false);
+                window.print();
+            });
+
+            // 3. Kartice: skupna tema, priklic in ločena samopresoja.
+            function filteredCards() {
+                return state.cards.filter(
+                    (c) =>
+                        (!$("card-filter").value || c.topic === $("card-filter").value) &&
+                        (!weak || c.rating !== "known"),
+                );
+            }
+            function resetDeck() {
+                cardOrder = filteredCards().map((c) => c.id);
+                cardIndex = 0;
+                flipped = false;
+                renderCard();
+            }
+            function currentCard() {
+                return state.cards.find((c) => c.id === cardOrder[cardIndex]);
+            }
+            function renderCard() {
+                const c = currentCard();
+                $("card-count").textContent = c
+                    ? `Kartica ${cardIndex + 1} od ${cardOrder.length} · ${c.topic} · ${c.rating === "known" ? "označeno: znam" : "za ponovitev"}`
+                    : "V tem izboru ni kartic.";
+                $("card-text").textContent = c
+                    ? flipped
+                        ? c.answer
+                        : c.question
+                    : "Dodaj kartico ali spremeni izbrano temo.";
+                $("card-side").textContent = flipped ? "ODGOVOR" : "VPRAŠANJE";
+                $("flip").textContent = flipped ? "Pokaži vprašanje" : "Pokaži odgovor";
+                $("card-rating").hidden = !c || !flipped;
+                for (const id of ["flip", "card-edit", "card-delete", "card-prev", "card-next"])
+                    $(id).disabled = !c;
+            }
+            $("card-filter").addEventListener("change", resetDeck);
+            $("weak-only").addEventListener("click", () => {
+                weak = !weak;
+                $("weak-only").setAttribute("aria-pressed", String(weak));
+                resetDeck();
+            });
+            $("shuffle").addEventListener("click", () => {
+                cardOrder = shuffled(cardOrder);
+                cardIndex = 0;
+                flipped = false;
+                renderCard();
+            });
+            $("flip").addEventListener("click", () => {
+                flipped = !flipped;
+                renderCard();
+            });
+            function moveCard(n) {
+                if (!cardOrder.length) return;
+                cardIndex = (cardIndex + n + cardOrder.length) % cardOrder.length;
+                flipped = false;
+                renderCard();
+            }
+            $("card-prev").addEventListener("click", () => moveCard(-1));
+            $("card-next").addEventListener("click", () => moveCard(1));
+            function rateCard(value) {
+                const c = currentCard();
+                if (!c) return;
+                c.rating = value;
+                save();
+                renderHome();
+                if (weak && value === "known") resetDeck();
+                else moveCard(1);
+            }
+            $("card-again").addEventListener("click", () => rateCard("again"));
+            $("card-known").addEventListener("click", () => rateCard("known"));
+            function clearCardForm() {
+                editingCard = null;
+                $("card-question").value = "";
+                $("card-answer").value = "";
+                $("card-save").textContent = "Dodaj kartico";
+            }
+            $("card-form").addEventListener("submit", (e) => {
+                e.preventDefault();
+                const topic = $("card-topic").value.trim(),
+                    question = $("card-question").value.trim(),
+                    answer = $("card-answer").value.trim();
+                if (!textOK(topic, 120) || !textOK(question, 1000) || !textOK(answer, 3000))
+                    return message("Vnesi temo, vprašanje in odgovor v dovoljenih dolžinah.", true);
+                if (!editingCard && state.cards.length >= 1000)
+                    return message("Največ 1000 kartic.", true);
+                const c = { id: editingCard || uid(), topic, question, answer, rating: "again" };
+                if (editingCard)
+                    state.cards = state.cards.map((x) => (x.id === editingCard ? c : x));
+                else state.cards.push(c);
+                clearCardForm();
+                save();
+                render();
+                message("Kartica je shranjena.");
+            });
+            $("card-cancel").addEventListener("click", clearCardForm);
+            $("card-edit").addEventListener("click", () => {
+                const c = currentCard();
+                if (!c) return;
+                editingCard = c.id;
+                $("card-topic").value = c.topic;
+                $("card-question").value = c.question;
+                $("card-answer").value = c.answer;
+                $("card-save").textContent = "Shrani spremembe";
+                $("card-form").parentElement.open = true;
+                $("card-question").focus();
+            });
+            $("card-delete").addEventListener("click", () => {
+                const c = currentCard();
+                if (c && confirm("Odstranim trenutno kartico?")) {
+                    state.cards = state.cards.filter((x) => x.id !== c.id);
+                    if (editingCard === c.id) clearCardForm();
+                    save();
+                    render();
+                }
+            });
+
+            // 4. Kviz uporablja lastna vprašanja. Napake postanejo kartice z enim klikom.
+            function filteredQuestions() {
+                return state.questions.filter(
+                    (q) => !$("quiz-filter").value || q.topic === $("quiz-filter").value,
+                );
+            }
+            function clearQuestionForm() {
+                editingQuestion = null;
+                for (const id of ["quiz-question", "option-0", "option-1", "option-2", "option-3"])
+                    $(id).value = "";
+                $("correct").value = "0";
+                $("quiz-save").textContent = "Dodaj vprašanje";
+            }
+            $("quiz-cancel").addEventListener("click", clearQuestionForm);
+            $("quiz-form").addEventListener("submit", (e) => {
+                e.preventDefault();
+                const topic = $("quiz-topic").value.trim(),
+                    question = $("quiz-question").value.trim(),
+                    options = [0, 1, 2, 3].map((i) => $("option-" + i).value.trim()),
+                    correct = Number($("correct").value);
+                if (
+                    !textOK(topic, 120) ||
+                    !textOK(question, 1000) ||
+                    options.some((o) => !textOK(o, 500)) ||
+                    new Set(options.map((o) => o.toLocaleLowerCase("sl-SI"))).size !== 4 ||
+                    !Number.isInteger(correct) ||
+                    correct < 0 ||
+                    correct > 3
+                )
+                    return message(
+                        "Vnesi temo, vprašanje, štiri različne odgovore in pravilno izbiro.",
+                        true,
+                    );
+                if (!editingQuestion && state.questions.length >= 100)
+                    return message("Največ 100 vprašanj.", true);
+                const q = { id: editingQuestion || uid(), topic, question, options, correct };
+                if (editingQuestion)
+                    state.questions = state.questions.map((x) =>
+                        x.id === editingQuestion ? q : x,
+                    );
+                else state.questions.push(q);
+                clearQuestionForm();
+                save();
+                render();
+                message("Vprašanje je shranjeno.");
+            });
+            function renderQuestions() {
+                const list = $("question-list");
+                list.replaceChildren();
+                for (const q of state.questions) {
+                    const row = el("div", undefined, "item");
+                    row.append(el("p", q.topic + " · " + q.question));
+                    const actions = el("div", undefined, "actions");
+                    actions.append(
+                        button("Uredi", () => {
+                            editingQuestion = q.id;
+                            $("quiz-topic").value = q.topic;
+                            $("quiz-question").value = q.question;
+                            q.options.forEach((v, i) => ($("option-" + i).value = v));
+                            $("correct").value = String(q.correct);
+                            $("quiz-save").textContent = "Shrani spremembe";
+                            $("quiz-form").parentElement.open = true;
+                            $("quiz-question").focus();
+                        }),
+                        button("Odstrani", () => {
+                            if (confirm("Odstranim vprašanje?")) {
+                                state.questions = state.questions.filter((x) => x.id !== q.id);
+                                if (editingQuestion === q.id) clearQuestionForm();
+                                save();
+                                render();
+                            }
+                        }),
+                    );
+                    row.append(actions);
+                    list.append(row);
+                }
+                updateQuizCount();
+            }
+            function updateQuizCount() {
+                $("quiz-count").textContent =
+                    `V izbrani temi: ${filteredQuestions().length} vprašanj. Vprašanja se ob začetku premešajo.`;
+                $("quiz-start").disabled = !filteredQuestions().length;
+            }
+            $("quiz-filter").addEventListener("change", updateQuizCount);
+            function quizView(view) {
+                $("quiz-setup").hidden = view !== "setup";
+                $("quiz-run").hidden = view !== "run";
+                $("quiz-result").hidden = view !== "result";
+            }
+            function startQuiz() {
+                const pool = filteredQuestions();
+                if (!pool.length) return message("Najprej dodaj vprašanja za to temo.", true);
+                quizOrder = shuffled(pool);
+                quizIndex = 0;
+                quizAnswers = [];
+                errors = [];
+                quizView("run");
+                showQuestion();
+            }
+            function showQuestion() {
+                quizLocked = false;
+                const q = quizOrder[quizIndex];
+                $("quiz-progress").textContent =
+                    `Vprašanje ${quizIndex + 1} od ${quizOrder.length} · ${q.topic}`;
+                $("quiz-bar").max = quizOrder.length;
+                $("quiz-bar").value = quizIndex;
+                $("quiz-prompt").textContent = q.question;
+                $("quiz-feedback").textContent = "";
+                $("quiz-next").disabled = true;
+                $("quiz-next").textContent =
+                    quizIndex === quizOrder.length - 1 ? "Pokaži rezultat" : "Naslednje vprašanje";
+                $("quiz-options").replaceChildren();
+                q.options.forEach((option, i) => {
+                    const b = button(option, () => answerQuiz(i));
+                    b.className = "answer";
+                    $("quiz-options").append(b);
+                });
+                $("quiz-prompt").focus();
+            }
+            function answerQuiz(i) {
+                if (quizLocked) return;
+                quizLocked = true;
+                const q = quizOrder[quizIndex];
+                quizAnswers.push(i);
+                [...$("quiz-options").children].forEach((b, j) => {
+                    b.disabled = true;
+                    if (j === q.correct) b.classList.add("good");
+                    else if (j === i) b.classList.add("bad");
+                });
+                $("quiz-feedback").textContent =
+                    i === q.correct ? "Pravilno." : "Še ponovi. Pravilno: " + q.options[q.correct];
+                $("quiz-next").disabled = false;
+            }
+            function finishQuiz() {
+                errors = quizOrder.filter((q, i) => quizAnswers[i] !== q.correct);
+                const correct = quizOrder.length - errors.length;
+                state.stats.lastQuiz = { correct, total: quizOrder.length };
+                save();
+                renderHome();
+                quizView("result");
+                $("quiz-score").textContent =
+                    `${correct}/${quizOrder.length} pravilnih · ${Math.round((correct / quizOrder.length) * 100)} %`;
+                $("quiz-errors").replaceChildren();
+                if (!errors.length)
+                    $("quiz-errors").append(
+                        el(
+                            "p",
+                            "Vsi odgovori so pravilni. Poskusi jih še razložiti brez ponujenih možnosti.",
+                        ),
+                    );
+                errors.forEach((q) => {
+                    const row = el("div", undefined, "item"),
+                        i = quizOrder.indexOf(q);
+                    row.append(
+                        el("h4", q.question),
+                        el("p", "Tvoj odgovor: " + q.options[quizAnswers[i]]),
+                        el("p", "Pravilno: " + q.options[q.correct]),
+                    );
+                    $("quiz-errors").append(row);
+                });
+                $("errors-to-cards").disabled = !errors.length;
+                $("quiz-score").focus();
+            }
+            $("quiz-next").addEventListener("click", () => {
+                if (!quizLocked) return;
+                quizIndex++;
+                if (quizIndex < quizOrder.length) showQuestion();
+                else finishQuiz();
+            });
+            $("quiz-start").addEventListener("click", startQuiz);
+            $("quiz-repeat").addEventListener("click", startQuiz);
+            $("quiz-back").addEventListener("click", () => quizView("setup"));
+            $("quiz-stop").addEventListener("click", () => {
+                quizView("setup");
+                message("Kviz je prekinjen. Rezultat ni bil shranjen.");
+            });
+            $("errors-to-cards").addEventListener("click", () => {
+                let n = 0;
+                for (const q of errors) {
+                    if (state.cards.length >= 1000) break;
+                    if (state.cards.some((c) => c.question === q.question && c.topic === q.topic))
+                        continue;
+                    state.cards.push({
+                        id: uid(),
+                        topic: q.topic,
+                        question: q.question,
+                        answer: q.options[q.correct],
+                        rating: "again",
+                    });
+                    n++;
+                }
+                save();
+                render();
+                message(`Dodanih kartic: ${n}. Obstoječa vprašanja se ne podvajajo.`);
+            });
+
+            // 5. Pomodoro uporablja dejanski rok, zato zamik intervala ne ustavi odštevanja.
+            let timer = null,
+                phase = "work",
+                remaining = 25 * 60000,
+                deadline = 0,
+                workMs = 25 * 60000,
+                breakMs = 5 * 60000,
+                configured = false,
+                sessionCount = 0,
+                audio = null;
+            function paintTimer() {
+                const sec = Math.ceil(Math.max(0, remaining) / 1000),
+                    t = `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}`;
+                $("clock").textContent = t;
+                $("timer-phase").textContent = phase === "work" ? "Učenje" : "Odmor";
+                $("timer-progress").value = 1 - remaining / (phase === "work" ? workMs : breakMs);
+                $("session-count").textContent = `V tej seji: ${sessionCount} učnih intervalov.`;
+                document.title = configured
+                    ? `${t} · ${phase === "work" ? "Učenje" : "Odmor"} – Učni studio`
+                    : "Učni studio – Sidebit";
+            }
+            async function unlockSound() {
+                try {
+                    const A = window.AudioContext || window.webkitAudioContext;
+                    if (!A) return;
+                    if (!audio) audio = new A();
+                    await audio.resume();
+                } catch {}
+            }
+            function beep() {
+                if (!$("sound").checked || !audio || audio.state !== "running") return;
+                try {
+                    const o = audio.createOscillator(),
+                        g = audio.createGain();
+                    o.frequency.value = 660;
+                    g.gain.setValueAtTime(0.12, audio.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.4);
+                    o.connect(g);
+                    g.connect(audio.destination);
+                    o.start();
+                    o.stop(audio.currentTime + 0.4);
+                } catch {}
+            }
+            function tick() {
+                const now = Date.now();
+                let changed = false,
+                    completed = 0;
+                while (now >= deadline) {
+                    if (phase === "work") {
+                        sessionCount++;
+                        state.stats.sessions++;
+                        state.stats.minutes += workMs / 60000;
+                        completed++;
+                        phase = "break";
+                        deadline += breakMs;
+                    } else {
+                        phase = "work";
+                        deadline += workMs;
+                    }
+                    changed = true;
+                }
+                remaining = deadline - now;
+                if (changed) {
+                    beep();
+                    $("timer-status").textContent =
+                        (phase === "work" ? "Začel se je nov učni interval." : "Čas za odmor.") +
+                        " Zamik v ozadju se upošteva po uri.";
+                    if (completed) {
+                        save();
+                        renderHome();
+                    }
+                }
+                paintTimer();
+            }
+            function resetTimer() {
+                clearInterval(timer);
+                timer = null;
+                configured = false;
+                phase = "work";
+                workMs = Number($("work").value) * 60000;
+                breakMs = Number($("break").value) * 60000;
+                if (!validTimes()) {
+                    workMs = 25 * 60000;
+                    breakMs = 5 * 60000;
+                }
+                remaining = workMs;
+                $("work").disabled = false;
+                $("break").disabled = false;
+                $("active-topic").disabled = false;
+                $("timer-start").disabled = false;
+                $("timer-start").textContent = "Začni";
+                $("timer-pause").disabled = true;
+                $("timer-status").textContent =
+                    "Interval je ponastavljen. Skupna statistika ostane.";
+                paintTimer();
+            }
+            function validTimes() {
+                const w = Number($("work").value),
+                    b = Number($("break").value);
+                return (
+                    Number.isInteger(w) &&
+                    w >= 1 &&
+                    w <= 180 &&
+                    Number.isInteger(b) &&
+                    b >= 1 &&
+                    b <= 60
+                );
+            }
+            $("timer-start").addEventListener("click", () => {
+                if (timer !== null) return;
+                if (!configured) {
+                    if (!validTimes())
+                        return message(
+                            "Učenje: 1–180 minut. Odmor: 1–60 minut. Vnesi cela števila.",
+                            true,
+                        );
+                    workMs = Number($("work").value) * 60000;
+                    breakMs = Number($("break").value) * 60000;
+                    remaining = workMs;
+                    configured = true;
+                }
+                unlockSound();
+                deadline = Date.now() + remaining;
+                timer = setInterval(tick, 250);
+                $("work").disabled = true;
+                $("break").disabled = true;
+                $("active-topic").disabled = true;
+                $("timer-start").disabled = true;
+                $("timer-pause").disabled = false;
+                $("timer-status").textContent = "Časovnik teče. Osredotoči se na eno stvar.";
+                tick();
+            });
+            $("timer-pause").addEventListener("click", () => {
+                if (timer === null) return;
+                tick();
+                clearInterval(timer);
+                timer = null;
+                $("timer-start").disabled = false;
+                $("timer-start").textContent = "Nadaljuj";
+                $("timer-pause").disabled = true;
+                $("timer-status").textContent = "Časovnik je začasno ustavljen.";
+            });
+            $("timer-reset").addEventListener("click", resetTimer);
+            $("work").addEventListener("input", () => {
+                if (!configured && validTimes()) {
+                    workMs = Number($("work").value) * 60000;
+                    remaining = workMs;
+                    paintTimer();
+                }
+            });
+            document.addEventListener("visibilitychange", () => {
+                if (!document.hidden && timer !== null) tick();
+            });
+            function selectTopic(topic, tab) {
+                if (configured && $("active-topic").value !== topic) {
+                    message("Za spremembo teme najprej ponastavi trenutni interval.", true);
+                    return;
+                }
+                fillSelect("active-topic", [...new Set([...topicNames(), topic])]);
+                $("active-topic").value = topic;
+                $("card-topic").value = topic;
+                $("quiz-topic").value = topic;
+                $("card-filter").value = topic;
+                $("quiz-filter").value = topic;
+                resetDeck();
+                updateQuizCount();
+                navigate(tab);
+            }
+            $("active-topic").addEventListener("change", () =>
+                selectTopic($("active-topic").value, "cards"),
+            );
+            $("timer-cards").addEventListener("click", () =>
+                selectTopic($("active-topic").value, "cards"),
+            );
+            $("timer-quiz").addEventListener("click", () =>
+                selectTopic($("active-topic").value, "quiz"),
+            );
+
+            // 6. Pregled in varnostna kopija. Uvoz se preveri, preden zamenja podatke.
+            function renderHome() {
+                $("stat-minutes").textContent = state.stats.minutes;
+                $("stat-cards").textContent = state.cards.length;
+                const q = state.stats.lastQuiz;
+                $("stat-quiz").textContent = q ? `${q.correct}/${q.total}` : "—";
+                const step = !state.plan
+                    ? "Najprej pripravi načrt do testa."
+                    : !state.cards.length
+                      ? "Dodaj prvo kartico za temo iz svojega načrta."
+                      : !state.questions.length
+                        ? "Dodaj vprašanja in preveri znanje s kvizom."
+                        : "Ponovi kartice, ki še niso označene kot osvojene, nato reši kviz.";
+                $("next-step").textContent = step;
+                $("topic-overview").replaceChildren();
+                for (const t of topicNames()) {
+                    const row = el("div", undefined, "item"),
+                        cs = state.cards.filter((c) => c.topic === t);
+                    row.append(
+                        el("h3", t),
+                        el(
+                            "p",
+                            `${cs.filter((c) => c.rating === "known").length}/${cs.length} kartic označenih »znam« · ${state.questions.filter((q) => q.topic === t).length} vprašanj`,
+                        ),
+                        button("Odpri temo", () => selectTopic(t, "cards")),
+                    );
+                    $("topic-overview").append(row);
+                }
+                if (!topicNames().length)
+                    $("topic-overview").append(el("p", "Tvoje teme se bodo pojavile tukaj."));
+            }
+            $("next-action").addEventListener("click", () =>
+                navigate(
+                    !state.plan
+                        ? "plan"
+                        : !state.cards.length
+                          ? "cards"
+                          : !state.questions.length
+                            ? "quiz"
+                            : "cards",
+                ),
+            );
+            function render() {
+                const names = topicNames();
+                fillSelect("active-topic", names);
+                fillSelect("card-filter", names, true);
+                fillSelect("quiz-filter", names, true);
+                renderHome();
+                renderPlan();
+                resetDeck();
+                renderQuestions();
+            }
+            function validate(data) {
+                if (
+                    !data ||
+                    data.version !== 1 ||
+                    !Array.isArray(data.cards) ||
+                    data.cards.length > 1000 ||
+                    !Array.isArray(data.questions) ||
+                    data.questions.length > 100
+                )
+                    throw Error("Neveljavna datoteka studia.");
+                const out = fresh();
+                out.cards = data.cards.map((c) => {
+                    if (
+                        !c ||
+                        !textOK(c.topic, 120) ||
+                        !textOK(c.question, 1000) ||
+                        !textOK(c.answer, 3000)
+                    )
+                        throw Error("Neveljavne kartice.");
+                    return {
+                        id: uid(),
+                        topic: c.topic,
+                        question: c.question,
+                        answer: c.answer,
+                        rating: c.rating === "known" ? "known" : "again",
+                    };
+                });
+                out.questions = data.questions.map((q) => {
+                    if (
+                        !q ||
+                        !textOK(q.topic, 120) ||
+                        !textOK(q.question, 1000) ||
+                        !Array.isArray(q.options) ||
+                        q.options.length !== 4 ||
+                        q.options.some((o) => !textOK(o, 500)) ||
+                        new Set(q.options.map((o) => o.toLocaleLowerCase("sl-SI"))).size !== 4 ||
+                        !Number.isInteger(q.correct) ||
+                        q.correct < 0 ||
+                        q.correct > 3
+                    )
+                        throw Error("Neveljavna vprašanja.");
+                    return {
+                        id: uid(),
+                        topic: q.topic,
+                        question: q.question,
+                        options: q.options,
+                        correct: q.correct,
+                    };
+                });
+                if (data.plan) {
+                    const p = data.plan;
+                    if (!Array.isArray(p.topics) || new Set(p.topics).size !== p.topics.length)
+                        throw Error("Neveljavne teme načrta.");
+                    out.plan = makePlan(p.exam, p.daily, p.topics, p.start);
+                    if (!Array.isArray(p.items) || p.items.length !== out.plan.items.length)
+                        throw Error("Neveljaven načrt.");
+                    out.plan.items.forEach((item, i) => {
+                        const original = p.items[i];
+                        if (
+                            !original ||
+                            item.date !== original.date ||
+                            item.topic !== original.topic ||
+                            item.minutes !== original.minutes
+                        )
+                            throw Error("Neveljavna razporeditev načrta.");
+                        item.done = original.done === true;
+                    });
+                }
+                const s = data.stats;
+                if (
+                    s &&
+                    Number.isSafeInteger(s.minutes) &&
+                    s.minutes >= 0 &&
+                    Number.isSafeInteger(s.sessions) &&
+                    s.sessions >= 0
+                ) {
+                    out.stats.minutes = s.minutes;
+                    out.stats.sessions = s.sessions;
+                    const q = s.lastQuiz;
+                    if (
+                        q &&
+                        Number.isInteger(q.correct) &&
+                        Number.isInteger(q.total) &&
+                        q.total > 0 &&
+                        q.total <= 100 &&
+                        q.correct >= 0 &&
+                        q.correct <= q.total
+                    )
+                        out.stats.lastQuiz = { correct: q.correct, total: q.total };
+                }
+                return out;
+            }
+            $("export").addEventListener("click", () => {
+                const url = URL.createObjectURL(
+                    new Blob([JSON.stringify(state, null, 2)], { type: "application/json" }),
+                );
+                const a = el("a");
+                a.href = url;
+                a.download = "sidebit-ucni-studio.json";
+                document.body.append(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                message("Varnostna kopija je pripravljena za prenos.");
+            });
+            $("import").addEventListener("change", async () => {
+                const file = $("import").files[0];
+                if (!file) return;
+                try {
+                    if (file.size > 5 * 1024 * 1024)
+                        throw Error("Največja dovoljena velikost je 5 MB.");
+                    const data = JSON.parse(await file.text());
+                    if (Array.isArray(data)) {
+                        if (
+                            data.length > 1000 - state.cards.length ||
+                            data.some(
+                                (c) => !c || !textOK(c.vprasanje, 1000) || !textOK(c.odgovor, 3000),
+                            )
+                        )
+                            throw Error(
+                                "Neveljavne stare kartice ali presežena omejitev 1000 kartic.",
+                            );
+                        state.cards.push(
+                            ...data.map((c) => ({
+                                id: uid(),
+                                topic: "Uvožene kartice",
+                                question: c.vprasanje,
+                                answer: c.odgovor,
+                                rating: "again",
+                            })),
+                        );
+                    } else {
+                        const checked = validate(data);
+                        if (
+                            !confirm(
+                                "Uvoz zamenja načrt, kartice, vprašanja in statistiko. Nadaljujem?",
+                            )
+                        )
+                            return;
+                        resetTimer();
+                        state = checked;
+                        quizView("setup");
+                        clearCardForm();
+                        clearQuestionForm();
+                    }
+                    save();
+                    restorePlanForm();
+                    render();
+                    message("Zbirka je uvožena.");
+                } catch (err) {
+                    message("Uvoz ni uspel: " + err.message, true);
+                } finally {
+                    $("import").value = "";
+                }
+            });
+            function restorePlanForm() {
+                if (state.plan) {
+                    $("exam").value = state.plan.exam;
+                    $("daily").value = state.plan.daily;
+                    $("topics").value = state.plan.topics.join("\n");
+                } else {
+                    $("exam").value = "";
+                    $("daily").value = "60";
+                    $("topics").value = "";
+                }
+            }
+            $("demo").addEventListener("click", () => {
+                if (state.cards.some((c) => c.topic === "Primer: glukoza"))
+                    return message("Primer je že dodan.");
+                if (state.cards.length > 997 || state.questions.length > 98)
+                    return message("V zbirki ni dovolj prostora za primer.", true);
+                const topic = "Primer: glukoza";
+                state.cards.push(
+                    ...[
+                        ["Kakšna je molekulska formula glukoze?", "C₆H₁₂O₆."],
+                        ["Kje poteka glikoliza?", "V citosolu celice."],
+                        ["Kolikšen je neto izkupiček ATP pri glikolizi ene glukoze?", "2 ATP."],
+                    ].map(([question, answer]) => ({
+                        id: uid(),
+                        topic,
+                        question,
+                        answer,
+                        rating: "again",
+                    })),
+                );
+                state.questions.push(
+                    {
+                        id: uid(),
+                        topic,
+                        question: "Koliko atomov ogljika vsebuje ena molekula glukoze?",
+                        options: ["6", "12", "2", "18"],
+                        correct: 0,
+                    },
+                    {
+                        id: uid(),
+                        topic,
+                        question: "Kje poteka glikoliza?",
+                        options: ["V citosolu", "V jedru", "V lizosomu", "V Golgijevem aparatu"],
+                        correct: 0,
+                    },
+                );
+                save();
+                render();
+                message(
+                    "Dodan je primer: 3 kartice in 2 vprašanji. Vsebino lahko urediš ali odstraniš.",
+                );
+            });
+            try {
+                const stored = localStorage.getItem(KEY);
+                if (stored) state = validate(JSON.parse(stored));
+                $("storage-note").textContent =
+                    "Podatki ostanejo v tem brskalniku. Redno izvozi varnostno kopijo.";
+            } catch {
+                $("storage-note").textContent =
+                    "Prejšnjih podatkov ni bilo mogoče prebrati. Zbirko lahko obnoviš z uvozom varnostne kopije.";
+            }
+            $("exam").min = addDays(dateKey(), 1);
+            restorePlanForm();
+            render();
+            paintTimer();
+        </script>
+    </body>
+</html>
