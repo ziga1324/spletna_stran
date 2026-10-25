@@ -1,0 +1,1482 @@
+<!doctype html>
+<html lang="sl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Laboratorij podatkov in verjetnosti – Sidebit</title>
+    <meta
+      name="description"
+      content="Interaktivna statistika, kombinatorika in verjetnost. Raziskuj podatke, razporejaj elemente, simuliraj mete kocke in rešuj učne izzive."
+    />
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+      /* Vsi novi slogi veljajo samo za to stran. */
+      body.podatkovnik {
+        margin: 0;
+        background: #fff9ed;
+        color: #202333;
+        font:
+          16px/1.6 Arial,
+          Helvetica,
+          sans-serif;
+      }
+      .podatkovnik * {
+        box-sizing: border-box;
+      }
+      .podatkovnik [hidden] {
+        display: none !important;
+      }
+      .podatkovnik header,
+      .podatkovnik main,
+      .podatkovnik footer {
+        width: min(1160px, calc(100% - 36px));
+        margin: auto;
+        position: relative;
+      }
+      .podatkovnik header {
+        padding: 36px 0 24px;
+      }
+      .podatkovnik h1 {
+        font-size: clamp(34px, 6vw, 66px);
+        line-height: 1.06;
+        letter-spacing: -0.045em;
+        margin: 20px 0;
+        color: #202333;
+        background: none;
+        -webkit-text-fill-color: currentColor;
+      }
+      .podatkovnik h2,
+      .podatkovnik h3 {
+        color: #202333;
+        background: none;
+        -webkit-text-fill-color: currentColor;
+      }
+      .podatkovnik h2 {
+        margin: 0 0 16px;
+      }
+      .podatkovnik p {
+        margin: 10px 0 16px;
+      }
+      .podatkovnik a {
+        color: #513a88;
+      }
+      .podatkovnik .tag {
+        display: inline-block;
+        background: #ffe58c;
+        border: 2px solid #202333;
+        border-radius: 9px;
+        padding: 5px 12px;
+        font-weight: bold;
+        transform: rotate(-2deg);
+      }
+      .podatkovnik nav,
+      .podatkovnik .gumbi {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 18px 0;
+      }
+      .podatkovnik nav {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: #fff9edf5;
+        padding: 12px 0;
+      }
+      .podatkovnik button,
+      .podatkovnik .button {
+        font: inherit;
+        font-weight: bold;
+        cursor: pointer;
+        min-height: 44px;
+        border: 2px solid #202333;
+        border-radius: 10px;
+        padding: 10px 16px;
+        color: #202333;
+        background: #fff;
+        box-shadow: 3px 3px 0 #202333;
+        transition:
+          transform 0.15s,
+          background 0.15s;
+      }
+      .podatkovnik button:hover {
+        background: #dfd5ff;
+        transform: translateY(-2px);
+      }
+      .podatkovnik button:active {
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0 #202333;
+      }
+      .podatkovnik button[aria-pressed="true"],
+      .podatkovnik button.primary {
+        background: #ffe58c;
+      }
+      .podatkovnik button:disabled {
+        opacity: 0.5;
+        cursor: default;
+        transform: none;
+      }
+      .podatkovnik :focus-visible {
+        outline: 4px solid #7958df;
+        outline-offset: 4px;
+      }
+      .podatkovnik .card {
+        background: white;
+        border: 3px solid #202333;
+        border-radius: 22px;
+        padding: clamp(18px, 3vw, 30px);
+        box-shadow: 6px 6px 0 #202333;
+        margin-bottom: 26px;
+        min-width: 0;
+      }
+      .podatkovnik .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+        gap: 24px;
+      }
+      .podatkovnik .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .podatkovnik label {
+        display: block;
+        font-weight: bold;
+        margin: 12px 0 6px;
+      }
+      .podatkovnik input,
+      .podatkovnik textarea,
+      .podatkovnik select {
+        width: 100%;
+        min-width: 0;
+        padding: 11px;
+        border: 2px solid #202333;
+        border-radius: 9px;
+        font: inherit;
+        color: #202333;
+        background: #fff;
+      }
+      .podatkovnik textarea {
+        resize: vertical;
+      }
+      .podatkovnik input[type="range"] {
+        padding: 5px;
+        accent-color: #7958df;
+      }
+      .podatkovnik .check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .podatkovnik .check input {
+        width: 20px;
+        height: 20px;
+      }
+      .podatkovnik .hint {
+        font-size: 14px;
+        color: #536074;
+      }
+      .podatkovnik .error {
+        color: #a82222;
+        font-weight: bold;
+      }
+      .podatkovnik .error:empty {
+        display: none;
+      }
+      .podatkovnik .answer {
+        padding: 18px;
+        background: #e4f5ef;
+        border: 2px solid #202333;
+        border-radius: 12px;
+        overflow-wrap: anywhere;
+        margin: 16px 0;
+      }
+      .podatkovnik .big {
+        font-size: clamp(23px, 4vw, 38px);
+        font-weight: bold;
+        line-height: 1.3;
+      }
+      .podatkovnik .metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .podatkovnik .metric {
+        border: 2px solid #202333;
+        border-radius: 12px;
+        padding: 12px;
+        background: #fff5bf;
+        overflow-wrap: anywhere;
+      }
+      .podatkovnik .metric:nth-child(3n + 2) {
+        background: #dfd5ff;
+      }
+      .podatkovnik .metric:nth-child(3n) {
+        background: #c7f1e4;
+      }
+      .podatkovnik .metric strong {
+        display: block;
+        font-size: 23px;
+      }
+      .podatkovnik svg {
+        width: 100%;
+        height: auto;
+        display: block;
+        background: #fff;
+        border-radius: 12px;
+      }
+      .podatkovnik .scroll {
+        overflow: auto;
+        max-height: 320px;
+      }
+      .podatkovnik table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .podatkovnik th,
+      .podatkovnik td {
+        padding: 7px;
+        text-align: left;
+        border-bottom: 1px solid #ccd2dc;
+      }
+      .podatkovnik .tokens {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin: 16px 0;
+      }
+      .podatkovnik .tokens button {
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        background: #cde9ff;
+      }
+      .podatkovnik .tokens button[aria-pressed="true"] {
+        background: #ffc7d5;
+      }
+      .podatkovnik .sequence {
+        border: 2px dashed #202333;
+        padding: 14px;
+        border-radius: 12px;
+        min-height: 60px;
+        background: #fff5bf;
+      }
+      .podatkovnik .die {
+        width: 100px;
+        margin: auto;
+        font-size: 56px;
+        text-align: center;
+        border: 3px solid #202333;
+        background: #dfd5ff;
+        border-radius: 20px;
+        box-shadow: 5px 5px 0 #202333;
+      }
+      .podatkovnik progress {
+        width: 100%;
+        height: 24px;
+        accent-color: #087f8c;
+      }
+      .podatkovnik footer {
+        padding: 24px 0;
+        text-align: center;
+      }
+      .podatkovnik details {
+        margin: 14px 0;
+      }
+      .podatkovnik summary {
+        cursor: pointer;
+        font-weight: bold;
+      }
+      @media (max-width: 800px) {
+        .podatkovnik .grid {
+          grid-template-columns: 1fr;
+        }
+        .podatkovnik nav {
+          position: static;
+        }
+        .podatkovnik nav button {
+          flex: 1 1 40%;
+        }
+      }
+      @media (max-width: 480px) {
+        .podatkovnik .metrics {
+          grid-template-columns: 1fr 1fr;
+        }
+        .podatkovnik .two {
+          grid-template-columns: 1fr;
+        }
+        .podatkovnik .card {
+          box-shadow: 3px 3px 0 #202333;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .podatkovnik * {
+          transition: none !important;
+          scroll-behavior: auto !important;
+        }
+      }
+      @media print {
+        .podatkovnik nav,
+        .podatkovnik button {
+          display: none;
+        }
+        .podatkovnik .card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        .podatkovnik .grid {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body class="podatkovnik">
+    <header>
+      <a href="../index.html">← Vsa orodja</a><br /><span class="tag"
+        >Raziskuj. Poskusi. Razumi.</span
+      >
+      <h1>Majhni podatki.<br />Velika odkritja.</h1>
+      <p>
+        Laboratorij statistike, kombinatorike in verjetnosti. Premikaj podatke,
+        sestavljaj izbire in preveri, kako se teorija sreča s poskusom.
+      </p>
+    </header>
+    <main>
+      <nav aria-label="Področja laboratorija">
+        <button type="button" data-panel="stat" aria-pressed="true">
+          01 · Podatki
+        </button>
+        <button type="button" data-panel="komb" aria-pressed="false">
+          02 · Možnosti
+        </button>
+        <button type="button" data-panel="poskus" aria-pressed="false">
+          03 · Poskusi
+        </button>
+        <button type="button" data-panel="izziv" aria-pressed="false">
+          04 · Izzivi
+        </button>
+      </nav>
+      <section id="stat" aria-labelledby="stat-title">
+        <div class="grid">
+          <div class="card">
+            <h2 id="stat-title">Tvoja podatkovna zgodba</h2>
+            <form id="stat-form">
+              <label for="data">Števila</label>
+              <textarea
+                id="data"
+                rows="5"
+                maxlength="100000"
+                aria-describedby="data-help"
+                required
+              >
+2 4 4 4 5 5 7 9</textarea>
+              <p class="hint" id="data-help">
+                Največ 10.000 števil. Ločila: presledek, podpičje ali nova
+                vrstica. Decimalno vejico ali piko uporabi znotraj števila: 1,5;
+                2,5; 3. Vejica ni ločilo med podatki. Absolutna vrednost največ
+                10¹²; najmanjša neničelna 10⁻¹².
+              </p>
+              <label for="sample">Izračun razpršenosti</label>
+              <select id="sample">
+                <option value="population">
+                  Celotna populacija: deljenje z n
+                </option>
+                <option value="sample">Vzorec: deljenje z n − 1</option>
+              </select>
+              <div class="gumbi">
+                <button class="primary">Razišči podatke</button
+                ><button type="button" id="random-data">
+                  Naključni podatki</button
+                ><button type="reset">Počisti</button>
+              </div>
+            </form>
+            <p id="stat-error" class="error" role="alert"></p>
+            <div id="outlier-block">
+              <h3>Kaj se zgodi, če …</h3>
+              <label class="check"
+                ><input id="outlier-on" type="checkbox" /> Dodam en
+                osamelec</label
+              >
+              <label for="outlier"
+                >Vrednost osamelca:
+                <output id="outlier-value">30</output></label
+              >
+              <input
+                id="outlier"
+                type="range"
+                min="-100"
+                max="100"
+                value="30"
+                step="1"
+              />
+              <p class="hint">
+                Drsnik dodaja eno vrednost k izvirnemu nizu; ne spreminja vnosa.
+                Primerjaj premik povprečja in mediane.
+              </p>
+              <button type="button" id="export-data">
+                Prenesi podatke TXT
+              </button>
+            </div>
+          </div>
+          <div class="card" id="stat-output">
+            <h2>Podatki pod lupo</h2>
+            <div id="metrics" class="metrics"></div>
+            <svg
+              id="distribution"
+              viewBox="0 0 680 310"
+              role="img"
+              aria-labelledby="dist-title"
+            >
+              <title id="dist-title">Porazdelitev podatkov</title>
+            </svg>
+            <p id="stat-story" aria-live="polite"></p>
+            <details>
+              <summary>Vsi rezultati in frekvence</summary>
+              <div id="stat-details" class="scroll"></div>
+            </details>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Zakaj povprečje ni cela zgodba?</h2>
+          <p>
+            Za niz 2, 4, 4, 6, 9 je povprečje 5, mediana pa 4. Če dodamo 100, se
+            povprečje dvigne na približno 20,83, mediana pa na 5. Skrajna
+            vrednost vpliva na povprečje močneje.
+          </p>
+          <p>
+            Varianca je povprečno kvadratno odstopanje od povprečja. Standardni
+            odklon je njen koren in ima iste enote kot podatki. Za oceno
+            variance populacije iz vzorca uporabimo n − 1; potrebujemo vsaj dva
+            podatka.
+          </p>
+          <p class="hint">
+            Pri enakih frekvencah vseh različnih vrednosti tu izpišemo »ni
+            izstopajočega modusa«. Zaokrožujemo na največ 10 pomembnih števk.
+            Stolpci združujejo podatke v največ 12 enako širokih razredov,
+            tabela pa pokaže točne frekvence.
+          </p>
+        </div>
+      </section>
+      <section id="komb" hidden aria-labelledby="komb-title">
+        <div class="grid">
+          <div class="card">
+            <h2 id="komb-title">Koliko poti obstaja?</h2>
+            <form id="comb-form">
+              <label for="operation">Kaj računaš?</label
+              ><select id="operation">
+                <option value="factorial">Permutacije: n!</option>
+                <option value="variation">Variacije brez ponavljanja</option>
+                <option value="power">Variacije s ponavljanjem</option>
+                <option value="combination" selected>
+                  Kombinacije brez ponavljanja
+                </option>
+                <option value="repetition">Kombinacije s ponavljanjem</option>
+                <option value="probability">Verjetnost: ugodni / vsi</option>
+              </select>
+              <p id="op-help"></p>
+              <div class="two">
+                <div>
+                  <label for="n" id="n-label">Elementi n</label
+                  ><input
+                    id="n"
+                    type="number"
+                    min="0"
+                    max="1000"
+                    step="1"
+                    value="5"
+                    required
+                  />
+                </div>
+                <div id="k-field">
+                  <label for="k" id="k-label">Izbrani elementi k</label
+                  ><input
+                    id="k"
+                    type="number"
+                    min="0"
+                    max="1000"
+                    step="1"
+                    value="2"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="gumbi">
+                <button class="primary">Izračunaj možnosti</button
+                ><button type="button" id="team">Primer: ekipa</button
+                ><button type="button" id="roles">Primer: dve vlogi</button>
+              </div>
+            </form>
+            <p id="comb-error" class="error" role="alert"></p>
+            <div id="comb-output" class="answer" aria-live="polite"></div>
+            <details>
+              <summary>Katero pravilo izbrati?</summary>
+              <p>
+                Razporediš vse različne elemente: n!. Izbereš k elementov z
+                različnimi vlogami: variacije. Izbereš ekipo brez različnih
+                vlog: kombinacije. Če lahko element uporabiš večkrat, izberi
+                ponavljanje.
+              </p>
+              <p>
+                Za n = 5 in k = 2 je ekip 10, razporeditev predsednika in
+                namestnika pa 20. Ista para A–B in B–A sta ena ekipa, a dve
+                razporeditvi vlog.
+              </p>
+              <p class="hint">
+                Cela števila 0–1000. Število možnosti je natančno izračunano z
+                BigInt. Prazna izbira ima eno možnost, tudi pri n = 0.
+              </p>
+            </details>
+          </div>
+          <div class="card">
+            <h2>Preizkusi z rokami</h2>
+            <p id="play-help">Klikni elemente in sestavi izbiro.</p>
+            <div id="tokens" class="tokens"></div>
+            <div id="selection" class="sequence" aria-live="polite"></div>
+            <div class="gumbi">
+              <button type="button" id="undo">Korak nazaj</button
+              ><button type="button" id="clear-choice">Nova izbira</button
+              ><button type="button" id="record">Shrani izbiro</button>
+            </div>
+            <p id="collection-info" role="status"></p>
+            <div id="collection" class="tokens"></div>
+            <p class="hint">
+              Raziskovalni prikaz deluje za n ≤ 8 in dolžino izbire ≤ 8.
+              Kalkulator podpira večje vrednosti. Pri kombinacijah se izbira
+              pred primerjavo uredi; vrstni red ne šteje.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section id="poskus" hidden aria-labelledby="exp-title">
+        <div class="grid">
+          <div class="card">
+            <h2 id="exp-title">Teorija sreča kocko</h2>
+            <p>
+              Vsak met ima šest enako verjetnih izidov. Izberi dogodek in
+              spremljaj relativno frekvenco.
+            </p>
+            <label for="event">Dogodek</label
+            ><select id="event">
+              <option value="even">Sodo število: 2, 4, 6</option>
+              <option value="six">Šestica</option>
+              <option value="high">Vsaj 5: 5, 6</option>
+            </select>
+            <div id="die" class="die" aria-label="Zadnji met">–</div>
+            <div class="gumbi">
+              <button type="button" id="roll-one">En met</button
+              ><button type="button" id="roll-many">100 metov</button
+              ><button type="button" id="auto">Začni animacijo</button
+              ><button type="button" id="reset-exp">Ponastavi</button>
+            </div>
+            <p id="exp-status" role="status"></p>
+            <button type="button" id="to-stats">
+              Prenesi mete v statistiko
+            </button>
+            <p class="hint">
+              Največ 10.000 metov na poskus. Poskusi uporabljajo naključna
+              števila brskalnika, niso primerni za igre na srečo. Statistika
+              dobi trenutne rezultate; nadaljnji meti je ne posodabljajo.
+            </p>
+          </div>
+          <div class="card">
+            <h2>Se naključje »uredi«?</h2>
+            <div id="exp-metrics" class="metrics"></div>
+            <svg
+              id="die-chart"
+              viewBox="0 0 680 310"
+              role="img"
+              aria-label="Frekvence izidov 1 do 6"
+            ></svg
+            ><label for="prob-progress">Opažena relativna frekvenca</label
+            ><progress id="prob-progress" max="1" value="0"></progress>
+            <p id="exp-story"></p>
+            <details>
+              <summary>Frekvence v tabeli</summary>
+              <div id="die-table"></div>
+            </details>
+            <p>
+              Več metov običajno stabilizira relativno frekvenco okoli
+              teoretične verjetnosti. To ne pomeni, da mora biti naslednji met
+              šestica, če je dolgo ni bilo. Meti so neodvisni.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section id="izziv" hidden aria-labelledby="quest-title">
+        <div class="grid">
+          <div class="card">
+            <span class="tag">Kratka vaja, pravo razumevanje</span>
+            <h2 id="quest-title">Tvoj naslednji izziv</h2>
+            <label for="quest-type">Področje</label
+            ><select id="quest-type">
+              <option value="mixed">Mešano</option>
+              <option value="mean">Povprečje</option>
+              <option value="median">Mediana</option>
+              <option value="comb">Kombinacije</option>
+              <option value="var">Variacije</option>
+              <option value="prob">Verjetnost</option>
+            </select>
+            <p id="question" class="big"></p>
+            <form id="quest-form">
+              <label for="guess">Tvoj odgovor</label
+              ><input
+                id="guess"
+                type="text"
+                maxlength="100"
+                placeholder="Število ali ulomek, npr. 1/2"
+                required
+              />
+              <div class="gumbi">
+                <button class="primary">Preveri</button
+                ><button type="button" id="quest-hint">Namig</button
+                ><button type="button" id="reveal">Razkrij rešitev</button>
+              </div>
+            </form>
+            <p id="quest-feedback" role="status"></p>
+            <div id="quest-solution" class="answer" hidden></div>
+            <button type="button" id="next-quest">Nov izziv</button>
+          </div>
+          <div class="card">
+            <h2>Napredek z razumevanjem</h2>
+            <div id="score" class="metrics"></div>
+            <p>
+              Prvi pravilen poskus prinese 10 točk. Namig je brezplačen. Po
+              napačnem prvem poskusu ali razkritju rešitve lahko še naprej
+              vadiš, brez dodatnih točk.
+            </p>
+            <p id="break-note"></p>
+            <button type="button" id="reset-score">Ponastavi napredek</button>
+            <p class="hint">
+              Shrani se le skupni napredek v tem brskalniku, če lokalna shramba
+              deluje. Podatki, meti in izbire se ob osvežitvi izgubijo. Vse
+              računanje poteka v brskalniku, brez zunanjih knjižnic.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      Sidebit · Laboratorij podatkov in verjetnosti · Uči se s poskusom.
+    </footer>
+    <script>
+      "use strict";
+      // Skupna orodja: varno branje števil, prikaz ter ustvarjanje elementov.
+      const $ = (id) => document.getElementById(id);
+      const fmt = (n) =>
+        new Intl.NumberFormat("sl-SI", { maximumSignificantDigits: 10 }).format(
+          Object.is(n, -0) ? 0 : n,
+        );
+      const rand = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+      function node(tag, text, parent, cls) {
+        const e = document.createElement(tag);
+        if (text !== null) e.textContent = text;
+        if (cls) e.className = cls;
+        if (parent) parent.append(e);
+        return e;
+      }
+      function number(text) {
+        if (
+          !/^[+-]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:e[+-]?\d+)?$/i.test(text.trim())
+        )
+          throw Error("Vnesi veljavno število.");
+        const v = Number(text.trim().replace(",", "."));
+        if (
+          !Number.isFinite(v) ||
+          (v === 0 && /[1-9]/.test(text.split(/[eE]/)[0]))
+        )
+          throw Error("Število je zunaj podprtega obsega.");
+        return v;
+      }
+      function navigate(id) {
+        stopAuto();
+        document
+          .querySelectorAll("main > section")
+          .forEach((e) => (e.hidden = e.id !== id));
+        document
+          .querySelectorAll("[data-panel]")
+          .forEach((e) =>
+            e.setAttribute("aria-pressed", String(e.dataset.panel === id)),
+          );
+      }
+      document
+        .querySelectorAll("[data-panel]")
+        .forEach((b) =>
+          b.addEventListener("click", () => navigate(b.dataset.panel)),
+        );
+      function table(parent, rows, heads = ["Podatek", "Vrednost"]) {
+        const t = node("table", null, parent),
+          head = node("thead", null, t),
+          tr = node("tr", null, head);
+        heads.forEach((h) => (node("th", h, tr).scope = "col"));
+        const body = node("tbody", null, t);
+        rows.forEach(([a, b]) => {
+          const r = node("tr", null, body);
+          node("th", a, r).scope = "row";
+          node("td", b, r);
+        });
+      }
+      function metrics(id, items) {
+        $(id).replaceChildren();
+        items.forEach(([label, v]) => {
+          const e = node("div", null, $(id), "metric");
+          node("span", label, e);
+          node("strong", v, e);
+        });
+      }
+      const NS = "http://www.w3.org/2000/svg";
+      function svgEl(svg, tag, attrs, text) {
+        const e = document.createElementNS(NS, tag);
+        Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, String(v)));
+        if (text !== undefined) e.textContent = text;
+        svg.append(e);
+        return e;
+      }
+      function bars(id, counts, labels, title, markers = []) {
+        const s = $(id);
+        s.replaceChildren();
+        svgEl(s, "title", {}, title);
+        const max = Math.max(1, ...counts),
+          bw = 570 / counts.length;
+        counts.forEach((v, i) => {
+          const h = (v / max) * 200,
+            x = 60 + i * bw;
+          svgEl(s, "rect", {
+            x: x + 4,
+            y: 240 - h,
+            width: Math.max(1, bw - 8),
+            height: h,
+            fill: i % 2 ? "#c8baff" : "#a9ebdd",
+            stroke: "#202333",
+            "stroke-width": 2,
+          });
+          svgEl(
+            s,
+            "text",
+            {
+              x: x + bw / 2,
+              y: 262,
+              "text-anchor": "middle",
+              "font-size": 12,
+              fill: "#202333",
+            },
+            labels[i],
+          );
+          svgEl(
+            s,
+            "text",
+            {
+              x: x + bw / 2,
+              y: Math.max(24, 232 - h),
+              "text-anchor": "middle",
+              "font-size": 12,
+            },
+            String(v),
+          );
+        });
+        svgEl(s, "line", {
+          x1: 60,
+          x2: 630,
+          y1: 240,
+          y2: 240,
+          stroke: "#202333",
+          "stroke-width": 2,
+        });
+        markers.forEach((m, i) => {
+          svgEl(s, "line", {
+            x1: m.x,
+            x2: m.x,
+            y1: 35,
+            y2: 240,
+            stroke: m.color,
+            "stroke-width": 3,
+            "stroke-dasharray": i ? "5 5" : "none",
+          });
+          svgEl(
+            s,
+            "text",
+            { x: 60 + i * 280, y: 292, fill: m.color, "font-size": 14 },
+            m.label,
+          );
+        });
+      }
+
+      // STATISTIKA: Welfordov algoritem in frekvenčna tabela.
+      let base = [],
+        active = [],
+        currentStats = null;
+      function parseData(text) {
+        if (!text.trim()) throw Error("Vnesi vsaj eno število.");
+        const parts = text.trim().split(/[;\s]+/);
+        if (parts.length > 10000)
+          throw Error("Vneseš lahko največ 10.000 števil.");
+        return parts.map((p, i) => {
+          let v;
+          try {
+            v = number(p);
+          } catch {
+            throw Error("Neveljavno število na mestu " + (i + 1) + ".");
+          }
+          if (Math.abs(v) > 1e12 || (v !== 0 && Math.abs(v) < 1e-12))
+            throw Error(
+              "Vrednosti naj bodo med −10¹² in 10¹²; neničelne vsaj 10⁻¹² po absolutni vrednosti.",
+            );
+          return v;
+        });
+      }
+      function statistics(data, sample = false) {
+        const sorted = [...data].sort((a, b) => a - b),
+          n = data.length;
+        if (!n) throw Error("Prazen niz.");
+        let mean = 0,
+          m2 = 0,
+          sum = 0;
+        data.forEach((x, i) => {
+          sum += x;
+          const delta = x - mean;
+          mean += delta / (i + 1);
+          m2 += delta * (x - mean);
+        });
+        const median =
+          n % 2
+            ? sorted[(n - 1) / 2]
+            : sorted[n / 2 - 1] / 2 + sorted[n / 2] / 2;
+        const frequencies = new Map();
+        for (const x of sorted)
+          frequencies.set(x, (frequencies.get(x) || 0) + 1);
+        const top = Math.max(...frequencies.values());
+        const modes = [...frequencies]
+          .filter(([, f]) => f === top)
+          .map(([x]) => x);
+        const variance =
+          sample && n === 1 ? null : Math.max(0, m2 / (sample ? n - 1 : n));
+        return {
+          n,
+          mean,
+          median,
+          sum,
+          min: sorted[0],
+          max: sorted[n - 1],
+          range: sorted[n - 1] - sorted[0],
+          variance,
+          sd: variance === null ? null : Math.sqrt(variance),
+          frequencies,
+          modes,
+          top,
+          noMode: modes.length === frequencies.size,
+        };
+      }
+      function updateStats() {
+        try {
+          base = parseData($("data").value);
+          if ($("outlier-on").checked && base.length === 10000)
+            throw Error("Za osamelec uporabi največ 9.999 izvirnih števil.");
+          active = $("outlier-on").checked
+            ? [...base, Number($("outlier").value)]
+            : [...base];
+          const s = statistics(active, $("sample").value === "sample");
+          currentStats = s;
+          $("stat-error").textContent = "";
+          $("stat-output").hidden = false;
+          $("export-data").disabled = false;
+          $("outlier-value").textContent = $("outlier").value;
+          metrics("metrics", [
+            ["Število podatkov", s.n],
+            ["Povprečje", fmt(s.mean)],
+            ["Mediana", fmt(s.median)],
+            ["Razpon", fmt(s.range)],
+            ["Varianca", s.variance === null ? "Ni določena" : fmt(s.variance)],
+            ["Standardni odklon", s.sd === null ? "Ni določen" : fmt(s.sd)],
+          ]);
+          const bins =
+              s.min === s.max ? 1 : Math.min(12, Math.ceil(Math.sqrt(s.n))),
+            width = (s.max - s.min) / bins;
+          const counts = Array(bins).fill(0);
+          active.forEach(
+            (x) =>
+              counts[
+                width === 0
+                  ? 0
+                  : Math.min(bins - 1, Math.floor((x - s.min) / width))
+              ]++,
+          );
+          const position = (x) =>
+            width === 0 ? 345 : 60 + ((x - s.min) / (s.max - s.min)) * 570;
+          bars(
+            "distribution",
+            counts,
+            counts.map((_, i) =>
+              bins === 1 ? fmt(s.min) : fmt(s.min + i * width),
+            ),
+            "Histogram: spodnje meje razredov; zadnji vključuje maksimum.",
+            [
+              {
+                x: position(s.mean),
+                color: "#087f8c",
+                label: "Povprečje: " + fmt(s.mean),
+              },
+              {
+                x: position(s.median),
+                color: "#7958df",
+                label: "Mediana: " + fmt(s.median),
+              },
+            ],
+          );
+          const original = statistics(base);
+          $("stat-story").textContent = $("outlier-on").checked
+            ? `Osamelec: premik povprečja ${fmt(s.mean - original.mean)}, premik mediane ${fmt(s.median - original.median)}. Histogram vključuje dodani podatek.`
+            : `Razredne frekvence imajo vsoto ${s.n}. Črtkana črta označuje mediano, polna povprečje. Oznake pod stolpci so spodnje meje razredov.`;
+          $("stat-details").replaceChildren();
+          table($("stat-details"), [
+            ["Vsota", fmt(s.sum)],
+            ["Minimum", fmt(s.min)],
+            ["Maksimum", fmt(s.max)],
+            [
+              "Modus",
+              s.noMode
+                ? "Ni izstopajočega modusa"
+                : s.modes.map(fmt).join("; ") + " (pogostost " + s.top + ")",
+            ],
+            [
+              "Delitelj variance",
+              $("sample").value === "sample" ? "n − 1" : "n",
+            ],
+          ]);
+          table(
+            $("stat-details"),
+            [...s.frequencies].map(([x, f]) => [fmt(x), f]),
+            ["Vrednost", "Frekvenca"],
+          );
+        } catch (e) {
+          $("stat-error").textContent = e.message;
+          $("stat-output").hidden = true;
+          $("export-data").disabled = true;
+          currentStats = null;
+          active = [];
+        }
+      }
+      $("stat-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        updateStats();
+      });
+      $("data").addEventListener("input", updateStats);
+      $("sample").addEventListener("change", updateStats);
+      ["outlier-on", "outlier"].forEach((id) =>
+        $(id).addEventListener("input", updateStats),
+      );
+      $("random-data").addEventListener("click", () => {
+        $("data").value = Array.from({ length: rand(8, 20) }, () =>
+          rand(1, 20),
+        ).join(" ");
+        $("outlier-on").checked = false;
+        updateStats();
+      });
+      $("stat-form").addEventListener("reset", (e) => {
+        e.preventDefault();
+        $("data").value = "";
+        $("outlier-on").checked = false;
+        $("sample").value = "population";
+        updateStats();
+      });
+      function download(text, name) {
+        const url = URL.createObjectURL(
+            new Blob([text], { type: "text/plain;charset=utf-8" }),
+          ),
+          a = document.createElement("a");
+        a.href = url;
+        a.download = name;
+        document.body.append(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+      $("export-data").addEventListener("click", () => {
+        if (currentStats) download(active.join("\n"), "sidebit-podatki.txt");
+      });
+
+      // KOMBINATORIKA: celoštevilski izračuni brez zaokroževanja.
+      function factorial(n) {
+        let r = 1n;
+        for (let i = 2; i <= n; i++) r *= BigInt(i);
+        return r;
+      }
+      function combination(n, k) {
+        if (k > n) return 0n;
+        let r = 1n;
+        k = Math.min(k, n - k);
+        for (let i = 1; i <= k; i++) r = (r * BigInt(n - k + i)) / BigInt(i);
+        return r;
+      }
+      function variation(n, k) {
+        let r = 1n;
+        for (let i = 0; i < k; i++) r *= BigInt(n - i);
+        return r;
+      }
+      function gcd(a, b) {
+        while (b) [a, b] = [b, a % b];
+        return a;
+      }
+      function combinatorics(op, n, k) {
+        if (![n, k].every((v) => Number.isInteger(v) && v >= 0 && v <= 1000))
+          throw Error("Vnesi cela števila od 0 do 1000.");
+        if (["variation", "combination"].includes(op) && k > n)
+          throw Error("Brez ponavljanja mora veljati k ≤ n.");
+        switch (op) {
+          case "factorial":
+            return factorial(n);
+          case "variation":
+            return variation(n, k);
+          case "power":
+            return BigInt(n) ** BigInt(k);
+          case "combination":
+            return combination(n, k);
+          case "repetition":
+            return k === 0 ? 1n : n === 0 ? 0n : combination(n + k - 1, k);
+          case "probability":
+            if (n === 0 || k > n)
+              throw Error(
+                "Vseh izidov mora biti vsaj 1, ugodnih pa največ toliko kot vseh.",
+              );
+            return k / n;
+          default:
+            throw Error("Neznana operacija.");
+        }
+      }
+      const descriptions = {
+        factorial: "Razporediš vse različne elemente: n!.",
+        variation: "Vrstni red šteje, ponavljanje ne: n! / (n − k)!.",
+        power: "Vrstni red šteje, ponavljanje je dovoljeno: n^k.",
+        combination: "Vrstni red ne šteje, ponavljanje ni dovoljeno: C(n, k).",
+        repetition:
+          "Vrstni red ne šteje, ponavljanje je dovoljeno: C(n + k − 1, k).",
+        probability:
+          "Za enako verjetne izide: P = število ugodnih / število vseh.",
+      };
+      let choice = [],
+        found = new Set(),
+        combState = null;
+      function combCalculate() {
+        choice = [];
+        found.clear();
+        combState = null;
+        $("comb-output").replaceChildren();
+        $("comb-error").textContent = "";
+        const op = $("operation").value;
+        $("op-help").textContent = descriptions[op];
+        $("k-field").hidden = op === "factorial";
+        $("k").disabled = op === "factorial";
+        $("n-label").textContent =
+          op === "probability" ? "Vsi izidi n" : "Elementi n";
+        $("k-label").textContent =
+          op === "probability" ? "Ugodni izidi k" : "Izbrani elementi k";
+        try {
+          const n = number($("n").value),
+            k = op === "factorial" ? 0 : number($("k").value),
+            v = combinatorics(op, n, k);
+          combState = {
+            op,
+            n,
+            k,
+            target: op === "factorial" ? n : k,
+            total: v,
+          };
+          node(
+            "p",
+            "Izračun: " +
+              (op === "factorial"
+                ? `${n}!`
+                : op === "variation"
+                  ? `${n}! / (${n} − ${k})!`
+                  : op === "power"
+                    ? `${n}^${k}`
+                    : op === "combination"
+                      ? `C(${n}, ${k})`
+                      : op === "repetition"
+                        ? k === 0
+                          ? "Prazna izbira"
+                          : n === 0
+                            ? "Ni elementov za neprazno izbiro"
+                            : `C(${n + k - 1}, ${k})`
+                        : `${k}/${n}`),
+            $("comb-output"),
+          );
+          node(
+            "p",
+            typeof v === "bigint"
+              ? v.toString()
+              : new Intl.NumberFormat("sl-SI", {
+                  maximumFractionDigits: 6,
+                }).format(v * 100) + " %",
+            $("comb-output"),
+            "big",
+          );
+          if (op === "probability") {
+            const g = gcd(BigInt(k), BigInt(n));
+            node(
+              "p",
+              `Okrajšan ulomek: ${BigInt(k) / g}/${BigInt(n) / g}`,
+              $("comb-output"),
+            );
+          } else node("p", "Natančno število možnosti.", $("comb-output"));
+        } catch (e) {
+          $("comb-error").textContent = e.message;
+        }
+        renderChoice();
+      }
+      function playable() {
+        return (
+          combState &&
+          combState.op !== "probability" &&
+          combState.n <= 8 &&
+          combState.target <= 8
+        );
+      }
+      function renderChoice() {
+        const ok = playable();
+        $("tokens").replaceChildren();
+        $("collection").replaceChildren();
+        $("play-help").textContent = ok
+          ? "Sestavi izbiro z " +
+            combState.target +
+            " elementi. Nato jo shrani in poišči drugo."
+          : "Za ročni prikaz izberi n in dolžino do 8 ter kombinatorično operacijo.";
+        if (ok)
+          for (let i = 0; i < combState.n; i++) {
+            const b = node("button", String.fromCharCode(65 + i), $("tokens"));
+            b.type = "button";
+            const repeat = ["power", "repetition"].includes(combState.op);
+            b.disabled =
+              choice.length >= combState.target ||
+              (!repeat && choice.includes(i));
+            b.setAttribute("aria-pressed", String(choice.includes(i)));
+            b.addEventListener("click", () => {
+              choice.push(i);
+              renderChoice();
+            });
+          }
+        $("selection").textContent = choice.length
+          ? choice.map((i) => String.fromCharCode(65 + i)).join(" → ")
+          : "Prazna izbira";
+        $("record").disabled = !ok || choice.length !== combState.target;
+        $("undo").disabled = !choice.length;
+        $("clear-choice").disabled = !ok;
+        $("collection-info").textContent = ok
+          ? `Najdenih različnih izbir: ${found.size} od ${combState.total}.`
+          : "Kalkulator nad tem prikazom ostaja uporaben.";
+        [...found]
+          .slice(-30)
+          .forEach((key) =>
+            node("span", key || "Prazna izbira", $("collection"), "tag"),
+          );
+      }
+      $("record").addEventListener("click", () => {
+        if (!playable() || choice.length !== combState.target) return;
+        const unordered = ["combination", "repetition"].includes(combState.op),
+          key = (unordered ? [...choice].sort((a, b) => a - b) : choice)
+            .map((i) => String.fromCharCode(65 + i))
+            .join(" · ");
+        const repeated = found.has(key);
+        found.add(key);
+        renderChoice();
+        $("collection-info").textContent += repeated
+          ? " To izbiro že poznaš."
+          : " Nova možnost odkrita!";
+      });
+      $("undo").addEventListener("click", () => {
+        choice.pop();
+        renderChoice();
+      });
+      $("clear-choice").addEventListener("click", () => {
+        choice = [];
+        renderChoice();
+      });
+      $("comb-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        combCalculate();
+      });
+      ["operation", "n", "k"].forEach((id) =>
+        $(id).addEventListener(
+          id === "operation" ? "change" : "input",
+          combCalculate,
+        ),
+      );
+      [
+        ["team", "combination"],
+        ["roles", "variation"],
+      ].forEach(([id, op]) =>
+        $(id).addEventListener("click", () => {
+          $("operation").value = op;
+          $("n").value = "5";
+          $("k").value = "2";
+          combCalculate();
+        }),
+      );
+
+      // POSKUS: omejen posnetek metov, animacija se ustavi ob odhodu.
+      let rolls = [],
+        auto = null;
+      function eventHit(x) {
+        return $("event").value === "even"
+          ? x % 2 === 0
+          : $("event").value === "six"
+            ? x === 6
+            : x >= 5;
+      }
+      function stopAuto() {
+        if (auto !== null) clearInterval(auto);
+        auto = null;
+        $("auto").textContent = "Začni animacijo";
+      }
+      function experiment() {
+        const counts = Array(6).fill(0);
+        rolls.forEach((x) => counts[x - 1]++);
+        const wins = rolls.filter(eventHit).length,
+          p =
+            $("event").value === "even"
+              ? 1 / 2
+              : $("event").value === "six"
+                ? 1 / 6
+                : 1 / 3;
+        metrics("exp-metrics", [
+          ["Število metov", rolls.length],
+          ["Teoretično", fmt(100 * p) + " %"],
+          [
+            "Opaženo",
+            rolls.length
+              ? fmt((100 * wins) / rolls.length) + " %"
+              : "Še ni metov",
+          ],
+        ]);
+        bars(
+          "die-chart",
+          counts,
+          ["1", "2", "3", "4", "5", "6"],
+          "Število pojavitev posameznega izida.",
+        );
+        $("die-table").replaceChildren();
+        table(
+          $("die-table"),
+          counts.map((c, i) => [i + 1, c]),
+          ["Izid", "Število pojavitev"],
+        );
+        $("prob-progress").value = rolls.length ? wins / rolls.length : 0;
+        $("exp-story").textContent =
+          `Ugodnih metov: ${wins} od ${rolls.length}. ` +
+          (rolls.length
+            ? "Razlika od teorije: " +
+              fmt((wins / rolls.length - p) * 100) +
+              " odstotnih točk."
+            : "Izvedi prvi poskus.");
+        $("die").textContent = rolls.length ? rolls[rolls.length - 1] : "–";
+        $("die").setAttribute(
+          "aria-label",
+          rolls.length
+            ? "Zadnji met: " + rolls[rolls.length - 1]
+            : "Še ni metov",
+        );
+        $("to-stats").disabled = !rolls.length;
+        ["roll-one", "roll-many", "auto"].forEach(
+          (id) => ($(id).disabled = rolls.length >= 10000),
+        );
+      }
+      function roll(count) {
+        const amount = Math.min(count, 10000 - rolls.length);
+        for (let i = 0; i < amount; i++) rolls.push(rand(1, 6));
+        if (rolls.length === 10000) {
+          stopAuto();
+          $("exp-status").textContent =
+            "Dosežena je meja 10.000 metov. Poskus lahko ponastaviš.";
+        } else
+          $("exp-status").textContent =
+            amount === 1
+              ? "Kocka je pokazala " + rolls[rolls.length - 1] + "."
+              : `Dodanih ${amount} metov.`;
+        experiment();
+      }
+      $("roll-one").addEventListener("click", () => roll(1));
+      $("roll-many").addEventListener("click", () => roll(100));
+      $("auto").addEventListener("click", () => {
+        if (auto !== null) {
+          stopAuto();
+          return;
+        }
+        if (rolls.length >= 10000) return;
+        auto = setInterval(() => roll(1), 180);
+        $("auto").textContent = "Ustavi animacijo";
+      });
+      $("reset-exp").addEventListener("click", () => {
+        stopAuto();
+        rolls = [];
+        $("exp-status").textContent = "Poskus je ponastavljen.";
+        experiment();
+      });
+      $("event").addEventListener("change", experiment);
+      $("to-stats").addEventListener("click", () => {
+        if (!rolls.length) return;
+        $("data").value = rolls.join(" ");
+        $("outlier-on").checked = false;
+        $("sample").value = "population";
+        updateStats();
+        navigate("stat");
+      });
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stopAuto();
+      });
+
+      // IZZIVI: naloge nastanejo iz naključnih podatkov in pravil.
+      const KEY = "sidebit-podatki-izzivi-v1";
+      let score = { attempts: 0, correct: 0 },
+        quest = null,
+        session = 0;
+      try {
+        const s = JSON.parse(localStorage.getItem(KEY));
+        if (
+          s &&
+          Number.isSafeInteger(s.attempts) &&
+          Number.isSafeInteger(s.correct) &&
+          s.attempts >= 0 &&
+          s.correct >= 0 &&
+          s.correct <= s.attempts
+        )
+          score = { attempts: s.attempts, correct: s.correct };
+      } catch {}
+      function renderScore() {
+        metrics("score", [
+          ["Prvi poskusi", score.attempts],
+          ["Pravilno", score.correct],
+          ["Točke", score.correct * 10],
+        ]);
+        $("break-note").textContent =
+          session >= 5
+            ? "Za tabo je vsaj pet izzivov. Privošči si kratek odmor, nato nadaljuj, ko želiš."
+            : "Vzemi si čas za postopek. Hitrost ni pomembna.";
+        try {
+          localStorage.setItem(KEY, JSON.stringify(score));
+        } catch {}
+      }
+      function makeQuestion(type) {
+        if (type === "mixed")
+          type = ["mean", "median", "comb", "var", "prob"][rand(0, 4)];
+        const data = Array.from({ length: rand(3, 7) }, () => rand(1, 15)),
+          n = rand(4, 9),
+          k = rand(2, 3),
+          s = statistics(data);
+        switch (type) {
+          case "mean":
+            return {
+              q: "Izračunaj povprečje: " + data.join(", ") + ".",
+              a: s.mean,
+              h: "Seštej podatke in deli z njihovim številom.",
+              sol: `Vsota ${s.sum}, število ${s.n}. Povprečje = ${s.sum}/${s.n} ≈ ${fmt(s.mean)}.`,
+            };
+          case "median":
+            return {
+              q: "Določi mediano: " + data.join(", ") + ".",
+              a: s.median,
+              h: "Najprej uredi podatke. Pri sodem številu vzemi povprečje srednjih dveh.",
+              sol:
+                "Urejeno: " +
+                [...data].sort((a, b) => a - b).join(", ") +
+                ". Mediana = " +
+                fmt(s.median) +
+                ".",
+            };
+          case "comb":
+            return {
+              q: `Iz ${n} dijakov izbereš ekipo ${k} dijakov brez različnih vlog. Koliko ekip je mogočih?`,
+              a: Number(combination(n, k)),
+              h: "Vrstni red ne šteje. Uporabi kombinacije.",
+              sol: `C(${n}, ${k}) = ${combination(n, k)}.`,
+            };
+          case "var":
+            return {
+              q: `Izmed ${n} oseb izbereš predsednika in namestnika. Ista oseba ne sme imeti obeh vlog. Koliko razporeditev obstaja?`,
+              a: n * (n - 1),
+              h: "Vlogi sta različni. Za drugo je na voljo ena oseba manj.",
+              sol: `${n} · ${n - 1} = ${n * (n - 1)}.`,
+            };
+          default: {
+            const threshold = rand(2, 6),
+              favorable = 7 - threshold;
+            return {
+              q: `Pošteno kocko vržeš enkrat. Kolikšna je verjetnost števila vsaj ${threshold}? Vnesi število med 0 in 1 ali ulomek.`,
+              a: favorable / 6,
+              h: "Preštej ugodne izide in jih deli s šestimi.",
+              sol: `Ugodnih je ${favorable} od 6. P = ${favorable}/6 ≈ ${fmt(favorable / 6)}.`,
+            };
+          }
+        }
+      }
+      function newQuest() {
+        quest = {
+          ...makeQuestion($("quest-type").value),
+          attempted: false,
+          revealed: false,
+        };
+        $("question").textContent = quest.q;
+        $("guess").value = "";
+        $("quest-feedback").textContent = "";
+        $("quest-solution").hidden = true;
+        $("quest-solution").textContent = "";
+      }
+      function guessValue(text) {
+        const p = text.trim().split("/");
+        if (p.length > 2) throw Error("Vnesi število ali ulomek.");
+        const a = number(p[0]),
+          b = p.length === 2 ? number(p[1]) : 1;
+        if (!b) throw Error("Imenovalec ne sme biti 0.");
+        if (!Number.isFinite(a / b)) throw Error("Število je preveliko.");
+        return a / b;
+      }
+      $("quest-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        try {
+          const v = guessValue($("guess").value),
+            ok =
+              Math.abs(v - quest.a) <= Math.max(1e-6, Math.abs(quest.a) * 1e-6);
+          const first = !quest.attempted && !quest.revealed;
+          if (first) {
+            score.attempts++;
+            if (ok) score.correct++;
+            quest.attempted = true;
+            session++;
+            renderScore();
+          }
+          $("quest-feedback").textContent = ok
+            ? first
+              ? "Pravilno! +10 točk."
+              : "Pravilno. Ta izziv je bil že preverjen ali razkrit; brez dodatnih točk."
+            : "Še ni pravilno. Poskusi znova ali uporabi namig. Odgovor lahko zaokrožiš na šest decimalnih mest.";
+        } catch (e) {
+          $("quest-feedback").textContent = e.message;
+        }
+      });
+      $("quest-hint").addEventListener("click", () => {
+        $("quest-solution").hidden = false;
+        $("quest-solution").textContent = quest.h;
+      });
+      $("reveal").addEventListener("click", () => {
+        quest.revealed = true;
+        $("quest-solution").hidden = false;
+        $("quest-solution").textContent = quest.sol;
+        $("quest-feedback").textContent =
+          "Rešitev je razkrita. Ta izziv ne prinese novih točk.";
+      });
+      $("next-quest").addEventListener("click", newQuest);
+      $("quest-type").addEventListener("change", newQuest);
+      $("reset-score").addEventListener("click", () => {
+        if (confirm("Ponastavim shranjeni napredek?")) {
+          score = { attempts: 0, correct: 0 };
+          session = 0;
+          newQuest();
+          renderScore();
+        }
+      });
+      updateStats();
+      combCalculate();
+      experiment();
+      newQuest();
+      renderScore();
+    </script>
+  </body>
+</html>
