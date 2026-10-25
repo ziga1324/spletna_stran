@@ -1,0 +1,1788 @@
+<!doctype html>
+<html lang="sl">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Geometrijski studio – ploščina, obseg in Pitagorov izrek | Sidebit</title>
+        <meta
+            name="description"
+            content="Razišči ploščino in obseg likov ter Pitagorov izrek. Spreminjaj dolžine, primerjaj povečave in rešuj geometrijske naloge s postopki in namigi."
+        />
+        <link rel="stylesheet" href="../style.css" />
+        <style>
+            /* Slog studia velja samo za to stran. Skupni style.css ostane nespremenjen. */
+            body.geo {
+                --ink: #252638;
+                --mint: #bcf0d8;
+                --violet: #dcd0ff;
+                --yellow: #ffe18a;
+                color: var(--ink);
+                background: #fffaf0;
+                font-family: Arial, Helvetica, sans-serif;
+                line-height: 1.6;
+            }
+            .geo header,
+            .geo main,
+            .geo footer {
+                width: min(1200px, calc(100% - 36px));
+                margin-inline: auto;
+            }
+            .geo header {
+                padding: 32px 0 22px;
+            }
+            .geo h1,
+            .geo h2,
+            .geo h3 {
+                color: var(--ink);
+                background: none;
+                -webkit-text-fill-color: currentColor;
+            }
+            .geo h1 {
+                font-size: clamp(38px, 6.5vw, 76px);
+                line-height: 1.04;
+                letter-spacing: -0.06em;
+                margin: 20px 0;
+            }
+            .geo .lead {
+                max-width: 740px;
+                font-size: 18px;
+                color: #55566c;
+            }
+            .geo .sticker {
+                display: inline-block;
+                padding: 5px 12px;
+                border: 2px solid var(--ink);
+                background: var(--yellow);
+                border-radius: 9px;
+                font-weight: 800;
+                transform: rotate(-2deg);
+            }
+            .geo .nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                margin: 25px 0 10px;
+            }
+            .geo button {
+                min-height: 44px;
+                padding: 10px 15px;
+                border: 2px solid var(--ink);
+                border-radius: 10px;
+                background: #fff;
+                color: var(--ink);
+                font: inherit;
+                font-weight: 700;
+                box-shadow: 2px 2px 0 var(--ink);
+                cursor: pointer;
+            }
+            .geo button:hover {
+                background: #fff0b4;
+            }
+            .geo button:active {
+                transform: translate(2px, 2px);
+                box-shadow: none;
+            }
+            .geo button[aria-pressed="true"] {
+                background: var(--ink);
+                color: white;
+            }
+            .geo button.primary,
+            .geo button[type="submit"] {
+                background: var(--yellow);
+            }
+            .geo button:disabled {
+                cursor: default;
+                opacity: 0.5;
+            }
+            .geo .panel {
+                background: white;
+                border: 3px solid var(--ink);
+                border-radius: 22px;
+                padding: clamp(18px, 3vw, 30px);
+                box-shadow: 6px 6px 0 var(--ink);
+                margin: 0 0 26px;
+                min-width: 0;
+            }
+            .geo .layout {
+                display: grid;
+                grid-template-columns: 320px minmax(0, 1fr);
+                gap: 26px;
+                align-items: start;
+            }
+            .geo .settings {
+                background: #eee6ff;
+            }
+            .geo .graphic {
+                background: #f8fffb;
+            }
+            .geo .two {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+            .geo .actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin: 16px 0;
+            }
+            .geo label {
+                display: block;
+                margin: 13px 0 5px;
+                font-weight: 700;
+            }
+            .geo input,
+            .geo select {
+                width: 100%;
+                min-width: 0;
+                padding: 11px 12px;
+                border: 2px solid #838097;
+                border-radius: 9px;
+                background: #fff;
+                color: var(--ink);
+                font: inherit;
+            }
+            .geo input[type="range"] {
+                padding: 8px 0;
+                border: none;
+                accent-color: #7350bc;
+                background: transparent;
+                cursor: pointer;
+                min-height: 36px;
+            }
+            .geo .hint {
+                color: #57586c;
+                font-size: 14px;
+            }
+            .geo .error {
+                color: #a32323;
+                font-weight: 700;
+            }
+            .geo .error:empty {
+                display: none;
+            }
+            .geo .metrics {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+                margin: 18px 0;
+            }
+            .geo .metric {
+                border: 2px solid var(--ink);
+                border-radius: 14px;
+                padding: 17px;
+                background: var(--mint);
+                overflow-wrap: anywhere;
+            }
+            .geo .metric:nth-child(2) {
+                background: var(--yellow);
+            }
+            .geo .metric strong {
+                display: block;
+                font-size: clamp(24px, 3vw, 34px);
+                line-height: 1.2;
+                margin: 7px 0;
+            }
+            .geo svg {
+                display: block;
+                width: 100%;
+                height: auto;
+                background: white;
+                border: 1px solid #dddde5;
+                border-radius: 15px;
+            }
+            .geo .formula {
+                font-size: clamp(21px, 3vw, 29px);
+                line-height: 1.4;
+                padding: 16px;
+                border: 2px solid var(--ink);
+                border-radius: 12px;
+                background: #fff1bd;
+                overflow-wrap: anywhere;
+            }
+            .geo .tag {
+                display: inline-block;
+                padding: 3px 9px;
+                background: #e7dfff;
+                border-radius: 6px;
+                font-size: 13px;
+                font-weight: bold;
+            }
+            .geo .steps {
+                padding-left: 24px;
+            }
+            .geo .steps li {
+                padding: 9px 0;
+                overflow-wrap: anywhere;
+            }
+            .geo .notice {
+                background: #ece9fb;
+                border-radius: 12px;
+                padding: 14px 17px;
+            }
+            .geo .notice:empty {
+                display: none;
+            }
+            .geo .proof-sums {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 10px;
+            }
+            .geo .proof-sums p {
+                padding: 12px;
+                border: 2px solid var(--ink);
+                border-radius: 12px;
+                text-align: center;
+                background: #c6efde;
+                overflow-wrap: anywhere;
+            }
+            .geo .proof-sums p:nth-child(2) {
+                background: #e2d7ff;
+            }
+            .geo .proof-sums p:nth-child(3) {
+                background: #ffe6a3;
+            }
+            .geo .bar {
+                display: flex;
+                height: 25px;
+                overflow: hidden;
+                border: 2px solid var(--ink);
+                border-radius: 8px;
+            }
+            .geo .bar span:first-child {
+                background: #91d7b7;
+            }
+            .geo .bar span:last-child {
+                background: #b6a0ed;
+            }
+            .geo .score {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+                padding: 16px;
+                background: #e4f4eb;
+                border: 2px solid var(--ink);
+                border-radius: 12px;
+                margin: 18px 0;
+            }
+            .geo .task {
+                font-size: clamp(21px, 3vw, 29px);
+                font-weight: bold;
+                line-height: 1.4;
+            }
+            .geo .table-wrap {
+                overflow: auto;
+            }
+            .geo table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .geo th,
+            .geo td {
+                padding: 12px;
+                border-bottom: 1px solid #ddd;
+                text-align: left;
+            }
+            .geo .boundary {
+                stroke-dasharray: 12 7;
+                animation: walk-edge 2s linear infinite;
+            }
+            @keyframes walk-edge {
+                to {
+                    stroke-dashoffset: -38;
+                }
+            }
+            .geo [hidden] {
+                display: none !important;
+            }
+            .geo :focus-visible {
+                outline: 3px solid #7350bc;
+                outline-offset: 4px;
+            }
+            .geo summary {
+                cursor: pointer;
+                font-weight: bold;
+            }
+            .geo footer {
+                padding: 10px 0 35px;
+            }
+            @media (max-width: 850px) {
+                .geo .layout {
+                    grid-template-columns: 1fr;
+                }
+                .geo .two {
+                    grid-template-columns: 1fr;
+                }
+                .geo .nav button {
+                    flex: 1 1 40%;
+                }
+            }
+            @media (max-width: 450px) {
+                .geo .panel {
+                    box-shadow: 3px 3px 0 var(--ink);
+                }
+                .geo .metric {
+                    padding: 12px;
+                }
+                .geo .proof-sums {
+                    gap: 5px;
+                }
+                .geo .proof-sums p {
+                    font-size: 13px;
+                    padding: 8px;
+                }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .geo * {
+                    animation: none !important;
+                    transition: none !important;
+                    scroll-behavior: auto !important;
+                }
+            }
+            @media print {
+                .geo .nav,
+                .geo button,
+                .geo .settings,
+                .geo input,
+                .geo select {
+                    display: none !important;
+                }
+                .geo .layout,
+                .geo .two {
+                    display: block;
+                }
+                .geo .panel {
+                    box-shadow: none;
+                    border: 1px solid #aaa;
+                    break-inside: avoid;
+                }
+            }
+        </style>
+    </head>
+    <body class="geo">
+        <header>
+            <a href="../index.html">← Vsa orodja</a><br />
+            <span class="sticker">NE SAMO FORMULE. POGLEJ, ZAKAJ DELUJEJO.</span>
+            <h1>Geometrija,<br />ki jo lahko spreminjaš.</h1>
+            <p class="lead">
+                Razišči obseg, zapolni ploščino in sestavi Pitagorov izrek. Nato preizkusi svoje
+                znanje v nalogah.
+            </p>
+            <nav class="nav" aria-label="Poglavja geometrijskega studia">
+                <button data-tab="shapes" aria-controls="shapes" aria-pressed="true">
+                    Ploščina in obseg
+                </button>
+                <button data-tab="pyth" aria-controls="pyth" aria-pressed="false">
+                    Pitagorov laboratorij
+                </button>
+                <button data-tab="practice" aria-controls="practice" aria-pressed="false">
+                    Vadnica
+                </button>
+                <button data-tab="guide" aria-controls="guide" aria-pressed="false">
+                    Zemljevid znanja
+                </button>
+            </nav>
+        </header>
+        <main>
+            <noscript
+                ><p class="notice">
+                    Za izračune, interaktivne prikaze in naloge omogoči JavaScript. Pregled formul
+                    je na voljo v izvorni vsebini strani.
+                </p></noscript
+            >
+            <section id="shapes" data-panel aria-labelledby="shapes-title">
+                <div class="layout">
+                    <section class="panel settings">
+                        <h2 id="shapes-title" tabindex="-1">Sestavi svoj lik</h2>
+                        <form id="shape-form" novalidate>
+                            <label for="shape">Geometrijski lik</label
+                            ><select id="shape">
+                                <option value="square">Kvadrat</option>
+                                <option value="rect">Pravokotnik</option>
+                                <option value="circle">Krog</option>
+                                <option value="triangle">Trikotnik</option>
+                            </select>
+                            <label for="unit">Merska enota vnesenih dolžin</label
+                            ><select id="unit">
+                                <option value="cm">Centimetri (cm)</option>
+                                <option value="m">Metri (m)</option>
+                                <option value="mm">Milimetri (mm)</option>
+                                <option value="km">Kilometri (km)</option>
+                            </select>
+                            <div id="dimensions"></div>
+                            <p class="hint">
+                                Vpiši dolžino ali premakni drsnik. Številski vnos: od 0,000001 do
+                                1.000.000. Drsnik pokriva razpon 0,5–20. Dovoljeni sta vejica in
+                                pika.
+                            </p>
+                            <div class="actions">
+                                <button type="submit">Izračunaj</button
+                                ><button type="reset">Ponastavi lik</button>
+                            </div>
+                        </form>
+                        <p id="shape-error" class="error" role="alert"></p>
+                        <p class="hint">
+                            Menjava enote spremeni pomen vnesenih števil, ne pretvori dolžin.
+                            Pretvorjeni rezultat vidiš spodaj.
+                        </p>
+                    </section>
+                    <section class="panel graphic">
+                        <span class="tag">RAZIŠČI Z OČMI</span>
+                        <h2 id="figure-title">Kvadrat</h2>
+                        <div class="actions" role="group" aria-label="Prikaz lika">
+                            <button id="show-area" aria-pressed="true">Ploščina: notranjost</button
+                            ><button id="show-edge" aria-pressed="false">Obseg: rob</button>
+                        </div>
+                        <svg
+                            id="shape-svg"
+                            viewBox="0 0 740 420"
+                            role="img"
+                            aria-labelledby="shape-svg-title shape-svg-desc"
+                        >
+                            <title id="shape-svg-title">Geometrijski lik</title>
+                            <desc id="shape-svg-desc">
+                                Dinamični prikaz lika z oznakami stranic.
+                            </desc>
+                        </svg>
+                        <p id="drawing-note" class="hint"></p>
+                        <div class="metrics" aria-live="polite">
+                            <div class="metric">
+                                Ploščina S<strong id="area-value"></strong
+                                ><span id="area-formula"></span>
+                            </div>
+                            <div class="metric">
+                                Obseg o<strong id="perimeter-value"></strong
+                                ><span id="perimeter-formula"></span>
+                            </div>
+                        </div>
+                        <p id="shape-explain" class="notice"></p>
+                        <details>
+                            <summary>Izračun po korakih</summary>
+                            <ol id="shape-steps" class="steps"></ol>
+                        </details>
+                        <label for="convert">Rezultat prikaži tudi v</label
+                        ><select id="convert">
+                            <option value="m">metrih in kvadratnih metrih</option>
+                            <option value="cm">centimetrih in kvadratnih centimetrih</option>
+                            <option value="mm">milimetrih in kvadratnih milimetrih</option>
+                            <option value="km">kilometrih in kvadratnih kilometrih</option>
+                        </select>
+                        <p id="converted" class="hint"></p>
+                    </section>
+                </div>
+                <section class="panel">
+                    <h2>Podvoji stranice. Kaj se zgodi s ploščino?</h2>
+                    <p>
+                        Vse dolžine osnovnega lika povečamo z istim faktorjem k. Tako dobimo podoben
+                        lik.
+                    </p>
+                    <label for="scale">Faktor povečave k: <output id="scale-label">2</output></label
+                    ><input id="scale" type="range" min="0.5" max="3" step="0.1" value="2" />
+                    <svg
+                        id="scale-svg"
+                        viewBox="0 0 740 260"
+                        role="img"
+                        aria-labelledby="scale-title scale-desc"
+                    >
+                        <title id="scale-title">Primerjava podobnih likov</title>
+                        <desc id="scale-desc">
+                            Osnovni in povečani lik uporabljata skupno merilo.
+                        </desc>
+                    </svg>
+                    <p id="scale-result" class="formula"></p>
+                    <p id="scale-numbers"></p>
+                    <p class="hint">
+                        Obseg se pomnoži s k, ploščina s k². Pri k = 2 je obseg dvakraten, ploščina
+                        pa štirikratna.
+                    </p>
+                </section>
+            </section>
+
+            <section id="pyth" data-panel hidden aria-labelledby="pyth-title">
+                <div class="layout">
+                    <section class="panel settings">
+                        <h2 id="pyth-title" tabindex="-1">Poišči manjkajočo stranico</h2>
+                        <form id="pyth-form" novalidate>
+                            <label for="pyth-mode">Kaj iščeš?</label
+                            ><select id="pyth-mode">
+                                <option value="hyp">Hipotenuzo c</option>
+                                <option value="leg">Kateto a</option>
+                            </select>
+                            <label for="pyth-x" id="pyth-x-label">Kateta a</label
+                            ><input
+                                id="pyth-x"
+                                type="text"
+                                inputmode="decimal"
+                                value="3"
+                                maxlength="30"
+                                required
+                            />
+                            <label for="pyth-b">Kateta b</label
+                            ><input
+                                id="pyth-b"
+                                type="text"
+                                inputmode="decimal"
+                                value="4"
+                                maxlength="30"
+                                required
+                            />
+                            <label for="pyth-unit">Merska enota</label
+                            ><select id="pyth-unit">
+                                <option>cm</option>
+                                <option>m</option>
+                                <option>mm</option>
+                                <option>km</option>
+                            </select>
+                            <div class="actions">
+                                <button type="submit">Izračunaj in razloži</button
+                                ><button type="reset">Primer 3–4–5</button>
+                            </div>
+                        </form>
+                        <p id="pyth-error" class="error" role="alert"></p>
+                        <div class="actions">
+                            <button id="triple-1">3–4–5</button
+                            ><button id="triple-2">5–12–13</button
+                            ><button id="triple-3">8–15–17</button>
+                        </div>
+                        <p class="hint">
+                            Izrek velja za pravokotni trikotnik. Hipotenuza je nasproti pravemu kotu
+                            in je daljša od obeh katet.
+                        </p>
+                    </section>
+                    <section class="panel graphic">
+                        <span class="tag">TRI STRANICE. TRIJE KVADRATI.</span>
+                        <h2>Zakaj a² + b² = c²?</h2>
+                        <button id="squares" aria-pressed="true">Skrij kvadrate</button>
+                        <svg
+                            id="pyth-svg"
+                            viewBox="0 0 740 500"
+                            role="img"
+                            aria-labelledby="pyth-svg-title pyth-svg-desc"
+                        >
+                            <title id="pyth-svg-title">
+                                Pravokotni trikotnik s kvadrati ob stranicah
+                            </title>
+                            <desc id="pyth-svg-desc">
+                                Vsaka stranica je stranica svojega kvadrata.
+                            </desc>
+                        </svg>
+                        <p class="hint">
+                            Kvadrati so narisani v istem merilu: njihova ploščina je kvadrat dolžine
+                            pripadajoče stranice.
+                        </p>
+                        <div class="proof-sums">
+                            <p id="a-square"></p>
+                            <p id="b-square"></p>
+                            <p id="c-square"></p>
+                        </div>
+                        <div class="bar" aria-hidden="true">
+                            <span id="a-bar"></span><span id="b-bar"></span>
+                        </div>
+                        <p id="pyth-equality" class="formula"></p>
+                        <h3 id="pyth-answer"></h3>
+                        <ol id="pyth-steps" class="steps"></ol>
+                        <div class="actions">
+                            <button id="to-shapes">Ta trikotnik odpri med liki</button>
+                        </div>
+                    </section>
+                </div>
+                <section class="panel">
+                    <h2>Pomembna razlika</h2>
+                    <div class="two">
+                        <div>
+                            <h3>Iščeš hipotenuzo?</h3>
+                            <p>Sešteješ ploščini kvadratov nad katetama in nato koreniš.</p>
+                            <p class="formula">c = √(a² + b²)</p>
+                        </div>
+                        <div>
+                            <h3>Iščeš kateto?</h3>
+                            <p>
+                                Od kvadrata hipotenuze odšteješ kvadrat znane katete in nato
+                                koreniš.
+                            </p>
+                            <p class="formula">a = √(c² − b²)</p>
+                        </div>
+                    </div>
+                    <p>
+                        Seštevanje dolžin a + b ne da hipotenuze. Pri katetah 3 in 4 velja c = 5, ne
+                        7.
+                    </p>
+                </section>
+            </section>
+
+            <section id="practice" data-panel hidden aria-labelledby="practice-title">
+                <section class="panel">
+                    <span class="tag">ZDAJ SI NA VRSTI TI</span>
+                    <h2 id="practice-title" tabindex="-1">Geometrijska vadnica</h2>
+                    <div class="two">
+                        <div>
+                            <label for="practice-topic">Področje</label
+                            ><select id="practice-topic">
+                                <option value="all">Mešane naloge</option>
+                                <option value="area">Ploščina</option>
+                                <option value="perimeter">Obseg</option>
+                                <option value="pyth">Pitagorov izrek</option>
+                                <option value="scale">Podobni liki in enote</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="difficulty">Težavnost podatkov</label
+                            ><select id="difficulty">
+                                <option value="1">Lažja</option>
+                                <option value="2">Zahtevnejša</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="score" aria-live="polite">
+                        <span id="score">Prvi poskusi: 0/0</span><span id="xp">Točke: 0</span
+                        ><span id="streak">Zaporedno pravilno: 0</span>
+                    </div>
+                    <p id="task-kind" class="tag"></p>
+                    <p id="task-question" class="task"></p>
+                    <svg
+                        id="task-svg"
+                        viewBox="0 0 740 320"
+                        role="img"
+                        aria-labelledby="task-svg-title task-svg-desc"
+                    >
+                        <title id="task-svg-title">Skica naloge</title>
+                        <desc id="task-svg-desc">
+                            Podatki naloge so navedeni v besedilu nad skico.
+                        </desc>
+                    </svg>
+                    <form id="answer-form" novalidate>
+                        <label for="answer"
+                            >Tvoj številčni odgovor <span id="answer-unit"></span></label
+                        ><input
+                            id="answer"
+                            type="text"
+                            inputmode="decimal"
+                            maxlength="60"
+                            autocomplete="off"
+                            placeholder="Na primer: 12,57"
+                            required
+                        />
+                        <p class="hint">
+                            Rezultat zaokroži na dve decimalki. Vpiši samo število, brez enote.
+                            Dovoljena je pika ali vejica.
+                        </p>
+                        <div class="actions">
+                            <button type="submit" id="check-answer">Preveri</button
+                            ><button type="button" id="hint">Namig</button
+                            ><button type="button" id="solution">Pokaži postopek</button
+                            ><button type="button" id="new-task">Nova naloga</button>
+                        </div>
+                    </form>
+                    <p id="feedback" role="status"></p>
+                    <p id="task-hint" class="notice" hidden></p>
+                    <div id="task-solution" class="notice" hidden></div>
+                    <details>
+                        <summary>Kako se šteje napredek?</summary>
+                        <p>
+                            Šteje le prvi veljavni poskus pri vsaki nalogi pred prikazom postopka.
+                            Pravilni prvi odgovor prinese 10 točk. Namig ne prepreči točkovanja.
+                            Razkrita rešitev ne prinaša točk. Preskočena naloga se ne šteje kot
+                            poskus.
+                        </p>
+                        <button id="reset-stats" type="button">Ponastavi napredek</button>
+                    </details>
+                    <p id="save-status" class="hint"></p>
+                </section>
+            </section>
+
+            <section id="guide" data-panel hidden aria-labelledby="guide-title">
+                <section class="panel">
+                    <h2 id="guide-title" tabindex="-1">Zemljevid znanja</h2>
+                    <div class="two">
+                        <div>
+                            <h3>Obseg meri rob.</h3>
+                            <p>
+                                Predstavljaj si ograjo okoli vrta: potrebuješ dolžino roba. Enota je
+                                mm, cm, m ali km.
+                            </p>
+                            <p class="formula">o = vsota dolžin stranic</p>
+                        </div>
+                        <div>
+                            <h3>Ploščina meri notranjost.</h3>
+                            <p>
+                                Predstavljaj si ploščice, ki prekrijejo tla. Enota je mm², cm², m²
+                                ali km².
+                            </p>
+                            <p class="formula">1 cm² = kvadrat 1 cm × 1 cm</p>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Lik</th>
+                                    <th scope="col">Ploščina S</th>
+                                    <th scope="col">Obseg o</th>
+                                    <th scope="col">Kaj potrebuješ?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Kvadrat</th>
+                                    <td>a²</td>
+                                    <td>4a</td>
+                                    <td>Stranico a</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Pravokotnik</th>
+                                    <td>ab</td>
+                                    <td>2(a + b)</td>
+                                    <td>Stranici a in b</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Krog</th>
+                                    <td>πr²</td>
+                                    <td>2πr</td>
+                                    <td>Polmer r, ne premer</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Trikotnik</th>
+                                    <td>√(s(s − a)(s − b)(s − c))</td>
+                                    <td>a + b + c</td>
+                                    <td>Tri stranice; s = o/2</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Pravokotni trikotnik</th>
+                                    <td>ab/2</td>
+                                    <td>a + b + c</td>
+                                    <td>Kateti a, b; c² = a² + b²</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <h3>Najpogostejše pasti</h3>
+                    <ul>
+                        <li>Pri krogu vstaviš polmer, ki je polovica premera.</li>
+                        <li>Pri Heronovi formuli s pomeni polovico obsega.</li>
+                        <li>
+                            Tri dolžine tvorijo trikotnik le, če je vsota dveh krajših večja od
+                            najdaljše.
+                        </li>
+                        <li>
+                            Pri pretvarjanju ploščine se faktor pretvorbe dolžine kvadrira: 1 m =
+                            100 cm, zato 1 m² = 10.000 cm².
+                        </li>
+                        <li>Pitagorov izrek uporabiš samo pri pravokotnem trikotniku.</li>
+                    </ul>
+                    <h3>Rešen primer: lestev ob steni</h3>
+                    <p>
+                        Lestev je dolga 5 m, njeno vznožje je od stene oddaljeno 3 m. Stena in tla
+                        tvorita pravi kot. Višina dosega je √(5² − 3²) = √16 = 4 m.
+                    </p>
+                    <div class="actions">
+                        <button id="guide-explore">Razišči like</button
+                        ><button id="guide-pyth">Odpri Pitagorov prikaz</button
+                        ><button id="guide-practice">Preizkusi znanje</button>
+                    </div>
+                    <p class="hint">
+                        Skice so numerično narisane. Zelo ploski trikotniki ali zelo različne
+                        stranice so lahko na zaslonu slabo vidni. Izračuni uporabljajo polno
+                        razpoložljivo natančnost; prikaz je zaokrožen. Podatki ostanejo v
+                        brskalniku. Lokalno se shranjuje samo statistika vadnice, ne vnesene dolžine
+                        ali trenutna naloga.
+                    </p>
+                </section>
+            </section>
+            <div class="actions">
+                <button id="print">Natisni / shrani odprto poglavje v PDF</button>
+            </div>
+        </main>
+        <footer>Sidebit · Geometrijski studio · Od skice do razumevanja.</footer>
+        <script>
+            "use strict";
+            // 1. Skupne funkcije in geometrijski izračuni.
+            const $ = (id) => document.getElementById(id),
+                NS = "http://www.w3.org/2000/svg";
+            const formatter = new Intl.NumberFormat("sl-SI", { maximumSignificantDigits: 9 });
+            const fmt = (n) =>
+                Math.abs(n) > 0 && (Math.abs(n) < 0.00001 || Math.abs(n) >= 1e10)
+                    ? n.toExponential(5).replace(".", ",")
+                    : formatter.format(Object.is(n, -0) ? 0 : n);
+            const names = {
+                square: "Kvadrat",
+                rect: "Pravokotnik",
+                circle: "Krog",
+                triangle: "Trikotnik",
+            };
+            const defaults = {
+                square: { a: 5 },
+                rect: { a: 8, b: 4 },
+                circle: { r: 3 },
+                triangle: { a: 5, b: 4, c: 3 },
+            };
+            const labels = { a: "Stranica a", b: "Stranica b", c: "Stranica c", r: "Polmer r" };
+            const meters = { mm: 0.001, cm: 0.01, m: 1, km: 1000 };
+            function text(tag, value, parent, cls) {
+                const n = document.createElement(tag);
+                n.textContent = value;
+                if (cls) n.className = cls;
+                parent.append(n);
+                return n;
+            }
+            function svg(tag, attrs = {}, value) {
+                const n = document.createElementNS(NS, tag);
+                Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v));
+                if (value !== undefined) n.textContent = value;
+                return n;
+            }
+            function parseDecimal(value) {
+                const s = value.trim();
+                if (!/^[+-]?(?:\d+(?:[.,]\d*)?|[.,]\d+)$/.test(s))
+                    throw Error("Vnesi veljavno število s piko ali vejico.");
+                const n = Number(s.replace(",", "."));
+                if (!Number.isFinite(n)) throw Error("Število je zunaj podprtega obsega.");
+                return n;
+            }
+            function length(value) {
+                const n = parseDecimal(value);
+                if (n < 1e-6 || n > 1e6)
+                    throw Error("Dolžine morajo biti od 0,000001 do 1.000.000.");
+                return n;
+            }
+            function geometry(kind, v) {
+                let area, perimeter;
+                const { a, b, c, r } = v;
+                for (const n of Object.values(v))
+                    if (!Number.isFinite(n) || n <= 0)
+                        throw Error("Vse dolžine morajo biti večje od 0.");
+                if (kind === "square") {
+                    area = a * a;
+                    perimeter = 4 * a;
+                } else if (kind === "rect") {
+                    area = a * b;
+                    perimeter = 2 * (a + b);
+                } else if (kind === "circle") {
+                    area = Math.PI * r * r;
+                    perimeter = 2 * Math.PI * r;
+                } else if (kind === "triangle") {
+                    const [x, y, z] = [a, b, c].sort((a, b) => b - a);
+                    if (z <= x - y)
+                        throw Error(
+                            "Te dolžine ne tvorijo trikotnika. Vsota dveh krajših stranic mora biti večja od najdaljše.",
+                        );
+                    const Y = y / x,
+                        Z = z / x,
+                        delta = (x - y) / x;
+                    const product = (1 + Y + Z) * ((z - (x - y)) / x) * (Z + delta) * (1 + Y - Z);
+                    area = x * (Math.sqrt(product) / 4) * x;
+                    perimeter = x + y + z;
+                } else throw Error("Neznan lik.");
+                if (
+                    !Number.isFinite(area) ||
+                    !Number.isFinite(perimeter) ||
+                    area <= 0 ||
+                    perimeter <= 0
+                )
+                    throw Error("Izračun ni mogoč za te dolžine.");
+                return { kind, v: { ...v }, area, perimeter };
+            }
+            function pythagoras(mode, x, b) {
+                if (!Number.isFinite(x) || !Number.isFinite(b) || x <= 0 || b <= 0)
+                    throw Error("Vnesi pozitivni dolžini.");
+                let a, c;
+                if (mode === "hyp") {
+                    a = x;
+                    c = Math.hypot(a, b);
+                } else {
+                    c = x;
+                    if (c <= b) throw Error("Hipotenuza c mora biti daljša od katete b.");
+                    a = c * Math.sqrt((c - b) / c) * Math.sqrt(1 + b / c);
+                }
+                if (!Number.isFinite(a) || !Number.isFinite(c) || a <= 0 || c <= 0)
+                    throw Error("Rezultat je zunaj podprtega obsega.");
+                return { a, b, c };
+            }
+            function navigate(id) {
+                document.querySelectorAll("[data-panel]").forEach((p) => (p.hidden = p.id !== id));
+                document
+                    .querySelectorAll("[data-tab]")
+                    .forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.tab === id)));
+                $(id + "-title").focus();
+            }
+            document
+                .querySelectorAll("[data-tab]")
+                .forEach((b) => b.addEventListener("click", () => navigate(b.dataset.tab)));
+
+            // 2. Skica z enakim merilom za obe osi. Trikotnik postavimo iz njegovih stranic.
+            function shapePoints(result) {
+                const { kind, v, area } = result;
+                if (kind === "square")
+                    return [
+                        [0, 0],
+                        [v.a, 0],
+                        [v.a, v.a],
+                        [0, v.a],
+                    ];
+                if (kind === "rect")
+                    return [
+                        [0, 0],
+                        [v.a, 0],
+                        [v.a, v.b],
+                        [0, v.b],
+                    ];
+                if (kind === "triangle") {
+                    const x = (v.c * v.c + v.a * v.a - v.b * v.b) / (2 * v.a),
+                        h = (2 * area) / v.a;
+                    return [
+                        [0, 0],
+                        [v.a, 0],
+                        [x, h],
+                    ];
+                }
+                return [];
+            }
+            function bounds(result) {
+                if (result.kind === "circle")
+                    return {
+                        xmin: -result.v.r,
+                        xmax: result.v.r,
+                        ymin: -result.v.r,
+                        ymax: result.v.r,
+                    };
+                const p = shapePoints(result);
+                return {
+                    xmin: Math.min(...p.map((p) => p[0])),
+                    xmax: Math.max(...p.map((p) => p[0])),
+                    ymin: 0,
+                    ymax: Math.max(...p.map((p) => p[1])),
+                };
+            }
+            function clearSvg(id, title, description) {
+                const s = $(id);
+                s.replaceChildren(
+                    svg("title", { id: id + "-title" }, title),
+                    svg("desc", { id: id + "-desc" }, description),
+                );
+                s.setAttribute("aria-labelledby", id + "-title " + id + "-desc");
+                return s;
+            }
+            let edge = false,
+                currentShape = null;
+            function drawShape(s, result, box, options = {}) {
+                const { kind, v } = result,
+                    b = bounds(result),
+                    spanX = b.xmax - b.xmin,
+                    spanY = b.ymax - b.ymin;
+                const scale =
+                    options.scale ||
+                    Math.min(box.w / Math.max(spanX, 1e-15), box.h / Math.max(spanY, 1e-15));
+                const X = (x) => box.x + (box.w - spanX * scale) / 2 + (x - b.xmin) * scale,
+                    Y = (y) => box.y + (box.h - spanY * scale) / 2 + (b.ymax - y) * scale;
+                const group = svg("g");
+                s.append(group);
+                const fill = options.edge ? "#fffdf5" : options.color || "#c3efdb",
+                    stroke = options.edge ? "#bc7921" : "#252638";
+                let sh;
+                if (kind === "circle")
+                    sh = svg("circle", {
+                        cx: X(0),
+                        cy: Y(0),
+                        r: v.r * scale,
+                        fill,
+                        stroke,
+                        "stroke-width": 3,
+                    });
+                else
+                    sh = svg("polygon", {
+                        points: shapePoints(result)
+                            .map(([x, y]) => `${X(x)},${Y(y)}`)
+                            .join(" "),
+                        fill,
+                        stroke,
+                        "stroke-width": 3,
+                    });
+                if (options.edge) sh.setAttribute("class", "boundary");
+                group.append(sh);
+                // Mreža je izrezana po liku; velikost celice se prilagaja prikazu.
+                if (options.grid && !options.edge) {
+                    const clipId = "clip-" + s.id + "-" + s.children.length,
+                        defs = svg("defs"),
+                        clip = svg("clipPath", { id: clipId });
+                    clip.append(sh.cloneNode(true));
+                    defs.append(clip);
+                    group.append(defs);
+                    const grid = svg("g", { "clip-path": `url(#${clipId})` });
+                    let unit = 1;
+                    const maxSpan = Math.max(spanX, spanY);
+                    if (maxSpan > 30 || maxSpan < 2)
+                        unit = 10 ** Math.floor(Math.log10(maxSpan / 8));
+                    const nx = Math.ceil(spanX / unit),
+                        ny = Math.ceil(spanY / unit);
+                    if (nx < 100 && ny < 100) {
+                        for (let i = Math.floor(b.xmin / unit); i <= Math.ceil(b.xmax / unit); i++)
+                            grid.append(
+                                svg("line", {
+                                    x1: X(i * unit),
+                                    x2: X(i * unit),
+                                    y1: box.y,
+                                    y2: box.y + box.h,
+                                    stroke: "#4b9a79",
+                                    "stroke-opacity": 0.28,
+                                }),
+                            );
+                        for (let i = Math.floor(b.ymin / unit); i <= Math.ceil(b.ymax / unit); i++)
+                            grid.append(
+                                svg("line", {
+                                    x1: box.x,
+                                    x2: box.x + box.w,
+                                    y1: Y(i * unit),
+                                    y2: Y(i * unit),
+                                    stroke: "#4b9a79",
+                                    "stroke-opacity": 0.28,
+                                }),
+                            );
+                    }
+                    group.append(grid);
+                    if (options.gridNote)
+                        $(options.gridNote).textContent =
+                            `Skica uporablja enako merilo v obeh smereh. Stranica mrežne celice je ${fmt(unit)} ${$("unit").value}.`;
+                }
+                if (options.labels) {
+                    const label = (x, y, t) =>
+                        group.append(
+                            svg(
+                                "text",
+                                {
+                                    x,
+                                    y,
+                                    "text-anchor": "middle",
+                                    "font-size": 18,
+                                    "font-weight": 700,
+                                    fill: "#252638",
+                                    "paint-order": "stroke",
+                                    stroke: "white",
+                                    "stroke-width": 5,
+                                    "stroke-linejoin": "round",
+                                },
+                                t,
+                            ),
+                        );
+                    const u = options.unit || "";
+                    if (kind === "circle") {
+                        group.append(
+                            svg("line", {
+                                x1: X(0),
+                                y1: Y(0),
+                                x2: X(v.r),
+                                y2: Y(0),
+                                stroke: "#7350bc",
+                                "stroke-width": 3,
+                            }),
+                            svg("circle", { cx: X(0), cy: Y(0), r: 4, fill: "#7350bc" }),
+                        );
+                        label((X(0) + X(v.r)) / 2, Y(0) - 12, `r = ${fmt(v.r)} ${u}`);
+                    } else if (kind === "triangle") {
+                        const p = shapePoints(result);
+                        label((X(p[0][0]) + X(p[1][0])) / 2, Y(0) + 30, `a = ${fmt(v.a)} ${u}`);
+                        label(
+                            (X(p[1][0]) + X(p[2][0])) / 2 + 20,
+                            (Y(p[1][1]) + Y(p[2][1])) / 2,
+                            `b = ${fmt(v.b)} ${u}`,
+                        );
+                        label(
+                            (X(p[0][0]) + X(p[2][0])) / 2 - 22,
+                            (Y(p[0][1]) + Y(p[2][1])) / 2,
+                            `c = ${fmt(v.c)} ${u}`,
+                        );
+                    } else {
+                        label((X(0) + X(v.a)) / 2, Y(0) + 30, `a = ${fmt(v.a)} ${u}`);
+                        if (kind === "rect")
+                            label(X(v.a) + 20, (Y(0) + Y(v.b)) / 2, `b = ${fmt(v.b)} ${u}`);
+                    }
+                }
+                return { scale, X, Y };
+            }
+            function buildDimensions(values = defaults[$("shape").value]) {
+                $("dimensions").replaceChildren();
+                for (const [id, value] of Object.entries(values)) {
+                    const block = document.createElement("div"),
+                        label = text("label", labels[id], block);
+                    label.htmlFor = "dim-" + id;
+                    const input = document.createElement("input");
+                    input.id = "dim-" + id;
+                    input.type = "text";
+                    input.inputMode = "decimal";
+                    input.value = String(value);
+                    input.maxLength = 30;
+                    input.required = true;
+                    input.setAttribute("aria-describedby", "shape-error");
+                    block.append(input);
+                    const slider = document.createElement("input");
+                    slider.type = "range";
+                    slider.min = ".5";
+                    slider.max = "20";
+                    slider.step = ".1";
+                    slider.value = String(Math.min(20, Math.max(0.5, value)));
+                    slider.id = "slider-" + id;
+                    slider.setAttribute("aria-label", labels[id] + " – drsnik");
+                    block.append(slider);
+                    $("dimensions").append(block);
+                    slider.addEventListener("input", () => {
+                        input.value = slider.value;
+                        updateShape();
+                    });
+                    input.addEventListener("input", () => {
+                        const n = Number(input.value.replace(",", "."));
+                        if (Number.isFinite(n))
+                            slider.value = String(Math.min(20, Math.max(0.5, n)));
+                        updateShape();
+                    });
+                }
+            }
+            function updateShape() {
+                try {
+                    const values = {};
+                    Object.keys(defaults[$("shape").value]).forEach(
+                        (id) => (values[id] = length($("dim-" + id).value)),
+                    );
+                    currentShape = geometry($("shape").value, values);
+                    $("shape-error").textContent = "";
+                    renderShape();
+                } catch (err) {
+                    currentShape = null;
+                    $("shape-error").textContent = err.message;
+                    [
+                        "area-value",
+                        "perimeter-value",
+                        "converted",
+                        "scale-result",
+                        "scale-numbers",
+                        "shape-explain",
+                        "area-formula",
+                        "perimeter-formula",
+                        "drawing-note",
+                    ].forEach((id) => ($(id).textContent = ""));
+                    $("shape-steps").replaceChildren();
+                    clearSvg("shape-svg", "Neveljaven lik", "Popravi podatke v obrazcu.");
+                    clearSvg("scale-svg", "Primerjava ni na voljo", "Popravi podatke lika.");
+                }
+            }
+            function renderShape() {
+                if (!currentShape) return;
+                const r = currentShape,
+                    { v, kind, area, perimeter } = r,
+                    u = $("unit").value;
+                const s = clearSvg(
+                    "shape-svg",
+                    names[kind],
+                    `${names[kind]}. Ploščina ${fmt(area)} ${u}², obseg ${fmt(perimeter)} ${u}.`,
+                );
+                $("figure-title").textContent = names[kind];
+                drawShape(
+                    s,
+                    r,
+                    { x: 100, y: 50, w: 510, h: 290 },
+                    { labels: true, unit: u, grid: !edge, edge, gridNote: "drawing-note" },
+                );
+                if (edge)
+                    $("drawing-note").textContent =
+                        "Poudarjeni rob predstavlja obseg. Skica ohranja razmerja dolžin.";
+                $("area-value").textContent = fmt(area) + " " + u + "²";
+                $("perimeter-value").textContent = fmt(perimeter) + " " + u;
+                const formulas = {
+                    square: ["S = a²", "o = 4a"],
+                    rect: ["S = ab", "o = 2(a + b)"],
+                    circle: ["S = πr²", "o = 2πr"],
+                    triangle: ["S = √(s(s − a)(s − b)(s − c))", "o = a + b + c"],
+                };
+                $("area-formula").textContent = formulas[kind][0];
+                $("perimeter-formula").textContent = formulas[kind][1];
+                const explanations = {
+                    square: "Kvadrat lahko prekriješ z enotskimi kvadratki. Pri celoštevilski stranici a je v vsaki od a vrstic a kvadratkov.",
+                    rect: "Ploščina je število enotskih kvadratkov v vrsticah in stolpcih; obseg sešteje dva para nasprotnih stranic.",
+                    circle: "Polmer poteka od središča do roba. Premer je 2r. Pri ploščini je polmer kvadriran, pri obsegu ni.",
+                    triangle:
+                        "Vsota dveh krajših stranic je večja od najdaljše. Za ploščino iz treh stranic uporabimo Heronovo formulo.",
+                };
+                $("shape-explain").textContent = explanations[kind];
+                let steps = [];
+                if (kind === "square")
+                    steps = [
+                        `S = ${fmt(v.a)}² = ${fmt(area)} ${u}².`,
+                        `o = 4 · ${fmt(v.a)} = ${fmt(perimeter)} ${u}.`,
+                    ];
+                if (kind === "rect")
+                    steps = [
+                        `S = ${fmt(v.a)} · ${fmt(v.b)} = ${fmt(area)} ${u}².`,
+                        `o = 2 · (${fmt(v.a)} + ${fmt(v.b)}) = ${fmt(perimeter)} ${u}.`,
+                    ];
+                if (kind === "circle")
+                    steps = [
+                        `S = π · ${fmt(v.r)}² ≈ ${fmt(area)} ${u}².`,
+                        `o = 2π · ${fmt(v.r)} ≈ ${fmt(perimeter)} ${u}.`,
+                    ];
+                if (kind === "triangle") {
+                    const half = perimeter / 2;
+                    steps = [
+                        `o = ${fmt(v.a)} + ${fmt(v.b)} + ${fmt(v.c)} = ${fmt(perimeter)} ${u}.`,
+                        `s = o/2 = ${fmt(half)} ${u}.`,
+                        `S = √(${fmt(half)} · (${fmt(half)} − ${fmt(v.a)}) · (${fmt(half)} − ${fmt(v.b)}) · (${fmt(half)} − ${fmt(v.c)})) ≈ ${fmt(area)} ${u}².`,
+                    ];
+                }
+                $("shape-steps").replaceChildren();
+                steps.forEach((t) => text("li", t, $("shape-steps")));
+                convert();
+                renderScale();
+            }
+            function convert() {
+                if (!currentShape) return;
+                const factor = meters[$("unit").value] / meters[$("convert").value],
+                    u = $("convert").value;
+                $("converted").textContent =
+                    `S ≈ ${fmt(currentShape.area * factor * factor)} ${u}² · o ≈ ${fmt(currentShape.perimeter * factor)} ${u}. Dolžine množimo s ${fmt(factor)}, ploščino pa s ${fmt(factor * factor)}.`;
+            }
+            function renderScale() {
+                if (!currentShape) return;
+                const k = Number($("scale").value),
+                    r = currentShape;
+                const enlarged = geometry(
+                    r.kind,
+                    Object.fromEntries(Object.entries(r.v).map(([key, v]) => [key, v * k])),
+                );
+                const s = clearSvg(
+                    "scale-svg",
+                    "Osnovni in podobni lik",
+                    `Faktor ${fmt(k)}. Obseg se pomnoži s ${fmt(k)}, ploščina s ${fmt(k * k)}.`,
+                );
+                const b1 = bounds(r),
+                    b2 = bounds(enlarged),
+                    common = Math.min(
+                        280 / Math.max(b1.xmax - b1.xmin, b2.xmax - b2.xmin),
+                        170 / Math.max(b1.ymax - b1.ymin, b2.ymax - b2.ymin),
+                    );
+                drawShape(
+                    s,
+                    r,
+                    { x: 25, y: 25, w: 320, h: 180 },
+                    { scale: common, color: "#c3efdb" },
+                );
+                drawShape(
+                    s,
+                    enlarged,
+                    { x: 395, y: 25, w: 320, h: 180 },
+                    { scale: common, color: "#dfd2ff" },
+                );
+                s.append(
+                    svg(
+                        "text",
+                        { x: 185, y: 240, "text-anchor": "middle", "font-size": 17 },
+                        "Osnovni lik",
+                    ),
+                    svg(
+                        "text",
+                        { x: 555, y: 240, "text-anchor": "middle", "font-size": 17 },
+                        "Podoben lik · k = " + fmt(k),
+                    ),
+                );
+                $("scale-label").textContent = fmt(k);
+                $("scale-result").textContent =
+                    `o₂ = ${fmt(k)} · o₁     |     S₂ = ${fmt(k * k)} · S₁`;
+                $("scale-numbers").textContent =
+                    `Obseg: ${fmt(r.perimeter)} → ${fmt(enlarged.perimeter)} ${$("unit").value}. Ploščina: ${fmt(r.area)} → ${fmt(enlarged.area)} ${$("unit").value}².`;
+            }
+            $("shape").addEventListener("change", () => {
+                buildDimensions();
+                updateShape();
+            });
+            $("unit").addEventListener("change", renderShape);
+            $("convert").addEventListener("change", convert);
+            $("scale").addEventListener("input", renderScale);
+            $("shape-form").addEventListener("submit", (e) => {
+                e.preventDefault();
+                updateShape();
+            });
+            $("shape-form").addEventListener("reset", (e) => {
+                e.preventDefault();
+                buildDimensions();
+                updateShape();
+            });
+            $("show-area").addEventListener("click", () => {
+                edge = false;
+                $("show-area").setAttribute("aria-pressed", "true");
+                $("show-edge").setAttribute("aria-pressed", "false");
+                renderShape();
+            });
+            $("show-edge").addEventListener("click", () => {
+                edge = true;
+                $("show-area").setAttribute("aria-pressed", "false");
+                $("show-edge").setAttribute("aria-pressed", "true");
+                renderShape();
+            });
+
+            // 3. Pitagorov prikaz: kvadrati so res narisani nad pripadajočimi stranicami.
+            let currentPyth = null,
+                showSquares = true;
+            function drawPyth(id, t, options = {}) {
+                const s = clearSvg(
+                    id,
+                    "Pravokotni trikotnik",
+                    `Kateta a ${options.unknown === "a" ? "je iskana" : "= " + fmt(t.a)}, kateta b = ${fmt(t.b)}, hipotenuza c ${options.unknown === "c" ? "je iskana" : "= " + fmt(t.c)}.`,
+                );
+                const { a, b, c } = t,
+                    squares = options.squares,
+                    polys = [
+                        [
+                            [0, 0],
+                            [a, 0],
+                            [a, -a],
+                            [0, -a],
+                        ],
+                        [
+                            [0, 0],
+                            [0, b],
+                            [-b, b],
+                            [-b, 0],
+                        ],
+                        [
+                            [a, 0],
+                            [0, b],
+                            [b, a + b],
+                            [a + b, a],
+                        ],
+                    ];
+                const all = squares
+                        ? polys.flat()
+                        : [
+                              [0, 0],
+                              [a, 0],
+                              [0, b],
+                          ],
+                    xs = all.map((p) => p[0]),
+                    ys = all.map((p) => p[1]);
+                const xmin = Math.min(...xs),
+                    xmax = Math.max(...xs),
+                    ymin = Math.min(...ys),
+                    ymax = Math.max(...ys),
+                    height = id === "task-svg" ? 320 : 500;
+                const scale = Math.min(600 / (xmax - xmin), (height - 90) / (ymax - ymin)),
+                    ox = 70 + (600 - (xmax - xmin) * scale) / 2,
+                    oy = 40 + (height - 90 - (ymax - ymin) * scale) / 2;
+                const X = (x) => ox + (x - xmin) * scale,
+                    Y = (y) => oy + (ymax - y) * scale;
+                const label = (x, y, t, color = "#252638", size = 18) =>
+                    s.append(
+                        svg(
+                            "text",
+                            {
+                                x: X(x),
+                                y: Y(y),
+                                "text-anchor": "middle",
+                                "dominant-baseline": "middle",
+                                "font-size": size,
+                                "font-weight": 700,
+                                fill: color,
+                                "paint-order": "stroke",
+                                stroke: "white",
+                                "stroke-width": 4,
+                            },
+                            t,
+                        ),
+                    );
+                if (squares)
+                    polys.forEach((poly, i) => {
+                        s.append(
+                            svg("polygon", {
+                                points: poly.map(([x, y]) => X(x) + "," + Y(y)).join(" "),
+                                fill: ["#bcead3", "#ddccff", "#ffe293"][i],
+                                stroke: "#252638",
+                                "stroke-width": 2,
+                            }),
+                        );
+                        const cx = poly.reduce((sum, p) => sum + p[0], 0) / 4,
+                            cy = poly.reduce((sum, p) => sum + p[1], 0) / 4;
+                        label(cx, cy, ["a²", "b²", "c²"][i]);
+                    });
+                s.append(
+                    svg("polygon", {
+                        points: [
+                            [0, 0],
+                            [a, 0],
+                            [0, b],
+                        ]
+                            .map(([x, y]) => X(x) + "," + Y(y))
+                            .join(" "),
+                        fill: "#fff",
+                        stroke: "#252638",
+                        "stroke-width": 3,
+                    }),
+                );
+                const q = Math.min(a, b) * 0.13;
+                s.append(
+                    svg("polyline", {
+                        points: [
+                            [q, 0],
+                            [q, q],
+                            [0, q],
+                        ]
+                            .map(([x, y]) => X(x) + "," + Y(y))
+                            .join(" "),
+                        fill: "none",
+                        stroke: "#252638",
+                        "stroke-width": 2,
+                    }),
+                );
+                label(
+                    a / 2,
+                    -(squares ? 0 : 0.1 * b),
+                    options.unknown === "a" ? "a = ?" : `a = ${fmt(a)}`,
+                    "#176548",
+                );
+                label(-0.08 * a, b / 2, `b = ${fmt(b)}`, "#67429f");
+                label(
+                    a / 2 + 0.08 * a,
+                    b / 2 + 0.08 * b,
+                    options.unknown === "c" ? "c = ?" : `c = ${fmt(c)}`,
+                    "#925d0e",
+                );
+                return s;
+            }
+            function updatePyth() {
+                try {
+                    const x = length($("pyth-x").value),
+                        b = length($("pyth-b").value),
+                        mode = $("pyth-mode").value,
+                        t = pythagoras(mode, x, b);
+                    currentPyth = t;
+                    $("pyth-error").textContent = "";
+                    renderPyth();
+                } catch (err) {
+                    currentPyth = null;
+                    $("pyth-error").textContent = err.message;
+                    ["a-square", "b-square", "c-square", "pyth-equality", "pyth-answer"].forEach(
+                        (id) => ($(id).textContent = ""),
+                    );
+                    $("pyth-steps").replaceChildren();
+                    $("a-bar").style.width = "0";
+                    $("b-bar").style.width = "0";
+                    clearSvg("pyth-svg", "Neveljaven trikotnik", "Popravi dolžini.");
+                    $("to-shapes").disabled = true;
+                }
+            }
+            function renderPyth() {
+                if (!currentPyth) return;
+                const t = currentPyth,
+                    { a, b, c } = t,
+                    u = $("pyth-unit").value;
+                drawPyth("pyth-svg", t, { squares: showSquares });
+                $("to-shapes").disabled = false;
+                $("a-square").textContent = `a² ≈ ${fmt(a * a)} ${u}²`;
+                $("b-square").textContent = `b² ≈ ${fmt(b * b)} ${u}²`;
+                $("c-square").textContent = `c² ≈ ${fmt(c * c)} ${u}²`;
+                $("a-bar").style.width = ((a * a) / (c * c)) * 100 + "%";
+                $("b-bar").style.width = ((b * b) / (c * c)) * 100 + "%";
+                $("pyth-equality").textContent =
+                    `${fmt(a * a)} + ${fmt(b * b)} ≈ ${fmt(c * c)} ${u}²`;
+                const hyp = $("pyth-mode").value === "hyp";
+                $("pyth-answer").textContent =
+                    (hyp ? "Hipotenuza c" : "Kateta a") + " ≈ " + fmt(hyp ? c : a) + " " + u;
+                const steps = hyp
+                    ? ["a² + b² = c².", `c = √(${fmt(a)}² + ${fmt(b)}²).`, `c ≈ ${fmt(c)} ${u}.`]
+                    : [
+                          "a² + b² = c².",
+                          "Odštejemo b²: a² = c² − b².",
+                          `a = √(${fmt(c)}² − ${fmt(b)}²) ≈ ${fmt(a)} ${u}.`,
+                      ];
+                $("pyth-steps").replaceChildren();
+                steps.forEach((t) => text("li", t, $("pyth-steps")));
+            }
+            function pythMode() {
+                const hyp = $("pyth-mode").value === "hyp";
+                $("pyth-x-label").textContent = hyp ? "Kateta a" : "Hipotenuza c";
+                $("pyth-x").value = hyp ? "3" : "5";
+                $("pyth-b").value = "4";
+                updatePyth();
+            }
+            $("pyth-mode").addEventListener("change", pythMode);
+            $("pyth-form").addEventListener("submit", (e) => {
+                e.preventDefault();
+                updatePyth();
+            });
+            ["pyth-x", "pyth-b"].forEach((id) => $(id).addEventListener("input", updatePyth));
+            $("pyth-unit").addEventListener("change", renderPyth);
+            $("pyth-form").addEventListener("reset", (e) => {
+                e.preventDefault();
+                $("pyth-mode").value = "hyp";
+                pythMode();
+            });
+            $("squares").addEventListener("click", () => {
+                showSquares = !showSquares;
+                $("squares").setAttribute("aria-pressed", String(showSquares));
+                $("squares").textContent = showSquares ? "Skrij kvadrate" : "Pokaži kvadrate";
+                renderPyth();
+            });
+            [
+                [3, 4],
+                [5, 12],
+                [8, 15],
+            ].forEach(([a, b], i) =>
+                $("triple-" + (i + 1)).addEventListener("click", () => {
+                    $("pyth-mode").value = "hyp";
+                    $("pyth-x-label").textContent = "Kateta a";
+                    $("pyth-x").value = String(a);
+                    $("pyth-b").value = String(b);
+                    updatePyth();
+                }),
+            );
+            $("to-shapes").addEventListener("click", () => {
+                if (!currentPyth) return;
+                const t = currentPyth;
+                $("shape").value = "triangle";
+                $("unit").value = $("pyth-unit").value;
+                buildDimensions({ a: t.c, b: t.a, c: t.b });
+                updateShape();
+                navigate("shapes");
+            });
+
+            // 4. Naloge imajo numerični odgovor, namig, postopek in ločeno statistiko prvih poskusov.
+            const rand = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a,
+                choose = (a) => a[rand(0, a.length - 1)],
+                round2 = (n) => Math.round(n * 100) / 100;
+            let task = null,
+                stats = { attempted: 0, correct: 0, xp: 0, streak: 0 };
+            const STORAGE = "sidebit-geometrija-napredek-v1";
+            function makeTask(topic, d = 1) {
+                const a = rand(2, d === 1 ? 9 : 25),
+                    b = rand(2, d === 1 ? 8 : 20),
+                    r = rand(1, d === 1 ? 6 : 15);
+                let type = topic === "all" ? choose(["area", "perimeter", "pyth", "scale"]) : topic,
+                    t = { type, checked: false, revealed: false, solved: false };
+                if (type === "area" || type === "perimeter") {
+                    const kind = choose(["square", "rect", "circle", "triangle"]),
+                        v =
+                            kind === "square"
+                                ? { a }
+                                : kind === "rect"
+                                  ? { a, b }
+                                  : kind === "circle"
+                                    ? { r }
+                                    : { a: 5 * a, b: 4 * a, c: 3 * a },
+                        g = geometry(kind, v),
+                        details =
+                            kind === "square"
+                                ? `stranico ${a} cm`
+                                : kind === "rect"
+                                  ? `stranici ${a} cm in ${b} cm`
+                                  : kind === "circle"
+                                    ? `polmer ${r} cm`
+                                    : `stranice ${5 * a} cm, ${4 * a} cm in ${3 * a} cm`;
+                    t.question = `Izračunaj ${type === "area" ? "ploščino" : "obseg"}: ${names[kind].toLocaleLowerCase("sl-SI")} ima ${details}.`;
+                    t.answer = type === "area" ? g.area : g.perimeter;
+                    t.unit = type === "area" ? "cm²" : "cm";
+                    t.shape = g;
+                    t.hint =
+                        type === "perimeter"
+                            ? kind === "circle"
+                                ? "Uporabi o = 2πr."
+                                : "Seštej dolžine vseh stranic."
+                            : kind === "triangle"
+                              ? "Preveri razmerje 3 : 4 : 5. Lahko uporabiš S = kateta · kateta / 2 ali Heronovo formulo."
+                              : {
+                                    square: "Ploščina kvadrata je a².",
+                                    rect: "Pomnoži dolžini sosednjih stranic.",
+                                    circle: "Uporabi πr². Najprej kvadriraj polmer.",
+                                }[kind];
+                    t.solution = t.hint + ` Rezultat: ${fmt(round2(t.answer))} ${t.unit}.`;
+                } else if (type === "pyth") {
+                    const triple = choose([
+                            [3, 4, 5],
+                            [5, 12, 13],
+                            [8, 15, 17],
+                        ]),
+                        k = rand(1, d === 1 ? 2 : 5),
+                        [a, b, c] = triple.map((n) => n * k),
+                        hyp = Math.random() < 0.5;
+                    t.question = hyp
+                        ? `Pravokotni trikotnik ima kateti ${a} cm in ${b} cm. Koliko meri hipotenuza c?`
+                        : `Pravokotni trikotnik ima hipotenuzo ${c} cm in kateto b = ${b} cm. Koliko meri kateta a?`;
+                    t.answer = hyp ? c : a;
+                    t.unit = "cm";
+                    t.pyth = { a, b, c };
+                    t.unknown = hyp ? "c" : "a";
+                    t.hint = hyp
+                        ? "Ploščini kvadratov nad katetama seštej, nato koreni."
+                        : "Od c² odštej b², nato koreni.";
+                    t.solution = hyp
+                        ? `c = √(${a}² + ${b}²) = √${a * a + b * b} = ${c} cm.`
+                        : `a = √(${c}² − ${b}²) = √${c * c - b * b} = ${a} cm.`;
+                } else {
+                    const variant = rand(0, 2);
+                    if (variant === 0) {
+                        const k = choose([2, 3, 4]);
+                        t.question = `Kvadrat ima ploščino ${a * a} cm². Vse stranice povečamo ${k}-krat. Kolikšna je nova ploščina?`;
+                        t.answer = a * a * k * k;
+                        t.unit = "cm²";
+                        t.hint = "Ploščina se spremeni s kvadratom faktorja povečave.";
+                        t.solution = `S₂ = k² · S₁ = ${k}² · ${a * a} = ${t.answer} cm².`;
+                        t.shape = geometry("square", { a });
+                    } else if (variant === 1) {
+                        t.question = `Ploščina pravokotnika je ${a} m². Koliko je to v cm²?`;
+                        t.answer = a * 10000;
+                        t.unit = "cm²";
+                        t.hint = "1 m = 100 cm. Za ploščino kvadriraj faktor 100.";
+                        t.solution = `1 m² = 100² cm² = 10.000 cm². Zato ${a} m² = ${fmt(t.answer)} cm².`;
+                    } else {
+                        const k = choose([2, 3, 4]);
+                        t.question = `Lik ima obseg ${4 * a} cm. Vse njegove dolžine povečamo ${k}-krat. Kolikšen je novi obseg?`;
+                        t.answer = 4 * a * k;
+                        t.unit = "cm";
+                        t.hint = "Obseg se pomnoži z istim faktorjem kot dolžine.";
+                        t.solution = `o₂ = k · o₁ = ${k} · ${4 * a} = ${t.answer} cm.`;
+                    }
+                }
+                t.answer = round2(t.answer);
+                return t;
+            }
+            function newTask() {
+                task = makeTask($("practice-topic").value, Number($("difficulty").value));
+                $("task-kind").textContent = {
+                    area: "PLOŠČINA",
+                    perimeter: "OBSEG",
+                    pyth: "PITAGOROV IZREK",
+                    scale: "POVEČAVE IN ENOTE",
+                }[task.type];
+                $("task-question").textContent = task.question;
+                $("answer-unit").textContent = "(" + task.unit + ")";
+                $("answer").value = "";
+                $("feedback").textContent = "";
+                $("task-hint").hidden = true;
+                $("task-solution").hidden = true;
+                $("check-answer").disabled = false;
+                if (task.pyth) drawPyth("task-svg", task.pyth, { unknown: task.unknown });
+                else {
+                    const s = clearSvg("task-svg", "Skica naloge", "Uporabi podatke iz vprašanja.");
+                    if (task.shape) {
+                        drawShape(
+                            s,
+                            task.shape,
+                            { x: 130, y: 35, w: 440, h: 220 },
+                            { labels: true, unit: task.type === "scale" ? "" : "cm" },
+                        );
+                        if (task.type === "scale")
+                            s.append(
+                                svg(
+                                    "text",
+                                    { x: 370, y: 300, "text-anchor": "middle", "font-size": 15 },
+                                    "Skica osnovnega lika.",
+                                ),
+                            );
+                    } else {
+                        s.append(
+                            svg("rect", {
+                                x: 160,
+                                y: 60,
+                                width: 420,
+                                height: 180,
+                                fill: "#d5f0e3",
+                                stroke: "#252638",
+                                "stroke-width": 3,
+                            }),
+                            svg(
+                                "text",
+                                { x: 370, y: 150, "text-anchor": "middle", "font-size": 30 },
+                                "m² → cm²",
+                            ),
+                        );
+                    }
+                }
+            }
+            function renderStats() {
+                $("score").textContent =
+                    `Prvi poskusi: ${stats.correct}/${stats.attempted} pravilnih`;
+                $("xp").textContent = `Točke: ${stats.xp}`;
+                $("streak").textContent = `Zaporedno pravilno: ${stats.streak}`;
+            }
+            function saveStats() {
+                try {
+                    localStorage.setItem(STORAGE, JSON.stringify(stats));
+                    $("save-status").textContent =
+                        "Statistika je shranjena v tem brskalniku. Trenutna naloga se ne shranjuje.";
+                } catch {
+                    $("save-status").textContent =
+                        "Statistike ni mogoče trajno shraniti. Ostane le do osvežitve strani.";
+                }
+            }
+            $("answer-form").addEventListener("submit", (e) => {
+                e.preventDefault();
+                if (!task || task.solved) return;
+                try {
+                    const answer = parseDecimal($("answer").value),
+                        ok = Math.abs(answer - task.answer) <= 0.0050000001;
+                    if (!task.checked && !task.revealed) {
+                        task.checked = true;
+                        stats.attempted++;
+                        if (ok) {
+                            stats.correct++;
+                            stats.xp += 10;
+                            stats.streak++;
+                        } else stats.streak = 0;
+                        saveStats();
+                        renderStats();
+                    }
+                    if (ok) {
+                        task.solved = true;
+                        $("check-answer").disabled = true;
+                        $("feedback").textContent =
+                            "Pravilno. " +
+                            (task.revealed
+                                ? "Rešitev je bila že prikazana; odgovor se ne točkuje."
+                                : "Dobro opravljeno. Nadaljuj z novo nalogo.");
+                    } else
+                        $("feedback").textContent =
+                            "Še ni pravilno. Preveri enoto in formulo ali odpri namig.";
+                } catch (err) {
+                    $("feedback").textContent = err.message;
+                }
+            });
+            $("hint").addEventListener("click", () => {
+                $("task-hint").textContent = task.hint;
+                $("task-hint").hidden = false;
+            });
+            $("solution").addEventListener("click", () => {
+                task.revealed = true;
+                $("task-solution").textContent = task.solution;
+                $("task-solution").hidden = false;
+            });
+            $("new-task").addEventListener("click", newTask);
+            $("practice-topic").addEventListener("change", newTask);
+            $("difficulty").addEventListener("change", newTask);
+            $("reset-stats").addEventListener("click", () => {
+                if (!confirm("Ponastavim statistiko vadnice?")) return;
+                stats = { attempted: 0, correct: 0, xp: 0, streak: 0 };
+                saveStats();
+                renderStats();
+                newTask();
+            });
+            try {
+                const s = JSON.parse(localStorage.getItem(STORAGE) || "null");
+                if (
+                    s &&
+                    ["attempted", "correct", "xp", "streak"].every(
+                        (k) => Number.isSafeInteger(s[k]) && s[k] >= 0,
+                    ) &&
+                    s.correct <= s.attempted &&
+                    s.streak <= s.correct &&
+                    s.xp === s.correct * 10
+                )
+                    stats = s;
+                $("save-status").textContent = "Statistika se shranjuje v tem brskalniku.";
+            } catch {
+                $("save-status").textContent =
+                    "Shranjevanje ni na voljo. Napredek velja do osvežitve.";
+            }
+            $("guide-explore").addEventListener("click", () => navigate("shapes"));
+            $("guide-pyth").addEventListener("click", () => navigate("pyth"));
+            $("guide-practice").addEventListener("click", () => navigate("practice"));
+            $("print").addEventListener("click", () => window.print());
+            buildDimensions();
+            updateShape();
+            updatePyth();
+            renderStats();
+            newTask();
+        </script>
+    </body>
+</html>
