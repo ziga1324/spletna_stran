@@ -1,399 +1,1550 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="sl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-          content="Kalkulator matrik: seštevanje, odštevanje, množenje, transponiranje in determinanta.">
-    <title>Računanje z matrikami</title>
-    <link rel="stylesheet" href="../style.css">
-</head>
-<body>
-    <header>
-        <h1>Računanje z matrikami</h1>
-        <p>Vnesi matriki in izberi računsko operacijo.</p>
-        <a href="../index.html">← Nazaj na začetno stran</a>
-    </header>
-
-    <main>
-        <section class="kalkulator" aria-labelledby="naslov">
-            <h2 id="naslov">Kalkulator matrik</h2>
-
-            <form id="obrazec">
-                <label for="operacija">Operacija</label>
-                <select id="operacija">
-                    <option value="sestevanje">A + B</option>
-                    <option value="odstevanje">A − B</option>
-                    <option value="mnozenje">A × B</option>
-                    <option value="transponiranje">Transponirana matrika A</option>
-                    <option value="determinanta">Determinanta matrike A</option>
-                </select>
-
-                <label for="matrika-a">Matrika A</label>
-                <textarea id="matrika-a" rows="5" maxlength="10000"
-                          required spellcheck="false"
-                          aria-describedby="navodila">1 2
-3 4</textarea>
-
-                <div id="vnos-b">
-                    <label for="matrika-b">Matrika B</label>
-                    <textarea id="matrika-b" rows="5" maxlength="10000"
-                              required spellcheck="false"
-                              aria-describedby="navodila">5 6
-7 8</textarea>
-                </div>
-
-                <p id="navodila">
-                    Vsako vrstico matrike zapiši v novo vrstico.
-                    Števila loči s presledki ali podpičji.
-                    Decimalna števila lahko zapisuješ s piko ali vejico.
-                    Največja velikost je 10 × 10.
-                </p>
-
-                <div class="gumbi">
-                    <button type="submit">Izračunaj</button>
-                    <button type="reset">Ponastavi</button>
-                </div>
-            </form>
-
-            <p id="napaka" class="napaka" role="alert"></p>
-
-            <div id="rezultat" class="rezultat" aria-live="polite"></div>
-
-            <button id="kopiraj" type="button" hidden>
-                Kopiraj rezultat
-            </button>
-            <p id="sporocilo" role="status"></p>
-        </section>
-
-        <section class="razlaga">
-            <h2>Kako deluje?</h2>
-            <ul>
-                <li>
-                    Pri seštevanju in odštevanju morata imeti matriki
-                    enako število vrstic in stolpcev.
-                </li>
-                <li>
-                    Pri množenju mora biti število stolpcev matrike A
-                    enako številu vrstic matrike B.
-                </li>
-                <li>
-                    Transponiranje zamenja vrstice in stolpce.
-                </li>
-                <li>
-                    Determinanto lahko izračunaš samo za kvadratno matriko.
-                </li>
-            </ul>
-            <p>
-                Izračuni uporabljajo decimalno aritmetiko brskalnika.
-                Pri zelo velikih številih ali skoraj singularnih matrikah
-                se lahko pojavijo numerične napake.
-                Prikaz rezultata je zaokrožen na 10 pomembnih števk.
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Matrični laboratorij – računanje, prikazi in izzivi | Sidebit</title>
+        <meta
+            name="description"
+            content="Urejaj matrike v mreži, spremljaj množenje po korakih, razišči linearne preslikave in vadi računanje z matrikami v interaktivnih izzivih."
+        />
+        <link rel="stylesheet" href="../style.css" />
+        <style>
+            body.matrix {
+                --ink: #252638;
+                --mint: #c4efda;
+                --purple: #dfd1ff;
+                --gold: #ffe295;
+                background: #fffaf0;
+                color: var(--ink);
+                font-family: Arial, Helvetica, sans-serif;
+                line-height: 1.6;
+            }
+            .matrix header,
+            .matrix main,
+            .matrix footer {
+                width: min(1240px, calc(100% - 36px));
+                margin-inline: auto;
+            }
+            .matrix header {
+                padding: 30px 0 22px;
+            }
+            .matrix h1,
+            .matrix h2,
+            .matrix h3 {
+                color: var(--ink);
+                background: none;
+                -webkit-text-fill-color: currentColor;
+            }
+            .matrix h1 {
+                font-size: clamp(38px, 6vw, 72px);
+                letter-spacing: -0.055em;
+                line-height: 1.05;
+                margin: 20px 0 15px;
+            }
+            .matrix .lead {
+                font-size: 18px;
+                max-width: 740px;
+                color: #55576b;
+            }
+            .matrix .badge {
+                display: inline-block;
+                padding: 5px 12px;
+                border: 2px solid var(--ink);
+                border-radius: 8px;
+                background: var(--gold);
+                font-weight: 800;
+            }
+            .matrix .actions,
+            .matrix .nav {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin: 18px 0;
+            }
+            .matrix button {
+                min-height: 44px;
+                padding: 10px 15px;
+                border: 2px solid var(--ink);
+                border-radius: 10px;
+                background: white;
+                color: var(--ink);
+                font: inherit;
+                font-weight: 700;
+                cursor: pointer;
+                box-shadow: 2px 2px 0 var(--ink);
+            }
+            .matrix button:hover {
+                background: #ffefb5;
+            }
+            .matrix button:active {
+                transform: translate(2px, 2px);
+                box-shadow: none;
+            }
+            .matrix button[aria-pressed="true"] {
+                background: var(--ink);
+                color: white;
+            }
+            .matrix button:disabled {
+                opacity: 0.45;
+                cursor: default;
+            }
+            .matrix button.primary,
+            .matrix button[type="submit"] {
+                background: var(--gold);
+            }
+            .matrix .panel {
+                padding: clamp(18px, 3vw, 28px);
+                border: 3px solid var(--ink);
+                border-radius: 22px;
+                background: white;
+                box-shadow: 6px 6px 0 var(--ink);
+                margin-bottom: 26px;
+                min-width: 0;
+            }
+            .matrix .two {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 25px;
+            }
+            .matrix .layout {
+                display: grid;
+                grid-template-columns: 310px minmax(0, 1fr);
+                gap: 25px;
+                align-items: start;
+            }
+            .matrix label {
+                display: block;
+                font-weight: 700;
+                margin: 12px 0 6px;
+            }
+            .matrix input,
+            .matrix select,
+            .matrix textarea {
+                width: 100%;
+                min-width: 0;
+                padding: 11px 12px;
+                border: 2px solid #827d96;
+                border-radius: 9px;
+                background: white;
+                color: var(--ink);
+                font: inherit;
+            }
+            .matrix textarea {
+                min-height: 110px;
+                resize: vertical;
+            }
+            .matrix input[type="range"] {
+                padding: 8px 0;
+                border: 0;
+                accent-color: #7754bd;
+            }
+            .matrix .scroll {
+                overflow: auto;
+                padding: 5px 5px 10px;
+            }
+            .matrix .grid {
+                display: grid;
+                gap: 8px;
+                width: max-content;
+                padding: 12px 18px;
+                border-left: 3px solid var(--ink);
+                border-right: 3px solid var(--ink);
+                border-radius: 10px;
+                margin: 5px auto;
+            }
+            .matrix .grid input {
+                width: 78px;
+                text-align: center;
+                padding: 10px 5px;
+                font-variant-numeric: tabular-nums;
+            }
+            .matrix .grid button {
+                min-width: 64px;
+                font-variant-numeric: tabular-nums;
+                font-size: 19px;
+                white-space: nowrap;
+            }
+            .matrix .a-panel {
+                background: #effbf4;
+            }
+            .matrix .b-panel {
+                background: #f3eeff;
+            }
+            .matrix .cell-a {
+                background: #a7e7c5 !important;
+                border-color: #276748 !important;
+            }
+            .matrix .cell-b {
+                background: #d0b7ff !important;
+                border-color: #7047a5 !important;
+            }
+            .matrix .cell-result {
+                background: #ffe295 !important;
+            }
+            .matrix .dimension {
+                font-size: 14px;
+                color: #57596d;
+            }
+            .matrix .formula {
+                padding: 16px;
+                border: 2px solid var(--ink);
+                border-radius: 12px;
+                background: #fff0b9;
+                font-size: clamp(20px, 3vw, 30px);
+                line-height: 1.4;
+                overflow-wrap: anywhere;
+            }
+            .matrix .hint {
+                font-size: 14px;
+                color: #57596c;
+            }
+            .matrix .notice {
+                padding: 14px 17px;
+                background: #eee8fb;
+                border-radius: 12px;
+                overflow-wrap: anywhere;
+                white-space: pre-line;
+            }
+            .matrix .notice:empty {
+                display: none;
+            }
+            .matrix .error {
+                color: #a42323;
+                font-weight: 700;
+            }
+            .matrix .error:empty {
+                display: none;
+            }
+            .matrix .term {
+                display: inline-block;
+                border: 2px solid #d5ccde;
+                border-radius: 9px;
+                padding: 8px 11px;
+                margin: 5px;
+            }
+            .matrix .term.active {
+                background: var(--gold);
+                border-color: var(--ink);
+            }
+            .matrix svg {
+                display: block;
+                width: 100%;
+                height: auto;
+                border: 1px solid #ddd;
+                border-radius: 14px;
+                background: #fff;
+            }
+            .matrix .legend {
+                display: flex;
+                gap: 16px;
+                flex-wrap: wrap;
+                font-size: 14px;
+            }
+            .matrix .legend span::before {
+                content: "";
+                display: inline-block;
+                width: 14px;
+                height: 14px;
+                background: #e0e2e8;
+                margin-right: 6px;
+                border: 1px solid var(--ink);
+                vertical-align: middle;
+            }
+            .matrix .legend span:last-child::before {
+                background: var(--purple);
+            }
+            .matrix .stats {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 18px;
+                padding: 16px;
+                background: #e7f5ee;
+                border: 2px solid var(--ink);
+                border-radius: 13px;
+                margin: 18px 0;
+            }
+            .matrix .task {
+                font-size: 23px;
+                line-height: 1.4;
+                font-weight: 700;
+            }
+            .matrix .readonly {
+                display: inline-grid;
+                gap: 8px;
+                padding: 12px 18px;
+                border-left: 3px solid var(--ink);
+                border-right: 3px solid var(--ink);
+                border-radius: 8px;
+                margin: 10px;
+            }
+            .matrix .readonly span {
+                min-width: 35px;
+                text-align: center;
+                padding: 4px;
+            }
+            .matrix .metrics {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin: 16px 0;
+            }
+            .matrix .metrics div {
+                border: 2px solid var(--ink);
+                border-radius: 12px;
+                background: var(--mint);
+                padding: 15px;
+            }
+            .matrix .metrics div:last-child {
+                background: var(--gold);
+            }
+            .matrix .metrics strong {
+                display: block;
+                font-size: 26px;
+            }
+            .matrix [hidden] {
+                display: none !important;
+            }
+            .matrix :focus-visible {
+                outline: 3px solid #7754bd;
+                outline-offset: 4px;
+            }
+            .matrix summary {
+                cursor: pointer;
+                font-weight: bold;
+            }
+            .matrix footer {
+                padding: 10px 0 30px;
+            }
+            @media (max-width: 850px) {
+                .matrix .two,
+                .matrix .layout {
+                    grid-template-columns: 1fr;
+                }
+                .matrix .nav button {
+                    flex: 1 1 30%;
+                }
+            }
+            @media (max-width: 450px) {
+                .matrix .panel {
+                    box-shadow: 3px 3px 0 var(--ink);
+                }
+                .matrix .grid input {
+                    width: 65px;
+                }
+                .matrix .metrics div {
+                    padding: 10px;
+                }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .matrix * {
+                    animation: none !important;
+                    transition: none !important;
+                    scroll-behavior: auto !important;
+                }
+            }
+            @media print {
+                .matrix button,
+                .matrix .nav,
+                .matrix textarea,
+                .matrix select {
+                    display: none !important;
+                }
+                .matrix .panel {
+                    box-shadow: none;
+                }
+                .matrix .two,
+                .matrix .layout {
+                    display: block;
+                }
+            }
+        </style>
+    </head>
+    <body class="matrix">
+        <header>
+            <a href="../index.html">← Vsa orodja</a><br /><span class="badge"
+                >ŠTEVILA, KI PREMIKAJO SVET.</span
+            >
+            <h1>Matrični laboratorij</h1>
+            <p class="lead">
+                Računaj v mreži, razkrij vsak korak in poglej, kako matrika raztegne, obrne ali
+                splošči geometrijski lik.
             </p>
-        </section>
-    </main>
-
-    <footer>
-        <p>Kalkulator matrik</p>
-    </footer>
-
-    <script>
-        "use strict";
-
-        const obrazec = document.getElementById("obrazec");
-        const operacija = document.getElementById("operacija");
-        const vnosA = document.getElementById("matrika-a");
-        const vnosB = document.getElementById("matrika-b");
-        const poljeB = document.getElementById("vnos-b");
-        const napaka = document.getElementById("napaka");
-        const rezultat = document.getElementById("rezultat");
-        const kopiraj = document.getElementById("kopiraj");
-        const sporocilo = document.getElementById("sporocilo");
-
-        let besediloRezultata = "";
-
-        function pocistiRezultat() {
-            napaka.textContent = "";
-            rezultat.replaceChildren();
-            sporocilo.textContent = "";
-            kopiraj.hidden = true;
-            besediloRezultata = "";
-        }
-
-        function posodobiOperacijo() {
-            const potrebujeB = [
-                "sestevanje",
-                "odstevanje",
-                "mnozenje"
-            ].includes(operacija.value);
-
-            poljeB.hidden = !potrebujeB;
-            vnosB.required = potrebujeB;
-            vnosB.disabled = !potrebujeB;
-            pocistiRezultat();
-        }
-
-        function preberiMatriko(besedilo, ime) {
-            const vrstice = besedilo.trim().split(/\r?\n/);
-
-            if (!besedilo.trim()) {
-                throw new Error("Vnesi matriko " + ime + ".");
+            <nav class="nav" aria-label="Poglavja">
+                <button data-tab="lab" aria-pressed="true" aria-controls="lab">
+                    Računaj in raziskuj</button
+                ><button data-tab="transform" aria-pressed="false" aria-controls="transform">
+                    Matrika premika like</button
+                ><button data-tab="practice" aria-pressed="false" aria-controls="practice">
+                    Izzivi
+                </button>
+            </nav>
+        </header>
+        <main>
+            <noscript
+                ><p class="notice">
+                    Za računanje in interaktivne prikaze omogoči JavaScript.
+                </p></noscript
+            >
+            <section id="lab" data-panel aria-labelledby="lab-title">
+                <section class="panel">
+                    <h2 id="lab-title" tabindex="-1">Od elementa do rezultata</h2>
+                    <label for="operation">Operacija</label
+                    ><select id="operation">
+                        <option value="add">A + B</option>
+                        <option value="subtract">A − B</option>
+                        <option value="multiply">A × B</option>
+                        <option value="transpose">Transponirana matrika A</option>
+                        <option value="det">Determinanta matrike A</option>
+                    </select>
+                    <p id="compatibility" class="notice"></p>
+                    <div class="actions">
+                        <button id="random" class="primary">Naključni veljavni matriki</button
+                        ><button id="swap">Zamenjaj A in B</button
+                        ><button id="reset">Začetni primer</button>
+                    </div>
+                    <p class="hint">
+                        Rezultat se posodobi med vnosom. Dovoljeni so pika, decimalna vejica in
+                        zapis 1e3. Največ 10 × 10 elementov.
+                    </p>
+                </section>
+                <div class="two">
+                    <section class="panel a-panel">
+                        <h3>Matrika A</h3>
+                        <div class="two">
+                            <div>
+                                <label for="a-rows">Vrstice A</label
+                                ><select id="a-rows"></select>
+                            </div>
+                            <div>
+                                <label for="a-cols">Stolpci A</label
+                                ><select id="a-cols"></select>
+                            </div>
+                        </div>
+                        <div class="scroll"><div id="grid-a" class="grid"></div></div>
+                        <div class="actions">
+                            <button id="identity">Enotska A</button
+                            ><button id="zero-a">Ničelna A</button>
+                        </div>
+                        <details>
+                            <summary>Prilepi matriko A kot besedilo</summary>
+                            <label for="text-a">Vsaka vrstica v novo vrstico</label
+                            ><textarea id="text-a" maxlength="10000" spellcheck="false">
+1 2
+3 4</textarea
+                            ><button id="apply-a">Prenesi v mrežo A</button>
+                        </details>
+                    </section>
+                    <section id="b-panel" class="panel b-panel">
+                        <h3>Matrika B</h3>
+                        <div class="two">
+                            <div>
+                                <label for="b-rows">Vrstice B</label
+                                ><select id="b-rows"></select>
+                            </div>
+                            <div>
+                                <label for="b-cols">Stolpci B</label
+                                ><select id="b-cols"></select>
+                            </div>
+                        </div>
+                        <div class="scroll"><div id="grid-b" class="grid"></div></div>
+                        <details>
+                            <summary>Prilepi matriko B kot besedilo</summary>
+                            <label for="text-b">Števila loči s presledki ali podpičji</label
+                            ><textarea id="text-b" maxlength="10000" spellcheck="false">
+5 6
+7 8</textarea
+                            ><button id="apply-b">Prenesi v mrežo B</button>
+                        </details>
+                    </section>
+                </div>
+                <p id="error" class="error" role="alert"></p>
+                <section class="panel" aria-labelledby="result-title">
+                    <h2 id="result-title">Tvoj rezultat</h2>
+                    <p id="result-summary" role="status"></p>
+                    <div class="scroll"><div id="result-grid" class="grid"></div></div>
+                    <div id="det-result" class="formula" hidden></div>
+                    <p class="hint">
+                        Klikni poljubni element rezultata: obarvajo se podatki, iz katerih je
+                        nastal.
+                    </p>
+                    <div id="walkthrough">
+                        <h3 id="cell-title">Poglej račun</h3>
+                        <div id="terms"></div>
+                        <p id="cell-equation" class="formula"></p>
+                        <div class="actions">
+                            <button id="prev-cell">Prejšnji element</button
+                            ><button id="next-cell">Naslednji element</button
+                            ><button id="next-term">Naslednji člen računa</button
+                            ><button id="animate" aria-pressed="false">Predvajaj izračun</button>
+                        </div>
+                        <p id="step-description" class="hint"></p>
+                    </div>
+                    <div id="det-steps" hidden>
+                        <h3>Postopek determinante</h3>
+                        <ol id="elimination"></ol>
+                    </div>
+                    <div class="actions">
+                        <button id="copy">Kopiraj rezultat</button
+                        ><button id="download">Prenesi rezultat TXT</button
+                        ><button id="to-transform">Odpri A v prikazu preslikave</button>
+                    </div>
+                    <p id="copy-status" role="status"></p>
+                    <p id="precision" class="hint"></p>
+                </section>
+                <section class="panel">
+                    <h2>Pravila na enem mestu</h2>
+                    <ul>
+                        <li>
+                            <strong>Seštevanje in odštevanje:</strong> enaka velikost, računaš
+                            istoležne elemente.
+                        </li>
+                        <li>
+                            <strong>Množenje:</strong> A je m × n, B je n × p, rezultat pa m × p.
+                            Vrstico A pomnožiš s stolpcem B.
+                        </li>
+                        <li>
+                            <strong>Transponiranje:</strong> element aᵢⱼ postane element na mestu
+                            (j, i).
+                        </li>
+                        <li>
+                            <strong>Determinanta:</strong> določena je samo za kvadratne matrike. Za
+                            2 × 2 velja ad − bc.
+                        </li>
+                    </ul>
+                    <p>
+                        A × B in B × A običajno nista enaka; drugo množenje lahko zaradi dimenzij
+                        sploh ni mogoče.
+                    </p>
+                </section>
+            </section>
+            <section id="transform" data-panel hidden aria-labelledby="transform-title">
+                <div class="layout">
+                    <section class="panel b-panel">
+                        <h2 id="transform-title" tabindex="-1">Kaj naredi matrika?</h2>
+                        <p class="hint">
+                            Vektorje obravnavamo kot stolpce. Matrika A preslika (x, y) v (ax + by,
+                            cx + dy).
+                        </p>
+                        <div id="transform-inputs"></div>
+                        <div class="actions">
+                            <button data-preset="identity">Enotska</button
+                            ><button data-preset="rotate">Zasuk 90°</button
+                            ><button data-preset="stretch">Razteg</button
+                            ><button data-preset="shear">Strig</button
+                            ><button data-preset="reflect">Zrcaljenje</button
+                            ><button data-preset="flat">Splošči</button>
+                        </div>
+                        <label for="morph">Prehod od enotske do izbrane matrike</label
+                        ><input id="morph" type="range" min="0" max="1" step=".01" value="1" />
+                        <p id="morph-label" class="hint"></p>
+                        <div class="actions">
+                            <button id="morph-play">Predvajaj prehod</button
+                            ><button id="from-transform">Prenesi A v kalkulator</button>
+                        </div>
+                    </section>
+                    <section class="panel">
+                        <span class="badge">ISTI LIK, DRUGA RAVNINA.</span>
+                        <h2>Opazuj ploščino in smer</h2>
+                        <div class="legend">
+                            <span>Prvotni lik</span><span>Preslikani lik</span>
+                        </div>
+                        <svg
+                            id="plane"
+                            viewBox="0 0 740 560"
+                            role="img"
+                            aria-labelledby="plane-title plane-desc"
+                        >
+                            <title id="plane-title">Linearna preslikava v ravnini</title>
+                            <desc id="plane-desc"></desc>
+                        </svg>
+                        <p id="mapping" class="formula"></p>
+                        <div class="metrics">
+                            <div>
+                                Determinanta trenutne matrike<strong id="transform-det"></strong>
+                            </div>
+                            <div>Faktor ploščine<strong id="area-factor"></strong></div>
+                        </div>
+                        <p id="orientation" class="notice"></p>
+                        <p class="hint">
+                            Turkizna puščica je slika vektorja (1, 0), vijolična slika (0, 1).
+                            Prehod uporablja linearno interpolacijo (1 − t)I + tA; vmesna matrika je
+                            lahko singularna tudi, če končna ni.
+                        </p>
+                    </section>
+                </div>
+            </section>
+            <section id="practice" data-panel hidden aria-labelledby="practice-title">
+                <section class="panel">
+                    <span class="badge">EN ELEMENT. EN JASEN KORAK.</span>
+                    <h2 id="practice-title" tabindex="-1">Matrični izzivi</h2>
+                    <label for="practice-kind">Vrsta nalog</label
+                    ><select id="practice-kind">
+                        <option value="mixed">Mešano</option>
+                        <option value="add">Seštevanje</option>
+                        <option value="subtract">Odštevanje</option>
+                        <option value="multiply">Množenje</option>
+                        <option value="transpose">Transponiranje</option>
+                        <option value="det">Determinanta 2 × 2</option>
+                    </select>
+                    <div class="stats" aria-live="polite">
+                        <span id="practice-score">0/0 pravilnih prvih poskusov</span
+                        ><span id="practice-xp">0 točk</span>
+                    </div>
+                    <p id="question" class="task"></p>
+                    <div id="practice-matrices" class="scroll"></div>
+                    <form id="answer-form" novalidate>
+                        <label for="answer">Tvoj številčni odgovor</label
+                        ><input
+                            id="answer"
+                            type="text"
+                            inputmode="decimal"
+                            maxlength="100"
+                            required
+                        />
+                        <div class="actions">
+                            <button type="submit">Preveri</button
+                            ><button type="button" id="practice-hint">Namig</button
+                            ><button type="button" id="practice-solution">Pokaži rešitev</button
+                            ><button type="button" id="new-question">Nova naloga</button>
+                        </div>
+                    </form>
+                    <p id="feedback" role="status"></p>
+                    <p id="practice-help" class="notice" hidden></p>
+                    <p class="hint">
+                        Pravilni prvi odgovor pred razkritjem prinese 10 točk. Poznejši poskusi so
+                        za vajo. Pri ustvarjenih celoštevilskih nalogah je toleranca 0,000001.
+                    </p>
+                    <p id="storage" class="hint"></p>
+                    <button id="reset-progress">Ponastavi napredek</button>
+                </section>
+            </section>
+        </main>
+        <footer>Sidebit · Matrični laboratorij · Razumi vsak element.</footer>
+        <script>
+            "use strict";
+            // 1. Računsko jedro, ločeno od izrisa.
+            const $ = (id) => document.getElementById(id),
+                NS = "http://www.w3.org/2000/svg";
+            const formatter = new Intl.NumberFormat("sl-SI", { maximumSignificantDigits: 10 });
+            const fmt = (n) =>
+                Number.isFinite(n) ? formatter.format(Object.is(n, -0) ? 0 : n) : "zunaj obsega";
+            function numeric(s) {
+                s = s.trim();
+                if (!/^[+-]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:e[+-]?\d+)?$/i.test(s))
+                    throw Error("Vnesi veljavna števila s piko ali vejico.");
+                const n = Number(s.replace(",", "."));
+                if (!Number.isFinite(n)) throw Error("Število je zunaj podprtega obsega.");
+                if (n === 0 && /[1-9]/.test(s.split(/e/i)[0]))
+                    throw Error("Število je premajhno za podprti obseg.");
+                return n;
             }
-
-            if (vrstice.length > 10) {
-                throw new Error(
-                    "Matrika " + ime + " ima lahko največ 10 vrstic."
-                );
-            }
-
-            const vzorec =
-                /^[+-]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:e[+-]?\d+)?$/i;
-
-            const matrika = vrstice.map((vrstica, indeks) => {
-                if (!vrstica.trim()) {
-                    throw new Error(
-                        "Matrika " + ime + " vsebuje prazno vrstico."
-                    );
-                }
-
-                const elementi = vrstica.trim().split(/[;\s]+/);
-
-                if (elementi.length > 10) {
-                    throw new Error(
-                        "Matrika " + ime + " ima lahko največ 10 stolpcev."
-                    );
-                }
-
-                return elementi.map(element => {
-                    if (!vzorec.test(element)) {
-                        throw new Error(
-                            "Neveljavno število v matriki " + ime +
-                            ", vrstica " + (indeks + 1) + ": " + element
-                        );
-                    }
-
-                    const stevilo = Number(element.replace(",", "."));
-
-                    if (!Number.isFinite(stevilo)) {
-                        throw new Error(
-                            "Matrika " + ime + " vsebuje preveliko število."
-                        );
-                    }
-
-                    return stevilo;
+            function parseMatrix(s, name = "") {
+                if (!s.trim()) throw Error("Vnesi matriko " + name + ".");
+                const rows = s.trim().split(/\r?\n/);
+                if (rows.length > 10) throw Error("Največ 10 vrstic.");
+                const m = rows.map((r) => {
+                    if (!r.trim()) throw Error("Matrika vsebuje prazno vrstico.");
+                    const row = r.trim().split(/[;\s]+/);
+                    if (row.length > 10) throw Error("Največ 10 stolpcev.");
+                    return row.map(numeric);
                 });
-            });
-
-            const stolpci = matrika[0].length;
-
-            if (!matrika.every(vrstica => vrstica.length === stolpci)) {
-                throw new Error(
-                    "Vse vrstice matrike " + ime +
-                    " morajo imeti enako število elementov."
+                if (!m.every((r) => r.length === m[0].length))
+                    throw Error("Vse vrstice morajo imeti enako število elementov.");
+                return m;
+            }
+            function finiteMatrix(m) {
+                if (!m.flat().every(Number.isFinite))
+                    throw Error(
+                        "Rezultat presega numerični obseg. Uporabi manj skrajne vrednosti.",
+                    );
+                return m;
+            }
+            function operation(op, A, B) {
+                if (op === "transpose") return A[0].map((_, j) => A.map((row) => row[j]));
+                if (op === "det") return determinant(A).value;
+                if (op === "multiply") {
+                    if (A[0].length !== B.length)
+                        throw Error(
+                            "Za A × B mora biti število stolpcev A enako številu vrstic B.",
+                        );
+                    return finiteMatrix(
+                        A.map((row) =>
+                            B[0].map((_, j) => row.reduce((sum, v, k) => sum + v * B[k][j], 0)),
+                        ),
+                    );
+                }
+                if (A.length !== B.length || A[0].length !== B[0].length)
+                    throw Error(
+                        "Za seštevanje ali odštevanje morata biti matriki enake velikosti.",
+                    );
+                return finiteMatrix(
+                    A.map((row, i) => row.map((v, j) => v + (op === "add" ? 1 : -1) * B[i][j])),
                 );
             }
-
-            return matrika;
-        }
-
-        function preveriEnakeDimenzije(a, b) {
-            if (a.length !== b.length || a[0].length !== b[0].length) {
-                throw new Error(
-                    "Matriki morata imeti enako število vrstic in stolpcev."
-                );
-            }
-        }
-
-        function sestejAliOdstej(a, b, predznak) {
-            preveriEnakeDimenzije(a, b);
-
-            return a.map((vrstica, i) =>
-                vrstica.map((vrednost, j) =>
-                    vrednost + predznak * b[i][j]
-                )
-            );
-        }
-
-        function zmnozi(a, b) {
-            if (a[0].length !== b.length) {
-                throw new Error(
-                    "Število stolpcev matrike A mora biti enako " +
-                    "številu vrstic matrike B."
-                );
-            }
-
-            return a.map(vrstica =>
-                b[0].map((_, j) =>
-                    vrstica.reduce(
-                        (vsota, vrednost, k) => vsota + vrednost * b[k][j],
-                        0
-                    )
-                )
-            );
-        }
-
-        function transponiraj(a) {
-            return a[0].map((_, j) => a.map(vrstica => vrstica[j]));
-        }
-
-        function determinanta(a) {
-            if (a.length !== a[0].length) {
-                throw new Error(
-                    "Za determinanto mora biti matrika A kvadratna."
-                );
-            }
-
-            const m = a.map(vrstica => [...vrstica]);
-            let predznak = 1;
-
-            for (let k = 0; k < m.length; k++) {
-                let pivot = k;
-
-                for (let i = k + 1; i < m.length; i++) {
-                    if (Math.abs(m[i][k]) > Math.abs(m[pivot][k])) {
-                        pivot = i;
+            function determinant(A) {
+                if (A.length !== A[0].length) throw Error("Za determinanto mora biti A kvadratna.");
+                const m = A.map((r) => [...r]),
+                    steps = [],
+                    n = m.length;
+                let sign = 1,
+                    near = false;
+                const norm = Math.max(...A.flat().map(Math.abs));
+                if (n === 1)
+                    return {
+                        value: A[0][0],
+                        steps: [`Matrika 1 × 1: det(A) = ${fmt(A[0][0])}.`],
+                        near: false,
+                    };
+                for (let k = 0; k < n; k++) {
+                    let p = k;
+                    for (let i = k + 1; i < n; i++)
+                        if (Math.abs(m[i][k]) > Math.abs(m[p][k])) p = i;
+                    if (m[p][k] === 0) {
+                        steps.push(`V stolpcu ${k + 1} ni neničelnega pivota: determinanta je 0.`);
+                        return { value: 0, steps, near };
+                    }
+                    if (Math.abs(m[p][k]) < norm * 1e-12) near = true;
+                    if (p !== k) {
+                        [m[p], m[k]] = [m[k], m[p]];
+                        sign *= -1;
+                        steps.push(
+                            `Zamenjamo vrstici ${k + 1} in ${p + 1}. Predznak determinante se obrne.`,
+                        );
+                    }
+                    for (let i = k + 1; i < n; i++) {
+                        const factor = m[i][k] / m[k][k];
+                        if (!Number.isFinite(factor)) throw Error("Izračun presega obseg.");
+                        if (factor === 0) continue;
+                        m[i][k] = 0;
+                        for (let j = k + 1; j < n; j++) m[i][j] -= factor * m[k][j];
+                        finiteMatrix(m);
+                        steps.push(
+                            `R${i + 1} ← R${i + 1} − (${fmt(factor)}) · R${k + 1}. Prištevanje večkratnika druge vrstice ne spremeni determinante.`,
+                        );
                     }
                 }
-
-                if (m[pivot][k] === 0) return 0;
-
-                if (pivot !== k) {
-                    [m[k], m[pivot]] = [m[pivot], m[k]];
-                    predznak *= -1;
+                let value = sign;
+                for (let i = 0; i < n; i++) {
+                    const previous = value;
+                    value *= m[i][i];
+                    if (!Number.isFinite(value) || (value === 0 && previous !== 0 && m[i][i] !== 0))
+                        throw Error(
+                            "Determinanta presega numerični obseg ali je premajhna za zapis.",
+                        );
                 }
+                steps.push(
+                    `Zmnožimo diagonalo trikotne matrike in upoštevamo predznak: ${sign} · ${m.map((r, i) => "(" + fmt(r[i]) + ")").join(" · ")} = ${fmt(value)}.`,
+                );
+                return { value, steps, near };
+            }
+            const rand = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a,
+                randomMatrix = (r, c) =>
+                    Array.from({ length: r }, () => Array.from({ length: c }, () => rand(-5, 8)));
+            let matrices = {
+                    a: [
+                        [1, 2],
+                        [3, 4],
+                    ],
+                    b: [
+                        [5, 6],
+                        [7, 8],
+                    ],
+                },
+                result = null,
+                selection = { i: 0, j: 0 },
+                termIndex = 0,
+                timer = null,
+                copyText = "",
+                task = null,
+                stats = { attempts: 0, correct: 0, points: 0 };
+            function element(tag, value, parent, cls) {
+                const n = document.createElement(tag);
+                if (value !== undefined) n.textContent = value;
+                if (cls) n.className = cls;
+                if (parent) parent.append(n);
+                return n;
+            }
+            function stop() {
+                if (timer !== null) clearInterval(timer);
+                timer = null;
+                $("animate").setAttribute("aria-pressed", "false");
+                $("animate").textContent = "Predvajaj izračun";
+            }
+            function navigate(id) {
+                stop();
+                stopMorph();
+                document.querySelectorAll("[data-panel]").forEach((p) => (p.hidden = p.id !== id));
+                document
+                    .querySelectorAll("[data-tab]")
+                    .forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.tab === id)));
+                $(id + "-title").focus();
+            }
+            document
+                .querySelectorAll("[data-tab]")
+                .forEach((b) => b.addEventListener("click", () => navigate(b.dataset.tab)));
 
-                for (let i = k + 1; i < m.length; i++) {
-                    const faktor = m[i][k] / m[k][k];
-                    m[i][k] = 0;
-
-                    for (let j = k + 1; j < m.length; j++) {
-                        m[i][j] -= faktor * m[k][j];
-
-                        if (!Number.isFinite(m[i][j])) {
-                            throw new Error(
-                                "Izračun presega numerični obseg. " +
-                                "Uporabi manjša števila."
+            // 2. Urejanje matrik v mreži. Neveljaven vnos takoj skrije zastarel rezultat.
+            for (const side of ["a", "b"])
+                for (const dim of ["rows", "cols"]) {
+                    const s = $(side + "-" + dim);
+                    for (let i = 1; i <= 10; i++) {
+                        const o = element("option", String(i), s);
+                        o.value = String(i);
+                    }
+                    s.addEventListener("change", () => {
+                        stop();
+                        const rows = Number($(side + "-rows").value),
+                            cols = Number($(side + "-cols").value),
+                            old = matrices[side];
+                        matrices[side] = Array.from({ length: rows }, (_, i) =>
+                            Array.from({ length: cols }, (_, j) => old[i]?.[j] ?? 0),
+                        );
+                        renderInput(side);
+                        calculate();
+                    });
+                }
+            function renderInput(side) {
+                const m = matrices[side],
+                    g = $("grid-" + side);
+                $(side + "-rows").value = String(m.length);
+                $(side + "-cols").value = String(m[0].length);
+                g.replaceChildren();
+                g.style.gridTemplateColumns = `repeat(${m[0].length},78px)`;
+                m.forEach((row, i) =>
+                    row.forEach((v, j) => {
+                        const input = document.createElement("input");
+                        input.type = "text";
+                        input.inputMode = "decimal";
+                        input.maxLength = 100;
+                        input.value = String(v);
+                        input.id = `${side}-${i}-${j}`;
+                        input.setAttribute(
+                            "aria-label",
+                            `Matrika ${side.toUpperCase()}, vrstica ${i + 1}, stolpec ${j + 1}`,
+                        );
+                        input.addEventListener("input", () => {
+                            stop();
+                            calculate();
+                        });
+                        g.append(input);
+                    }),
+                );
+                $(side === "a" ? "text-a" : "text-b").value = m.map((r) => r.join(" ")).join("\n");
+            }
+            function readGrid(side) {
+                const rows = Number($(side + "-rows").value),
+                    cols = Number($(side + "-cols").value);
+                return Array.from({ length: rows }, (_, i) =>
+                    Array.from({ length: cols }, (_, j) => {
+                        try {
+                            return numeric($(`${side}-${i}-${j}`).value);
+                        } catch (err) {
+                            throw Error(
+                                `${side.toUpperCase()} (${i + 1}, ${j + 1}): ${err.message}`,
                             );
                         }
-                    }
-                }
-            }
-
-            return m.reduce(
-                (produkt, vrstica, i) => produkt * vrstica[i],
-                predznak
-            );
-        }
-
-        function oblikuj(stevilo) {
-            if (!Number.isFinite(stevilo)) {
-                throw new Error(
-                    "Rezultat presega numerični obseg. Uporabi manjša števila."
+                    }),
                 );
             }
-
-            if (Object.is(stevilo, -0)) return "0";
-            return Number(stevilo.toPrecision(10)).toString();
-        }
-
-        function prikaziMatriko(matrika, naslov) {
-            const prikaz = matrika.map(vrstica => vrstica.map(oblikuj));
-
-            const h3 = document.createElement("h3");
-            h3.textContent = naslov;
-
-            const dimenzije = document.createElement("p");
-            dimenzije.textContent =
-                `Velikost: ${matrika.length} × ${matrika[0].length}`;
-
-            const ovoj = document.createElement("div");
-            ovoj.className = "matrika-ovoj";
-
-            const tabela = document.createElement("table");
-            tabela.className = "matrika-tabela";
-            tabela.setAttribute("aria-label", naslov);
-
-            const telo = document.createElement("tbody");
-
-            for (const vrstica of prikaz) {
-                const tr = document.createElement("tr");
-
-                for (const vrednost of vrstica) {
-                    const td = document.createElement("td");
-                    td.textContent = vrednost;
-                    tr.appendChild(td);
-                }
-
-                telo.appendChild(tr);
+            function clearResult() {
+                result = null;
+                copyText = "";
+                $("result-grid").replaceChildren();
+                $("result-grid").hidden = true;
+                $("det-result").hidden = true;
+                $("walkthrough").hidden = true;
+                $("det-steps").hidden = true;
+                $("result-summary").textContent = "";
+                $("copy").disabled = true;
+                $("download").disabled = true;
+                document
+                    .querySelectorAll(".cell-a,.cell-b")
+                    .forEach((n) => n.classList.remove("cell-a", "cell-b"));
             }
-
-            tabela.appendChild(telo);
-            ovoj.appendChild(tabela);
-            rezultat.append(h3, dimenzije, ovoj);
-
-            besediloRezultata = prikaz
-                .map(vrstica => vrstica.join("\t"))
-                .join("\n");
-
-            kopiraj.hidden = false;
-        }
-
-        obrazec.addEventListener("submit", event => {
-            event.preventDefault();
-            pocistiRezultat();
-
-            try {
-                const a = preberiMatriko(vnosA.value, "A");
-                const izbira = operacija.value;
-
-                if (izbira === "determinanta") {
-                    const vrednost = oblikuj(determinanta(a));
-                    rezultat.textContent = "det(A) = " + vrednost;
-                    besediloRezultata = vrednost;
-                    kopiraj.hidden = false;
+            function calculate() {
+                stop();
+                $("copy-status").textContent = "";
+                clearResult();
+                const op = $("operation").value,
+                    needsB = ["add", "subtract", "multiply"].includes(op);
+                $("b-panel").hidden = !needsB;
+                $("swap").disabled = !needsB;
+                try {
+                    const A = readGrid("a"),
+                        B = needsB ? readGrid("b") : matrices.b;
+                    matrices.a = A;
+                    if (needsB) matrices.b = B;
+                    const output = operation(op, A, B);
+                    $("error").textContent = "";
+                    $("compatibility").textContent =
+                        op === "multiply"
+                            ? `A: ${A.length} × ${A[0].length}, B: ${B.length} × ${B[0].length}. Notranji dimenziji se ujemata; rezultat: ${A.length} × ${B[0].length}.`
+                            : op === "transpose"
+                              ? `A: ${A.length} × ${A[0].length} → Aᵀ: ${A[0].length} × ${A.length}.`
+                              : op === "det"
+                                ? `Determinanta kvadratne matrike ${A.length} × ${A[0].length}.`
+                                : `Istočasno računamo na istoležnih mestih matrik velikosti ${A.length} × ${A[0].length}.`;
+                    result = { A, B, output, op };
+                    $("precision").textContent =
+                        "Prikaz: največ 10 pomembnih števk. Izračuni so numerični; pri skoraj singularnih matrikah je determinanta občutljiva na zaokroževanje.";
+                    if (op === "det") {
+                        const det = determinant(A);
+                        $("det-result").hidden = false;
+                        $("det-result").textContent = "det(A) ≈ " + fmt(det.value);
+                        $("det-steps").hidden = false;
+                        $("elimination").replaceChildren();
+                        if (A.length === 2)
+                            element(
+                                "li",
+                                `Za 2 × 2: (${fmt(A[0][0])})·(${fmt(A[1][1])}) − (${fmt(A[0][1])})·(${fmt(A[1][0])}) = ${fmt(det.value)}.`,
+                                $("elimination"),
+                            );
+                        det.steps.forEach((s) => element("li", s, $("elimination")));
+                        if (det.near)
+                            $("precision").textContent +=
+                                " Opozorilo: eden od pivotov je zelo majhen glede na koeficiente.";
+                        copyText = String(det.value);
+                        $("result-summary").textContent = "Determinanta je število, ne matrika.";
+                    } else {
+                        const g = $("result-grid");
+                        g.hidden = false;
+                        g.style.gridTemplateColumns = `repeat(${output[0].length},minmax(64px,max-content))`;
+                        output.forEach((row, i) =>
+                            row.forEach((v, j) => {
+                                const b = element("button", fmt(v), g);
+                                b.type = "button";
+                                b.id = `result-${i}-${j}`;
+                                b.setAttribute(
+                                    "aria-label",
+                                    `Rezultat, vrstica ${i + 1}, stolpec ${j + 1}: ${fmt(v)}. Pokaži postopek.`,
+                                );
+                                b.addEventListener("click", () => {
+                                    stop();
+                                    selection = { i, j };
+                                    termIndex = 0;
+                                    walkthrough();
+                                });
+                            }),
+                        );
+                        $("result-summary").textContent =
+                            `Rezultat je matrika ${output.length} × ${output[0].length}.`;
+                        selection.i = Math.min(selection.i, output.length - 1);
+                        selection.j = Math.min(selection.j, output[0].length - 1);
+                        termIndex = 0;
+                        $("walkthrough").hidden = false;
+                        copyText = output
+                            .map((row) =>
+                                row.map((v) => String(Object.is(v, -0) ? 0 : v)).join("\t"),
+                            )
+                            .join("\n");
+                        walkthrough();
+                    }
+                    $("copy").disabled = false;
+                    $("download").disabled = false;
+                    $("to-transform").disabled = A.length !== 2 || A[0].length !== 2;
+                } catch (err) {
+                    $("error").textContent = err.message;
+                    $("compatibility").textContent =
+                        "Popravi vnose ali dimenzije, da bo operacija določena.";
+                    $("to-transform").disabled = true;
+                }
+            }
+            function mark(side, i, j, cls) {
+                const cell = $(`${side}-${i}-${j}`);
+                if (cell) cell.classList.add(cls);
+            }
+            function walkthrough() {
+                if (!result || result.op === "det") return;
+                const { A, B, output, op } = result,
+                    { i, j } = selection;
+                document
+                    .querySelectorAll(".cell-a,.cell-b,.cell-result")
+                    .forEach((n) => n.classList.remove("cell-a", "cell-b", "cell-result"));
+                $(`result-${i}-${j}`).classList.add("cell-result");
+                $("terms").replaceChildren();
+                $("cell-title").textContent = `Kako nastane element (${i + 1}, ${j + 1})?`;
+                if (op === "multiply") {
+                    const terms = A[i].map((v, k) => ({ a: v, b: B[k][j], value: v * B[k][j] }));
+                    termIndex = Math.min(termIndex, terms.length - 1);
+                    A[i].forEach((_, k) => mark("a", i, k, "cell-a"));
+                    B.forEach((_, k) => mark("b", k, j, "cell-b"));
+                    terms.forEach((t, k) => {
+                        const n = element(
+                            "span",
+                            `${fmt(t.a)} × (${fmt(t.b)}) = ${fmt(t.value)}`,
+                            $("terms"),
+                            "term" + (k === termIndex ? " active" : ""),
+                        );
+                        n.setAttribute("aria-label", `Člen ${k + 1}`);
+                    });
+                    const partial = terms.slice(0, termIndex + 1).reduce((s, t) => s + t.value, 0);
+                    $("cell-equation").textContent =
+                        terms.map((t) => `(${fmt(t.a)})·(${fmt(t.b)})`).join(" + ") +
+                        ` = ${fmt(output[i][j])}`;
+                    $("step-description").textContent =
+                        `Korak ${termIndex + 1}/${terms.length}: delna vsota prvih ${termIndex + 1} produktov je ${fmt(partial)}. Množimo vrstico ${i + 1} matrike A s stolpcem ${j + 1} matrike B.`;
+                } else if (op === "transpose") {
+                    mark("a", j, i, "cell-a");
+                    $("cell-equation").textContent =
+                        `Aᵀ(${i + 1}, ${j + 1}) = A(${j + 1}, ${i + 1}) = ${fmt(A[j][i])}`;
+                    $("step-description").textContent =
+                        "Vrstica postane stolpec: indeksa zamenjamo.";
+                } else {
+                    mark("a", i, j, "cell-a");
+                    mark("b", i, j, "cell-b");
+                    $("cell-equation").textContent =
+                        `${fmt(A[i][j])} ${op === "add" ? "+" : "−"} (${fmt(B[i][j])}) = ${fmt(output[i][j])}`;
+                    $("step-description").textContent =
+                        "Računamo samo z elementoma na istem mestu.";
+                }
+                $("next-term").disabled = op !== "multiply";
+            }
+            function moveCell(delta) {
+                if (!result || result.op === "det") return;
+                const m = result.output,
+                    n = m.length * m[0].length,
+                    index = (((selection.i * m[0].length + selection.j + delta) % n) + n) % n;
+                selection = { i: Math.floor(index / m[0].length), j: index % m[0].length };
+                termIndex = 0;
+                walkthrough();
+            }
+            $("prev-cell").addEventListener("click", () => {
+                stop();
+                moveCell(-1);
+            });
+            $("next-cell").addEventListener("click", () => {
+                stop();
+                moveCell(1);
+            });
+            $("next-term").addEventListener("click", () => {
+                stop();
+                if (result?.op === "multiply") {
+                    termIndex = (termIndex + 1) % result.A[0].length;
+                    walkthrough();
+                }
+            });
+            $("animate").addEventListener("click", () => {
+                if (timer !== null) {
+                    stop();
                     return;
                 }
+                if (!result || result.op === "det") return;
+                $("animate").setAttribute("aria-pressed", "true");
+                $("animate").textContent = "Ustavi predvajanje";
+                timer = setInterval(() => {
+                    if (result.op === "multiply" && termIndex < result.A[0].length - 1) {
+                        termIndex++;
+                        walkthrough();
+                    } else moveCell(1);
+                }, 1100);
+            });
+            $("operation").addEventListener("change", calculate);
+            $("random").addEventListener("click", () => {
+                const op = $("operation").value,
+                    ar = Number($("a-rows").value),
+                    ac = op === "det" ? ar : Number($("a-cols").value);
+                matrices.a = randomMatrix(ar, ac);
+                matrices.b =
+                    op === "multiply"
+                        ? randomMatrix(ac, Number($("b-cols").value))
+                        : randomMatrix(ar, ac);
+                renderInput("a");
+                renderInput("b");
+                calculate();
+            });
+            $("swap").addEventListener("click", () => {
+                try {
+                    const A = readGrid("a"),
+                        B = readGrid("b");
+                    matrices = { a: B, b: A };
+                    renderInput("a");
+                    renderInput("b");
+                    calculate();
+                } catch (err) {
+                    $("error").textContent = err.message;
+                }
+            });
+            $("reset").addEventListener("click", () => {
+                matrices = {
+                    a: [
+                        [1, 2],
+                        [3, 4],
+                    ],
+                    b: [
+                        [5, 6],
+                        [7, 8],
+                    ],
+                };
+                $("operation").value = "add";
+                renderInput("a");
+                renderInput("b");
+                calculate();
+            });
+            $("identity").addEventListener("click", () => {
+                const n = Number($("a-rows").value);
+                matrices.a = Array.from({ length: n }, (_, i) =>
+                    Array.from({ length: n }, (_, j) => +(i === j)),
+                );
+                renderInput("a");
+                calculate();
+            });
+            $("zero-a").addEventListener("click", () => {
+                matrices.a = matrices.a.map((row) => row.map(() => 0));
+                renderInput("a");
+                calculate();
+            });
+            for (const side of ["a", "b"])
+                $("apply-" + side).addEventListener("click", () => {
+                    try {
+                        const m = parseMatrix($("text-" + side).value, side.toUpperCase());
+                        matrices[side] = m;
+                        renderInput(side);
+                        calculate();
+                    } catch (err) {
+                        $("error").textContent = err.message;
+                    }
+                });
+            $("copy").addEventListener("click", async () => {
+                try {
+                    await navigator.clipboard.writeText(copyText);
+                    $("copy-status").textContent =
+                        "Rezultat je kopiran z nezaokroženimi številskimi vrednostmi.";
+                } catch {
+                    $("copy-status").textContent = "Kopiranje ni na voljo. Uporabi prenos TXT.";
+                }
+            });
+            $("download").addEventListener("click", () => {
+                if (!copyText) return;
+                const url = URL.createObjectURL(
+                        new Blob([copyText], { type: "text/plain;charset=utf-8" }),
+                    ),
+                    a = document.createElement("a");
+                a.href = url;
+                a.download = "sidebit-matrika.txt";
+                document.body.append(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            });
 
-                if (izbira === "transponiranje") {
-                    prikaziMatriko(transponiraj(a), "Transponirana matrika A");
+            // 3. Linearna preslikava: stolpca matrike sta sliki baznih vektorjev.
+            let transformValues = [1, 0, 0, 1],
+                morphTimer = null;
+            function svg(tag, attrs = {}, value) {
+                const n = document.createElementNS(NS, tag);
+                Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v));
+                if (value !== undefined) n.textContent = value;
+                return n;
+            }
+            for (let i = 0; i < 4; i++) {
+                const label = element(
+                    "label",
+                    [
+                        "a (prva vrstica, prvi stolpec)",
+                        "b (prva vrstica, drugi stolpec)",
+                        "c (druga vrstica, prvi stolpec)",
+                        "d (druga vrstica, drugi stolpec)",
+                    ][i],
+                    $("transform-inputs"),
+                );
+                label.htmlFor = "t-" + i;
+                const input = document.createElement("input");
+                input.type = "text";
+                input.inputMode = "decimal";
+                input.value = String(transformValues[i]);
+                input.id = "t-" + i;
+                input.maxLength = 100;
+                input.addEventListener("input", () => {
+                    stopMorph();
+                    try {
+                        const values = [0, 1, 2, 3].map((i) => numeric($("t-" + i).value));
+                        if (values.some((n) => Math.abs(n) > 1e6))
+                            throw Error(
+                                "Za preslikavo uporabi koeficiente med −1.000.000 in 1.000.000.",
+                            );
+                        transformValues = values;
+                        $("morph").value = "1";
+                        $("transform-error").textContent = "";
+                        renderTransform();
+                    } catch (err) {
+                        $("transform-error").textContent = err.message;
+                    }
+                });
+                $("transform-inputs").append(input);
+            }
+            element("p", "", $("transform-inputs"), "error").id = "transform-error";
+            function currentTransform() {
+                const t = Number($("morph").value);
+                return transformValues.map((v, i) => (i === 0 || i === 3 ? 1 - t : 0) + t * v);
+            }
+            function renderTransform() {
+                const [a, b, c, d] = currentTransform(),
+                    det = a * d - b * c,
+                    original = [
+                        [-1, -1],
+                        [1, -1],
+                        [1, 0.5],
+                        [0, 1.5],
+                        [-1, 0.5],
+                    ],
+                    points = original.map(([x, y]) => [a * x + b * y, c * x + d * y]);
+                const bound =
+                        Math.max(
+                            3,
+                            ...points.flat().map(Math.abs),
+                            Math.abs(a),
+                            Math.abs(b),
+                            Math.abs(c),
+                            Math.abs(d),
+                        ) * 1.2,
+                    s = $("plane");
+                s.replaceChildren(
+                    svg("title", { id: "plane-title" }, "Geometrijska slika matrike"),
+                    svg(
+                        "desc",
+                        { id: "plane-desc" },
+                        `Preslikava ima determinanto ${fmt(det)}, faktor ploščine ${fmt(Math.abs(det))}.`,
+                    ),
+                );
+                const scale = 225 / bound,
+                    X = (x) => 370 + x * scale,
+                    Y = (y) => 280 - y * scale;
+                let step = bound <= 8 ? 1 : 10 ** Math.floor(Math.log10(bound / 4));
+                for (let k = -Math.floor(bound / step); k <= Math.floor(bound / step); k++) {
+                    const x = k * step;
+                    s.append(
+                        svg("line", { x1: X(x), x2: X(x), y1: 40, y2: 520, stroke: "#e9e6ef" }),
+                        svg("line", { x1: 130, x2: 610, y1: Y(x), y2: Y(x), stroke: "#e9e6ef" }),
+                    );
+                    if (k !== 0 && k % 2 === 0)
+                        s.append(
+                            svg(
+                                "text",
+                                { x: X(x), y: 544, "text-anchor": "middle", "font-size": 12 },
+                                fmt(x),
+                            ),
+                        );
+                }
+                s.append(
+                    svg("line", { x1: 80, x2: 660, y1: Y(0), y2: Y(0), stroke: "#6b687c" }),
+                    svg("line", { x1: X(0), x2: X(0), y1: 25, y2: 530, stroke: "#6b687c" }),
+                    svg("text", { x: 675, y: Y(0) + 6 }, "x"),
+                    svg("text", { x: X(0) + 10, y: 25 }, "y"),
+                );
+                const poly = (p, fill, dash) =>
+                    svg("polygon", {
+                        points: p.map(([x, y]) => X(x) + "," + Y(y)).join(" "),
+                        fill,
+                        "fill-opacity": 0.55,
+                        stroke: fill === "#cfc1ed" ? "#71449f" : "#737583",
+                        "stroke-width": 3,
+                        ...(dash ? { "stroke-dasharray": "6 5" } : {}),
+                    });
+                s.append(poly(original, "#e0e2e8", true), poly(points, "#cfc1ed"));
+                function arrow(x, y, color, label) {
+                    const xx = X(x),
+                        yy = Y(y),
+                        angle = Math.atan2(yy - Y(0), xx - X(0)),
+                        g = svg("g");
+                    g.append(
+                        svg("line", {
+                            x1: X(0),
+                            y1: Y(0),
+                            x2: xx,
+                            y2: yy,
+                            stroke: color,
+                            "stroke-width": 3,
+                        }),
+                    );
+                    if (Math.hypot(x, y) > 1e-12)
+                        g.append(
+                            svg("polyline", {
+                                points: `${xx - 12 * Math.cos(angle - 0.4)},${yy - 12 * Math.sin(angle - 0.4)} ${xx},${yy} ${xx - 12 * Math.cos(angle + 0.4)},${yy - 12 * Math.sin(angle + 0.4)}`,
+                                fill: "none",
+                                stroke: color,
+                                "stroke-width": 3,
+                            }),
+                        );
+                    g.append(
+                        svg(
+                            "text",
+                            {
+                                x: xx + 12,
+                                y: yy - 12,
+                                fill: color,
+                                "font-size": 15,
+                                "font-weight": "bold",
+                            },
+                            label,
+                        ),
+                    );
+                    s.append(g);
+                }
+                arrow(a, c, "#087f8c", "A·e₁");
+                arrow(b, d, "#8250bc", "A·e₂");
+                $("mapping").textContent =
+                    `(x, y) → (${fmt(a)}x + (${fmt(b)})y; ${fmt(c)}x + (${fmt(d)})y)`;
+                $("transform-det").textContent = fmt(det);
+                $("area-factor").textContent = fmt(Math.abs(det)) + "×";
+                $("orientation").textContent =
+                    det === 0
+                        ? "Lik se splošči v daljico ali točko. Ploščina je 0."
+                        : Math.abs(det) < 1e-12
+                          ? "Determinanta je zelo blizu nič. Lik je lahko zelo tanek; numerična natančnost je omejena."
+                          : det > 0
+                            ? "Orientacija se ohrani. Ploščina se pomnoži z absolutno vrednostjo determinante."
+                            : "Orientacija se obrne. Ploščina je pozitivna in se pomnoži z |det(A)|.";
+                $("morph-label").textContent =
+                    `t = ${fmt(Number($("morph").value))}; prikazujemo (1 − t)I + tA.`;
+            }
+            function syncTransform() {
+                transformValues.forEach((v, i) => ($("t-" + i).value = String(v)));
+                $("transform-error").textContent = "";
+                $("morph").value = "1";
+                renderTransform();
+            }
+            const presets = {
+                identity: [1, 0, 0, 1],
+                rotate: [0, -1, 1, 0],
+                stretch: [2, 0, 0, 1],
+                shear: [1, 1, 0, 1],
+                reflect: [-1, 0, 0, 1],
+                flat: [1, 1, 0, 0],
+            };
+            document.querySelectorAll("[data-preset]").forEach((b) =>
+                b.addEventListener("click", () => {
+                    stopMorph();
+                    transformValues = [...presets[b.dataset.preset]];
+                    syncTransform();
+                }),
+            );
+            function stopMorph() {
+                if (morphTimer !== null) clearInterval(morphTimer);
+                morphTimer = null;
+                $("morph-play").textContent = "Predvajaj prehod";
+            }
+            $("morph").addEventListener("input", () => {
+                stopMorph();
+                renderTransform();
+            });
+            $("morph-play").addEventListener("click", () => {
+                if (morphTimer !== null) {
+                    stopMorph();
                     return;
                 }
-
-                const b = preberiMatriko(vnosB.value, "B");
-
-                if (izbira === "sestevanje") {
-                    prikaziMatriko(sestejAliOdstej(a, b, 1), "A + B");
-                } else if (izbira === "odstevanje") {
-                    prikaziMatriko(sestejAliOdstej(a, b, -1), "A − B");
-                } else if (izbira === "mnozenje") {
-                    prikaziMatriko(zmnozi(a, b), "A × B");
+                $("morph").value = "0";
+                renderTransform();
+                $("morph-play").textContent = "Ustavi prehod";
+                morphTimer = setInterval(() => {
+                    const next = Math.min(1, Number($("morph").value) + 0.025);
+                    $("morph").value = String(next);
+                    renderTransform();
+                    if (next >= 1) stopMorph();
+                }, 40);
+            });
+            $("to-transform").addEventListener("click", () => {
+                if (!result || result.A.length !== 2 || result.A[0].length !== 2) return;
+                const values = result.A.flat();
+                if (values.some((n) => Math.abs(n) > 1e6)) {
+                    $("copy-status").textContent =
+                        "Za preslikavo uporabi koeficiente do velikosti 1.000.000.";
+                    return;
                 }
-            } catch (error) {
-                pocistiRezultat();
-                napaka.textContent = error.message;
-            }
-        });
+                transformValues = values;
+                syncTransform();
+                navigate("transform");
+            });
+            $("from-transform").addEventListener("click", () => {
+                stopMorph();
+                const [a, b, c, d] = currentTransform();
+                matrices.a = [
+                    [a, b],
+                    [c, d],
+                ];
+                renderInput("a");
+                $("operation").value = "det";
+                calculate();
+                navigate("lab");
+            });
+            document.addEventListener("visibilitychange", () => {
+                if (document.hidden) {
+                    stop();
+                    stopMorph();
+                }
+            });
 
-        kopiraj.addEventListener("click", async () => {
+            // 4. Naključno sestavljene naloge in prvi poskusi.
+            function makeQuestion(kind) {
+                const op =
+                        kind === "mixed"
+                            ? ["add", "subtract", "multiply", "transpose", "det"][rand(0, 4)]
+                            : kind,
+                    r = rand(2, 3),
+                    n = rand(2, 3),
+                    p = rand(2, 3),
+                    A = randomMatrix(op === "det" ? 2 : r, op === "det" ? 2 : n),
+                    B = op === "multiply" ? randomMatrix(n, p) : randomMatrix(r, n),
+                    out = operation(op, A, B);
+                let i = 0,
+                    j = 0,
+                    question,
+                    answer,
+                    hint,
+                    solution;
+                if (op === "det") {
+                    answer = out;
+                    question = "Izračunaj determinanto matrike A.";
+                    hint = "Za matriko 2 × 2 uporabi ad − bc.";
+                    solution = `(${A[0][0]})·(${A[1][1]}) − (${A[0][1]})·(${A[1][0]}) = ${fmt(answer)}.`;
+                } else {
+                    i = rand(0, out.length - 1);
+                    j = rand(0, out[0].length - 1);
+                    answer = out[i][j];
+                    question = `Določi element v vrstici ${i + 1} in stolpcu ${j + 1} rezultata ${op === "add" ? "A + B" : op === "subtract" ? "A − B" : op === "multiply" ? "A × B" : "Aᵀ"}. Štetje se začne z 1.`;
+                    hint =
+                        op === "multiply"
+                            ? `Pomnoži vrstico ${i + 1} matrike A s stolpcem ${j + 1} matrike B in seštej produkte.`
+                            : op === "transpose"
+                              ? `Poišči A(${j + 1}, ${i + 1}).`
+                              : "Uporabi elementa na istem mestu.";
+                    solution =
+                        op === "multiply"
+                            ? A[i].map((v, k) => `(${v})·(${B[k][j]})`).join(" + ") +
+                              ` = ${fmt(answer)}.`
+                            : op === "transpose"
+                              ? `Aᵀ(${i + 1}, ${j + 1}) = A(${j + 1}, ${i + 1}) = ${fmt(answer)}.`
+                              : `${A[i][j]} ${op === "add" ? "+" : "−"} (${B[i][j]}) = ${fmt(answer)}.`;
+                }
+                return {
+                    op,
+                    A,
+                    B,
+                    i,
+                    j,
+                    question,
+                    answer,
+                    hint,
+                    solution,
+                    checked: false,
+                    revealed: false,
+                    solved: false,
+                };
+            }
+            function readonly(m, name, parent) {
+                const wrap = element("div", undefined, parent);
+                element("strong", name, wrap);
+                const grid = element("div", undefined, wrap, "readonly");
+                grid.style.gridTemplateColumns = `repeat(${m[0].length},minmax(35px,1fr))`;
+                grid.setAttribute("role", "group");
+                grid.setAttribute("aria-label", "Matrika " + name);
+                m.forEach((row, i) =>
+                    row.forEach((v, j) => {
+                        const n = element("span", fmt(v), grid);
+                        n.setAttribute(
+                            "aria-label",
+                            `Vrstica ${i + 1}, stolpec ${j + 1}: ${fmt(v)}`,
+                        );
+                    }),
+                );
+            }
+            function newQuestion() {
+                task = makeQuestion($("practice-kind").value);
+                $("question").textContent = task.question;
+                $("practice-matrices").replaceChildren();
+                readonly(task.A, "A", $("practice-matrices"));
+                if (["add", "subtract", "multiply"].includes(task.op))
+                    readonly(task.B, "B", $("practice-matrices"));
+                $("answer").value = "";
+                $("feedback").textContent = "";
+                $("practice-help").hidden = true;
+            }
+            function statsRender() {
+                $("practice-score").textContent =
+                    `${stats.correct}/${stats.attempts} pravilnih prvih poskusov`;
+                $("practice-xp").textContent = stats.points + " točk";
+            }
+            const KEY = "sidebit-matrike-v1";
+            function saveStats() {
+                try {
+                    localStorage.setItem(KEY, JSON.stringify(stats));
+                    $("storage").textContent =
+                        "Statistika ostane v tem brskalniku. Matrike in trenutna naloga se ne shranjujejo.";
+                } catch {
+                    $("storage").textContent =
+                        "Trajno shranjevanje ni na voljo. Napredek ostane do osvežitve.";
+                }
+            }
+            $("answer-form").addEventListener("submit", (e) => {
+                e.preventDefault();
+                if (task.solved) return;
+                try {
+                    const value = numeric($("answer").value),
+                        ok = Math.abs(value - task.answer) <= 1e-6;
+                    if (!task.checked && !task.revealed) {
+                        task.checked = true;
+                        stats.attempts++;
+                        if (ok) {
+                            stats.correct++;
+                            stats.points += 10;
+                        }
+                        statsRender();
+                        saveStats();
+                    }
+                    if (ok) {
+                        task.solved = true;
+                        $("feedback").textContent =
+                            "Pravilno. " +
+                            (task.revealed
+                                ? "Rešitev je bila že razkrita, zato naloga ni točkovana."
+                                : "Preizkusi naslednjo nalogo.");
+                    } else
+                        $("feedback").textContent =
+                            "Preveri vrstico, stolpec in predznake. Poskusi znova ali odpri namig.";
+                } catch (err) {
+                    $("feedback").textContent = err.message;
+                }
+            });
+            $("practice-hint").addEventListener("click", () => {
+                $("practice-help").textContent = task.hint;
+                $("practice-help").hidden = false;
+            });
+            $("practice-solution").addEventListener("click", () => {
+                task.revealed = true;
+                $("practice-help").textContent = task.solution;
+                $("practice-help").hidden = false;
+            });
+            $("new-question").addEventListener("click", newQuestion);
+            $("practice-kind").addEventListener("change", newQuestion);
+            $("reset-progress").addEventListener("click", () => {
+                if (!confirm("Ponastavim statistiko izzivov?")) return;
+                stats = { attempts: 0, correct: 0, points: 0 };
+                statsRender();
+                saveStats();
+                newQuestion();
+            });
             try {
-                await navigator.clipboard.writeText(besediloRezultata);
-                sporocilo.textContent = "Rezultat je kopiran.";
+                const s = JSON.parse(localStorage.getItem(KEY) || "null");
+                if (
+                    s &&
+                    ["attempts", "correct", "points"].every(
+                        (k) => Number.isSafeInteger(s[k]) && s[k] >= 0,
+                    ) &&
+                    s.correct <= s.attempts &&
+                    s.points === s.correct * 10
+                )
+                    stats = s;
+                $("storage").textContent =
+                    "Statistika izzivov se shranjuje lokalno v tem brskalniku.";
             } catch {
-                sporocilo.textContent =
-                    "Kopiranje ni uspelo. Rezultat lahko označiš in kopiraš ročno.";
+                $("storage").textContent = "Lokalno shranjevanje ni na voljo.";
             }
-        });
-
-        operacija.addEventListener("change", posodobiOperacijo);
-        vnosA.addEventListener("input", pocistiRezultat);
-        vnosB.addEventListener("input", pocistiRezultat);
-
-        obrazec.addEventListener("reset", () => {
-            // Počakaj, da brskalnik obnovi začetne vrednosti.
-            setTimeout(posodobiOperacijo, 0);
-        });
-
-        posodobiOperacijo();
-    </script>
-</body>
+            renderInput("a");
+            renderInput("b");
+            calculate();
+            syncTransform();
+            statsRender();
+            newQuestion();
+        </script>
+    </body>
 </html>
