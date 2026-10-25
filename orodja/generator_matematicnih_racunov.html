@@ -3,10 +3,10 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Generator matematičnih nalog z rešitvami in PDF | Sidebit</title>
+        <title>Generator učnih nalog z rešitvami in PDF | Sidebit</title>
         <meta
             name="description"
-            content="Ustvari matematične naloge za osnovno in srednjo šolo ter fakulteto. Izberi temo in težavnost, vadi z grafi ter prenesi delovni list PDF z rešitvami."
+            content="Sestavi naloge za matematiko, fiziko, kemijo, računalništvo in tehniške smeri. Vadi s postopki in grafi ter prenesi PDF z rešitvami."
         />
         <!-- SEO: če spremeniš naslov datoteke, popravi tudi canonical in spodnje URL-je. -->
         <link
@@ -17,13 +17,10 @@
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="sl_SI" />
         <meta property="og:site_name" content="Sidebit" />
-        <meta
-            property="og:title"
-            content="Generator matematičnih nalog z rešitvami in PDF | Sidebit"
-        />
+        <meta property="og:title" content="Generator učnih nalog z rešitvami in PDF | Sidebit" />
         <meta
             property="og:description"
-            content="Ustvari matematične naloge za osnovno in srednjo šolo ter fakulteto. Izberi temo in težavnost, vadi z grafi ter prenesi delovni list PDF z rešitvami."
+            content="Sestavi naloge za matematiko, fiziko, kemijo, računalništvo in tehniške smeri. Vadi s postopki in grafi ter prenesi PDF z rešitvami."
         />
         <meta
             property="og:url"
@@ -37,8 +34,8 @@
                         "@type": "WebPage",
                         "@id": "https://sidebit.si/orodja/generator_matematicnih_racunov.html#stran",
                         "url": "https://sidebit.si/orodja/generator_matematicnih_racunov.html",
-                        "name": "Generator matematičnih nalog z rešitvami in PDF | Sidebit",
-                        "description": "Ustvari matematične naloge za osnovno in srednjo šolo ter fakulteto. Izberi temo in težavnost, vadi z grafi ter prenesi delovni list PDF z rešitvami.",
+                        "name": "Generator učnih nalog z rešitvami in PDF | Sidebit",
+                        "description": "Sestavi naloge za matematiko, fiziko, kemijo, računalništvo in tehniške smeri. Vadi s postopki in grafi ter prenesi PDF z rešitvami.",
                         "inLanguage": "sl",
                         "breadcrumb": {
                             "@id": "https://sidebit.si/orodja/generator_matematicnih_racunov.html#drobtinice"
@@ -47,9 +44,9 @@
                     {
                         "@type": "WebApplication",
                         "@id": "https://sidebit.si/orodja/generator_matematicnih_racunov.html#orodje",
-                        "name": "Generator matematičnih nalog",
+                        "name": "Generator učnih nalog",
                         "url": "https://sidebit.si/orodja/generator_matematicnih_racunov.html",
-                        "description": "Ustvari matematične naloge za osnovno in srednjo šolo ter fakulteto. Izberi temo in težavnost, vadi z grafi ter prenesi delovni list PDF z rešitvami.",
+                        "description": "Sestavi naloge za matematiko, fiziko, kemijo, računalništvo in tehniške smeri. Vadi s postopki in grafi ter prenesi PDF z rešitvami.",
                         "applicationCategory": "EducationalApplication",
                         "operatingSystem": "Vsi sistemi s sodobnim spletnim brskalnikom",
                         "browserRequirements": "Za interaktivne naloge in PDF mora biti omogočen JavaScript.",
@@ -69,7 +66,7 @@
                             {
                                 "@type": "ListItem",
                                 "position": 2,
-                                "name": "Generator matematičnih nalog",
+                                "name": "Generator učnih nalog",
                                 "item": "https://sidebit.si/orodja/generator_matematicnih_racunov.html"
                             }
                         ]
@@ -341,12 +338,12 @@
     <body>
         <header>
             <a href="../index.html">← Vsa orodja</a>
-            <h1>Generator matematičnih nalog</h1>
+            <h1>Generator učnih nalog</h1>
             <p>
                 Pripravi delovni list, računaj, nariši graf in primerjaj svoj postopek z rešitvijo.
             </p>
             <div class="uvod-stat">
-                <span>16 srednješolskih področij</span><span>96 vrst nalog</span
+                <span>7 učnih smeri</span><span>34 algoritemskih tem</span
                 ><span>PDF z grafi in rešitvami</span>
             </div>
         </header>
@@ -355,7 +352,7 @@
             <nav aria-label="Poglavja generatorja" class="razlaga">
                 <p>
                     <a href="#nastavitve-naslov">Ustvari naloge</a> ·
-                    <a href="#podrocja">Matematične teme</a> ·
+                    <a href="#podrocja">Dodatne matematične teme</a> ·
                     <a href="#primeri">Rešena primera</a> · <a href="#navodila">Navodila</a> ·
                     <a href="#pogosta-vprasanja">Pogosta vprašanja</a>
                 </p>
@@ -374,6 +371,25 @@
                 <h2 id="nastavitve-naslov">Sestavi svojo vajo</h2>
                 <form id="nastavitve">
                     <div class="nastavitve-mreza">
+                        <div class="polje">
+                            <label for="smer">Smer oziroma predmet</label
+                            ><select id="smer">
+                                <option value="matematika">Matematika</option>
+                                <option value="fizika">Fizika</option>
+                                <option value="kemija">Kemija</option>
+                                <option value="racunalnistvo">Računalništvo in omrežja</option>
+                                <option value="elektrotehnika">Elektrotehnika</option>
+                                <option value="ekonomika">Ekonomika</option>
+                                <option value="strojnistvo">Strojništvo</option>
+                            </select>
+                        </div>
+                        <div class="polje">
+                            <label for="mehanizem">Način generiranja</label
+                            ><select id="mehanizem">
+                                <option value="algoritem">Algoritemsko sestavljanje (novo)</option>
+                                <option value="prejsnji">Obstoječe matematične vaje</option>
+                            </select>
+                        </div>
                         <div class="polje">
                             <label for="raven">Raven</label
                             ><select id="raven">
@@ -431,9 +447,11 @@
                         do težje</label
                     >
                     <p class="namig">
-                        Težavnost spreminja obseg podatkov; pri izbranih predlogah tudi število
-                        korakov ali uporabljeno metodo. Posamezne teme niso celotno učno gradivo ali
-                        uradni katalog za maturo.
+                        Težavnost spreminja obseg podatkov in pri sestavljenih izrazih, enačbah ter
+                        algoritmih tudi število korakov. Izbrana raven je orientacija za obseg
+                        računanja, ne uradna razvrstitev po učnem načrtu. Nove smeri so namenjene
+                        srednji šoli in izbranim temeljnim visokošolskim vajam; ne predstavljajo
+                        celotnega študija.
                     </p>
                     <button type="submit" id="ustvari-zbirko">Ustvari naloge in PDF</button>
                     <p id="napaka" role="alert" class="napaka"></p>
@@ -572,8 +590,8 @@
                 <h2 id="navodila">Kako uporabljati generator?</h2>
                 <ol>
                     <li>
-                        Izberi raven. Pri srednji šoli izberi eno področje ali mešan delovni list z
-                        več področji.
+                        Izberi smer in način generiranja, nato raven in eno temo ali mešani delovni
+                        list.
                     </li>
                     <li>
                         Izberi vrsto naloge: računanje, risanje, branje grafov, besedilni problem
@@ -589,10 +607,11 @@
                     </li>
                 </ol>
                 <p>
-                    Predloge uporabljajo naključno izbrane podatke. Generator se izogiba enakim
-                    vprašanjem; če izbrana predloga nima dovolj različnih možnosti, o ponovitvah
-                    izpiše obvestilo. Pri mešanem listu se razpoložljive teme in predloge
-                    izmenjujejo.
+                    Novi način zgradi podatkovni model naloge in iz njega izračuna vprašanje,
+                    rešitev ter postopek. Pri izrazih in enačbah spreminja tudi strukturo operacij.
+                    Pri strokovnih temah uporablja omejen nabor preverjenih fizikalnih in računskih
+                    pravil. Generator nima banke dokončanih nalog in ne uporablja zunanjega AI-ja.
+                    Ne more sam dodajati novih zakonov ali nepodprtih tem.
                 </p>
                 <p>
                     PDF je sestavljen iz slik strani, zato besedila v njem ni mogoče označiti ali
@@ -606,8 +625,56 @@
                     različic učnih načrtov.
                 </p>
             </section>
+            <section class="razlaga">
+                <h2>Nove smeri in način sestavljanja</h2>
+                <p>
+                    Izberi smer, nato eno temo ali mešani list. Na voljo je 34 tem: 6 matematičnih,
+                    po 5 iz fizike, kemije, računalništva in elektrotehnike ter po 4 iz ekonomike in
+                    strojništva. Pri izbiri samo enega tipa so nezdružljive teme izpuščene.
+                </p>
+                <ul>
+                    <li>
+                        <strong>Matematika:</strong> drevesa izrazov, reverzibilne enačbe, polinomi
+                        iz korenov, grafi, analiza in ustvarjeni statistični podatki.
+                    </li>
+                    <li>
+                        <strong>Fizika:</strong> gibanje, sile, delo in moč, toplota, valovanje.
+                    </li>
+                    <li>
+                        <strong>Kemija:</strong> množina, raztopine, stehiometrija, idealni plin in
+                        pH močnih kislin.
+                    </li>
+                    <li>
+                        <strong>Računalništvo:</strong> številski sistemi, prenosi, IPv4, sledenje
+                        zankam in logične tabele.
+                    </li>
+                    <li>
+                        <strong>Elektrotehnika:</strong> Ohmov zakon, sestavljena vezja, energija,
+                        kondenzatorji in idealni transformator.
+                    </li>
+                    <li>
+                        <strong>Ekonomika:</strong> zaporedne spremembe cen, hipotetične obresti,
+                        stroški in produktivnost.
+                    </li>
+                    <li>
+                        <strong>Strojništvo:</strong> navor, normalna napetost, raztezanje in
+                        pretok.
+                    </li>
+                </ul>
+                <p>
+                    Vsaka strokovna naloga v vprašanju poda poenostavitve in enoto odgovora.
+                    Številske odgovore sistem preveri; risbe, simbolne rešitve in logične tabele
+                    preveriš s primerjavo. Strokovne naloge niso načrtovalska priporočila za
+                    dejanske naprave ali finančne odločitve.
+                </p>
+                <p>
+                    Pod »Obstoječe matematične vaje« ostajajo prejšnja področja in ravni. Fakultetni
+                    oznaki v novem načinu povečata zahtevnost sestavljenih računov, ne pomenita
+                    popolnega pokritja univerzitetnih smeri.
+                </p>
+            </section>
             <section class="razlaga" aria-labelledby="podrocja">
-                <h2 id="podrocja">Katere matematične teme lahko vadiš?</h2>
+                <h2 id="podrocja">Dodatne teme v prejšnjem matematičnem načinu</h2>
                 <p>
                     Osnovnošolski del ponuja osnovne računske operacije, ulomke, odstotke in
                     potence. Srednješolski del vsebuje 16 področij s po šestimi predlogami nalog:
@@ -763,7 +830,7 @@
                 </p>
             </section>
         </main>
-        <footer>Sidebit · Matematične naloge za samostojno vajo</footer>
+        <footer>Sidebit · Učne naloge za samostojno vajo</footer>
         <script>
             "use strict";
 
@@ -2330,6 +2397,903 @@
                 return new Blob(deli, { type: "application/pdf" });
             }
 
+            // ALGORITEMSKI GENERATOR: nalogo najprej zgradimo kot podatkovni model,
+            // nato iz istega modela izpeljemo vprašanje, odgovor in postopek.
+            // Tu ni zbirke shranjenih dokončanih nalog in ni povezave z zunanjim AI-jem.
+            const subjects = {
+                matematika: {
+                    name: "Matematika",
+                    topics: [
+                        ["m_izrazi", "Sestavljeni številski izrazi", ["calc"]],
+                        ["m_enacbe", "Algoritemsko sestavljene enačbe", ["calc"]],
+                        ["m_polinomi", "Polinomi iz korenov", ["self"]],
+                        ["m_funkcije", "Funkcije, grafi in branje grafov", ["draw", "read"]],
+                        ["m_analiza", "Odvodi in integrali polinomov", ["calc"]],
+                        ["m_statistika", "Ustvarjeni podatki in statistika", ["calc"]],
+                    ],
+                },
+                fizika: {
+                    name: "Fizika",
+                    topics: [
+                        ["f_gibanje", "Enakomerno pospešeno gibanje", ["word"]],
+                        ["f_sile", "Sila, masa in pospešek", ["word"]],
+                        ["f_energija", "Delo, moč in energija", ["word"]],
+                        ["f_toplota", "Toplota in temperatura", ["word"]],
+                        ["f_valovanje", "Valovi, frekvenca in perioda", ["word"]],
+                    ],
+                },
+                kemija: {
+                    name: "Kemija",
+                    topics: [
+                        ["k_moli", "Masa, množina in delci", ["word"]],
+                        ["k_raztopine", "Koncentracije in redčenje", ["word"]],
+                        ["k_stehiometrija", "Stehiometrijska razmerja", ["word"]],
+                        ["k_plini", "Idealni plin", ["word"]],
+                        ["k_ph", "pH in močne kisline", ["word"]],
+                    ],
+                },
+                racunalnistvo: {
+                    name: "Računalništvo in omrežja",
+                    topics: [
+                        ["r_sistemi", "Številski sistemi", ["calc"]],
+                        ["r_podatki", "Prenos in shranjevanje podatkov", ["word"]],
+                        ["r_omrezja", "IPv4 in podomrežja", ["word"]],
+                        ["r_algoritmi", "Sledenje sestavljenim zankam", ["calc"]],
+                        ["r_logika", "Logični izrazi in tabele", ["self"]],
+                    ],
+                },
+                elektrotehnika: {
+                    name: "Elektrotehnika",
+                    topics: [
+                        ["e_ohm", "Ohmov zakon in moč", ["word"]],
+                        ["e_upori", "Sestavljena uporovna vezja", ["word"]],
+                        ["e_energija", "Električna energija", ["word"]],
+                        ["e_kondenzator", "Kondenzatorji in naboj", ["word"]],
+                        ["e_transformator", "Idealni transformator", ["word"]],
+                    ],
+                },
+                ekonomika: {
+                    name: "Ekonomika in poslovna matematika",
+                    topics: [
+                        ["b_cene", "Zaporedne spremembe cen", ["word"]],
+                        ["b_obresti", "Obrestni račun", ["word"]],
+                        ["b_stroski", "Stroški in točka pokritja", ["word"]],
+                        ["b_produktivnost", "Produktivnost in poraba materiala", ["word"]],
+                    ],
+                },
+                strojnistvo: {
+                    name: "Strojništvo in tehniška fizika",
+                    topics: [
+                        ["s_navor", "Navor in vrtenje", ["word"]],
+                        ["s_napetost", "Normalna mehanska napetost", ["word"]],
+                        ["s_raztezanje", "Toplotno raztezanje", ["word"]],
+                        ["s_pretok", "Pretok in hitrost tekočine", ["word"]],
+                    ],
+                },
+            };
+            const proceduralTypes = {
+                calc: T("calc", "Računanje", "racun"),
+                word: T("word", "Besedilni problem", "besedilo"),
+                self: T("self", "Simbolni odgovor in razlaga", "razlaga"),
+                draw: T("draw", "Nariši graf", "risanje"),
+                read: T("read", "Preberi graf", "graf"),
+            };
+            function activeCatalog() {
+                const minLevel = { m_izrazi: 1, m_enacbe: 2, m_statistika: 2 };
+                const level = levels[$("raven").value] || 3;
+                return subjects[$("smer").value].topics
+                    .filter(([id]) => level >= (minLevel[id] || 3))
+                    .map(([id, name, types]) => ({
+                        id,
+                        name,
+                        types: types.map((t) => proceduralTypes[t]),
+                    }));
+            }
+            function procedural() {
+                return $("mehanizem").value === "algoritem";
+            }
+            function availableCatalog() {
+                return procedural() ? activeCatalog() : topics;
+            }
+            const randomNonzero = (max = 8) => choose([-1, 1]) * R(1, max);
+            const product = (a) => a.reduce((s, n) => s * n, 1);
+            const levels = { osnovna: 1, visja: 2, srednja: 3, fakulteta: 4, napredna: 5 };
+            function generatedTask(
+                question,
+                solution,
+                answer = null,
+                hint = "Izpiši podatke, poenoti enote in uporabi zvezo med veličinami.",
+                extra = {},
+            ) {
+                if (answer !== null && !Number.isFinite(answer))
+                    throw Error("Generator je ustvaril neveljaven rezultat.");
+                return {
+                    question,
+                    solution,
+                    answer,
+                    mode: typeof answer === "number" ? "number" : "self",
+                    hint,
+                    graph: null,
+                    solutionGraph: null,
+                    ...extra,
+                };
+            }
+
+            // Ulomki ohranijo natančen odgovor pri sestavljanju izrazov in enačb.
+            function rational(n, d = 1) {
+                if (!Number.isSafeInteger(n) || !Number.isSafeInteger(d))
+                    throw Error("Ulomek presega natančen celoštevilski obseg.");
+                if (!d) throw Error("Deljenje z nič.");
+                if (d < 0) {
+                    n = -n;
+                    d = -d;
+                }
+                const g = gcd(n, d);
+                return { n: n / g, d: d / g };
+            }
+            function rationalOp(a, b, op) {
+                return op === "+"
+                    ? rational(a.n * b.d + b.n * a.d, a.d * b.d)
+                    : op === "−"
+                      ? rational(a.n * b.d - b.n * a.d, a.d * b.d)
+                      : op === "×"
+                        ? rational(a.n * b.n, a.d * b.d)
+                        : rational(a.n * b.d, a.d * b.n);
+            }
+            const rationalText = (a) => (a.d === 1 ? String(a.n) : `${a.n}/${a.d}`);
+            function expression(depth, trace, elementary = false) {
+                if (depth <= 0 || Math.random() < 0.22) {
+                    const n = elementary ? R(1, 10) : R(-12, 18);
+                    return { text: String(n), value: rational(n) };
+                }
+                const lt = [],
+                    rt = [],
+                    left = expression(depth - 1, lt, elementary),
+                    right = expression(depth - 1, rt, elementary);
+                const ops = shuffledOperators(
+                    elementary
+                        ? ["+", "−", "×"]
+                        : right.value.n === 0
+                          ? ["+", "−", "×"]
+                          : ["+", "−", "×", "÷"],
+                );
+                for (const op of ops) {
+                    try {
+                        const value = rationalOp(left.value, right.value, op);
+                        if (elementary && value.n < 0) continue;
+                        const text = `(${left.text} ${op} ${right.text})`;
+                        trace.push(...lt, ...rt, `${text} = ${rationalText(value)}.`);
+                        return { text, value };
+                    } catch {
+                        /* Poskusimo drugo operacijo z natančno predstavljivim ulomkom. */
+                    }
+                }
+                trace.push(...lt);
+                return left;
+            }
+            function shuffledOperators(ops) {
+                return ops
+                    .map((op) => ({ op, r: Math.random() }))
+                    .sort((a, b) => a.r - b.r)
+                    .map((x) => x.op);
+            }
+            function buildEquation(steps, max) {
+                const root = R(-max, max);
+                let value = rational(root),
+                    text = "x";
+                const operations = [];
+                for (let i = 0; i < steps; i++) {
+                    const op = choose(["+", "−", "×", "÷"]),
+                        n = R(2, max),
+                        before = value;
+                    value = rationalOp(value, rational(n), op);
+                    operations.push({ op, n, before, after: value });
+                    text = `(${text} ${op} ${n})`;
+                }
+                const inverse = [];
+                let result = value;
+                for (const step of [...operations].reverse()) {
+                    const undo = { "+": "−", "−": "+", "×": "÷", "÷": "×" }[step.op];
+                    const next = rationalOp(result, rational(step.n), undo);
+                    inverse.push(
+                        `${rationalText(result)} ${undo} ${step.n} = ${rationalText(next)}.`,
+                    );
+                    result = next;
+                }
+                return { root, text, value, operations, inverse };
+            }
+            function polynomialFromRoots(roots, lead = 1) {
+                let coef = [lead];
+                for (const r of roots) {
+                    const next = Array(coef.length + 1).fill(0);
+                    coef.forEach((v, i) => {
+                        next[i] += v;
+                        next[i + 1] -= v * r;
+                    });
+                    coef = next;
+                }
+                return coef;
+            }
+            function polynomialText(coef) {
+                const n = coef.length - 1;
+                let s = "";
+                coef.forEach((v, i) => {
+                    if (v === 0) return;
+                    const power = n - i,
+                        body =
+                            (Math.abs(v) === 1 && power > 0 ? "" : fmt(Math.abs(v))) +
+                            (power > 0 ? "x" + (power > 1 ? "^" + power : "") : "");
+                    s += (s ? (v < 0 ? " − " : " + ") : v < 0 ? "−" : "") + body;
+                });
+                return s || "0";
+            }
+            function evalPoly(coef, x) {
+                return coef.reduce((s, v) => s * x + v, 0);
+            }
+            function derivePoly(coef) {
+                return coef.slice(0, -1).map((v, i) => v * (coef.length - 1 - i));
+            }
+            function integrateAt(coef, x) {
+                return coef.reduce(
+                    (s, v, i) => s + (v * x ** (coef.length - i)) / (coef.length - i),
+                    0,
+                );
+            }
+
+            // Novogradnja za vse smeri. Število korakov in dovoljena pravila so omejeni.
+            function generateProcedural(topic, type, d = 1, level = "srednja") {
+                const l = levels[level] || 3,
+                    stage = l >= 4 ? 2 : 1,
+                    range = 5 + d * 5 + l;
+                const a = R(2, range),
+                    b = R(2, range),
+                    c = R(2, range),
+                    n = R(2, 5 + d),
+                    x = R(1, 5 + d);
+                const result = (q, s, v = null, h, extra) => generatedTask(q, s, v, h, extra);
+                switch (topic) {
+                    case "m_izrazi": {
+                        const trace = [],
+                            tree = expression(
+                                l === 1 ? Math.min(2, d) : Math.min(4, 1 + d + (l >= 4 ? 1 : 0)),
+                                trace,
+                                l === 1,
+                            );
+                        return result(
+                            `Izračunaj vrednost izraza ${tree.text}. Odgovori s številom ali ulomkom.`,
+                            trace.join("\n") + `\nRezultat: ${rationalText(tree.value)}.`,
+                            tree.value.n / tree.value.d,
+                            "Najprej izračunaj notranje oklepaje. Pri deljenju ulomkov množi z obratnim ulomkom.",
+                            { model: { kind: "expression", tree, trace } },
+                        );
+                    }
+                    case "m_enacbe": {
+                        const eq = buildEquation(Math.min(7, 1 + d + (l >= 4 ? 2 : 0)), range);
+                        return result(
+                            `Reši enačbo ${eq.text} = ${rationalText(eq.value)}.`,
+                            `Operacije odpravimo v obratnem vrstnem redu:\n${eq.inverse.join("\n")}\nZato x = ${eq.root}.`,
+                            eq.root,
+                            "Začni pri najbolj zunanjem oklepaju. Uporabi obratno operacijo.",
+                            { model: { kind: "equation", ...eq } },
+                        );
+                    }
+                    case "m_polinomi": {
+                        const count = l >= 4 ? d + 2 : Math.min(3, d + 1),
+                            roots = Array.from({ length: count }, () => R(-8, 8)),
+                            lead = randomNonzero(4),
+                            coef = polynomialFromRoots(roots, lead);
+                        return result(
+                            `Razstavi polinom P(x) = ${polynomialText(coef)} in določi vse njegove realne ničle ter njihove večkratnosti.`,
+                            `P(x) = ${lead} · ${roots.map((r) => `(x − (${r}))`).join(" · ")}.\nNičle z večkratnostmi: ${[...new Set(roots)].map((r) => `${r} (${roots.filter((x) => x === r).length}-krat)`).join(", ")}.`,
+                            null,
+                            "Poišči celoštevilske ničle med delitelji prostega člena; pri prostem členu 0 najprej izpostavi x.",
+                            { model: { kind: "polynomial", roots, coef } },
+                        );
+                    }
+                    case "m_funkcije": {
+                        const family = choose(["line", "quad", "exp"]),
+                            m = randomNonzero(3),
+                            h = R(-4, 4),
+                            k = R(-4, 4);
+                        let curve,
+                            prompt,
+                            solution,
+                            range = { xmin: -8, xmax: 8, ymin: -10, ymax: 12 };
+                        if (family === "line") {
+                            curve = line(m, k);
+                            prompt = `f(x) = ${lin(m, k)}`;
+                            solution = `Naklon ${m}, začetna vrednost ${k}; ničla x = ${frac(-k, m)}. Točki (0, ${k}) in (1, ${m + k}).`;
+                        } else if (family === "quad") {
+                            curve = quad(m, h, k);
+                            prompt = `f(x) = ${m}(x − (${h}))² ${signed(k)}`;
+                            solution = `Teme T(${h}, ${k}), os x = ${h}, odprtost ${m > 0 ? "navzgor" : "navzdol"}. Točki (${h - 1}, ${m + k}) in (${h + 1}, ${m + k}).`;
+                        } else {
+                            const base = choose([2, 3]);
+                            curve = { kind: "exp", base, k };
+                            prompt = `f(x) = ${base}^x ${signed(k)}`;
+                            solution = `Vodoravna asimptota y = ${k}. Točki (0, ${1 + k}), (1, ${base + k}). Funkcija narašča.`;
+                            range = { xmin: -3, xmax: 4, ymin: -6, ymax: 15 };
+                        }
+                        const g = graph([curve], [], range);
+                        return result(
+                            type === "draw"
+                                ? `Skiciraj graf ${prompt}. Označi značilne točke in opiši obnašanje funkcije.`
+                                : `Iz prikazanega grafa določi značilne točke ter predpis funkcije. Pri premici določi naklon; pri paraboli teme; pri eksponentni funkciji asimptoto.`,
+                            `Predpis: ${prompt}.\n${solution}`,
+                            null,
+                            "Poišči presečišče z osjo y in še eno značilno točko.",
+                            {
+                                graph: type === "read" ? g : null,
+                                solutionGraph: g,
+                                model: { kind: "function", family, curve },
+                            },
+                        );
+                    }
+                    case "m_analiza": {
+                        const degree = Math.min(6, d + stage),
+                            coef = Array.from({ length: degree + 1 }, () => R(-8, 8));
+                        if (!coef[0]) coef[0] = R(1, 5);
+                        const operation = choose(["derivative", "integral"]),
+                            at = R(1, 4);
+                        if (operation === "derivative") {
+                            const derivative = derivePoly(coef);
+                            return result(
+                                `Za f(x) = ${polynomialText(coef)} izračunaj f′(${at}).`,
+                                `f′(x) = ${polynomialText(derivative)}.\nf′(${at}) = ${fmt(evalPoly(derivative, at))}.`,
+                                evalPoly(derivative, at),
+                                "Odvajaj vsak člen posebej: (a·x^n)′ = a·n·x^(n−1).",
+                                { model: { kind: "derivative", coef, at } },
+                            );
+                        }
+                        const hi = R(1, 4);
+                        return result(
+                            `Izračunaj določeni integral f(x) = ${polynomialText(coef)} na intervalu [0, ${hi}].`,
+                            `Integriramo vsak člen a·x^n v a·x^(n+1)/(n+1).\nF(${hi}) − F(0) = ${fmt(integrateAt(coef, hi))}. Integral je predznačena vrednost, ne nujno geometrijska ploščina.`,
+                            integrateAt(coef, hi),
+                            "Poišči primitivno funkcijo in odštej vrednosti na mejah.",
+                            { model: { kind: "integral", coef, hi } },
+                        );
+                    }
+                    case "m_statistika": {
+                        const data = Array.from({ length: 5 + 2 * d }, () => R(1, 15 + 10 * d)),
+                            sort = [...data].sort((x, y) => x - y),
+                            metric = choose(
+                                l < 3
+                                    ? ["mean", "median", "range"]
+                                    : ["mean", "median", "range", "variance"],
+                            ),
+                            mean = data.reduce((s, v) => s + v, 0) / data.length;
+                        let val, name, sol;
+                        if (metric === "mean") {
+                            val = mean;
+                            name = "aritmetično sredino";
+                            sol = `Vsota ${data.reduce((s, v) => s + v, 0)} / ${data.length}`;
+                        } else if (metric === "median") {
+                            val = sort[Math.floor(sort.length / 2)];
+                            name = "mediano";
+                            sol = `Urejeni podatki: ${sort.join(", ")}. Srednji člen`;
+                        } else if (metric === "range") {
+                            val = sort.at(-1) - sort[0];
+                            name = "variacijski razmik";
+                            sol = `Največja vrednost ${sort.at(-1)} − najmanjša ${sort[0]}`;
+                        } else {
+                            val = data.reduce((s, v) => s + (v - mean) ** 2, 0) / data.length;
+                            name = "populacijsko varianco (deli z N, ne N − 1)";
+                            sol = `Sredina μ = ${fmt(mean)}. Seštej (xᵢ − μ)² in deli z N = ${data.length}`;
+                        }
+                        return result(
+                            `Za podatke ${data.join(", ")} izračunaj ${name}.`,
+                            sol + ` = ${fmt(val)}.`,
+                            val,
+                            "Za mediano podatke uredi, za sredino jih seštej; preveri, katera mera je zahtevana.",
+                            { model: { kind: "statistics", data, metric } },
+                        );
+                    }
+                    case "f_gibanje": {
+                        const v0 = R(0, 15),
+                            acc = R(1, 6),
+                            time = R(2, 12),
+                            distance = v0 * time + 0.5 * acc * time * time,
+                            unknown = choose(["s", "v", "a", "t"]);
+                        const cases = {
+                            s: [
+                                `Telo se giblje s stalnim pospeškom ${acc} m/s², začetna hitrost je ${v0} m/s. Kolikšno pot opravi v ${time} s? Odgovor v m.`,
+                                `s = v₀t + at²/2 = ${v0}·${time} + ${acc}·${time}²/2 = ${distance} m.`,
+                                distance,
+                            ],
+                            v: [
+                                `Telo začne s hitrostjo ${v0} m/s in se ${time} s pospešuje z ${acc} m/s². Določi končno hitrost v m/s.`,
+                                `v = v₀ + at = ${v0} + ${acc}·${time} = ${v0 + acc * time} m/s.`,
+                                v0 + acc * time,
+                            ],
+                            a: [
+                                `Telo ima začetno hitrost ${v0} m/s. V ${time} s opravi ${distance} m pri stalnem pospešku. Izračunaj pospešek v m/s².`,
+                                `a = 2(s − v₀t)/t² = ${acc} m/s².`,
+                                acc,
+                            ],
+                            t: [
+                                `Telo začne s hitrostjo ${v0} m/s in se pospešuje z ${acc} m/s². Kdaj opravi ${distance} m? Odgovor v s; išči pozitivni čas.`,
+                                `Reši ${distance} = ${v0}t + ${acc}t²/2.\nt = (−v₀ + √(v₀² + 2as))/a = ${time} s.`,
+                                time,
+                            ],
+                        };
+                        return result(...cases[unknown]);
+                    }
+                    case "f_sile": {
+                        const mass = R(2, 80),
+                            acc = R(1, 15),
+                            force = mass * acc,
+                            target = choose(["F", "m", "a"]);
+                        return result(
+                            target === "F"
+                                ? `Rezultanta sil na telo mase ${mass} kg povzroča pospešek ${acc} m/s². Izračunaj rezultanto v N.`
+                                : target === "m"
+                                  ? `Rezultanta ${force} N povzroči pospešek ${acc} m/s². Kolikšna je masa telesa v kg?`
+                                  : `Na telo mase ${mass} kg deluje rezultanta ${force} N. Izračunaj pospešek v m/s².`,
+                            `F = ma. ${target} = ${fmt(target === "F" ? force : target === "m" ? mass : acc)}.`,
+                            target === "F" ? force : target === "m" ? mass : acc,
+                        );
+                    }
+                    case "f_energija": {
+                        const force = a * 10,
+                            distance = b,
+                            angle = choose([0, 30, 60]),
+                            work = force * distance * Math.cos((angle * Math.PI) / 180),
+                            time = c,
+                            target = choose(["work", "power"]);
+                        return result(
+                            `Stalna sila ${force} N deluje pod kotom ${angle}° glede na premik ${distance} m. ${target === "power" ? `Premik traja ${time} s. Izračunaj povprečno moč v W.` : "Izračunaj delo v J."}`,
+                            `W = Fs cos α = ${fmt(work)} J.` +
+                                (target === "power" ? `\nP = W/t = ${fmt(work / time)} W.` : ""),
+                            target === "power" ? work / time : work,
+                        );
+                    }
+                    case "f_toplota": {
+                        const mass = R(1, 12),
+                            capacity = choose([4200, 900, 460]),
+                            delta = R(5, 50),
+                            Q = mass * capacity * delta,
+                            target = choose(["Q", "dt"]);
+                        return result(
+                            target === "Q"
+                                ? `Vzorec mase ${mass} kg s specifično toploto ${capacity} J/(kg·K) segrejemo za ${delta} K. Brez izgub in faznih sprememb: koliko toplote potrebuje? Odgovor v kJ.`
+                                : `Vzorec mase ${mass} kg in specifične toplote ${capacity} J/(kg·K) prejme ${Q / 1000} kJ toplote. Brez izgub in faznih sprememb določi dvig temperature v K.`,
+                            `Q = mcΔT. ${target === "Q" ? `Q = ${mass}·${capacity}·${delta} / 1000 = ${Q / 1000} kJ.` : `ΔT = ${Q}/(${mass}·${capacity}) = ${delta} K.`}`,
+                            target === "Q" ? Q / 1000 : delta,
+                        );
+                    }
+                    case "f_valovanje": {
+                        const speed = choose([20, 40, 100, 340]),
+                            frequency = R(2, 20) * 5,
+                            lambda = speed / frequency,
+                            target = choose(["lambda", "f", "T"]);
+                        return result(
+                            target === "lambda"
+                                ? `Valovanje se širi s hitrostjo ${speed} m/s pri frekvenci ${frequency} Hz. Določi valovno dolžino v m.`
+                                : target === "f"
+                                  ? `Val ima valovno dolžino ${fmt(lambda)} m in hitrost ${speed} m/s. Določi frekvenco v Hz.`
+                                  : `Frekvenca je ${frequency} Hz. Izračunaj periodo v ms.`,
+                            `v = λf, T = 1/f. ${target === "lambda" ? `λ = ${speed}/${frequency} = ${fmt(lambda)} m.` : target === "f" ? `f = ${speed}/(${speed}/${frequency}) = ${frequency} Hz.` : `T = 1000/${frequency} = ${fmt(1000 / frequency)} ms.`}`,
+                            target === "lambda"
+                                ? lambda
+                                : target === "f"
+                                  ? frequency
+                                  : 1000 / frequency,
+                        );
+                    }
+                    case "k_moli": {
+                        const M = choose([18, 44, 58.5, 98]),
+                            mol = R(1, 20) / 2,
+                            mass = M * mol,
+                            target = choose(["n", "m", "N"]);
+                        return result(
+                            target === "n"
+                                ? `Snov z molsko maso ${fmt(M)} g/mol ima maso ${fmt(mass)} g. Kolikšna je množina v mol?`
+                                : target === "m"
+                                  ? `Množina snovi je ${fmt(mol)} mol, molska masa pa ${fmt(M)} g/mol. Izračunaj maso v g.`
+                                  : `Vzorec vsebuje ${fmt(mol)} mol delcev. Uporabi Nₐ = 6,022·10^23 mol⁻¹. Določi koeficient pred 10^23 v številu delcev.`,
+                            `m = nM; N = nNₐ. ${target === "n" ? `n = ${fmt(mass)}/${fmt(M)} = ${fmt(mol)} mol.` : target === "m" ? `m = ${fmt(mol)}·${fmt(M)} = ${fmt(mass)} g.` : `N = ${fmt(mol * 6.022)}·10^23 delcev.`}`,
+                            target === "n" ? mol : target === "m" ? mass : mol * 6.022,
+                        );
+                    }
+                    case "k_raztopine": {
+                        const c1 = R(2, 12) / 2,
+                            V1 = R(1, 10) * 25,
+                            factor = R(2, 8),
+                            V2 = V1 * factor,
+                            c2 = c1 / factor,
+                            target = choose(["c2", "V2"]);
+                        return result(
+                            target === "c2"
+                                ? `Odmerimo ${V1} mL raztopine koncentracije ${fmt(c1)} mol/L in jo z vodo razredčimo do skupnega volumna ${V2} mL. Določi končno koncentracijo v mol/L.`
+                                : `Kolikšen mora biti končni volumen v mL, če ${V1} mL raztopine koncentracije ${fmt(c1)} mol/L razredčimo do ${fmt(c2)} mol/L?`,
+                            `Pri redčenju ostane množina topljenca enaka: c₁V₁ = c₂V₂.\n${target === "c2" ? `c₂ = ${fmt(c1)}·${V1}/${V2} = ${fmt(c2)} mol/L.` : `V₂ = ${fmt(c1)}·${V1}/(${fmt(c1)}/${factor}) = ${V2} mL.`}`,
+                            target === "c2" ? c2 : V2,
+                        );
+                    }
+                    case "k_stehiometrija": {
+                        const equations = [
+                                {
+                                    text: "2H₂ + O₂ → 2H₂O",
+                                    reactant: "H₂",
+                                    product: "H₂O",
+                                    ratio: 1,
+                                    M: 18,
+                                },
+                                {
+                                    text: "N₂ + 3H₂ → 2NH₃",
+                                    reactant: "N₂",
+                                    product: "NH₃",
+                                    ratio: 2,
+                                    M: 17,
+                                },
+                                {
+                                    text: "2CO + O₂ → 2CO₂",
+                                    reactant: "CO",
+                                    product: "CO₂",
+                                    ratio: 1,
+                                    M: 44,
+                                },
+                            ],
+                            eq = choose(equations),
+                            mol = R(1, 20) / 2,
+                            target = choose(["mol", "mass"]),
+                            productMol = mol * eq.ratio;
+                        return result(
+                            `Za reakcijo ${eq.text} je na voljo ${fmt(mol)} mol ${eq.reactant}; drugi reaktant je v presežku in izkoristek 100 %. ${target === "mol" ? `Koliko mol ${eq.product} nastane?` : `Kolikšna masa ${eq.product} nastane v g? Uporabi M(${eq.product}) = ${eq.M} g/mol.`}`,
+                            `Iz koeficientov: n(produkt) = ${eq.ratio}·n(reaktant) = ${fmt(productMol)} mol.` +
+                                (target === "mass"
+                                    ? `\nm = nM = ${fmt(productMol)}·${eq.M} = ${fmt(productMol * eq.M)} g.`
+                                    : ""),
+                            target === "mol" ? productMol : productMol * eq.M,
+                        );
+                    }
+                    case "k_plini": {
+                        const mol = R(1, 12) / 2,
+                            T = R(27, 127) + 273.15,
+                            p = choose([100, 150, 200]),
+                            Rgas = 8.314,
+                            V = (mol * Rgas * T) / p,
+                            target = choose(["V", "n"]);
+                        return result(
+                            target === "V"
+                                ? `Idealni plin: n = ${fmt(mol)} mol, T = ${fmt(T)} K, p = ${p} kPa. Uporabi R = 8,314 kPa·L/(mol·K). Določi volumen v L.`
+                                : `Idealni plin ima V = ${fmt(V)} L, T = ${fmt(T)} K in p = ${p} kPa. Uporabi R = 8,314 kPa·L/(mol·K). Določi n v mol.`,
+                            `pV = nRT. ${target === "V" ? `V = ${fmt(mol)}·8,314·${fmt(T)}/${p} = ${fmt(V)} L.` : `n = pV/(RT) ≈ ${fmt(mol)} mol.`}`,
+                            target === "V" ? V : mol,
+                        );
+                    }
+                    case "k_ph": {
+                        const exponent = R(1, 4),
+                            coef = R(1, 8),
+                            conc = coef * 10 ** -exponent;
+                        return result(
+                            `Za vodno raztopino močne enoprotonske kisline privzemi popolno disociacijo in idealno obnašanje. [H₃O⁺] = ${coef}·10^(−${exponent}) mol/L. Izračunaj pH.`,
+                            `pH = −log₁₀([H₃O⁺]/(1 mol/L)) = ${fmt(-Math.log10(conc))}.`,
+                            -Math.log10(conc),
+                            "Uporabi desetiški logaritem. Ne uporabi naravnega logaritma.",
+                        );
+                    }
+                    case "r_sistemi": {
+                        const base = choose([2, 8, 16]),
+                            number = R(10, 2 ** (4 + d + l) - 1),
+                            target = choose(["to10", "from10"]);
+                        return target === "to10"
+                            ? result(
+                                  `Pretvori zapis ${number.toString(base).toUpperCase()} iz osnove ${base} v desetiški sistem.`,
+                                  `Vsako števko pomnoži z ustrezno potenco ${base} in seštej.\nRezultat: ${number}.`,
+                                  number,
+                              )
+                            : result(
+                                  `Število ${number} iz desetiškega sistema pretvori v osnovo ${base}.`,
+                                  `Zaporedoma deli z ${base}, zapisuj ostanke in jih preberi od zadaj: ${number.toString(base).toUpperCase()}.`,
+                                  null,
+                                  "Uporabi zaporedno deljenje z osnovo in ostanke.",
+                              );
+                    }
+                    case "r_podatki": {
+                        const size = R(1, 200) * 5,
+                            speed = choose([10, 20, 50, 100, 200]),
+                            efficiency = choose([0.7, 0.8, 0.9, 1]),
+                            target = choose(["time", "size"]);
+                        return result(
+                            target === "time"
+                                ? `Prenesti je treba ${size} MB pri nazivni hitrosti ${speed} Mbit/s. Učinkovitost prenosa je ${fmt(efficiency * 100)} %. Uporabi decimalne enote (1 MB = 10^6 B). Koliko sekund traja prenos?`
+                                : `Povezava ${speed} Mbit/s dosega ${fmt(efficiency * 100)} % nazivne hitrosti. Koliko MB prenese v ${size} s? Decimalne enote.`,
+                            `1 B = 8 bitov. Dejanska hitrost = ${fmt(speed * efficiency)} Mbit/s.\n${target === "time" ? `t = ${size}·8/(${speed}·${fmt(efficiency)}) = ${fmt((size * 8) / (speed * efficiency))} s.` : `V = ${speed}·${fmt(efficiency)}·${size}/8 = ${fmt((speed * efficiency * size) / 8)} MB.`}`,
+                            target === "time"
+                                ? (size * 8) / (speed * efficiency)
+                                : (speed * efficiency * size) / 8,
+                        );
+                    }
+                    case "r_omrezja": {
+                        const prefix = R(24, 29),
+                            hostbits = 32 - prefix,
+                            target = choose(["hosts", "subnets", "network"]);
+                        if (target === "hosts")
+                            return result(
+                                `Koliko uporabnih naslovov za gostitelje vsebuje običajno IPv4-podomrežje /${prefix}? Omrežni in razpršeni naslov nista uporabna za gostitelja.`,
+                                `Gostiteljski biti: 32 − ${prefix} = ${hostbits}.\n2^${hostbits} − 2 = ${2 ** hostbits - 2}.`,
+                                2 ** hostbits - 2,
+                            );
+                        if (target === "subnets") {
+                            const old = R(16, 23);
+                            return result(
+                                `Omrežje /${old} razdelimo na enako velika podomrežja /${prefix}. Koliko podomrežij nastane?`,
+                                `Izposojeni biti: ${prefix} − ${old} = ${prefix - old}.\nŠtevilo podomrežij = 2^${prefix - old} = ${2 ** (prefix - old)}.`,
+                                2 ** (prefix - old),
+                            );
+                        }
+                        const octet = R(1, 254),
+                            block = 2 ** hostbits,
+                            network = Math.floor(octet / block) * block;
+                        return result(
+                            `Gostitelj ima IPv4-naslov 192.168.${a}.${octet}/${prefix}. Določi zadnji oktet omrežnega naslova.`,
+                            `Velikost bloka je ${block}; floor(${octet}/${block})·${block} = ${network}.\nOmrežje: 192.168.${a}.${network}/${prefix}.`,
+                            network,
+                        );
+                    }
+                    case "r_algoritmi": {
+                        const start = R(-5, 5),
+                            outer = R(2, 5 + d),
+                            inner = R(2, 4 + d),
+                            ci = R(1, 4),
+                            cj = R(1, 4),
+                            constant = R(-3, 5),
+                            nested = l >= 4 || d >= 2;
+                        let sum = start,
+                            steps = [];
+                        for (let i = 1; i <= outer; i++) {
+                            let delta = 0;
+                            if (nested) {
+                                for (let j = 1; j <= inner; j++)
+                                    delta += ci * i + cj * j + constant;
+                            } else delta = ci * i + constant;
+                            sum += delta;
+                            steps.push(`i = ${i}: prištejemo ${delta}; s = ${sum}.`);
+                        }
+                        return result(
+                            `Sledi psevdokodi. Obe meji zanke sta vključeni. Kakšna je končna vrednost s?\ns = ${start}\nza i od 1 do ${outer}:\n${nested ? `    za j od 1 do ${inner}:\n        s = s + ${ci}·i + ${cj}·j + (${constant})` : `    s = s + ${ci}·i + (${constant})`}`,
+                            steps.join("\n"),
+                            sum,
+                            "Izdelaj sledilno tabelo in ohrani s med ponovitvami.",
+                            {
+                                model: {
+                                    kind: "loops",
+                                    start,
+                                    outer,
+                                    inner,
+                                    ci,
+                                    cj,
+                                    constant,
+                                    nested,
+                                },
+                            },
+                        );
+                    }
+                    case "r_logika": {
+                        const ops = ["∧", "∨", "→"],
+                            left = choose(ops),
+                            right = choose(ops),
+                            neg = Math.random() < 0.5,
+                            calc = (op, a, b) =>
+                                op === "∧" ? a && b : op === "∨" ? a || b : !a || b;
+                        const rows = [];
+                        for (const p of [false, true])
+                            for (const q of [false, true])
+                                for (const r of [false, true])
+                                    rows.push(
+                                        `${+p} ${+q} ${+r} | ${+calc(right, neg ? !calc(left, p, q) : calc(left, p, q), r)}`,
+                                    );
+                        return result(
+                            `Sestavi resničnostno tabelo za ${neg ? "¬" : ""}(p ${left} q) ${right} r. Določi tudi, ali je izjava tavtologija.`,
+                            `p q r | rezultat\n${rows.join("\n")}\nIzjava ni tavtologija (vsaj ena vrstica je 0).`,
+                            null,
+                            "Najprej izračunaj notranji oklepaj, nato negacijo, nazadnje zunanji veznik.",
+                        );
+                    }
+                    case "e_ohm": {
+                        const resistance = R(2, 30) * 10,
+                            current = R(1, 20) / 10,
+                            U = resistance * current,
+                            target = choose(["U", "R", "I", "P"]);
+                        const cases = {
+                            U: [
+                                `Idealen upor ima R = ${resistance} Ω in tok I = ${fmt(current)} A. Določi napetost v V.`,
+                                U,
+                            ],
+                            R: [
+                                `Na idealnem uporu je ${fmt(U)} V, tok je ${fmt(current)} A. Določi upor v Ω.`,
+                                resistance,
+                            ],
+                            I: [
+                                `Napetost na idealnem uporu ${resistance} Ω je ${fmt(U)} V. Določi tok v A.`,
+                                current,
+                            ],
+                            P: [
+                                `Skozi idealen upor ${resistance} Ω teče ${fmt(current)} A. Določi električno moč v W.`,
+                                current * current * resistance,
+                            ],
+                        };
+                        return result(
+                            cases[target][0],
+                            `U = RI; P = UI = I²R.\n${target} = ${fmt(cases[target][1])}.`,
+                            cases[target][1],
+                        );
+                    }
+                    case "e_upori": {
+                        let value = R(1, 20) * 10,
+                            description = `R₁ = ${value} Ω`,
+                            steps = [];
+                        const count = 2 + d;
+                        for (let i = 2; i <= count; i++) {
+                            const resistor = R(1, 20) * 10,
+                                series = Math.random() < 0.5,
+                                before = value;
+                            value = series ? value + resistor : 1 / (1 / value + 1 / resistor);
+                            description = `(${description}) ${series ? "zaporedno" : "vzporedno"} z R${i} = ${resistor} Ω`;
+                            steps.push(
+                                `${i - 1}. korak: ${series ? `${fmt(before)} + ${resistor}` : `1/(1/${fmt(before)} + 1/${resistor})`} = ${fmt(value)} Ω.`,
+                            );
+                        }
+                        return result(
+                            `Izračunaj nadomestni upor idealnega vezja. Oklepaji določajo zaporedje sestavljanja: ${description}. Odgovor v Ω.`,
+                            steps.join("\n"),
+                            value,
+                            "Sledi notranjim oklepajem. Zaporedne upore seštej, pri vzporednih seštevaj prevodnosti.",
+                        );
+                    }
+                    case "e_energija": {
+                        const power = R(1, 30) * 50,
+                            hours = R(1, 8),
+                            days = R(5, 30),
+                            energy = (power / 1000) * hours * days;
+                        return result(
+                            `Porabnik z močjo ${power} W deluje ${hours} ur na dan, ${days} dni. Določi porabljeno energijo v kWh.`,
+                            `E = P·t = (${power}/1000)·${hours}·${days} = ${fmt(energy)} kWh.`,
+                            energy,
+                        );
+                    }
+                    case "e_kondenzator": {
+                        const capacitance = R(1, 30) * 10,
+                            U = R(2, 30),
+                            target = choose(["charge", "energy"]);
+                        return result(
+                            `Idealen kondenzator ima C = ${capacitance} μF in U = ${U} V. ${target === "charge" ? "Določi naboj v μC." : "Določi shranjeno energijo v mJ."}`,
+                            target === "charge"
+                                ? `Q = CU = ${capacitance}·${U} = ${capacitance * U} μC.`
+                                : `E = CU²/2 = ${capacitance}·10^(−6)·${U}²/2 J = ${fmt((capacitance * U * U) / 2000)} mJ.`,
+                            target === "charge" ? capacitance * U : (capacitance * U * U) / 2000,
+                        );
+                    }
+                    case "e_transformator": {
+                        const n1 = R(1, 20) * 50,
+                            n2 = R(1, 20) * 25,
+                            U1 = choose([12, 24, 48, 120, 230]),
+                            target = choose(["voltage", "ratio"]);
+                        return result(
+                            `Idealen transformator ima N₁ = ${n1} in N₂ = ${n2} ovojev. Primarna izmenična napetost je ${U1} V. ${target === "voltage" ? "Določi sekundarno napetost v V." : "Določi razmerje U₂/U₁."}`,
+                            `U₂/U₁ = N₂/N₁ = ${fmt(n2 / n1)}. ${target === "voltage" ? `U₂ = ${U1}·${n2}/${n1} = ${fmt((U1 * n2) / n1)} V.` : ""}`,
+                            target === "voltage" ? (U1 * n2) / n1 : n2 / n1,
+                        );
+                    }
+                    case "b_cene": {
+                        const initial = R(10, 300) * 5,
+                            changes = Array.from(
+                                { length: d + 1 },
+                                () => choose([-1, 1]) * R(1, 6) * 5,
+                            );
+                        let value = initial,
+                            steps = [];
+                        changes.forEach((rate) => {
+                            value *= 1 + rate / 100;
+                            steps.push(
+                                `Sprememba ${signed(rate)} %: pomnoži z ${fmt(1 + rate / 100)} → ${fmt(value)} €.`,
+                            );
+                        });
+                        return result(
+                            `Začetna cena je ${initial} €. Zaporedne spremembe so ${changes.map((v) => signed(v) + " %").join(", ")}. Izračunaj končno ceno v €. Ne zaokrožuj vmesnih korakov.`,
+                            steps.join("\n"),
+                            value,
+                            "Odstotnih sprememb ne seštevaj; faktorje množi.",
+                        );
+                    }
+                    case "b_obresti": {
+                        const capital = R(10, 100) * 100,
+                            rate = R(1, 8),
+                            years = R(2, 8),
+                            compound = d >= 2,
+                            target = choose(["final", "interest"]),
+                            final = compound
+                                ? capital * (1 + rate / 100) ** years
+                                : capital * (1 + (rate / 100) * years);
+                        return result(
+                            `Hipotetični primer: glavnica ${capital} €, letna obrestna mera ${rate} %, čas ${years} let. Uporabi ${compound ? "letno obrestno obrestovanje" : "navadni obrestni račun"}, brez davkov in stroškov. Določi ${target === "final" ? "končni znesek" : "skupne obresti"} v €.`,
+                            `${compound ? "Kₙ = K₀(1 + p/100)^n" : "Kₙ = K₀(1 + np/100)"} = ${fmt(final)} €.\nObresti = Kₙ − K₀ = ${fmt(final - capital)} €.`,
+                            target === "final" ? final : final - capital,
+                        );
+                    }
+                    case "b_stroski": {
+                        const fixed = R(10, 100) * 50,
+                            variable = R(2, 20),
+                            margin = R(2, 15),
+                            price = variable + margin,
+                            target = choose(["break", "profit"]),
+                            quantity = R(10, 100) * 10;
+                        return result(
+                            target === "break"
+                                ? `Fiksni stroški so ${fixed} €, variabilni strošek ${variable} €/kos, prodajna cena ${price} €/kos. Koliko celih kosov je najmanj treba prodati, da prihodek pokrije stroške?`
+                                : `Fiksni stroški so ${fixed} €, variabilni strošek ${variable} €/kos, prodajna cena ${price} €/kos. Izračunaj poslovni izid pri ${quantity} prodanih kosih v €. Negativno število pomeni izgubo.`,
+                            target === "break"
+                                ? `q ≥ F/(p − v) = ${fixed}/${margin} = ${fmt(fixed / margin)}. Za cele kose zaokrožimo navzgor: ${Math.ceil(fixed / margin)}.`
+                                : `Dobiček = (p − v)q − F = ${margin}·${quantity} − ${fixed} = ${margin * quantity - fixed} €.`,
+                            target === "break"
+                                ? Math.ceil(fixed / margin)
+                                : margin * quantity - fixed,
+                        );
+                    }
+                    case "b_produktivnost": {
+                        const workers = R(2, 12),
+                            hours = R(2, 8),
+                            perHour = R(2, 15),
+                            target = choose(["output", "hours"]),
+                            output = workers * hours * perHour;
+                        return result(
+                            target === "output"
+                                ? `${workers} delavcev dela ${hours} ur. Vsak izdela ${perHour} kosov na uro. Privzemi stalno produktivnost brez izgub. Koliko kosov izdelajo skupaj?`
+                                : `Naročilo obsega ${output} kosov. Dela ${workers} delavcev, vsak izdela ${perHour} kosov na uro. Privzemi stalno produktivnost. Koliko ur potrebujejo?`,
+                            `N = delavci · čas · produktivnost.\n${target === "output" ? `N = ${workers}·${hours}·${perHour} = ${output} kosov.` : `t = ${output}/(${workers}·${perHour}) = ${hours} ur.`}`,
+                            target === "output" ? output : hours,
+                        );
+                    }
+                    case "s_navor": {
+                        const force = R(2, 40) * 10,
+                            arm = R(1, 20) / 10,
+                            angle = choose([30, 60, 90]);
+                        return result(
+                            `Sila ${force} N deluje na ročici dolžine ${fmt(arm)} m pod kotom ${angle}° glede na ročico. Določi velikost navora v N·m.`,
+                            `M = Fr sin α = ${force}·${fmt(arm)}·sin ${angle}° = ${fmt(force * arm * Math.sin((angle * Math.PI) / 180))} N·m.`,
+                            force * arm * Math.sin((angle * Math.PI) / 180),
+                        );
+                    }
+                    case "s_napetost": {
+                        const force = R(1, 40),
+                            area = R(2, 30) * 10,
+                            target = choose(["stress", "force"]),
+                            stress = (force * 1000) / area;
+                        return result(
+                            target === "stress"
+                                ? `Osna sila ${force} kN je enakomerno porazdeljena po prerezu ${area} mm². Določi povprečno normalno napetost v MPa.`
+                                : `Povprečna normalna napetost je ${fmt(stress)} MPa, prerez ${area} mm². Določi osno silo v kN.`,
+                            `σ = F/A. 1 MPa = 1 N/mm².\n${target === "stress" ? `σ = ${force * 1000}/${area} = ${fmt(stress)} MPa.` : `F = σA / 1000 = ${force} kN.`}`,
+                            target === "stress" ? stress : force,
+                        );
+                    }
+                    case "s_raztezanje": {
+                        const L = R(1, 20),
+                            alpha = choose([12, 17, 23]),
+                            delta = R(10, 100);
+                        return result(
+                            `Palica dolžine ${L} m ima koeficient linearnega raztezanja α = ${alpha}·10^(−6) K⁻¹. Temperatura naraste za ${delta} K. Brez omejitve raztezanja določi podaljšek v mm.`,
+                            `ΔL = L₀αΔT = ${L}·${alpha}·10^(−6)·${delta} m = ${fmt((L * alpha * delta) / 1000)} mm.`,
+                            (L * alpha * delta) / 1000,
+                        );
+                    }
+                    case "s_pretok": {
+                        const flow = R(1, 25),
+                            diameter = R(2, 12) * 10,
+                            area = (Math.PI * (diameter / 1000) ** 2) / 4;
+                        return result(
+                            `Skozi polno okroglo cev notranjega premera ${diameter} mm teče nestisljiva tekočina s pretokom ${flow} L/s. Določi povprečno hitrost v m/s.`,
+                            `A = πd²/4 = ${fmt(area)} m².\nQ = ${flow}/1000 = ${fmt(flow / 1000)} m³/s.\nv = Q/A = ${fmt(flow / 1000 / area)} m/s.`,
+                            flow / 1000 / area,
+                        );
+                    }
+                    default:
+                        throw Error("Za to temo generator ni na voljo.");
+                }
+            }
+
             // UPORABNIŠKI VMESNIK: nastavitve, odgovori in napredek.
             const $ = (id) => document.getElementById(id);
             const legacyThemes = {
@@ -2362,7 +3326,7 @@
                 blobURL = null,
                 busy = false,
                 meta = null;
-            const topicName = (id) => topics.find((t) => t.id === id)?.name || id;
+            const topicName = (id) => availableCatalog().find((t) => t.id === id)?.name || id;
             function fillSelect(el, options) {
                 el.replaceChildren(
                     ...options.map(([value, text]) => {
@@ -2373,35 +3337,57 @@
                     }),
                 );
             }
+            const checkboxes = $("teme-seznam");
             function updateTopics() {
+                const isNew = procedural();
+                const other = $("smer").value !== "matematika";
+                // Stari način je dostopen samo pri matematiki.
+                $("mehanizem").options[1].disabled = other;
+                if (other && !isNew) $("mehanizem").value = "algoritem";
+                const newMode = procedural();
+                [...$("raven").options].forEach(
+                    (o) => (o.disabled = other && ["osnovna", "visja"].includes(o.value)),
+                );
+                if (other && ["osnovna", "visja"].includes($("raven").value))
+                    $("raven").value = "srednja";
                 const secondaryLevel = $("raven").value === "srednja";
-                $("srednjesolske-moznosti").hidden = !secondaryLevel;
+                const catalog = availableCatalog();
+                $("srednjesolske-moznosti").hidden = !newMode && !secondaryLevel;
                 fillSelect(
                     $("tema"),
-                    secondaryLevel
-                        ? [["vse", "Mešani delovni list"], ...topics.map((t) => [t.id, t.name])]
+                    newMode || secondaryLevel
+                        ? [["vse", "Mešani delovni list"], ...catalog.map((t) => [t.id, t.name])]
                         : legacyThemes[$("raven").value],
                 );
+                checkboxes.replaceChildren();
+                catalog.forEach((t) => {
+                    const label = document.createElement("label"),
+                        input = document.createElement("input");
+                    input.type = "checkbox";
+                    input.value = t.id;
+                    input.checked = true;
+                    label.append(input, document.createTextNode(t.name));
+                    checkboxes.append(label);
+                });
                 updateTypes();
             }
             function updateTypes() {
-                const t = topics.find((t) => t.id === $("tema").value);
+                const catalog = availableCatalog(),
+                    t = catalog.find((t) => t.id === $("tema").value);
+                const groups = [...new Set(catalog.flatMap((t) => t.types.map((s) => s.type)))];
                 fillSelect($("tip"), [
                     ["vsi", "Vsi razpoložljivi tipi"],
-                    ...(t ? t.types.map((t) => [t.id, t.name]) : Object.entries(typesLabels)),
+                    ...(t
+                        ? t.types.map((s) => [s.id, s.name])
+                        : groups.map((g) => [g, typesLabels[g]])),
                 ]);
                 $("izbor-tem").hidden = $("tema").value !== "vse";
             }
-            const checkboxes = $("teme-seznam");
-            topics.forEach((t) => {
-                const label = document.createElement("label");
-                const input = document.createElement("input");
-                input.type = "checkbox";
-                input.value = t.id;
-                input.checked = true;
-                label.append(input, document.createTextNode(t.name));
-                checkboxes.append(label);
+            $("smer").addEventListener("change", () => {
+                if ($("smer").value !== "matematika") $("mehanizem").value = "algoritem";
+                updateTopics();
             });
+            $("mehanizem").addEventListener("change", updateTopics);
             $("raven").addEventListener("change", updateTopics);
             $("tema").addEventListener("change", updateTypes);
             $("vse-teme").addEventListener("click", () =>
@@ -2420,11 +3406,13 @@
             function getPool() {
                 const selected =
                     $("tema").value === "vse"
-                        ? [...checkboxes.querySelectorAll("input:checked")].map((i) => i.value)
+                        ? [...checkboxes.querySelectorAll("input")]
+                              .filter((i) => i.checked)
+                              .map((i) => i.value)
                         : [$("tema").value];
                 if (!selected.length) throw new Error("Izberi vsaj eno temo.");
                 const filter = $("tip").value;
-                const pool = topics
+                const pool = availableCatalog()
                     .filter((t) => selected.includes(t.id))
                     .flatMap((t) =>
                         t.types
@@ -2679,7 +3667,7 @@
                     $("pdf-status").textContent = `Pripravljam PDF: ${pages.length} strani …`;
                     await yieldUI();
                 }
-                let title = "Matematični delovni list",
+                let title = "Učni delovni list",
                     activeTask = 0;
                 async function ensure(height) {
                     if (y + height > 1630) {
@@ -2719,7 +3707,7 @@
                     y += 600;
                 }
                 async function section(solutions) {
-                    title = solutions ? "Rešitve in postopki" : "Matematični delovni list";
+                    title = solutions ? "Rešitve in postopki" : "Učni delovni list";
                     start(title);
                     if (!solutions) {
                         await text(
@@ -2803,9 +3791,10 @@
                     return;
                 }
                 try {
-                    const isSecondary = $("raven").value === "srednja",
-                        pool = isSecondary ? getPool() : null;
-                    const plan = isSecondary ? planTemplates(pool, count) : null;
+                    const isNew = procedural();
+                    const isSecondary = $("raven").value === "srednja";
+                    const pool = isNew || isSecondary ? getPool() : null;
+                    const plan = pool ? planTemplates(pool, count) : null;
                     const set = new Set();
                     let repeats = 0;
                     tasks = Array.from({ length: count }, (_, i) => {
@@ -2815,7 +3804,14 @@
                         let task,
                             attempts = 0;
                         do {
-                            if (isSecondary) {
+                            if (isNew) {
+                                const p = plan[i];
+                                task = generateProcedural(p.topic, p.id, d, $("raven").value);
+                                task.label =
+                                    subjects[$("smer").value].name + " – " + topicName(p.topic);
+                                task.category = p.type;
+                                task.difficulty = d;
+                            } else if (isSecondary) {
                                 const p = plan[i];
                                 task = secondary(p.topic, p.id, d);
                                 task.label = topicName(p.topic) + " – " + p.name;
@@ -2883,7 +3879,12 @@
                         }
                         return taskState(task);
                     });
-                    meta = { level: $("raven").selectedOptions[0].textContent };
+                    meta = {
+                        level:
+                            subjects[$("smer").value].name +
+                            " · " +
+                            $("raven").selectedOptions[0].textContent,
+                    };
                     $("napaka").textContent = repeats
                         ? `${repeats} nalog se ponovi, ker ima izbrani tip omejeno število kombinacij. Za več raznolikosti izberi več tem in tipov.`
                         : "";
