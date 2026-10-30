@@ -1,0 +1,2759 @@
+<!doctype html>
+<html lang="sl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Elektrika – interaktivni fizikalni laboratorij | Sidebit</title>
+    <meta
+      name="description"
+      content="Raziskuj elektriko z interaktivnimi vezji, Ohmovim zakonom, porabo energije, kondenzatorji, električnim poljem in izmenično napetostjo. Kalkulatorji in učni izzivi z rešitvami."
+    />
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+      /* Slogi so omejeni na to stran. Skupni style.css ostane nespremenjen. */
+      body.elektrika {
+        margin: 0;
+        background: #fff9ec;
+        color: #202333;
+        font:
+          16px/1.6 Arial,
+          Helvetica,
+          sans-serif;
+        isolation: isolate;
+      }
+      .elektrika * {
+        box-sizing: border-box;
+      }
+      .elektrika [hidden] {
+        display: none !important;
+      }
+      .elektrika::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 90% 8%, #e1d8ff 0, transparent 30%),
+          radial-gradient(circle at 2% 65%, #d3f4e8 0, transparent 26%),
+          radial-gradient(#20233316 1px, transparent 1px);
+        background-size:
+          auto,
+          auto,
+          24px 24px;
+      }
+      .elektrika header,
+      .elektrika main,
+      .elektrika footer {
+        width: min(1200px, calc(100% - 36px));
+        margin-inline: auto;
+      }
+      .elektrika header {
+        padding: 32px 0 18px;
+      }
+      .elektrika header > a {
+        display: inline-block;
+        color: #51398b;
+        font-weight: bold;
+        margin-bottom: 18px;
+      }
+      .elektrika h1,
+      .elektrika h2,
+      .elektrika h3 {
+        color: #202333;
+        background: none;
+        -webkit-text-fill-color: currentColor;
+        line-height: 1.2;
+      }
+      .elektrika h1 {
+        font-size: clamp(40px, 7vw, 78px);
+        letter-spacing: -0.055em;
+        margin: 16px 0;
+      }
+      .elektrika h2 {
+        font-size: 26px;
+        margin: 0 0 15px;
+      }
+      .elektrika h3 {
+        font-size: 19px;
+        margin: 20px 0 12px;
+      }
+      .elektrika p {
+        margin: 0 0 16px;
+      }
+      .elektrika a {
+        color: #51398b;
+      }
+      .elektrika .lead {
+        max-width: 750px;
+        font-size: 19px;
+        color: #45526a;
+      }
+      .elektrika .badge {
+        display: inline-block;
+        border: 2px solid #202333;
+        border-radius: 9px;
+        background: #ffe58c;
+        padding: 5px 12px;
+        font-size: 13px;
+        font-weight: 800;
+        transform: rotate(-2deg);
+      }
+      .elektrika .hero {
+        display: grid;
+        grid-template-columns: 1fr 210px;
+        gap: 24px;
+        align-items: center;
+      }
+      .elektrika .hero-art {
+        transform: rotate(4deg);
+        filter: drop-shadow(5px 6px 0 #20233322);
+      }
+      .elektrika .tabs {
+        display: flex;
+        gap: 9px;
+        flex-wrap: wrap;
+        position: sticky;
+        top: 0;
+        padding: 12px 0;
+        margin-bottom: 16px;
+        background: #fff9ecf5;
+        z-index: 10;
+        border-bottom: 2px solid #20233318;
+      }
+      .elektrika button,
+      .elektrika .button {
+        min-height: 44px;
+        padding: 10px 15px;
+        font: inherit;
+        font-weight: 700;
+        border: 2px solid #202333;
+        border-radius: 10px;
+        color: #202333;
+        background: #fff;
+        box-shadow: 3px 3px 0 #202333;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          background 0.15s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .elektrika button:hover,
+      .elektrika .button:hover {
+        background: #e5dcff;
+        transform: translateY(-2px);
+      }
+      .elektrika button:active {
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0 #202333;
+      }
+      .elektrika button[aria-pressed="true"],
+      .elektrika .primary {
+        background: #ffe58c;
+      }
+      .elektrika button:disabled {
+        opacity: 0.5;
+        cursor: default;
+        transform: none;
+      }
+      .elektrika :focus-visible {
+        outline: 4px solid #7958df;
+        outline-offset: 4px;
+      }
+      .elektrika .card {
+        min-width: 0;
+        background: #fff;
+        border: 3px solid #202333;
+        border-radius: 22px;
+        padding: clamp(18px, 2.6vw, 30px);
+        box-shadow: 6px 6px 0 #202333;
+        margin-bottom: 26px;
+      }
+      .elektrika .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.25fr);
+        gap: 24px;
+      }
+      .elektrika .twocol {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .elektrika .three {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .elektrika .card.mint {
+        background: #e5f7ef;
+      }
+      .elektrika .card.lilac {
+        background: #ede6ff;
+      }
+      .elektrika label {
+        display: block;
+        font-weight: 700;
+        margin: 12px 0 6px;
+      }
+      .elektrika input,
+      .elektrika select,
+      .elektrika textarea {
+        min-width: 0;
+        width: 100%;
+        padding: 11px 12px;
+        border: 2px solid #8a91a2;
+        border-radius: 9px;
+        background: white;
+        color: #202333;
+        font: inherit;
+      }
+      .elektrika input[type="range"] {
+        padding: 5px;
+        accent-color: #7958df;
+      }
+      .elektrika textarea {
+        resize: vertical;
+      }
+      .elektrika .unit {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 95px;
+        gap: 8px;
+      }
+      .elektrika .gumbi {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 18px 0;
+      }
+      .elektrika .small {
+        font-size: 13px;
+        color: #536176;
+      }
+      .elektrika .error {
+        color: #a52121;
+        font-weight: bold;
+        margin-top: 12px;
+      }
+      .elektrika .error:empty {
+        display: none;
+      }
+      .elektrika .answer {
+        background: #e5f5f1;
+        border: 2px solid #202333;
+        border-radius: 12px;
+        padding: 16px;
+        margin: 16px 0;
+        overflow-wrap: anywhere;
+      }
+      .elektrika .formula {
+        font-size: 22px;
+        font-weight: bold;
+        overflow-wrap: anywhere;
+      }
+      .elektrika .metrics {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin: 16px 0;
+      }
+      .elektrika .metric {
+        background: #fff3b9;
+        border: 2px solid #202333;
+        border-radius: 13px;
+        padding: 13px;
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+      .elektrika .metric:nth-child(4n + 2) {
+        background: #dfd5ff;
+      }
+      .elektrika .metric:nth-child(4n + 3) {
+        background: #c7f1e4;
+      }
+      .elektrika .metric:nth-child(4n) {
+        background: #cde9ff;
+      }
+      .elektrika .metric span {
+        display: block;
+        font-size: 13px;
+      }
+      .elektrika .metric strong {
+        display: block;
+        font-size: clamp(20px, 2.6vw, 30px);
+        line-height: 1.3;
+        margin-top: 4px;
+      }
+      .elektrika .scroll {
+        overflow: auto;
+        max-height: 420px;
+      }
+      .elektrika table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 14px;
+      }
+      .elektrika th,
+      .elektrika td {
+        padding: 9px 7px;
+        border-bottom: 1px solid #d7dce5;
+        text-align: left;
+        vertical-align: top;
+      }
+      .elektrika th {
+        font-weight: 700;
+      }
+      .elektrika svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        overflow: hidden;
+        border-radius: 12px;
+        background: #fff;
+      }
+      .elektrika .stage {
+        border: 2px solid #d7dce5;
+        border-radius: 14px;
+        overflow: hidden;
+        margin: 16px 0;
+        background: #fff;
+      }
+      .elektrika .toggle {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .elektrika .toggle input {
+        width: 21px;
+        height: 21px;
+      }
+      .elektrika details {
+        margin: 15px 0;
+      }
+      .elektrika summary {
+        cursor: pointer;
+        font-weight: bold;
+      }
+      .elektrika .topics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .elektrika .topics button {
+        text-align: left;
+        display: block;
+        background: #fff5c9;
+        padding: 20px;
+      }
+      .elektrika .topics button:nth-child(3n + 2) {
+        background: #e1d8ff;
+      }
+      .elektrika .topics button:nth-child(3n) {
+        background: #d2f2e6;
+      }
+      .elektrika .topics strong {
+        font-size: 20px;
+        display: block;
+        margin-bottom: 7px;
+      }
+      .elektrika .topics span {
+        font-weight: 400;
+        font-size: 14px;
+        display: block;
+      }
+      .elektrika .bar-row {
+        display: grid;
+        grid-template-columns: 100px 1fr 105px;
+        gap: 10px;
+        align-items: center;
+        font-size: 13px;
+        margin: 10px 0;
+      }
+      .elektrika .bar {
+        height: 18px;
+        background: #edf0f4;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid #202333;
+      }
+      .elektrika .bar i {
+        display: block;
+        height: 100%;
+        background: #a998e8;
+      }
+      .elektrika .big {
+        font-size: clamp(22px, 3vw, 33px);
+        font-weight: bold;
+        line-height: 1.4;
+      }
+      .elektrika footer {
+        padding: 24px 0 36px;
+        text-align: center;
+        font-size: 14px;
+        color: #536176;
+      }
+      .elektrika .flow {
+        stroke-dasharray: 3 17;
+        animation: tok var(--speed, 2s) linear infinite;
+      }
+      .elektrika .paused .flow {
+        animation-play-state: paused;
+      }
+      .elektrika .spark {
+        animation: utrip 2s ease-in-out infinite;
+      }
+      @keyframes tok {
+        to {
+          stroke-dashoffset: -80;
+        }
+      }
+      @keyframes utrip {
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+      @media (max-width: 850px) {
+        .elektrika .grid {
+          grid-template-columns: 1fr;
+        }
+        .elektrika .topics,
+        .elektrika .three {
+          grid-template-columns: 1fr 1fr;
+        }
+        .elektrika .tabs {
+          position: static;
+        }
+        .elektrika .tabs button {
+          flex: 1 1 27%;
+        }
+        .elektrika .hero {
+          grid-template-columns: 1fr 130px;
+        }
+      }
+      @media (max-width: 520px) {
+        .elektrika .hero {
+          grid-template-columns: 1fr;
+        }
+        .elektrika .hero-art {
+          display: none;
+        }
+        .elektrika .topics,
+        .elektrika .twocol,
+        .elektrika .three {
+          grid-template-columns: 1fr;
+        }
+        .elektrika .tabs button {
+          flex: 1 1 40%;
+          font-size: 14px;
+        }
+        .elektrika .card {
+          box-shadow: 3px 3px 0 #202333;
+        }
+        .elektrika .bar-row {
+          grid-template-columns: 80px 1fr 85px;
+        }
+        .elektrika .unit {
+          grid-template-columns: minmax(0, 1fr) 85px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .elektrika * {
+          animation: none !important;
+          transition: none !important;
+          scroll-behavior: auto !important;
+        }
+      }
+      @media print {
+        .elektrika .tabs,
+        .elektrika button,
+        .elektrika header .hero-art {
+          display: none;
+        }
+        .elektrika .grid {
+          display: block;
+        }
+        .elektrika .card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        .elektrika::before {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="elektrika">
+    <header>
+      <a href="../index.html">← Vsa orodja</a>
+      <div class="hero">
+        <div>
+          <span class="badge">Sidebit · Fizika, ki jo lahko premikaš</span>
+          <h1>Elektrika.<br />Naj se ti posveti.</h1>
+          <p class="lead">
+            Skleni vezje, spremeni upor in opazuj tok. Poveži fizikalne zakone s
+            porabo naprav ter preveri svoje znanje v novih izzivih.
+          </p>
+        </div>
+        <svg class="hero-art" viewBox="0 0 200 230" aria-hidden="true">
+          <rect
+            x="20"
+            y="20"
+            width="160"
+            height="190"
+            rx="30"
+            fill="#c8baff"
+            stroke="#202333"
+            stroke-width="5"
+          />
+          <circle
+            cx="100"
+            cy="90"
+            r="50"
+            fill="#fff4ba"
+            stroke="#202333"
+            stroke-width="5"
+          />
+          <path
+            d="M110 50 77 96h27l-15 38 38-53h-29z"
+            fill="#ffe181"
+            stroke="#202333"
+            stroke-width="3"
+          />
+          <path d="M48 170h35m35 0h34" stroke="#202333" stroke-width="5" />
+          <circle
+            cx="100"
+            cy="170"
+            r="12"
+            fill="#a9ebdd"
+            stroke="#202333"
+            stroke-width="4"
+          />
+        </svg>
+      </div>
+    </header>
+    <main>
+      <nav class="tabs" aria-label="Področja elektrike">
+        <button type="button" data-tab="start" aria-pressed="true">
+          Pregled</button
+        ><button type="button" data-tab="circuit" aria-pressed="false">
+          Vezja</button
+        ><button type="button" data-tab="ohm" aria-pressed="false">
+          Ohmov zakon</button
+        ><button type="button" data-tab="energy" aria-pressed="false">
+          Poraba</button
+        ><button type="button" data-tab="physics" aria-pressed="false">
+          Fizikalni poskusi</button
+        ><button type="button" data-tab="practice" aria-pressed="false">
+          Izzivi
+        </button>
+      </nav>
+      <section id="start" aria-labelledby="start-title">
+        <div class="card">
+          <h2 id="start-title">Izberi, kaj želiš odkriti</h2>
+          <div class="topics">
+            <button type="button" data-go="circuit">
+              <strong>Tok skozi vezje</strong
+              ><span
+                >Zaporedno ali vzporedno? Preklopi stikalo in primerjaj tokove
+                ter napetosti.</span
+              ></button
+            ><button type="button" data-go="ohm">
+              <strong>Štiri povezane veličine</strong
+              ><span
+                >Iz poljubnih dveh pozitivnih podatkov do U, I, R in P. Z grafom
+                in postopkom.</span
+              ></button
+            ><button type="button" data-go="energy">
+              <strong>Koliko porabiš?</strong
+              ><span
+                >Primerjaj naprave, tarifi in scenarij manjše uporabe. Prenesi
+                pregled.</span
+              ></button
+            ><button type="button" data-physics="rc">
+              <strong>Kondenzator v času</strong
+              ><span
+                >Premikaj čas in opazuj polnjenje, praznjenje ter shranjeno
+                energijo.</span
+              ></button
+            ><button type="button" data-physics="field">
+              <strong>Nevidne sile</strong
+              ><span
+                >Raziskuj električno polje in silo med dvema točkastima
+                nabojema.</span
+              ></button
+            ><button type="button" data-go="practice">
+              <strong>Preveri razumevanje</strong
+              ><span
+                >Naključne računske naloge z namigi, postopki in shranjenim
+                napredkom.</span
+              >
+            </button>
+          </div>
+        </div>
+        <div class="three">
+          <article class="card mint">
+            <h2>Napetost U</h2>
+            <p>
+              Razlika električnih potencialov. Enota je volt (V). Določa
+              energijo na enoto naboja: U = W/Q.
+            </p>
+          </article>
+          <article class="card lilac">
+            <h2>Tok I</h2>
+            <p>
+              Pretok naboja na časovno enoto: I = Q/t. Enota je amper (A), torej
+              C/s. Dogovorjena smer je smer pozitivnih nabojev.
+            </p>
+          </article>
+          <article class="card">
+            <h2>Moč in energija</h2>
+            <p>
+              Moč pove hitrost prenosa energije: P = W/t. Vat (W) ni isto kot
+              kilovatna ura (kWh). 1 kWh = 3,6 MJ.
+            </p>
+          </article>
+        </div>
+        <div class="card">
+          <h2>Kako raziskovati?</h2>
+          <ol>
+            <li>
+              V Vezjih preizkusi dva upora po 100 Ω pri 12 V. Primerjaj
+              zaporedno in vzporedno vezavo.
+            </li>
+            <li>
+              V Ohmovem zakonu nastavi U = 12 V in R = 24 Ω. Dobiš I = 0,5 A in
+              P = 6 W.
+            </li>
+            <li>Moč prenesi v Porabo ter izračunaj energijo za izbrani čas.</li>
+            <li>
+              V RC-poskusu nastavi čas na eno časovno konstanto: kondenzator pri
+              polnjenju doseže približno 63,2 % končne napetosti.
+            </li>
+          </ol>
+          <p class="small">
+            To so idealizirani učni modeli. Animirane pike ponazarjajo
+            dogovorjeno smer toka, njihova hitrost ni dejanska hitrost
+            elektronov. Prikazana vezja niso navodila za delo z omrežno
+            napetostjo.
+          </p>
+        </div>
+      </section>
+
+      <section id="circuit" hidden aria-labelledby="circuit-title">
+        <div class="grid">
+          <div class="card">
+            <h2 id="circuit-title">Sestavi uporovno vezje</h2>
+            <form id="circuit-form">
+              <label for="connection">Vezava</label
+              ><select id="connection">
+                <option value="series">Zaporedna</option>
+                <option value="parallel">Vzporedna</option></select
+              ><label for="resistors">Upornosti</label
+              ><textarea
+                id="resistors"
+                rows="3"
+                maxlength="10000"
+                aria-describedby="resistors-help"
+              >
+100 100</textarea>
+              <p id="resistors-help" class="small">
+                Od 1 do 100 uporov; loči jih s presledkom, podpičjem ali novo
+                vrstico. Decimalna vejica ali pika je znotraj števila: 1,5; 2,5.
+                Vejica ni ločilo med upori. Dovoljena je tudi upornost 0 Ω.
+              </p>
+              <label for="res-unit">Enota vseh uporov</label
+              ><select id="res-unit">
+                <option value="1">Ω</option>
+                <option value="1000">kΩ</option>
+                <option value="1000000">MΩ</option></select
+              ><label for="source-u">Napetost vira U (V)</label
+              ><input
+                id="source-u"
+                type="text"
+                inputmode="decimal"
+                value="12"
+                maxlength="30"
+              /><label for="source-range" class="small"
+                >Hitro spreminjanje napetosti: 0–48 V</label
+              ><input
+                id="source-range"
+                type="range"
+                min="0"
+                max="48"
+                step="0.5"
+                value="12"
+              /><label class="toggle"
+                ><input id="closed" type="checkbox" checked /> Stikalo je
+                sklenjeno</label
+              >
+              <div class="gumbi">
+                <button class="primary">Posodobi vezje</button
+                ><button type="button" id="res-add">Dodaj 100 Ω</button
+                ><button type="button" id="res-example">
+                  Ponastavi primer
+                </button>
+              </div>
+            </form>
+            <p id="circuit-error" class="error" role="alert"></p>
+            <button type="button" id="motion" aria-pressed="true">
+              Ustavi prikaz toka
+            </button>
+          </div>
+          <div class="card">
+            <h2>Opazuj, kaj se spremeni</h2>
+            <div class="stage" id="circuit-stage">
+              <svg
+                id="circuit-svg"
+                viewBox="0 0 720 430"
+                role="img"
+                aria-label="Shema uporovnega vezja. Točni podatki so v tabeli pod prikazom."
+              ></svg>
+            </div>
+            <div id="circuit-metrics" class="metrics"></div>
+            <p id="circuit-story" role="status"></p>
+            <details>
+              <summary>Tok, napetost in moč vsakega upora</summary>
+              <div id="branch-table" class="scroll"></div>
+            </details>
+            <div id="circuit-steps" class="answer"></div>
+            <button type="button" id="circuit-energy">
+              Skupno moč prenesi v porabo
+            </button>
+            <p class="small">
+              Izračun vključuje vse upore. Shema pri več kot šestih uporih
+              pokaže nadomestni upor. Pozitivne upornosti po pretvorbi:
+              10⁻⁹–10¹² Ω, napetost: 0–10⁶ V. Vir in vodniki so idealni.
+            </p>
+          </div>
+        </div>
+        <div class="twocol">
+          <article class="card mint">
+            <h2>Zaporedno</h2>
+            <p class="formula">R = R₁ + R₂ + …</p>
+            <p>
+              Skozi vse upore teče isti tok. Vsota padcev napetosti je enaka
+              napetosti vira: U = U₁ + U₂ + … To je primer Kirchhoffovega
+              napetostnega zakona.
+            </p>
+          </article>
+          <article class="card lilac">
+            <h2>Vzporedno</h2>
+            <p class="formula">1/R = 1/R₁ + 1/R₂ + …</p>
+            <p>
+              Na vseh vejah je enaka napetost. Skupni tok je vsota tokov vej: I
+              = I₁ + I₂ + … To je primer Kirchhoffovega tokovnega zakona.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="ohm" hidden aria-labelledby="ohm-title">
+        <div class="grid">
+          <div class="card">
+            <h2 id="ohm-title">Dve vrednosti. Štirje odgovori.</h2>
+            <p>
+              Izpolni <strong>natanko dve</strong> polji. Ostali dve pusti
+              prazni. Vse znane vrednosti morajo biti pozitivne.
+            </p>
+            <form id="ohm-form">
+              <div id="ohm-inputs"></div>
+              <div class="gumbi">
+                <button class="primary">Izračunaj</button
+                ><button type="reset">Počisti</button
+                ><button type="button" id="ohm-example">
+                  Primer 12 V / 24 Ω
+                </button>
+              </div>
+            </form>
+            <p id="ohm-error" class="error" role="alert"></p>
+          </div>
+          <div class="card">
+            <h2>Ohmov zakon v živo</h2>
+            <div id="ohm-metrics" class="metrics"></div>
+            <p id="ohm-empty">Vnesi podatka ali uporabi primer.</p>
+            <div id="ohm-visual" hidden>
+              <svg
+                id="ohm-graph"
+                viewBox="0 0 720 350"
+                role="img"
+                aria-label="Linearen graf toka v odvisnosti od napetosti za izračunani upor."
+              ></svg
+              ><label for="probe"
+                >Raziskuj pri drugem U:
+                <output id="probe-value"></output></label
+              ><input id="probe" type="range" min="0" max="200" value="100" />
+              <p id="probe-story" role="status"></p>
+              <div id="ohm-steps" class="answer"></div>
+              <button type="button" id="ohm-energy">
+                Izračunano moč prenesi v porabo
+              </button>
+              <p class="small">
+                Drsnik raziskuje dodatno delovno točko; prenos uporablja prvotni
+                rezultat kalkulatorja.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Formule in meje modela</h2>
+          <p class="formula">
+            U = I · R &nbsp; I = U/R &nbsp; P = U · I = I²R = U²/R
+          </p>
+          <p>
+            Velja za idealni ohmski upor pri stalni temperaturi. Pri čisto
+            uporovnem izmeničnem bremenu uporabi efektivni vrednosti U in I. Za
+            motorje ali druga reaktivna bremena za delovno moč potrebujemo tudi
+            faktor moči. Ničelne vrednosti tu niso podprte, saj nekateri pari ne
+            določijo enolične rešitve.
+          </p>
+        </div>
+      </section>
+
+      <section id="energy" hidden aria-labelledby="energy-title">
+        <div class="grid">
+          <div class="card">
+            <h2 id="energy-title">Moč pretvori v porabo</h2>
+            <form id="energy-form">
+              <label for="device-name">Ime naprave</label
+              ><input
+                id="device-name"
+                type="text"
+                value="Moja naprava"
+                maxlength="60"
+              /><label for="device-power">Moč ene naprave</label>
+              <div class="unit">
+                <input
+                  id="device-power"
+                  type="text"
+                  inputmode="decimal"
+                  value="100"
+                  maxlength="30"
+                  required
+                /><select id="power-unit" aria-label="Enota moči">
+                  <option value="1">W</option>
+                  <option value="1000">kW</option>
+                </select>
+              </div>
+              <div class="twocol">
+                <div>
+                  <label for="device-count">Število naprav</label
+                  ><input
+                    id="device-count"
+                    type="number"
+                    min="1"
+                    max="1000000"
+                    step="1"
+                    value="1"
+                    required
+                  />
+                </div>
+                <div>
+                  <label for="hours">Ure na dan</label
+                  ><input
+                    id="hours"
+                    type="text"
+                    inputmode="decimal"
+                    value="5"
+                    maxlength="30"
+                    required
+                  />
+                </div>
+              </div>
+              <label for="hours-range" class="small"
+                >Hitro spreminjanje časa: 0–24 h</label
+              ><input
+                id="hours-range"
+                type="range"
+                min="0"
+                max="24"
+                step="0.25"
+                value="5"
+              />
+              <div class="twocol">
+                <div>
+                  <label for="days">Dni v obdobju</label
+                  ><input
+                    id="days"
+                    type="number"
+                    min="1"
+                    max="36600"
+                    step="1"
+                    value="30"
+                    required
+                  />
+                </div>
+                <div>
+                  <label for="price">Cena (€/kWh)</label
+                  ><input
+                    id="price"
+                    type="text"
+                    inputmode="decimal"
+                    value="0,20"
+                    maxlength="30"
+                    required
+                  />
+                </div>
+              </div>
+              <p class="small">
+                0,20 €/kWh je izmišljena cena za primer. Za svojo oceno jo
+                zamenjaj z lastno ceno.
+              </p>
+              <label class="toggle"
+                ><input id="two-tariffs" type="checkbox" /> Razdeli čas med dve
+                tarifi</label
+              >
+              <div id="tariff-options" hidden>
+                <label for="second-price">Druga cena (€/kWh)</label
+                ><input
+                  id="second-price"
+                  type="text"
+                  inputmode="decimal"
+                  value="0,15"
+                  maxlength="30"
+                /><label for="share"
+                  >Delež časa pri prvi ceni:
+                  <output id="share-value">50 %</output></label
+                ><input id="share" type="range" min="0" max="100" value="50" />
+              </div>
+              <div class="gumbi">
+                <button class="primary">Izračunaj porabo</button
+                ><button type="button" id="save-device">
+                  Dodaj v primerjavo</button
+                ><button type="button" id="energy-example">
+                  Vstavi primer
+                </button>
+              </div>
+            </form>
+            <p id="energy-error" class="error" role="alert"></p>
+          </div>
+          <div class="card">
+            <h2>Energija ni isto kot moč</h2>
+            <div id="energy-metrics" class="metrics"></div>
+            <div id="energy-steps" class="answer"></div>
+            <label for="reduction"
+              >Scenarij: zmanjšaj dnevni čas za
+              <output id="reduction-value">20 %</output></label
+            ><input
+              id="reduction"
+              type="range"
+              min="0"
+              max="100"
+              step="5"
+              value="20"
+            />
+            <p id="saving" role="status"></p>
+            <svg
+              id="energy-chart"
+              viewBox="0 0 720 240"
+              role="img"
+              aria-label="Primerjava energije izvirnega in krajšega časa uporabe."
+            ></svg>
+            <p class="small">
+              Scenarij predpostavlja enako moč in enak delež časa v tarifah. Pri
+              napravah s spremenljivo močjo vnesi izmerjeno povprečno moč med
+              navedenim časom. Fiksne postavke, dajatve, ki niso zajete v ceni,
+              in obračun po moči niso vključeni.
+            </p>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Primerjaj svoje naprave</h2>
+          <p class="small">
+            Shrani največ 20 trenutnih izračunov. Vsak ohrani svoje obdobje in
+            cene. Spremembe obrazca shranjenih izračunov ne spremenijo.
+            Primerjava se ob osvežitvi izbriše.
+          </p>
+          <div class="scroll" id="devices"></div>
+          <div class="gumbi">
+            <button type="button" id="export-energy">
+              Prenesi primerjavo CSV</button
+            ><button type="button" id="clear-devices">
+              Počisti primerjavo
+            </button>
+          </div>
+          <p class="formula">E(kWh) = P(W) / 1000 · t(h/dan) · n · dnevi</p>
+          <p>
+            Primer: 100 W · 5 h/dan = 0,5 kWh/dan. V 30 dneh je to 15 kWh
+            oziroma 3 € pri ponazoritveni ceni 0,20 €/kWh. Fizično je 15 kWh
+            enako 54 MJ.
+          </p>
+        </div>
+      </section>
+
+      <section id="physics" hidden aria-labelledby="physics-title">
+        <div class="card">
+          <h2 id="physics-title">Fizikalni poskusi</h2>
+          <label for="experiment">Kaj želiš raziskati?</label
+          ><select id="experiment">
+            <option value="rc">Kondenzator in časovna konstanta RC</option>
+            <option value="charge">
+              Električni naboj in število elektronov
+            </option>
+            <option value="field">Električno polje in Coulombova sila</option>
+            <option value="wire">Upornost žice in temperatura</option>
+            <option value="ac">Izmenična napetost in efektivna vrednost</option>
+            <option value="transformer">Idealni transformator</option>
+          </select>
+        </div>
+        <div class="grid">
+          <div class="card">
+            <h2 id="exp-name"></h2>
+            <form id="exp-form">
+              <div id="exp-inputs"></div>
+              <div class="gumbi">
+                <button class="primary">Posodobi poskus</button
+                ><button type="button" id="exp-reset">Ponastavi poskus</button>
+              </div>
+            </form>
+            <p id="exp-error" class="error" role="alert"></p>
+            <div id="time-controls" hidden>
+              <label for="exp-time"
+                >Čas: <output id="time-value"></output></label
+              ><input
+                id="exp-time"
+                type="range"
+                min="0"
+                max="500"
+                step="1"
+                value="100"
+              /><button type="button" id="play-exp">Zaženi potek</button>
+            </div>
+          </div>
+          <div class="card">
+            <h2 id="exp-visual-title">Razlaga in prikaz</h2>
+            <div id="exp-metrics" class="metrics"></div>
+            <svg
+              id="exp-svg"
+              viewBox="0 0 720 370"
+              role="img"
+              aria-label="Vizualni prikaz izbranega fizikalnega poskusa. Številčni podatki in formula so navedeni ob prikazu."
+            ></svg>
+            <div id="exp-result" class="answer" role="status"></div>
+            <p id="exp-theory"></p>
+            <button type="button" id="wire-to-circuit" hidden>
+              To upornost uporabi v vezju
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Enote, ki jih boš srečal</h2>
+          <div class="scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Veličina</th>
+                  <th>Enota</th>
+                  <th>Povezava</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Naboj Q</td>
+                  <td>kulon (C)</td>
+                  <td>1 C = 1 A · s</td>
+                </tr>
+                <tr>
+                  <td>Kapacitivnost C</td>
+                  <td>farad (F)</td>
+                  <td>1 F = 1 C/V; v oznaki enote C pomeni kulon.</td>
+                </tr>
+                <tr>
+                  <td>Električno polje E</td>
+                  <td>V/m oziroma N/C</td>
+                  <td>Med idealnima vzporednima ploščama E = U/d.</td>
+                </tr>
+                <tr>
+                  <td>Moč P</td>
+                  <td>vat (W)</td>
+                  <td>1 W = 1 J/s</td>
+                </tr>
+                <tr>
+                  <td>Energija W oziroma E</td>
+                  <td>džul (J), kilovatna ura (kWh)</td>
+                  <td>1 kWh = 3.600.000 J</td>
+                </tr>
+                <tr>
+                  <td>Predpone</td>
+                  <td>m, µ, n, k, M</td>
+                  <td>10⁻³, 10⁻⁶, 10⁻⁹, 10³, 10⁶</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="practice" hidden aria-labelledby="practice-title">
+        <div class="grid">
+          <div class="card">
+            <span class="badge">Vsakokrat novi podatki</span>
+            <h2 id="practice-title" style="margin-top: 20px">
+              Pokaži, da razumeš
+            </h2>
+            <label for="task-topic">Tema</label
+            ><select id="task-topic">
+              <option value="mixed">Mešani izzivi</option>
+              <option value="ohm">Ohmov zakon</option>
+              <option value="power">Električna moč</option>
+              <option value="energy">Poraba energije</option>
+              <option value="resistors">Vezava uporov</option>
+              <option value="charge">Električni naboj</option>
+              <option value="capacitor">Kondenzator</option>
+              <option value="field">Električno polje</option>
+              <option value="transformer">Transformator</option>
+            </select>
+            <p id="question" class="big"></p>
+            <form id="task-form">
+              <label for="task-answer" id="answer-label">Odgovor</label
+              ><input
+                id="task-answer"
+                type="text"
+                inputmode="decimal"
+                maxlength="100"
+                placeholder="Število ali ulomek, npr. 1/2"
+                required
+              />
+              <p class="small">
+                Vpiši število v zahtevani enoti brez oznake enote. Uporabi
+                decimalno vejico ali piko oziroma ulomek. Zaokroži na vsaj šest
+                decimalnih mest, kadar je potrebno.
+              </p>
+              <div class="gumbi">
+                <button class="primary">Preveri</button
+                ><button type="button" id="hint">Namig</button
+                ><button type="button" id="solution">Pokaži postopek</button>
+              </div>
+            </form>
+            <p id="task-feedback" role="status"></p>
+            <div id="task-help" class="answer" hidden></div>
+            <button type="button" id="next-task">Naslednji izziv</button>
+          </div>
+          <div class="card lilac">
+            <h2>Gradi znanje, ne hitrosti</h2>
+            <div id="progress" class="metrics"></div>
+            <p>
+              Prvi pravilen odgovor prinese 10 točk. Namig jih ne odvzame. Po
+              prvem napačnem odgovoru ali razkritju postopka še vedno lahko
+              rešuješ, vendar ta naloga ne prinaša dodatnih točk.
+            </p>
+            <p id="break-note"></p>
+            <button type="button" id="reset-progress">
+              Ponastavi napredek
+            </button>
+            <p class="small">
+              Shrani se samo število prvih poskusov in pravilnih odgovorov v tem
+              brskalniku, če lokalna shramba deluje. Naloge, vneseni podatki in
+              primerjava naprav se ob osvežitvi izgubijo.
+            </p>
+            <h3>Zakaj je to pomembno?</h3>
+            <p>
+              Če napetost na istem uporu podvojiš, se tok podvoji, moč pa
+              početveri. Če isto napravo uporabljaš pol manj časa, se njena
+              porabljena energija prepolovi. Preveri obe trditvi v laboratoriju.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      Sidebit · Elektrika · Vsi izračuni potekajo v tvojem brskalniku. Prikazane
+      vrednosti so približki idealnih modelov.
+    </footer>
+    <script>
+      "use strict";
+      // Skupna orodja. Uporabniškega besedila ne izvajamo kot programske kode.
+      const $ = (id) => document.getElementById(id);
+      const fmt = (n) =>
+        new Intl.NumberFormat("sl-SI", {
+          maximumSignificantDigits: 7,
+          notation:
+            Math.abs(n) >= 1e9 || (n !== 0 && Math.abs(n) < 1e-5)
+              ? "scientific"
+              : "standard",
+        }).format(Object.is(n, -0) ? 0 : n);
+      const euro = (n) =>
+        new Intl.NumberFormat("sl-SI", {
+          style: "currency",
+          currency: "EUR",
+        }).format(n);
+      const rnd = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+      function el(tag, text, parent, cls) {
+        const e = document.createElement(tag);
+        if (text !== null) e.textContent = text;
+        if (cls) e.className = cls;
+        if (parent) parent.append(e);
+        return e;
+      }
+      function num(
+        text,
+        name = "Število",
+        min = -1e100,
+        max = 1e100,
+        integer = false,
+      ) {
+        const s = String(text).trim();
+        if (!/^[+-]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:e[+-]?\d+)?$/i.test(s))
+          throw Error(name + ": vnesi veljavno število.");
+        const v = Number(s.replace(",", "."));
+        if (
+          !Number.isFinite(v) ||
+          (v === 0 && /[1-9]/.test(s.split(/[eE]/)[0])) ||
+          v < min ||
+          v > max ||
+          (integer && !Number.isInteger(v))
+        )
+          throw Error(
+            name +
+              ": dovoljen obseg " +
+              fmt(min) +
+              " do " +
+              fmt(max) +
+              (integer ? ", celo število." : "."),
+          );
+        return v;
+      }
+      function read(id, name, min, max, int = false) {
+        return num($(id).value, name, min, max, int);
+      }
+      function finite(values) {
+        if (!values.every(Number.isFinite))
+          throw Error("Rezultat je zunaj podprtega številskega obsega.");
+      }
+      function si(v, unit) {
+        if (v === 0) return "0 " + unit;
+        const a = Math.abs(v),
+          pairs = [
+            [1e12, "T"],
+            [1e9, "G"],
+            [1e6, "M"],
+            [1e3, "k"],
+            [1, ""],
+            [1e-3, "m"],
+            [1e-6, "µ"],
+            [1e-9, "n"],
+            [1e-12, "p"],
+          ];
+        const p = pairs.find(([m]) => a >= m);
+        return p ? fmt(v / p[0]) + " " + p[1] + unit : fmt(v) + " " + unit;
+      }
+      function metrics(id, items) {
+        $(id).replaceChildren();
+        for (const [label, value] of items) {
+          const d = el("div", null, $(id), "metric");
+          el("span", label, d);
+          el("strong", value, d);
+        }
+      }
+      function table(id, heads, rows) {
+        $(id).replaceChildren();
+        const t = el("table", null, $(id)),
+          h = el("tr", null, el("thead", null, t));
+        heads.forEach((x) => (el("th", x, h).scope = "col"));
+        const b = el("tbody", null, t);
+        for (const row of rows) {
+          const tr = el("tr", null, b);
+          row.forEach((v, i) => {
+            const c = el(i === 0 ? "th" : "td", null, tr);
+            if (i === 0) c.scope = "row";
+            if (v instanceof HTMLElement) c.append(v);
+            else c.textContent = String(v);
+          });
+        }
+      }
+      function navigate(id) {
+        stopExperiment();
+        document
+          .querySelectorAll("main>section")
+          .forEach((s) => (s.hidden = s.id !== id));
+        document
+          .querySelectorAll("[data-tab]")
+          .forEach((b) =>
+            b.setAttribute("aria-pressed", String(b.dataset.tab === id)),
+          );
+      }
+      document
+        .querySelectorAll("[data-tab]")
+        .forEach((b) =>
+          b.addEventListener("click", () => navigate(b.dataset.tab)),
+        );
+      document
+        .querySelectorAll("[data-go]")
+        .forEach((b) =>
+          b.addEventListener("click", () => navigate(b.dataset.go)),
+        );
+      document.querySelectorAll("[data-physics]").forEach((b) =>
+        b.addEventListener("click", () => {
+          $("experiment").value = b.dataset.physics;
+          setupExperiment();
+          navigate("physics");
+        }),
+      );
+      const NS = "http://www.w3.org/2000/svg";
+      function shape(svg, tag, attrs = {}, text) {
+        const e = document.createElementNS(NS, tag);
+        Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, String(v)));
+        if (text !== undefined) e.textContent = text;
+        svg.append(e);
+        return e;
+      }
+      function clearSvg(id, title) {
+        const s = $(id);
+        s.replaceChildren();
+        shape(s, "title", {}, title);
+        return s;
+      }
+      function textAt(
+        s,
+        x,
+        y,
+        text,
+        size = 16,
+        color = "#202333",
+        anchor = "middle",
+      ) {
+        return shape(
+          s,
+          "text",
+          {
+            x,
+            y,
+            "font-family": "Arial, sans-serif",
+            "font-size": size,
+            fill: color,
+            "text-anchor": anchor,
+          },
+          text,
+        );
+      }
+      function path(s, d, color = "#202333", width = 3, cls = "") {
+        return shape(s, "path", {
+          d,
+          fill: "none",
+          stroke: color,
+          "stroke-width": width,
+          "stroke-linecap": "round",
+          "stroke-linejoin": "round",
+          ...(cls ? { class: cls } : {}),
+        });
+      }
+      function chart(
+        id,
+        { title, xmax, ymax, fn, xlabel, ylabel, probe = null, second = null },
+      ) {
+        const s = clearSvg(id, title);
+        const left = 78,
+          top = 35,
+          w = 590,
+          h = 235;
+        const X = (x) => left + (x / xmax) * w,
+          Y = (y) => top + h - (y / ymax) * h;
+        for (let i = 0; i <= 4; i++) {
+          const x = (xmax * i) / 4,
+            y = (ymax * i) / 4;
+          path(s, `M${X(x)} ${top}V${top + h}`, "#e3e7ef", 1);
+          path(s, `M${left} ${Y(y)}H${left + w}`, "#e3e7ef", 1);
+          textAt(s, X(x), 295, fmt(x), 12);
+          textAt(s, left - 10, Y(y) + 4, fmt(y), 12, "#536176", "end");
+        }
+        path(s, `M${left} ${top}V${top + h}H${left + w}`);
+        textAt(s, 370, 332, xlabel, 14);
+        textAt(s, 8, 20, ylabel, 14, "#202333", "start");
+        for (const [f, c] of [
+          [fn, "#087f8c"],
+          ...(second ? [[second, "#7958df"]] : []),
+        ]) {
+          let d = "";
+          for (let i = 0; i <= 180; i++) {
+            const x = (xmax * i) / 180,
+              y = f(x);
+            d += (i ? "L" : "M") + X(x) + " " + Y(y);
+          }
+          path(s, d, c, 3);
+        }
+        if (probe) {
+          const y = fn(probe.x);
+          path(s, `M${X(probe.x)} ${top + h}V${Y(y)}`, "#b85844", 1);
+          shape(s, "circle", {
+            cx: X(probe.x),
+            cy: Y(y),
+            r: 6,
+            fill: "#ffe58c",
+            stroke: "#202333",
+            "stroke-width": 2,
+          });
+        }
+        return s;
+      }
+
+      // VEZJA: iste upore uporabljamo za izračun in risbo.
+      let circuitResult = null,
+        motion = true;
+      function parseResistors(text, factor = 1) {
+        if (!text.trim()) throw Error("Vnesi vsaj en upor.");
+        const tokens = text.trim().split(/[;\s]+/);
+        if (tokens.length > 100) throw Error("Največ 100 uporov.");
+        return tokens.map((s, i) => {
+          const v = num(s, "Upor " + (i + 1), 0, 1e12) * factor;
+          if (v > 1e12 || (v > 0 && v < 1e-9))
+            throw Error(
+              "Upornosti po pretvorbi naj bodo 0 ali od 10⁻⁹ do 10¹² Ω.",
+            );
+          return v;
+        });
+      }
+      function equivalent(rs, kind) {
+        if (kind === "series") return rs.reduce((s, r) => s + r, 0);
+        if (rs.includes(0)) return 0;
+        const min = Math.min(...rs);
+        return min / rs.reduce((s, r) => s + min / r, 0);
+      }
+      function solveCircuit(rs, kind, U, closed = true) {
+        const R = equivalent(rs, kind);
+        if (!closed)
+          return {
+            R,
+            U,
+            I: 0,
+            P: 0,
+            short: false,
+            branches: rs.map(() => ({ I: 0, U: 0, P: 0 })),
+          };
+        if (R === 0)
+          return { R, U, I: null, P: null, short: true, branches: null };
+        const I = U / R,
+          P = U * I;
+        const branches = rs.map((r) => {
+          const current = kind === "series" ? I : U / r,
+            drop = kind === "series" ? I * r : U;
+          return { I: current, U: drop, P: current * drop };
+        });
+        finite([R, I, P, ...branches.flatMap((b) => [b.I, b.U, b.P])]);
+        return { R, U, I, P, short: false, branches };
+      }
+      function drawCircuit(rs, kind, r) {
+        const s = clearSvg(
+          "circuit-svg",
+          "Idealno " +
+            (kind === "series" ? "zaporedno" : "vzporedno") +
+            " vezje",
+        );
+        const closed = $("closed").checked,
+          flow = closed && !r.short && r.I > 0;
+        path(s, "M60 190V65H220");
+        path(s, closed ? "M220 65H275" : "M220 65L268 35");
+        shape(s, "circle", { cx: 220, cy: 65, r: 4, fill: "#202333" });
+        shape(s, "circle", { cx: 275, cy: 65, r: 4, fill: "#202333" });
+        if (kind === "series" || rs.length > 6)
+          path(s, "M275 65H660V360H60V230");
+        else
+          path(
+            s,
+            `M275 65H300V${110 + (rs.length - 1) * 35}M660 110V360H60V230`,
+          );
+        path(s, "M40 190H80M48 230H72");
+        textAt(s, 27, 180, "+", 18);
+        textAt(s, 26, 249, "−", 18);
+        textAt(s, 105, 218, si(r.U, "V"));
+        textAt(s, 358, 30, closed ? "Sklenjeno stikalo" : "Odprto stikalo", 15);
+        const displayed = rs.length <= 6 ? rs : [r.R];
+        const label = (i) => (rs.length <= 6 ? "R" + (i + 1) : "R skupaj");
+        if (kind === "series" || rs.length > 6) {
+          const bw = 480 / displayed.length;
+          displayed.forEach((v, i) => {
+            const x = 140 + i * bw,
+              y = 360;
+            shape(s, "rect", {
+              x: x - 28,
+              y: y - 14,
+              width: 56,
+              height: 28,
+              fill: "#fff3b9",
+              stroke: "#202333",
+              "stroke-width": 3,
+            });
+            textAt(s, x, y - 38, label(i), 14);
+            textAt(s, x, y + 45, si(v, "Ω"), 13);
+          });
+          if (flow) {
+            const f = path(s, "M65 65H655V355H65V240", "#087f8c", 5, "flow");
+            f.style.setProperty(
+              "--speed",
+              Math.max(0.35, 3 / (1 + Math.log10(1 + r.I * 1000))) + "s",
+            );
+          }
+        } else {
+          displayed.forEach((v, i) => {
+            const y = 110 + i * 35;
+            path(s, `M300 ${y}H660`);
+            shape(s, "rect", {
+              x: 360,
+              y: y - 12,
+              width: 72,
+              height: 24,
+              fill: i % 2 ? "#dfd5ff" : "#c7f1e4",
+              stroke: "#202333",
+              "stroke-width": 2,
+            });
+            textAt(s, 510, y - 7, label(i) + " " + si(v, "Ω"), 13);
+            if (flow) path(s, `M305 ${y}H655`, "#087f8c", 3, "flow");
+          });
+        }
+        if (flow)
+          textAt(
+            s,
+            360,
+            415,
+            "Prikaz dogovorjene smeri toka (+ → −)",
+            13,
+            "#087f8c",
+          );
+        else
+          textAt(
+            s,
+            360,
+            415,
+            r.short
+              ? "Idealni kratek stik: ni končnega enoličnega izračuna toka."
+              : "Tok ne teče.",
+            13,
+          );
+      }
+      function updateCircuit() {
+        try {
+          const rs = parseResistors(
+              $("resistors").value,
+              Number($("res-unit").value),
+            ),
+            U = read("source-u", "Napetost", 0, 1e6),
+            kind = $("connection").value;
+          const result = solveCircuit(rs, kind, U, $("closed").checked);
+          circuitResult = { ...result, rs, kind };
+          $("circuit-error").textContent = "";
+          drawCircuit(rs, kind, result);
+          metrics("circuit-metrics", [
+            ["Skupna upornost", si(result.R, "Ω")],
+            [
+              "Skupni tok",
+              result.I === null ? "Ni določen" : si(result.I, "A"),
+            ],
+            ["Napetost vira", si(U, "V")],
+            [
+              "Skupna moč",
+              result.P === null ? "Ni določena" : si(result.P, "W"),
+            ],
+          ]);
+          $("circuit-energy").disabled = result.P === null;
+          $("circuit-story").textContent = !$("closed").checked
+            ? "Odprto stikalo prekine vse tokovne poti. V uporih ni toka in ni padcev napetosti; napetost vira ostane na odprtem stikalu."
+            : result.short
+              ? U > 0
+                ? "Uporovno omrežje ima 0 Ω. Idealni vir s pozitivno napetostjo ne določa končnega toka; realni tok omejujejo upornosti vira in povezav."
+                : "Pri U = 0 in R = 0 Ohmov zakon sam ne določi enoličnega toka."
+              : kind === "series"
+                ? "Tok je v vseh uporih enak. Večji upor prevzame večji delež skupne napetosti."
+                : "Napetost je na vseh vejah enaka. Skozi manjši upor teče večji tok.";
+          if (result.branches)
+            table(
+              "branch-table",
+              ["Upor", "R", "I", "U", "P"],
+              result.branches.map((b, i) => [
+                "R" + (i + 1),
+                si(rs[i], "Ω"),
+                si(b.I, "A"),
+                si(b.U, "V"),
+                si(b.P, "W"),
+              ]),
+            );
+          else
+            $("branch-table").textContent =
+              "Za idealni kratek stik posamezni tokovi niso izračunani.";
+          $("circuit-steps").textContent =
+            (kind === "series"
+              ? "R = ΣRᵢ = "
+              : rs.includes(0)
+                ? "Idealna veja z 0 Ω določi R = "
+                : "R = 1 / Σ(1/Rᵢ) = ") +
+            si(result.R, "Ω") +
+            (!$("closed").checked
+              ? " Stikalo je odprto: I = 0 A, P = 0 W. Napetost vira je na odprtem stikalu."
+              : result.I === null
+                ? ""
+                : `. I = U/R = ${si(result.I, "A")}; P = U · I = ${si(result.P, "W")}.`);
+        } catch (e) {
+          circuitResult = null;
+          $("circuit-error").textContent = e.message;
+          ["circuit-metrics", "branch-table", "circuit-steps"].forEach((id) =>
+            $(id).replaceChildren(),
+          );
+          $("circuit-story").textContent = "Popravi vnos za nov prikaz.";
+          $("circuit-svg").replaceChildren();
+          $("circuit-energy").disabled = true;
+        }
+      }
+      $("circuit-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        updateCircuit();
+      });
+      ["connection", "res-unit", "closed"].forEach((id) =>
+        $(id).addEventListener("change", updateCircuit),
+      );
+      ["resistors", "source-u"].forEach((id) =>
+        $(id).addEventListener("input", updateCircuit),
+      );
+      $("source-range").addEventListener("input", () => {
+        $("source-u").value = $("source-range").value;
+        updateCircuit();
+      });
+      $("source-u").addEventListener("input", () => {
+        const v = Number($("source-u").value.replace(",", "."));
+        if (Number.isFinite(v))
+          $("source-range").value = Math.min(48, Math.max(0, v));
+      });
+      $("res-add").addEventListener("click", () => {
+        try {
+          const rs = parseResistors(
+            $("resistors").value,
+            Number($("res-unit").value),
+          );
+          if (rs.length >= 100) throw Error("Dosežena meja 100 uporov.");
+          $("resistors").value = rs.concat(100).join(" ");
+          $("res-unit").value = "1";
+          updateCircuit();
+        } catch (e) {
+          $("circuit-error").textContent = e.message;
+        }
+      });
+      $("res-example").addEventListener("click", () => {
+        $("resistors").value = "100 100";
+        $("res-unit").value = "1";
+        $("source-u").value = "12";
+        $("source-range").value = "12";
+        $("closed").checked = true;
+        updateCircuit();
+      });
+      $("motion").addEventListener("click", () => {
+        motion = !motion;
+        $("circuit-stage").classList.toggle("paused", !motion);
+        $("motion").setAttribute("aria-pressed", String(motion));
+        $("motion").textContent = motion
+          ? "Ustavi prikaz toka"
+          : "Vključi prikaz toka";
+      });
+
+      // OHMOV ZAKON: podprti so vsi pari dveh znanih veličin.
+      const quantities = [
+        [
+          "U",
+          "Napetost U",
+          [
+            ["0.001", "mV"],
+            ["1", "V"],
+            ["1000", "kV"],
+          ],
+        ],
+        [
+          "I",
+          "Tok I",
+          [
+            ["0.000001", "µA"],
+            ["0.001", "mA"],
+            ["1", "A"],
+          ],
+        ],
+        [
+          "R",
+          "Upornost R",
+          [
+            ["1", "Ω"],
+            ["1000", "kΩ"],
+            ["1000000", "MΩ"],
+          ],
+        ],
+        [
+          "P",
+          "Moč P",
+          [
+            ["0.001", "mW"],
+            ["1", "W"],
+            ["1000", "kW"],
+          ],
+        ],
+      ];
+      for (const [key, label, units] of quantities) {
+        const l = el("label", label, $("ohm-inputs"));
+        l.htmlFor = "ohm-" + key;
+        const d = el("div", null, $("ohm-inputs"), "unit"),
+          input = el("input", null, d);
+        input.id = "ohm-" + key;
+        input.type = "text";
+        input.inputMode = "decimal";
+        input.maxLength = 40;
+        const select = el("select", null, d);
+        select.id = "unit-" + key;
+        select.setAttribute("aria-label", "Enota: " + label);
+        units.forEach(([v, t]) => {
+          const o = el("option", t, select);
+          o.value = v;
+          if (v === "1") o.selected = true;
+        });
+      }
+      let ohmResult = null;
+      function solveOhm(known) {
+        let { U, I, R, P } = known;
+        let steps;
+        if (
+          Object.keys(known).length !== 2 ||
+          !Object.values(known).every((v) => Number.isFinite(v) && v > 0)
+        )
+          throw Error("Vnesi natanko dve pozitivni vrednosti.");
+        if (U !== undefined && I !== undefined) {
+          R = U / I;
+          P = U * I;
+          steps = "R = U/I; P = U · I";
+        } else if (U !== undefined && R !== undefined) {
+          I = U / R;
+          P = U * I;
+          steps = "I = U/R; P = U · I";
+        } else if (U !== undefined && P !== undefined) {
+          I = P / U;
+          R = U / I;
+          steps = "I = P/U; R = U/I";
+        } else if (I !== undefined && R !== undefined) {
+          U = I * R;
+          P = U * I;
+          steps = "U = I · R; P = U · I";
+        } else if (I !== undefined && P !== undefined) {
+          U = P / I;
+          R = U / I;
+          steps = "U = P/I; R = U/I";
+        } else if (R !== undefined && P !== undefined) {
+          I = Math.sqrt(P) / Math.sqrt(R);
+          U = Math.sqrt(P) * Math.sqrt(R);
+          steps = "I = √(P/R); U = √(P · R)";
+        } else throw Error("Nepodprt par.");
+        if (![U, I, R, P].every((v) => Number.isFinite(v) && v > 0))
+          throw Error("Rezultat presega podprti obseg.");
+        return { U, I, R, P, steps };
+      }
+      function clearOhm() {
+        ohmResult = null;
+        $("ohm-error").textContent = "";
+        $("ohm-metrics").replaceChildren();
+        $("ohm-visual").hidden = true;
+        $("ohm-empty").hidden = false;
+      }
+      function updateProbe() {
+        if (!ohmResult) return;
+        const U = (ohmResult.U * Number($("probe").value)) / 100,
+          I = U / ohmResult.R,
+          P = U * I;
+        $("probe-value").textContent = si(U, "V");
+        $("probe-story").textContent =
+          `Pri istem R: I = ${si(I, "A")}, P = ${si(P, "W")}.`;
+        chart("ohm-graph", {
+          title: "I(U) za stalno upornost",
+          xmax: ohmResult.U * 2,
+          ymax: ohmResult.I * 2,
+          fn: (x) => x / ohmResult.R,
+          xlabel: "Napetost U (V)",
+          ylabel: "Tok I (A)",
+          probe: { x: U },
+        });
+      }
+      function calculateOhm() {
+        clearOhm();
+        try {
+          const known = {};
+          for (const [k, label] of quantities)
+            if ($("ohm-" + k).value.trim()) {
+              const v =
+                read("ohm-" + k, label, 1e-15, 1e15) *
+                Number($("unit-" + k).value);
+              if (v < 1e-15 || v > 1e15)
+                throw Error(
+                  "Pretvorjene vrednosti naj bodo med 10⁻¹⁵ in 10¹⁵ v osnovni enoti.",
+                );
+              known[k] = v;
+            }
+          ohmResult = solveOhm(known);
+          metrics(
+            "ohm-metrics",
+            quantities.map(([k, label]) => [
+              label + (k in known ? " · vneseno" : " · izračunano"),
+              si(ohmResult[k], { U: "V", I: "A", R: "Ω", P: "W" }[k]),
+            ]),
+          );
+          $("ohm-visual").hidden = false;
+          $("ohm-empty").hidden = true;
+          $("probe").value = "100";
+          $("ohm-steps").textContent =
+            `${ohmResult.steps}. U = ${fmt(ohmResult.U)} V; I = ${fmt(ohmResult.I)} A; R = ${fmt(ohmResult.R)} Ω; P = ${fmt(ohmResult.P)} W.`;
+          updateProbe();
+        } catch (e) {
+          $("ohm-error").textContent = e.message;
+        }
+      }
+      $("ohm-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        calculateOhm();
+      });
+      $("ohm-form").addEventListener("input", clearOhm);
+      $("ohm-form").addEventListener("change", clearOhm);
+      $("ohm-form").addEventListener("reset", () => {
+        setTimeout(clearOhm, 0);
+      });
+      $("probe").addEventListener("input", updateProbe);
+      $("ohm-example").addEventListener("click", () => {
+        for (const [k] of quantities) {
+          $("ohm-" + k).value = "";
+          $("unit-" + k).value = "1";
+        }
+        $("ohm-U").value = "12";
+        $("ohm-R").value = "24";
+        calculateOhm();
+      });
+
+      // PORABA: cena je izključno uporabniški podatek, brez aktualnega cenika.
+      let energyResult = null,
+        devices = [];
+      function consumption({
+        power,
+        count,
+        hours,
+        days,
+        price,
+        secondPrice = price,
+        share = 1,
+      }) {
+        const daily = (power / 1000) * count * hours,
+          kwh = daily * days,
+          rate = price * share + secondPrice * (1 - share),
+          cost = kwh * rate;
+        finite([daily, kwh, rate, cost]);
+        return { daily, kwh, rate, cost, mj: kwh * 3.6 };
+      }
+      function energyInput() {
+        const power =
+            read("device-power", "Moč", 0, 1e50) *
+            Number($("power-unit").value),
+          count = read("device-count", "Število", 1, 1e6, true),
+          hours = read("hours", "Ure", 0, 24),
+          days = read("days", "Dni", 1, 36600, true),
+          price = read("price", "Cena", 0, 1e6),
+          two = $("two-tariffs").checked,
+          secondPrice = two
+            ? read("second-price", "Druga cena", 0, 1e6)
+            : price,
+          share = two ? Number($("share").value) / 100 : 1;
+        return {
+          name: $("device-name").value.trim() || "Naprava",
+          power,
+          count,
+          hours,
+          days,
+          price,
+          secondPrice,
+          share,
+        };
+      }
+      function updateEnergy() {
+        const two = $("two-tariffs").checked;
+        $("tariff-options").hidden = !two;
+        $("share-value").textContent = $("share").value + " %";
+        $("reduction-value").textContent = $("reduction").value + " %";
+        try {
+          const input = energyInput(),
+            r = consumption(input);
+          energyResult = { ...input, ...r };
+          $("energy-error").textContent = "";
+          metrics("energy-metrics", [
+            ["Dnevna poraba", fmt(r.daily) + " kWh"],
+            ["Poraba obdobja", fmt(r.kwh) + " kWh"],
+            ["Strošek obdobja", euro(r.cost)],
+            ["Energija v MJ", fmt(r.mj) + " MJ"],
+          ]);
+          $("energy-steps").textContent =
+            `${fmt(input.power / 1000)} kW · ${input.count} · ${fmt(input.hours)} h/dan · ${input.days} dni = ${fmt(r.kwh)} kWh. Strošek: ${fmt(r.kwh)} · ${fmt(r.rate)} €/kWh = ${euro(r.cost)}.` +
+            (two
+              ? " Povprečna cena je utežena z deležem časa pri vsaki tarifi."
+              : "");
+          const factor = 1 - Number($("reduction").value) / 100;
+          $("saving").textContent =
+            `Pri ${fmt(input.hours * factor)} h/dan bi porabil ${fmt(r.kwh * factor)} kWh in plačal ${euro(r.cost * factor)}. Razlika: ${fmt(r.kwh * (1 - factor))} kWh oziroma ${euro(r.cost * (1 - factor))}.`;
+          const s = clearSvg(
+              "energy-chart",
+              "Primerjava porabe pri dveh časih uporabe",
+            ),
+            max = Math.max(1, r.kwh);
+          [
+            ["Izvirno", r.kwh, "#c8baff"],
+            ["Krajši čas", r.kwh * factor, "#a9ebdd"],
+          ].forEach(([label, v, color], i) => {
+            textAt(s, 25, 65 + i * 85, label, 15, "#202333", "start");
+            shape(s, "rect", {
+              x: 160,
+              y: 36 + i * 85,
+              width: Math.max(0, (v / max) * 390),
+              height: 40,
+              rx: 8,
+              fill: color,
+              stroke: "#202333",
+              "stroke-width": 2,
+            });
+            textAt(
+              s,
+              565,
+              63 + i * 85,
+              fmt(v) + " kWh",
+              14,
+              "#202333",
+              "start",
+            );
+          });
+          $("save-device").disabled = false;
+        } catch (e) {
+          energyResult = null;
+          $("energy-error").textContent = e.message;
+          $("energy-metrics").replaceChildren();
+          $("energy-steps").textContent = "";
+          $("saving").textContent = "";
+          $("energy-chart").replaceChildren();
+          $("save-device").disabled = true;
+        }
+      }
+      $("energy-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        updateEnergy();
+      });
+      $("energy-form").addEventListener("input", updateEnergy);
+      $("energy-form").addEventListener("change", updateEnergy);
+      $("reduction").addEventListener("input", updateEnergy);
+      $("hours-range").addEventListener("input", () => {
+        $("hours").value = $("hours-range").value;
+        updateEnergy();
+      });
+      $("hours").addEventListener("input", () => {
+        const h = Number($("hours").value.replace(",", "."));
+        if (Number.isFinite(h))
+          $("hours-range").value = Math.max(0, Math.min(24, h));
+      });
+      $("energy-example").addEventListener("click", () => {
+        $("device-name").value = "Primer: naprava";
+        $("device-power").value = "100";
+        $("power-unit").value = "1";
+        $("device-count").value = "1";
+        $("hours").value = "5";
+        $("hours-range").value = "5";
+        $("days").value = "30";
+        $("price").value = "0,20";
+        $("two-tariffs").checked = false;
+        updateEnergy();
+      });
+      function renderDevices() {
+        table(
+          "devices",
+          [
+            "Naprava",
+            "Moč skupaj",
+            "Čas / dan",
+            "Obdobje",
+            "Energija",
+            "Strošek",
+            "Odstrani",
+          ],
+          devices.map((d, i) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.textContent = "Odstrani";
+            b.setAttribute("aria-label", "Odstrani " + d.name);
+            b.addEventListener("click", () => {
+              devices.splice(i, 1);
+              renderDevices();
+            });
+            return [
+              d.name,
+              si(d.power * d.count, "W"),
+              fmt(d.hours) + " h",
+              d.days + " dni",
+              fmt(d.kwh) + " kWh",
+              euro(d.cost),
+              b,
+            ];
+          }),
+        );
+        if (!devices.length)
+          el(
+            "p",
+            "Primerjava je še prazna. Dodaj trenutni izračun.",
+            $("devices"),
+            "small",
+          );
+        $("export-energy").disabled = !devices.length;
+      }
+      $("save-device").addEventListener("click", () => {
+        updateEnergy();
+        if (!energyResult) return;
+        if (devices.length >= 20) {
+          $("energy-error").textContent =
+            "Primerjava vsebuje največ 20 naprav. Najprej katero odstrani.";
+          return;
+        }
+        devices.push({ ...energyResult });
+        renderDevices();
+      });
+      $("clear-devices").addEventListener("click", () => {
+        devices = [];
+        renderDevices();
+      });
+      function download(content, name, type) {
+        const url = URL.createObjectURL(new Blob([content], { type })),
+          a = document.createElement("a");
+        a.href = url;
+        a.download = name;
+        document.body.append(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+      function csvCell(x) {
+        let s = String(x);
+        if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+        return '"' + s.replaceAll('"', '""') + '"';
+      }
+      $("export-energy").addEventListener("click", () => {
+        if (!devices.length) return;
+        const rows = [
+          [
+            "Naprava",
+            "Moč ene naprave (W)",
+            "Število",
+            "Ure/dan",
+            "Dni",
+            "Cena 1 EUR/kWh",
+            "Cena 2 EUR/kWh",
+            "Delež časa pri ceni 1",
+            "Energija kWh",
+            "Strošek EUR",
+          ],
+          ...devices.map((d) => [
+            d.name,
+            d.power,
+            d.count,
+            d.hours,
+            d.days,
+            d.price,
+            d.secondPrice,
+            d.share,
+            d.kwh,
+            d.cost,
+          ]),
+        ];
+        download(
+          "\uFEFF" + rows.map((r) => r.map(csvCell).join(";")).join("\r\n"),
+          "sidebit-elektrika-poraba.csv",
+          "text/csv;charset=utf-8",
+        );
+      });
+      function transferPower(power, name) {
+        $("device-power").value = String(power);
+        $("power-unit").value = "1";
+        $("device-count").value = "1";
+        $("device-name").value = name;
+        updateEnergy();
+        navigate("energy");
+      }
+      $("circuit-energy").addEventListener("click", () => {
+        if (circuitResult && circuitResult.P !== null)
+          transferPower(circuitResult.P, "Uporovno vezje");
+      });
+      $("ohm-energy").addEventListener("click", () => {
+        if (ohmResult) transferPower(ohmResult.P, "Ohmski upor");
+      });
+
+      // FIZIKALNI POSKUSI: vse enote pretvorimo v SI pred izračunom.
+      const experiments = {
+        rc: {
+          name: "Kondenzator: čas nekaj pomeni",
+          fields: [
+            ["eu", "Napetost vira U (V)", 12, 0, 1000],
+            ["er", "Upornost R (kΩ)", 10, 0.001, 1000000],
+            ["ec", "Kapacitivnost C (µF)", 1000, 0.001, 1000000],
+          ],
+          theory:
+            "Pri polnjenju iz praznega stanja: Uc = U(1 − e^(−t/RC)). Pri praznjenju iz U: Uc = Ue^(−t/RC). τ = RC. Pri t = τ je napetost polnjenja 63,2 %, pri 5τ pa približno 99,3 % napetosti vira. Model zanemari uhajanje in notranje upornosti.",
+        },
+        charge: {
+          name: "Koliko naboja preteče?",
+          fields: [
+            ["ei", "Tok I (A)", 0.5, 0, 1000000],
+            ["et", "Čas t (s)", 60, 0, 1000000000],
+          ],
+          theory:
+            "Q = I · t velja za stalni tok. Število osnovnih nabojev je N = |Q|/e, kjer je e = 1,602176634 · 10⁻¹⁹ C. V kovini se elektroni pomikajo nasproti dogovorjeni smeri toka.",
+        },
+        field: {
+          name: "Naboji in električno polje",
+          fields: [
+            ["eq1", "Naboj q₁ (nC)", 10, -1000000, 1000000],
+            ["eq2", "Naboj q₂ (nC)", -20, -1000000, 1000000],
+            ["ed", "Razdalja med nabojema r (cm)", 10, 0.001, 1000000],
+            ["eu", "Napetost med ploščama U (V)", 12, 0, 1000000],
+            ["egap", "Razmik plošč d (cm)", 2, 0.001, 1000000],
+          ],
+          theory:
+            "Za točkasta naboja v vakuumu: |F| = k|q₁q₂|/r², k ≈ 8,98755 · 10⁹ N·m²/C². Enaka predznaka se odbijata, nasprotna privlačita. Ločen model dveh velikih vzporednih plošč uporablja E = U/d in zanemari robne pojave.",
+        },
+        wire: {
+          name: "Žica ni popoln prevodnik",
+          fields: [
+            ["el", "Dolžina l (m)", 10, 0.000001, 1000000],
+            ["ea", "Presek A (mm²)", 1.5, 0.000001, 1000000],
+            ["etemp", "Temperatura T (°C)", 20, 0, 100],
+          ],
+          theory:
+            "R = ρl/A. Približek pri 20 °C: baker ρ = 0,0172 Ω·mm²/m, aluminij 0,0282, nikrom 1,10. R(T) = R₂₀[1 + α(T − 20 °C)]. Približni α: 0,00393, 0,00403 in 0,0004 K⁻¹. To je en kos žice; za dovod in povratek potrebuješ skupno dolžino obeh. Model ne določa dovoljene tokovne obremenitve kabla.",
+        },
+        ac: {
+          name: "Napetost, ki menja smer",
+          fields: [
+            ["eu", "Efektivna napetost Uef (V)", 230, 0.000001, 1000000],
+            ["ef", "Frekvenca f (Hz)", 50, 0.001, 1000000],
+            ["er", "Čisto uporovno breme R (Ω)", 100, 0.000001, 1000000000],
+          ],
+          theory:
+            "Za sinus: u(t) = Û sin(2πft), Û = √2 Uef, T = 1/f. Pri čistem uporu Ief = Uef/R in povprečna moč P = Uef²/R. Za splošno izmenično breme velja P = Uef Ief cos φ; tukaj je φ = 0.",
+        },
+        transformer: {
+          name: "Idealni transformator",
+          fields: [
+            ["en1", "Primarni ovoji N₁", 1000, 1, 1000000, true],
+            ["en2", "Sekundarni ovoji N₂", 100, 1, 1000000, true],
+            [
+              "eu",
+              "Primarna efektivna napetost U₁ (V)",
+              230,
+              0.000001,
+              1000000,
+            ],
+            ["ei", "Sekundarni efektivni tok I₂ (A)", 1, 0, 1000000],
+          ],
+          theory:
+            "Idealni transformator pri izmeničnem toku: U₂/U₁ = N₂/N₁ in U₁I₁ = U₂I₂. Model predpostavlja brezizguben transformator in čisto uporovno breme. Z enosmerno stalno napetostjo tak prenos ne deluje.",
+        },
+      };
+      let expTimer = null,
+        expResult = null;
+      function stopExperiment() {
+        if (expTimer !== null) clearInterval(expTimer);
+        expTimer = null;
+        $("play-exp").textContent = "Zaženi potek";
+      }
+      function setupExperiment() {
+        stopExperiment();
+        const type = $("experiment").value,
+          c = experiments[type];
+        $("exp-name").textContent = c.name;
+        $("exp-inputs").replaceChildren();
+        for (const [id, label, value, min, max, integer] of c.fields) {
+          const l = el("label", label, $("exp-inputs"));
+          l.htmlFor = id;
+          const i = el("input", null, $("exp-inputs"));
+          i.id = id;
+          i.type = "text";
+          i.inputMode = "decimal";
+          i.maxLength = 40;
+          i.value = String(value);
+          const p = el(
+            "p",
+            "Obseg: " +
+              fmt(min) +
+              "–" +
+              fmt(max) +
+              (integer ? " (cela števila)" : ""),
+            $("exp-inputs"),
+            "small",
+          );
+          i.setAttribute("aria-describedby", id + "-help");
+          p.id = id + "-help";
+        }
+        if (type === "rc") {
+          const l = el("label", "Potek", $("exp-inputs"));
+          l.htmlFor = "rc-mode";
+          const s = el("select", null, $("exp-inputs"));
+          s.id = "rc-mode";
+          [
+            ["charge", "Polnjenje iz praznega stanja"],
+            ["discharge", "Praznjenje iz začetne napetosti U"],
+          ].forEach(([v, t]) => {
+            const o = el("option", t, s);
+            o.value = v;
+          });
+        }
+        if (type === "wire") {
+          const l = el("label", "Material", $("exp-inputs"));
+          l.htmlFor = "material";
+          const s = el("select", null, $("exp-inputs"));
+          s.id = "material";
+          [
+            ["copper", "Baker"],
+            ["aluminium", "Aluminij"],
+            ["nichrome", "Nikrom"],
+          ].forEach(([v, t]) => {
+            const o = el("option", t, s);
+            o.value = v;
+          });
+        }
+        $("time-controls").hidden = !["rc", "ac"].includes(type);
+        $("exp-time").value = type === "ac" ? "0" : "100";
+        $("exp-theory").textContent = c.theory;
+        updateExperiment();
+      }
+      function physical(
+        type,
+        v,
+        phase = 1,
+        mode = "charge",
+        material = "copper",
+      ) {
+        switch (type) {
+          case "rc": {
+            const R = v.er * 1000,
+              C = v.ec * 1e-6,
+              tau = R * C,
+              t = phase * tau,
+              uc =
+                v.eu *
+                (mode === "charge" ? 1 - Math.exp(-phase) : Math.exp(-phase)),
+              current = (v.eu / R) * Math.exp(-phase);
+            return {
+              tau,
+              t,
+              uc,
+              current,
+              charge: C * uc,
+              energy: 0.5 * C * uc * uc,
+              R,
+              C,
+            };
+          }
+          case "charge": {
+            const Q = v.ei * v.et;
+            return { Q, N: Q / 1.602176634e-19 };
+          }
+          case "field":
+            return {
+              force:
+                (8.9875517923e9 * Math.abs(v.eq1 * 1e-9 * v.eq2 * 1e-9)) /
+                (v.ed / 100) ** 2,
+              E: v.eu / (v.egap / 100),
+              attract: v.eq1 * v.eq2 < 0,
+              zero: v.eq1 === 0 || v.eq2 === 0,
+            };
+          case "wire": {
+            const [rho, alpha] = {
+                copper: [0.0172, 0.00393],
+                aluminium: [0.0282, 0.00403],
+                nichrome: [1.1, 0.0004],
+              }[material],
+              R20 = (rho * v.el) / v.ea;
+            return { rho, alpha, R20, R: R20 * (1 + alpha * (v.etemp - 20)) };
+          }
+          case "ac": {
+            const peak = Math.SQRT2 * v.eu,
+              T = 1 / v.ef,
+              t = phase * T;
+            return {
+              peak,
+              T,
+              t,
+              u: peak * Math.sin(2 * Math.PI * phase),
+              I: v.eu / v.er,
+              P: (v.eu * v.eu) / v.er,
+            };
+          }
+          case "transformer": {
+            const U2 = (v.eu * v.en2) / v.en1,
+              I1 = (U2 * v.ei) / v.eu;
+            return { U2, I1, P: U2 * v.ei, ratio: v.en2 / v.en1 };
+          }
+          default:
+            throw Error("Neznan poskus.");
+        }
+      }
+      function updateExperiment() {
+        try {
+          const type = $("experiment").value,
+            c = experiments[type],
+            v = {};
+          for (const [id, label, , min, max, int] of c.fields)
+            v[id] = read(id, label, min, max, !!int);
+          const phase =
+              Number($("exp-time").value) / (type === "ac" ? 250 : 100),
+            mode = type === "rc" ? $("rc-mode").value : "charge",
+            material = type === "wire" ? $("material").value : "copper",
+            r = physical(type, v, phase, mode, material);
+          finite(Object.values(r).filter((x) => typeof x === "number"));
+          expResult = { type, v, r };
+          $("exp-error").textContent = "";
+          $("wire-to-circuit").hidden = type !== "wire";
+          let items = [],
+            result = "";
+          const s = clearSvg("exp-svg", c.name);
+          if (type === "rc") {
+            items = [
+              ["Časovna konstanta τ", si(r.tau, "s")],
+              ["Napetost Uc", si(r.uc, "V")],
+              ["Naboj na plošči |Q|", si(r.charge, "C")],
+              ["Shranjena energija", si(r.energy, "J")],
+            ];
+            $("time-value").textContent = fmt(phase) + " τ = " + si(r.t, "s");
+            chart("exp-svg", {
+              title: "Napetost na kondenzatorju v odvisnosti od časa",
+              xmax: 5,
+              ymax: Math.max(1, v.eu),
+              fn: (x) =>
+                v.eu * (mode === "charge" ? 1 - Math.exp(-x) : Math.exp(-x)),
+              xlabel: "Čas t / τ",
+              ylabel: "Napetost Uc (V)",
+              probe: { x: phase },
+            });
+            result = `τ = ${fmt(r.R)} Ω · ${fmt(r.C)} F = ${si(r.tau, "s")}. |I(t)| = ${si(r.current, "A")}; Q = C · Uc; W = ½ C · Uc². Delež začetne/končne napetosti vira: ${v.eu === 0 ? "ni definiran pri U = 0" : fmt((r.uc / v.eu) * 100) + " %"}. Tok pri praznjenju teče v nasprotni smeri kot pri polnjenju.`;
+          } else if (type === "charge") {
+            items = [
+              ["Pretečeni naboj Q", si(r.Q, "C")],
+              ["Število elektronov", fmt(r.N)],
+            ];
+            path(s, "M70 170H650", "#202333", 20);
+            for (let i = 0; i < 9; i++) {
+              shape(s, "circle", {
+                cx: 110 + i * 60,
+                cy: 170,
+                r: 14,
+                fill: "#c8baff",
+                stroke: "#202333",
+                "stroke-width": 2,
+              });
+              textAt(s, 110 + i * 60, 176, "−", 19);
+            }
+            path(s, "M500 110H220L240 95M220 110L240 125", "#7958df", 4);
+            textAt(s, 360, 80, "Gibanje elektronov v kovini", 18);
+            path(s, "M220 230H500L480 215M500 230L480 245", "#087f8c", 4);
+            textAt(s, 360, 285, "Dogovorjena smer toka", 18);
+            result = `Q = ${fmt(v.ei)} A · ${fmt(v.et)} s = ${fmt(r.Q)} C. N = |Q|/e ≈ ${fmt(r.N)}. Puščici kažeta nasprotni smeri, ne hitrosti delcev.`;
+          } else if (type === "field") {
+            items = [
+              ["Velikost Coulombove sile", si(r.force, "N")],
+              ["Polje med ploščama", si(r.E, "V/m")],
+            ];
+            for (const [x, q] of [
+              [210, v.eq1],
+              [510, v.eq2],
+            ]) {
+              shape(s, "circle", {
+                cx: x,
+                cy: 105,
+                r: 36,
+                fill: q < 0 ? "#c8baff" : "#ffe58c",
+                stroke: "#202333",
+                "stroke-width": 3,
+              });
+              textAt(s, x, 112, q === 0 ? "0" : q > 0 ? "+" : "−", 28);
+            }
+            path(s, "M250 105H470", "#a8afbe", 2);
+            textAt(s, 360, 165, "r = " + fmt(v.ed) + " cm", 15);
+            if (!r.zero) {
+              const dir = r.attract ? 1 : -1;
+              for (const [x, d] of [
+                [210, dir],
+                [510, -dir],
+              ]) {
+                const end = x + d * 70;
+                path(
+                  s,
+                  `M${x} 48H${end}L${end - d * 12} 38M${end} 48L${end - d * 12} 58`,
+                  "#087f8c",
+                  3,
+                );
+              }
+            }
+            path(s, "M130 230V330M590 230V330", "#202333", 6);
+            textAt(s, 100, 280, "+", 23);
+            textAt(s, 620, 280, "−", 23);
+            if (v.eu > 0)
+              for (const y of [250, 280, 310])
+                path(
+                  s,
+                  `M170 ${y}H550L537 ${y - 8}M550 ${y}L537 ${y + 8}`,
+                  "#7958df",
+                  2,
+                );
+            textAt(s, 360, 355, "Ločen model: homogeno polje med ploščama", 14);
+            result =
+              (r.zero
+                ? "Vsaj en naboj je 0, zato je Coulombova sila v tem modelu 0."
+                : r.attract
+                  ? "Naboja se privlačita. Sili sta po velikosti enaki in po smeri nasprotni."
+                  : "Naboja se odbijata. Sili sta po velikosti enaki in po smeri nasprotni.") +
+              ` |F| = k|q₁q₂|/r² = ${si(r.force, "N")}. Med ploščama: E = ${fmt(v.eu)} V / ${fmt(v.egap / 100)} m = ${si(r.E, "V/m")}.`;
+          } else if (type === "wire") {
+            items = [
+              ["Upornost pri 20 °C", si(r.R20, "Ω")],
+              ["Upornost pri izbranem T", si(r.R, "Ω")],
+            ];
+            shape(s, "rect", {
+              x: 100,
+              y: 130,
+              width: 520,
+              height: 85,
+              rx: 40,
+              fill:
+                material === "copper"
+                  ? "#e8b68d"
+                  : material === "aluminium"
+                    ? "#cdd8e6"
+                    : "#dfd5ff",
+              stroke: "#202333",
+              "stroke-width": 4,
+            });
+            shape(s, "ellipse", {
+              cx: 120,
+              cy: 172,
+              rx: 20,
+              ry: 40,
+              fill: "#fff3b9",
+              stroke: "#202333",
+              "stroke-width": 3,
+            });
+            textAt(s, 365, 105, "l = " + fmt(v.el) + " m", 20);
+            textAt(
+              s,
+              360,
+              260,
+              "A = " + fmt(v.ea) + " mm²; T = " + fmt(v.etemp) + " °C",
+              18,
+            );
+            result = `R₂₀ = ${fmt(r.rho)} Ω·mm²/m · ${fmt(v.el)} m / ${fmt(v.ea)} mm² = ${si(r.R20, "Ω")}. Temperaturni faktor = ${fmt(1 + r.alpha * (v.etemp - 20))}. R(T) = ${si(r.R, "Ω")}. Geometrija risbe je simbolična.`;
+          } else if (type === "ac") {
+            items = [
+              ["Temenska napetost Û", si(r.peak, "V")],
+              ["Perioda T", si(r.T, "s")],
+              ["Efektivni tok Ief", si(r.I, "A")],
+              ["Povprečna moč P", si(r.P, "W")],
+            ];
+            $("time-value").textContent = fmt(phase) + " T = " + si(r.t, "s");
+            const left = 75,
+              w = 585,
+              mid = 170,
+              amp = 110;
+            path(s, `M${left} ${mid}H660M${left} 40V300`);
+            let d = "";
+            for (let j = 0; j <= 300; j++) {
+              const x = (j / 300) * 2;
+              d +=
+                (j ? "L" : "M") +
+                (left + (x / 2) * w) +
+                " " +
+                (mid - Math.sin(x * 2 * Math.PI) * amp);
+            }
+            path(s, d, "#7958df", 3);
+            const px = left + (phase / 2) * w,
+              py = mid - Math.sin(phase * 2 * Math.PI) * amp;
+            shape(s, "circle", {
+              cx: px,
+              cy: py,
+              r: 7,
+              fill: "#ffe58c",
+              stroke: "#202333",
+              "stroke-width": 2,
+            });
+            textAt(s, 360, 340, "Dve periodi: 0 ≤ t ≤ 2T", 16);
+            textAt(s, 15, 55, "+Û", 15);
+            textAt(s, 15, mid + 5, "0", 15);
+            textAt(s, 15, 285, "−Û", 15);
+            result = `Û = √2 · ${fmt(v.eu)} V = ${si(r.peak, "V")}. Trenutna u(t) = ${si(r.u, "V")}. Ief = Uef/R; P = Uef²/R = ${si(r.P, "W")}. Moč je časovno povprečje, ne trenutna vrednost.`;
+          } else {
+            items = [
+              ["Sekundarna U₂", si(r.U2, "V")],
+              ["Primarni I₁", si(r.I1, "A")],
+              ["Prenesena moč", si(r.P, "W")],
+              ["Razmerje N₂/N₁", fmt(r.ratio)],
+            ];
+            path(s, "M340 70V260M380 70V260", "#202333", 5);
+            for (const [x, sgn] of [
+              [300, 1],
+              [420, -1],
+            ]) {
+              let d = `M${x} 60`;
+              for (let i = 0; i < 6; i++) d += `q${30 * sgn} 14 0 28`;
+              path(s, d, "#7958df", 4);
+            }
+            textAt(s, 200, 300, "N₁ = " + v.en1, 18);
+            textAt(s, 510, 300, "N₂ = " + v.en2, 18);
+            textAt(s, 200, 40, si(v.eu, "V"), 18);
+            textAt(s, 510, 40, si(r.U2, "V"), 18);
+            result = `U₂ = U₁ · N₂/N₁ = ${si(r.U2, "V")}. P₂ = U₂I₂ = ${si(r.P, "W")}; I₁ = P₂/U₁ = ${si(r.I1, "A")}. Število narisanih zank je simbolično.`;
+          }
+          metrics("exp-metrics", items);
+          $("exp-result").textContent = result;
+        } catch (e) {
+          stopExperiment();
+          expResult = null;
+          $("exp-error").textContent = e.message;
+          $("exp-metrics").replaceChildren();
+          $("exp-svg").replaceChildren();
+          $("exp-result").textContent = "";
+          $("wire-to-circuit").hidden = true;
+        }
+      }
+      $("experiment").addEventListener("change", setupExperiment);
+      $("exp-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        updateExperiment();
+      });
+      $("exp-form").addEventListener("input", updateExperiment);
+      $("exp-form").addEventListener("change", updateExperiment);
+      $("exp-time").addEventListener("input", updateExperiment);
+      $("exp-reset").addEventListener("click", setupExperiment);
+      $("play-exp").addEventListener("click", () => {
+        if (expTimer !== null) {
+          stopExperiment();
+          return;
+        }
+        if (!expResult) return;
+        const type = $("experiment").value;
+        if (Number($("exp-time").value) >= 500) $("exp-time").value = "0";
+        expTimer = setInterval(() => {
+          const next = Number($("exp-time").value) + 2;
+          $("exp-time").value = Math.min(500, next);
+          updateExperiment();
+          if (next >= 500) stopExperiment();
+        }, 50);
+        $("play-exp").textContent = "Ustavi potek";
+      });
+      $("wire-to-circuit").addEventListener("click", () => {
+        if (expResult?.type !== "wire") return;
+        if (expResult.r.R < 1e-9 || expResult.r.R > 1e12) {
+          $("exp-error").textContent =
+            "Ta upornost je zunaj območja vezij (10⁻⁹–10¹² Ω). Spremeni dolžino ali presek žice.";
+          return;
+        }
+        $("resistors").value = String(expResult.r.R);
+        $("res-unit").value = "1";
+        updateCircuit();
+        navigate("circuit");
+      });
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stopExperiment();
+      });
+
+      // NAKLJUČNE NALOGE: vprašanje in rešitev nastaneta iz istih podatkov.
+      const TASK_KEY = "sidebit-elektrika-v1";
+      let progress = { attempts: 0, correct: 0 },
+        task = null,
+        session = 0;
+      try {
+        const p = JSON.parse(localStorage.getItem(TASK_KEY));
+        if (
+          p &&
+          Number.isSafeInteger(p.attempts) &&
+          Number.isSafeInteger(p.correct) &&
+          p.correct >= 0 &&
+          p.attempts >= p.correct
+        )
+          progress = { attempts: p.attempts, correct: p.correct };
+      } catch {}
+      function makeTask(type) {
+        if (type === "mixed")
+          type = [
+            "ohm",
+            "power",
+            "energy",
+            "resistors",
+            "charge",
+            "capacitor",
+            "field",
+            "transformer",
+          ][rnd(0, 7)];
+        const U = rnd(2, 24),
+          R = rnd(1, 10) * 10,
+          I = rnd(1, 10) / 10,
+          a = rnd(1, 10) * 10,
+          b = rnd(1, 10) * 10,
+          h = rnd(1, 8),
+          days = rnd(1, 4) * 7;
+        switch (type) {
+          case "ohm":
+            return {
+              q: `Na upor ${R} Ω priključimo ${U} V. Kolikšen tok teče?`,
+              answer: U / R,
+              unit: "A",
+              hint: "Uporabi I = U/R.",
+              solution: `I = ${U} V / ${R} Ω = ${fmt(U / R)} A.`,
+            };
+          case "power":
+            return {
+              q: `Skozi upor teče ${fmt(I)} A pri napetosti ${U} V. Izračunaj moč.`,
+              answer: U * I,
+              unit: "W",
+              hint: "Moč je produkt napetosti in toka.",
+              solution: `P = U · I = ${U} · ${fmt(I)} = ${fmt(U * I)} W.`,
+            };
+          case "energy": {
+            const P = rnd(1, 20) * 50;
+            return {
+              q: `Naprava z močjo ${P} W deluje ${h} h na dan, ${days} dni. Koliko energije porabi?`,
+              answer: (P / 1000) * h * days,
+              unit: "kWh",
+              hint: "Vate najprej pretvori v kilovate.",
+              solution: `E = ${fmt(P / 1000)} kW · ${h} h/dan · ${days} dni = ${fmt((P / 1000) * h * days)} kWh.`,
+            };
+          }
+          case "resistors": {
+            const parallel = rnd(0, 1);
+            return {
+              q: `Upora ${a} Ω in ${b} Ω sta vezana ${parallel ? "vzporedno" : "zaporedno"}. Določi skupno upornost.`,
+              answer: parallel ? (a * b) / (a + b) : a + b,
+              unit: "Ω",
+              hint: parallel
+                ? "Za dva vzporedna upora velja R = R₁R₂/(R₁ + R₂)."
+                : "Pri zaporedni vezavi upornosti sešteješ.",
+              solution: parallel
+                ? `R = ${a} · ${b} / (${a} + ${b}) = ${fmt((a * b) / (a + b))} Ω.`
+                : `R = ${a} + ${b} = ${a + b} Ω.`,
+            };
+          }
+          case "charge":
+            return {
+              q: `Tok ${fmt(I)} A teče ${h * 30} s. Kolikšen naboj preteče?`,
+              answer: I * h * 30,
+              unit: "C",
+              hint: "Q = I · t.",
+              solution: `Q = ${fmt(I)} · ${h * 30} = ${fmt(I * h * 30)} C.`,
+            };
+          case "capacitor": {
+            const C = rnd(1, 10) * 100;
+            return {
+              q: `Kondenzator kapacitivnosti ${C} µF je napolnjen na ${U} V. Kolikšna energija je shranjena?`,
+              answer: 0.5 * C * 1e-6 * U * U * 1000,
+              unit: "mJ",
+              hint: "W = ½CU². µF pretvori v F, rezultat J pa v mJ.",
+              solution: `W = ½ · ${C} · 10⁻⁶ · ${U}² J = ${fmt(0.5 * C * 1e-6 * U * U * 1000)} mJ.`,
+            };
+          }
+          case "field":
+            return {
+              q: `Med idealnima vzporednima ploščama je napetost ${U} V in razdalja ${h} cm. Kolikšna je jakost polja?`,
+              answer: U / (h / 100),
+              unit: "V/m",
+              hint: "E = U/d. Centimetre pretvori v metre.",
+              solution: `E = ${U} V / ${fmt(h / 100)} m = ${fmt(U / (h / 100))} V/m.`,
+            };
+          default:
+            return {
+              q: `Idealni transformator ima N₁ = ${a * 10}, N₂ = ${b * 10} in U₁ = ${U} V. Določi sekundarno efektivno napetost.`,
+              answer: (U * b) / a,
+              unit: "V",
+              hint: "U₂/U₁ = N₂/N₁.",
+              solution: `U₂ = ${U} · ${b * 10}/${a * 10} = ${fmt((U * b) / a)} V.`,
+            };
+        }
+      }
+      function renderProgress() {
+        metrics("progress", [
+          ["Prvi poskusi", progress.attempts],
+          ["Pravilni prvi odgovori", progress.correct],
+          ["Točke", progress.correct * 10],
+          [
+            "Uspešnost",
+            progress.attempts
+              ? fmt((progress.correct / progress.attempts) * 100) + " %"
+              : "Začni z nalogo",
+          ],
+        ]);
+        $("break-note").textContent =
+          session >= 5
+            ? "Rešil si vsaj pet izzivov. Kratek odmor je dobra priložnost, da se znanje usede."
+            : "Za odgovor ni časovne omejitve. Razmisli o enotah in zapiši postopek.";
+        try {
+          localStorage.setItem(TASK_KEY, JSON.stringify(progress));
+        } catch {}
+      }
+      function newTask() {
+        task = {
+          ...makeTask($("task-topic").value),
+          attempted: false,
+          revealed: false,
+        };
+        $("question").textContent = task.q;
+        $("answer-label").textContent = "Odgovor v " + task.unit;
+        $("task-answer").value = "";
+        $("task-feedback").textContent = "";
+        $("task-help").hidden = true;
+      }
+      function answerNumber(text) {
+        const p = text.trim().split("/");
+        if (p.length > 2) throw Error("Vnesi število ali ulomek.");
+        const a = num(p[0]),
+          b = p.length === 2 ? num(p[1]) : 1;
+        if (b === 0) throw Error("Imenovalec ne sme biti nič.");
+        const v = a / b;
+        finite([v]);
+        return v;
+      }
+      $("task-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        try {
+          const value = answerNumber($("task-answer").value),
+            ok =
+              Math.abs(value - task.answer) <=
+              Math.max(1e-6, Math.abs(task.answer) * 1e-6),
+            first = !task.attempted && !task.revealed;
+          if (first) {
+            progress.attempts++;
+            if (ok) progress.correct++;
+            task.attempted = true;
+            session++;
+            renderProgress();
+          }
+          $("task-feedback").textContent = ok
+            ? first
+              ? "Pravilno! +10 točk."
+              : "Pravilno. Ta naloga ne prinese dodatnih točk."
+            : "Odgovor še ni pravilen. Preveri pretvorbo enot in poskusi znova.";
+        } catch (e) {
+          $("task-feedback").textContent = e.message;
+        }
+      });
+      $("hint").addEventListener("click", () => {
+        $("task-help").hidden = false;
+        $("task-help").textContent = task.hint;
+      });
+      $("solution").addEventListener("click", () => {
+        task.revealed = true;
+        $("task-help").hidden = false;
+        $("task-help").textContent = task.solution;
+        $("task-feedback").textContent =
+          "Postopek je razkrit; nadaljnji odgovori pri tej nalogi se ne točkujejo.";
+      });
+      $("next-task").addEventListener("click", newTask);
+      $("task-topic").addEventListener("change", newTask);
+      $("reset-progress").addEventListener("click", () => {
+        if (confirm("Želiš izbrisati shranjeni napredek?")) {
+          progress = { attempts: 0, correct: 0 };
+          session = 0;
+          newTask();
+          renderProgress();
+        }
+      });
+      updateCircuit();
+      updateEnergy();
+      renderDevices();
+      setupExperiment();
+      newTask();
+      renderProgress();
+    </script>
+  </body>
+</html>
