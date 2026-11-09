@@ -1,366 +1,2057 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="sl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-          content="Simulacija poševnega meta: pot leta, domet, največja višina in čas leta.">
-    <title>Simulacija poševnega meta</title>
-    <link rel="stylesheet" href="../style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Meti – interaktivni laboratorij in vodena vaja | Sidebit</title>
+    <meta
+      name="description"
+      content="Prosti pad, navpični, vodoravni in poševni met. Animacija s hitrostnimi vektorji, grafi, primerjava metov, tarča ter vodene fizikalne naloge s postopki."
+    />
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+      /* Novi slogi so omejeni na to stran. */
+      body.meti {
+        margin: 0;
+        background: #fff9ee;
+        color: #202333;
+        font:
+          16px/1.6 Arial,
+          Helvetica,
+          sans-serif;
+        isolation: isolate;
+      }
+      .meti * {
+        box-sizing: border-box;
+      }
+      .meti [hidden] {
+        display: none !important;
+      }
+      .meti::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 95% 4%, #e5dcff, transparent 34%),
+          radial-gradient(circle at 0 70%, #d4f4e6, transparent 28%),
+          radial-gradient(#20233318 1px, transparent 1px);
+        background-size:
+          auto,
+          auto,
+          24px 24px;
+      }
+      .meti header,
+      .meti main,
+      .meti footer {
+        width: min(1240px, calc(100% - 36px));
+        margin-inline: auto;
+      }
+      .meti header {
+        padding: 30px 0 20px;
+      }
+      .meti header a {
+        display: inline-block;
+        margin-bottom: 20px;
+        font-weight: bold;
+        color: #513a86;
+      }
+      .meti h1,
+      .meti h2,
+      .meti h3 {
+        color: #202333;
+        background: none;
+        -webkit-text-fill-color: currentColor;
+        line-height: 1.2;
+      }
+      .meti h1 {
+        font-size: clamp(40px, 6vw, 72px);
+        letter-spacing: -0.05em;
+        margin: 20px 0;
+      }
+      .meti h2 {
+        font-size: 25px;
+        margin: 0 0 14px;
+      }
+      .meti h3 {
+        font-size: 18px;
+        margin: 18px 0 10px;
+      }
+      .meti p {
+        margin: 0 0 15px;
+      }
+      .meti .lead {
+        font-size: 19px;
+        max-width: 780px;
+        color: #45546c;
+      }
+      .meti .badge {
+        display: inline-block;
+        background: #ffe58c;
+        border: 2px solid #202333;
+        border-radius: 9px;
+        padding: 6px 12px;
+        font-size: 13px;
+        font-weight: bold;
+        transform: rotate(-2deg);
+      }
+      .meti .tabs,
+      .meti .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 18px 0;
+      }
+      .meti .tabs {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: #fff9eef5;
+        padding: 12px 0;
+      }
+      .meti button,
+      .meti .button {
+        font: inherit;
+        font-weight: bold;
+        min-height: 44px;
+        padding: 10px 15px;
+        border: 2px solid #202333;
+        border-radius: 10px;
+        color: #202333;
+        background: #fff;
+        box-shadow: 3px 3px 0 #202333;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          background 0.15s;
+      }
+      .meti button:hover {
+        background: #e4dbff;
+        transform: translateY(-2px);
+      }
+      .meti button:active {
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0 #202333;
+      }
+      .meti button[aria-pressed="true"],
+      .meti .primary {
+        background: #ffe58c;
+      }
+      .meti button:disabled {
+        opacity: 0.5;
+        cursor: default;
+        transform: none;
+      }
+      .meti :focus-visible {
+        outline: 4px solid #7958df;
+        outline-offset: 4px;
+      }
+      .meti .card {
+        background: #fff;
+        border: 3px solid #202333;
+        border-radius: 22px;
+        padding: clamp(18px, 2.5vw, 28px);
+        box-shadow: 6px 6px 0 #202333;
+        margin-bottom: 26px;
+        min-width: 0;
+      }
+      .meti .grid {
+        display: grid;
+        grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.5fr);
+        gap: 24px;
+      }
+      .meti .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+      .meti .three {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+      .meti .mint {
+        background: #e4f7ee;
+      }
+      .meti .lilac {
+        background: #ece5ff;
+      }
+      .meti label {
+        display: block;
+        font-weight: bold;
+        margin: 12px 0 6px;
+      }
+      .meti input,
+      .meti select {
+        width: 100%;
+        min-width: 0;
+        border: 2px solid #929bad;
+        border-radius: 9px;
+        background: #fff;
+        color: #202333;
+        padding: 10px 12px;
+        font: inherit;
+      }
+      .meti input[type="range"] {
+        padding: 5px;
+        accent-color: #7958df;
+      }
+      .meti .check {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-weight: 400;
+      }
+      .meti .check input {
+        width: 20px;
+        height: 20px;
+      }
+      .meti .hint {
+        font-size: 13px;
+        color: #536176;
+      }
+      .meti .error {
+        color: #a52121;
+        font-weight: bold;
+      }
+      .meti .error:empty {
+        display: none;
+      }
+      .meti .answer {
+        background: #e5f5ef;
+        border: 2px solid #202333;
+        border-radius: 12px;
+        padding: 17px;
+        margin: 16px 0;
+        overflow-wrap: anywhere;
+      }
+      .meti .formula {
+        font-size: 20px;
+        font-weight: bold;
+      }
+      .meti .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin: 16px 0;
+      }
+      .meti .metric {
+        min-width: 0;
+        border: 2px solid #202333;
+        border-radius: 12px;
+        padding: 12px;
+        background: #fff3bc;
+        overflow-wrap: anywhere;
+      }
+      .meti .metric:nth-child(4n + 2) {
+        background: #dfd5ff;
+      }
+      .meti .metric:nth-child(4n + 3) {
+        background: #c7f1e4;
+      }
+      .meti .metric:nth-child(4n) {
+        background: #cde9ff;
+      }
+      .meti .metric span {
+        display: block;
+        font-size: 12px;
+      }
+      .meti .metric strong {
+        display: block;
+        font-size: clamp(18px, 2.4vw, 27px);
+        line-height: 1.3;
+        margin-top: 5px;
+      }
+      .meti svg {
+        width: 100%;
+        height: auto;
+        display: block;
+        background: #fff;
+        border-radius: 12px;
+        touch-action: pan-y;
+      }
+      .meti .scene {
+        border: 2px solid #d6dce5;
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .meti #trajectory {
+        cursor: crosshair;
+      }
+      .meti .graph-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .meti .graph-grid figure {
+        margin: 0;
+        border: 1px solid #d8deea;
+        border-radius: 12px;
+        padding: 8px;
+        min-width: 0;
+      }
+      .meti figcaption {
+        font-size: 13px;
+        font-weight: bold;
+      }
+      .meti .scroll {
+        overflow: auto;
+        max-height: 420px;
+      }
+      .meti table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      .meti th,
+      .meti td {
+        padding: 9px 7px;
+        border-bottom: 1px solid #d8deea;
+        text-align: left;
+        vertical-align: top;
+      }
+      .meti details {
+        margin: 14px 0;
+      }
+      .meti summary {
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .meti .step {
+        display: inline-block;
+        background: #dfd5ff;
+        border: 2px solid #202333;
+        border-radius: 8px;
+        padding: 4px 9px;
+        font-size: 13px;
+        margin: 10px 0;
+      }
+      .meti .question {
+        font-size: clamp(20px, 3vw, 28px);
+        font-weight: bold;
+        line-height: 1.4;
+      }
+      .meti .chat {
+        padding: 14px 0;
+        border-bottom: 1px solid #d8deea;
+      }
+      .meti .chat strong {
+        display: block;
+        font-size: 13px;
+        color: #536176;
+      }
+      .meti .pill {
+        border: 2px solid #202333;
+        background: #fff3bc;
+        padding: 5px 10px;
+        border-radius: 9px;
+        font-size: 13px;
+        display: inline-block;
+      }
+      .meti .progress-track {
+        height: 15px;
+        border: 2px solid #202333;
+        border-radius: 12px;
+        background: #fff;
+        overflow: hidden;
+        margin: 12px 0;
+      }
+      .meti .progress-track span {
+        display: block;
+        background: #a9ebdd;
+        height: 100%;
+        width: 0;
+        transition: width 0.2s;
+      }
+      .meti footer {
+        text-align: center;
+        font-size: 14px;
+        color: #536176;
+        padding: 20px 0 35px;
+      }
+      .meti .topic-buttons button {
+        flex: 1 1 30%;
+      }
+      .meti .lesson ol {
+        padding-left: 25px;
+      }
+      @media (max-width: 950px) {
+        .meti .grid {
+          grid-template-columns: 1fr;
+        }
+        .meti .tabs {
+          position: static;
+        }
+        .meti .metrics {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .meti .graph-grid {
+          grid-template-columns: 1fr;
+        }
+        .meti .graph-grid svg {
+          max-height: 260px;
+        }
+        .meti .three {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 520px) {
+        .meti .two,
+        .meti .three {
+          grid-template-columns: 1fr;
+        }
+        .meti .tabs button {
+          flex: 1 1 40%;
+        }
+        .meti .card {
+          box-shadow: 3px 3px 0 #202333;
+        }
+        .meti .topic-buttons button {
+          flex: 1 1 40%;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .meti * {
+          animation: none !important;
+          transition: none !important;
+          scroll-behavior: auto !important;
+        }
+      }
+      @media print {
+        .meti .tabs,
+        .meti button,
+        .meti input[type="range"] {
+          display: none;
+        }
+        .meti .grid {
+          display: block;
+        }
+        .meti .card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        .meti::before {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="meti">
     <header>
-        <h1>Simulacija poševnega meta</h1>
-        <p>Razišči gibanje telesa pri izbrani začetni hitrosti in kotu.</p>
-        <a href="../index.html">← Nazaj na začetno stran</a>
+      <a href="../index.html">← Vsa orodja</a><br /><span class="badge"
+        >Sidebit · Učni laboratorij gibanja</span
+      >
+      <h1>En met.<br />Pet načinov razumevanja.</h1>
+      <p class="lead">
+        Ne glej samo parabole. Ustavi čas, primerjaj hitrosti, raziskuj energijo
+        in rešuj nalogo korak za korakom.
+      </p>
     </header>
-
     <main>
-        <section class="kalkulator" aria-labelledby="naslov">
-            <h2 id="naslov">Nastavitve meta</h2>
-
-            <form id="obrazec">
-                <label for="hitrost">Začetna hitrost v m/s</label>
-                <input id="hitrost" type="number" min="0.01"
-                       max="10000" step="any" value="20" required>
-
-                <label for="kot">Kot meta v stopinjah</label>
-                <input id="kot" type="number" min="0" max="90"
-                       step="any" value="45" required>
-
-                <label for="visina">Začetna višina v metrih</label>
-                <input id="visina" type="number" min="0" max="100000"
-                       step="any" value="0" required>
-
-                <label for="gravitacija">Gravitacijski pospešek v m/s²</label>
-                <input id="gravitacija" type="number" min="0.001"
-                       max="1000" step="any" value="9.81" required>
-
-                <div class="gumbi">
-                    <button type="submit">Izračunaj in prikaži</button>
-                    <button type="reset">Ponastavi</button>
-                </div>
+      <nav class="tabs" aria-label="Področja laboratorija">
+        <button type="button" data-tab="lab" aria-pressed="true">
+          Laboratorij</button
+        ><button type="button" data-tab="target" aria-pressed="false">
+          Zadeni tarčo</button
+        ><button type="button" data-tab="tutor" aria-pressed="false">
+          Vodena vaja</button
+        ><button type="button" data-tab="theory" aria-pressed="false">
+          Razumem snov
+        </button>
+      </nav>
+      <section id="lab" aria-labelledby="lab-title">
+        <div class="grid">
+          <div class="card">
+            <h2 id="lab-title">Kateri met raziskuješ?</h2>
+            <form id="settings">
+              <label for="type">Vrsta gibanja</label
+              ><select id="type">
+                <option value="oblique">Poševni met</option>
+                <option value="horizontal">Vodoravni met</option>
+                <option value="up">Navpični met navzgor</option>
+                <option value="down">Navpični met navzdol</option>
+                <option value="fall">Prosti pad iz mirovanja</option>
+              </select>
+              <p id="mode-hint" class="hint"></p>
+              <label for="speed">Začetna hitrost v₀ (m/s)</label
+              ><input
+                id="speed"
+                type="text"
+                inputmode="decimal"
+                value="20"
+                maxlength="30"
+              /><label for="speed-range" class="hint"
+                >Hitro spreminjanje: 0–50 m/s</label
+              ><input
+                id="speed-range"
+                type="range"
+                min="0"
+                max="50"
+                step="0.5"
+                value="20"
+              />
+              <div id="angle-field">
+                <label for="angle">Kot α (°)</label
+                ><input
+                  id="angle"
+                  type="text"
+                  inputmode="decimal"
+                  value="45"
+                  maxlength="30"
+                /><label for="angle-range" class="hint"
+                  >Hitro spreminjanje: 0–90°</label
+                ><input
+                  id="angle-range"
+                  type="range"
+                  min="0"
+                  max="90"
+                  step="1"
+                  value="45"
+                />
+              </div>
+              <label for="height">Začetna višina h₀ (m)</label
+              ><input
+                id="height"
+                type="text"
+                inputmode="decimal"
+                value="0"
+                maxlength="30"
+              /><label for="height-range" class="hint"
+                >Hitro spreminjanje: 0–100 m</label
+              ><input
+                id="height-range"
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value="0"
+              /><label for="gravity-preset">Gravitacijsko okolje</label
+              ><select id="gravity-preset">
+                <option value="9.81">Zemlja · 9,81 m/s²</option>
+                <option value="1.62">Luna · 1,62 m/s²</option>
+                <option value="3.71">Mars · 3,71 m/s²</option>
+                <option value="custom">Lastna vrednost</option></select
+              ><label for="gravity">Pospešek g (m/s²)</label
+              ><input
+                id="gravity"
+                type="text"
+                inputmode="decimal"
+                value="9.81"
+                maxlength="30"
+              /><label for="mass">Masa telesa m (kg)</label
+              ><input
+                id="mass"
+                type="text"
+                inputmode="decimal"
+                value="1"
+                maxlength="30"
+              />
+              <div class="buttons">
+                <button class="primary">Posodobi prikaz</button
+                ><button type="button" id="reset">Osnovni primer</button>
+              </div>
             </form>
-
-            <p id="napaka" class="napaka" role="alert"></p>
-            <div id="rezultat" class="rezultat" aria-live="polite"></div>
-
-            <canvas id="graf-meta" width="720" height="420"
-                    aria-label="Pot telesa pri poševnem metu">
-                Tvoj brskalnik ne podpira prikaza simulacije.
-            </canvas>
-
-            <div class="gumbi">
-                <button id="predvajaj" type="button" disabled>
-                    Predvajaj
-                </button>
-                <button id="ustavi" type="button" disabled>
-                    Ustavi
-                </button>
+            <p class="hint">
+              Vnosi: v₀ 0–10.000 m/s, h₀ 0–100.000 m, g 0,001–1000 m/s², m
+              0,001–1000 kg. Model ima stalni g in nima zračnega upora.
+            </p>
+            <p id="error" class="error" role="alert"></p>
+          </div>
+          <div class="card">
+            <div class="two">
+              <h2>Pot leta pod lupo</h2>
+              <span class="hint">Klik na pot → izbrani trenutek</span>
             </div>
+            <div class="scene">
+              <svg
+                id="trajectory"
+                viewBox="0 0 900 480"
+                role="img"
+                aria-label="Pot leta in izbrani položaj. Osi uporabljata enako merilo. Podatki so tudi v tabeli in opisu."
+              ></svg>
+            </div>
+            <div class="buttons">
+              <button type="button" id="play" class="primary">Predvajaj</button
+              ><button type="button" id="pause" disabled>Premor</button
+              ><button type="button" id="rewind">Na začetek</button
+              ><button type="button" id="apex">Skoči v najvišjo točko</button
+              ><button type="button" id="landing">Skoči ob tla</button>
+            </div>
+            <div class="two">
+              <div>
+                <label for="time"
+                  >Čas: <output id="time-value">0 s</output></label
+                ><input
+                  id="time"
+                  type="range"
+                  min="0"
+                  max="1000"
+                  step="any"
+                  value="0"
+                />
+              </div>
+              <div>
+                <label for="playback">Hitrost animacije</label
+                ><select id="playback">
+                  <option value="0.5">Počasi · cel let v 12 s</option>
+                  <option value="1" selected>Običajno · cel let v 6 s</option>
+                  <option value="2">Hitro · cel let v 3 s</option>
+                </select>
+              </div>
+            </div>
+            <label class="check"
+              ><input id="vectors" type="checkbox" checked /> Pokaži komponente
+              hitrosti in pospešek</label
+            >
+            <p id="position" class="answer" role="status"></p>
+            <p class="hint">
+              Časovni potek animacije je prilagojen dolžini leta, ne gre za
+              realni čas. Puščice hitrosti in pospeška imajo ločeni simbolični
+              merili. Sila je vedno navzdol, tudi v najvišji točki.
+            </p>
+            <div id="totals" class="metrics"></div>
+            <div class="buttons">
+              <button type="button" id="save-a">Shrani ta met kot A</button
+              ><button type="button" id="clear-a" disabled>
+                Odstrani primerjavo A</button
+              ><button type="button" id="export">Prenesi tabelo CSV</button>
+            </div>
+            <p id="compare-info" role="status"></p>
+            <div id="comparison" class="scroll"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Isti trenutek, trije pogledi</h2>
+          <div class="graph-grid">
+            <figure>
+              <figcaption>Višina y(t)</figcaption>
+              <svg
+                id="height-graph"
+                viewBox="0 0 440 260"
+                role="img"
+                aria-label="Višina v odvisnosti od časa"
+              ></svg>
+            </figure>
+            <figure>
+              <figcaption>Navpična hitrost vᵧ(t)</figcaption>
+              <svg
+                id="velocity-graph"
+                viewBox="0 0 440 260"
+                role="img"
+                aria-label="Navpična hitrost se linearno zmanjšuje s časom"
+              ></svg>
+            </figure>
+            <figure>
+              <figcaption>Kinetična in potencialna energija</figcaption>
+              <svg
+                id="energy-graph"
+                viewBox="0 0 440 260"
+                role="img"
+                aria-label="Energija v odvisnosti od časa: zelena kinetična, vijolična potencialna"
+              ></svg>
+            </figure>
+          </div>
+          <p id="energy-story"></p>
+          <details>
+            <summary>Številčni podatki v 11 trenutkih</summary>
+            <div id="data-table" class="scroll"></div>
+          </details>
+        </div>
+      </section>
 
-            <label for="cas">Položaj med letom</label>
-            <input id="cas" type="range" min="0" max="1000"
-                   step="1" value="0" disabled>
+      <section id="target" hidden aria-labelledby="target-title">
+        <div class="grid">
+          <div class="card">
+            <span class="badge"
+              >Poskus → povratna informacija → razumevanje</span
+            >
+            <h2 id="target-title" style="margin-top: 20px">
+              Zadeni pristajalno območje
+            </h2>
+            <p id="target-question"></p>
+            <label for="target-speed">Tvoja hitrost v₀ (m/s)</label
+            ><input
+              id="target-speed"
+              type="range"
+              min="1"
+              max="50"
+              step="0.1"
+              value="20"
+            /><output id="target-speed-value">20 m/s</output
+            ><label for="target-angle">Tvoj kot (°)</label
+            ><input
+              id="target-angle"
+              type="range"
+              min="5"
+              max="85"
+              step="1"
+              value="45"
+            /><output id="target-angle-value">45°</output>
+            <p class="hint">
+              Met se začne in konča na višini 0 m. Za ta izziv je g = 9,81 m/s².
+            </p>
+            <div class="buttons">
+              <button type="button" id="fire" class="primary">
+                Izstreli in preveri</button
+              ><button type="button" id="new-target">Nova tarča</button
+              ><button type="button" id="target-hint">Namig za domet</button>
+            </div>
+            <p id="target-feedback" role="status"></p>
+            <p id="target-help" class="answer" hidden></p>
+            <button type="button" id="target-to-lab">
+              Ta poskus odpri v laboratoriju
+            </button>
+          </div>
+          <div class="card">
+            <h2>Najprej napovej, nato izstreli</h2>
+            <svg
+              id="target-svg"
+              viewBox="0 0 900 480"
+              role="img"
+              aria-label="Pot izstrelka do pristajalne tarče. Rezultat je naveden v besedilu."
+            ></svg>
+            <p id="target-progress"></p>
+            <p>
+              Pri isti hitrosti in isti začetni ter končni višini imata kota α
+              in 90° − α enak domet. Največji domet je pri 45°. Višina in čas
+              leta se pri komplementarnih kotih razlikujeta.
+            </p>
+            <p class="hint">
+              Točke so ločene od vodene vaje. Vsako novo tarčo lahko uspešno
+              opraviš enkrat; ponovljeni zadetki iste tarče ne povečujejo
+              števca.
+            </p>
+          </div>
+        </div>
+      </section>
 
-            <p id="polozaj"></p>
-        </section>
+      <section id="tutor" hidden aria-labelledby="tutor-title">
+        <div class="grid">
+          <div class="card">
+            <h2 id="tutor-title">Naloga, razdeljena na razumljive korake</h2>
+            <label for="task-kind">Vrsta naloge</label
+            ><select id="task-kind">
+              <option value="mixed">Mešano</option>
+              <option value="fall">Prosti pad</option>
+              <option value="up">Navpični met navzgor</option>
+              <option value="down">Navpični met navzdol</option>
+              <option value="horizontal">Vodoravni met</option>
+              <option value="oblique">Poševni met</option>
+            </select>
+            <p id="task-text" class="question"></p>
+            <p class="hint">
+              Pozitivna os y je navzgor. Rešujemo do prvega stika s tlemi; po
+              odboju gibanja ne modeliramo.
+            </p>
+            <div
+              id="step-progress"
+              class="progress-track"
+              role="progressbar"
+              aria-label="Napredek v nalogi"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+            >
+              <span></span>
+            </div>
+            <span id="step-label" class="step"></span>
+            <p id="step-question" class="question"></p>
+            <form id="step-form">
+              <label id="step-answer-label" for="step-answer">Odgovor</label
+              ><input
+                id="step-answer"
+                type="text"
+                inputmode="decimal"
+                maxlength="100"
+                required
+                placeholder="Število ali ulomek"
+              />
+              <p class="hint">
+                Brez enote. Dovoljeni so vejica, pika in ulomek. Zaokroži na
+                vsaj štiri decimalna mesta, če rezultat ni cel.
+              </p>
+              <div class="buttons">
+                <button class="primary">Preveri korak</button
+                ><button type="button" id="step-hint">Namig</button
+                ><button type="button" id="step-solution">
+                  Razkrij ta korak
+                </button>
+              </div>
+            </form>
+            <p id="step-feedback" role="status"></p>
+            <div id="hint-box" class="answer" hidden></div>
+            <div class="buttons">
+              <button type="button" id="next-step" disabled>
+                Naslednji korak</button
+              ><button type="button" id="new-task">Nova naloga</button
+              ><button type="button" id="task-to-lab">
+                Pokaži v laboratoriju
+              </button>
+            </div>
+          </div>
+          <div class="card lilac">
+            <h2>Tvoj učni spremljevalec</h2>
+            <p>
+              Postavlja podvprašanja, preveri tvoj izračun in pojasni pogoste
+              napake. Deluje po vgrajenih pravilih, brez AI-storitve ali
+              pošiljanja odgovorov strežniku.
+            </p>
+            <div id="tutor-log"></div>
+            <h3>Napredek</h3>
+            <div id="score" class="metrics"></div>
+            <p class="hint">
+              Za prvi pravilen poskus posameznega koraka dobiš 10 točk. Namig je
+              brez odbitka. Razkriti koraki in odgovori po prvem napačnem
+              poskusu ne prinašajo dodatnih točk, lahko pa jih še vedno rešiš.
+            </p>
+            <p id="break-note"></p>
+            <button type="button" id="reset-score">Ponastavi napredek</button>
+          </div>
+        </div>
+      </section>
 
-        <section class="razlaga">
-            <h2>Kako deluje?</h2>
-            <p>
-                Vodoravna hitrost je vₓ = v₀ × cos(α),
-                začetna navpična hitrost pa vᵧ = v₀ × sin(α).
-            </p>
-            <p>
-                Položaj izračunamo z enačbama:
-                x(t) = vₓ × t in
-                y(t) = h₀ + vᵧ × t − g × t² / 2.
-            </p>
-            <p>
-                Simulacija se konča pri tleh, kjer je y = 0.
-                Največja višina je merjena od tal.
-                Gravitacija je stalna, zračni upor in ukrivljenost
-                Zemlje pa sta zanemarjena.
-            </p>
-            <p>
-                Animacija celoten let prikaže v približno petih sekundah.
-                Osi uporabljata enako merilo, zato je lahko pri skoraj
-                navpičnem metu pot videti zelo ozka.
-            </p>
-        </section>
+      <section id="theory" hidden aria-labelledby="theory-title">
+        <div class="card lesson">
+          <h2 id="theory-title">Vsi meti uporabljajo isti model</h2>
+          <p class="formula">x(t) = vₓ₀t &nbsp; y(t) = h₀ + vᵧ₀t − ½gt²</p>
+          <p class="formula">
+            vₓ(t) = vₓ₀ &nbsp; vᵧ(t) = vᵧ₀ − gt &nbsp; aᵧ = −g
+          </p>
+          <p>
+            Vodoravno gibanje je enakomerno, navpično pa enakomerno pospešeno.
+            Časa obeh gibanj sta ista. Vrsta meta določa začetni hitrosti, ne
+            različnih gravitacijskih zakonov.
+          </p>
+          <div class="scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Vrsta</th>
+                  <th>Začetni hitrosti</th>
+                  <th>Kaj opazujemo?</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Prosti pad iz mirovanja</td>
+                  <td>vₓ₀ = 0, vᵧ₀ = 0</td>
+                  <td>
+                    t = √(2h₀/g). Masa v tem modelu ne spremeni časa padanja.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Navpično navzgor</td>
+                  <td>vₓ₀ = 0, vᵧ₀ = +v₀</td>
+                  <td>Na vrhu je vᵧ = 0, pospešek pa ostane −g.</td>
+                </tr>
+                <tr>
+                  <td>Navpično navzdol</td>
+                  <td>vₓ₀ = 0, vᵧ₀ = −v₀</td>
+                  <td>
+                    Hitrost po velikosti narašča. Pri isti višini pade prej kot
+                    telo, spuščeno iz mirovanja.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Vodoravno</td>
+                  <td>vₓ₀ = v₀, vᵧ₀ = 0</td>
+                  <td>
+                    Čas leta je enak prostemu padu iz iste višine; domet je v₀t.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Poševno</td>
+                  <td>vₓ₀ = v₀ cos α, vᵧ₀ = v₀ sin α</td>
+                  <td>
+                    Domet za h₀ = 0: D = v₀² sin(2α)/g. Pri h₀ &gt; 0 ta posebna
+                    formula ne velja.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>Kako najdem čas pristanka?</h3>
+          <ol>
+            <li>Postavi y(t) = 0.</li>
+            <li>Za met navzgor ali poševno je t = (vᵧ₀ + √(vᵧ₀² + 2gh₀))/g.</li>
+            <li>
+              Izberi čas prvega pristanka po začetku leta. Pri začetku na tleh
+              in smeri navzdol ali vodoravno je stik s tlemi takojšen: t = 0.
+            </li>
+            <li>
+              Izračunaj D = vₓ₀t. Največjo višino določi z navpično hitrostjo:
+              če vᵧ₀ &gt; 0, H = h₀ + vᵧ₀²/(2g); sicer H = h₀.
+            </li>
+          </ol>
+          <h3>Energija brez zračnega upora</h3>
+          <p>
+            Eₖ = ½mv², Eₚ = mgy, E = Eₖ + Eₚ. Ničla potencialne energije je na
+            tleh. Pred stikom s tlemi se mehanska energija ohranja. Pri
+            pristanku animacija zamrzne tik pred udarcem; trka, izgube energije
+            in odboja ne vključuje.
+          </p>
+          <h3>Pogoste napake</h3>
+          <ul>
+            <li>
+              Na vrhu poševnega meta telo še vedno ima vodoravno hitrost. Ni
+              nujno, da je njegova celotna hitrost 0.
+            </li>
+            <li>
+              Hitrost in pospešek nista ista veličina. Pospešek je navzdol tudi
+              med dviganjem.
+            </li>
+            <li>
+              Formula t = 2v₀ sin α/g velja za vrnitev na začetno višino. Pri
+              metu z višine h₀ &gt; 0 uporabi splošno enačbo.
+            </li>
+            <li>
+              Večja masa spremeni energijo in težo, ne pa trajektorije pri istem
+              začetnem stanju.
+            </li>
+          </ul>
+          <p class="hint">
+            Luna in Mars pomenita samo spremembo stalnega g v istem modelu;
+            ozračje in velikost planeta nista simulirana. Pri zelo velikih
+            višinah in hitrostih približek stalnega g ter ravnih tal ni več
+            realističen. Vse prikazane energije, časi in razdalje so numerični
+            približki.
+          </p>
+        </div>
+      </section>
     </main>
-
     <footer>
-        <p>Simulacija poševnega meta</p>
+      Sidebit · Meti · Vneseni podatki ostanejo v brskalniku. Shrani se samo
+      skupni učni napredek, če lokalna shramba deluje.
     </footer>
-
     <script>
-        "use strict";
+      "use strict";
+      // Varno branje števil in skupni elementi vmesnika.
+      const $ = (id) => document.getElementById(id),
+        NS = "http://www.w3.org/2000/svg";
+      const fmt = (n) =>
+        new Intl.NumberFormat("sl-SI", {
+          maximumSignificantDigits: 7,
+          notation:
+            Math.abs(n) >= 1e7 || (n !== 0 && Math.abs(n) < 1e-4)
+              ? "scientific"
+              : "standard",
+        }).format(Object.is(n, -0) ? 0 : n);
+      const rnd = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+      const names = {
+        fall: "Prosti pad",
+        up: "Navpični met navzgor",
+        down: "Navpični met navzdol",
+        horizontal: "Vodoravni met",
+        oblique: "Poševni met",
+      };
+      function number(s, name = "Vrednost", min = -1e100, max = 1e100) {
+        s = String(s).trim();
+        if (!/^[+-]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:e[+-]?\d+)?$/i.test(s))
+          throw Error(name + ": vnesi število.");
+        const v = Number(s.replace(",", "."));
+        if (
+          !Number.isFinite(v) ||
+          v < min ||
+          v > max ||
+          (v === 0 && /[1-9]/.test(s.split(/[eE]/)[0]))
+        )
+          throw Error(
+            name + ": dovoljeno od " + fmt(min) + " do " + fmt(max) + ".",
+          );
+        return v;
+      }
+      function el(tag, text, parent, cls) {
+        const e = document.createElement(tag);
+        if (text !== null) e.textContent = text;
+        if (cls) e.className = cls;
+        if (parent) parent.append(e);
+        return e;
+      }
+      function metrics(id, items) {
+        $(id).replaceChildren();
+        items.forEach(([k, v]) => {
+          const e = el("div", null, $(id), "metric");
+          el("span", k, e);
+          el("strong", v, e);
+        });
+      }
+      function table(id, heads, rows) {
+        $(id).replaceChildren();
+        const t = el("table", null, $(id)),
+          h = el("tr", null, el("thead", null, t));
+        heads.forEach((x) => (el("th", x, h).scope = "col"));
+        const b = el("tbody", null, t);
+        rows.forEach((row) => {
+          const r = el("tr", null, b);
+          row.forEach((x, i) => {
+            const c = el(i ? "td" : "th", String(x), r);
+            if (!i) c.scope = "row";
+          });
+        });
+      }
+      function svg(s, tag, attrs = {}, text) {
+        const e = document.createElementNS(NS, tag);
+        Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, String(v)));
+        if (text !== undefined) e.textContent = text;
+        s.append(e);
+        return e;
+      }
+      function txt(
+        s,
+        x,
+        y,
+        t,
+        size = 15,
+        color = "#202333",
+        anchor = "middle",
+      ) {
+        return svg(
+          s,
+          "text",
+          {
+            x,
+            y,
+            "font-size": size,
+            "font-family": "Arial, sans-serif",
+            fill: color,
+            "text-anchor": anchor,
+          },
+          t,
+        );
+      }
+      function path(s, d, color = "#202333", width = 2, dash = "") {
+        return svg(s, "path", {
+          d,
+          fill: "none",
+          stroke: color,
+          "stroke-width": width,
+          "stroke-linejoin": "round",
+          ...(dash ? { "stroke-dasharray": dash } : {}),
+        });
+      }
+      function arrow(s, x, y, dx, dy, color, label) {
+        const mag = Math.hypot(dx, dy);
+        if (mag < 0.01) return;
+        const endX = x + dx,
+          endY = y + dy,
+          a = Math.atan2(dy, dx);
+        path(
+          s,
+          `M${x} ${y}L${endX} ${endY}M${endX - 9 * Math.cos(a - 0.4)} ${endY - 9 * Math.sin(a - 0.4)}L${endX} ${endY}L${endX - 9 * Math.cos(a + 0.4)} ${endY - 9 * Math.sin(a + 0.4)}`,
+          color,
+          3,
+        );
+        if (label)
+          txt(
+            s,
+            Math.max(65, Math.min(830, endX + 14)),
+            Math.max(22, Math.min(420, endY - 10)),
+            label,
+            14,
+            color,
+          );
+      }
+      function tab(id) {
+        stopAnimation();
+        stopTarget();
+        document
+          .querySelectorAll("main>section")
+          .forEach((e) => (e.hidden = e.id !== id));
+        document
+          .querySelectorAll("[data-tab]")
+          .forEach((b) =>
+            b.setAttribute("aria-pressed", String(b.dataset.tab === id)),
+          );
+      }
+      document
+        .querySelectorAll("[data-tab]")
+        .forEach((b) => b.addEventListener("click", () => tab(b.dataset.tab)));
 
-        const obrazec = document.getElementById("obrazec");
-        const napaka = document.getElementById("napaka");
-        const rezultat = document.getElementById("rezultat");
-        const canvas = document.getElementById("graf-meta");
-        const ctx = canvas.getContext("2d");
-        const drsnik = document.getElementById("cas");
-        const polozaj = document.getElementById("polozaj");
-        const predvajaj = document.getElementById("predvajaj");
-        const ustavi = document.getElementById("ustavi");
-
-        const vnosi = [
-            document.getElementById("hitrost"),
-            document.getElementById("kot"),
-            document.getElementById("visina"),
-            document.getElementById("gravitacija")
+      // Enoten model za vseh pet vrst meta; pozitivna smer y je navzgor.
+      function makeModel({
+        type = "oblique",
+        v = 20,
+        angle = 45,
+        h = 0,
+        g = 9.81,
+        mass = 1,
+      }) {
+        if (!Object.hasOwn(names, type)) throw Error("Neznan met.");
+        if (
+          ![v, angle, h, g, mass].every(Number.isFinite) ||
+          v < 0 ||
+          h < 0 ||
+          g <= 0 ||
+          mass <= 0
+        )
+          throw Error("Neveljavni fizikalni podatki.");
+        let vx = 0,
+          vy = 0;
+        if (type === "oblique") {
+          vx = angle === 90 ? 0 : v * Math.cos((angle * Math.PI) / 180);
+          vy = v * Math.sin((angle * Math.PI) / 180);
+        } else if (type === "horizontal") vx = v;
+        else if (type === "up") vy = v;
+        else if (type === "down") vy = -v;
+        const root = Math.hypot(vy, Math.sqrt(2 * g * h));
+        const T =
+          vy >= 0 ? (vy + root) / g : h === 0 ? 0 : (2 * h) / (root - vy);
+        const peakTime = vy > 0 ? vy / g : 0,
+          H = vy > 0 ? h + (vy * vy) / (2 * g) : h,
+          D = vx * T;
+        return {
+          type,
+          v: type === "fall" ? 0 : v,
+          angle:
+            type === "oblique"
+              ? angle
+              : type === "up"
+                ? 90
+                : type === "down"
+                  ? -90
+                  : 0,
+          h,
+          g,
+          mass,
+          vx,
+          vy,
+          T,
+          H,
+          D,
+          peakTime,
+        };
+      }
+      function stateAt(model, t) {
+        t = Math.max(0, Math.min(model.T, t));
+        const x = model.vx * t,
+          rawY = model.h + model.vy * t - 0.5 * model.g * t * t,
+          y = t === model.T && model.T > 0 ? 0 : Math.max(0, rawY),
+          rawVy = model.vy - model.g * t,
+          vy =
+            Math.abs(rawVy) <=
+            16 *
+              Number.EPSILON *
+              Math.max(1, Math.abs(model.vy), Math.abs(model.g * t))
+              ? 0
+              : rawVy,
+          speed = Math.hypot(model.vx, vy),
+          Ek = 0.5 * model.mass * speed * speed,
+          Ep = model.mass * model.g * y;
+        return { t, x, y, vx: model.vx, vy, speed, Ek, Ep, E: Ek + Ep };
+      }
+      let model = null,
+        savedA = null,
+        frame = null,
+        animationStart = 0,
+        startFraction = 0,
+        sceneMap = null;
+      function readSettings() {
+        const type = $("type").value;
+        return {
+          type,
+          v:
+            type === "fall" ? 0 : number($("speed").value, "Hitrost", 0, 10000),
+          angle:
+            type === "oblique" ? number($("angle").value, "Kot", 0, 90) : 0,
+          h: number($("height").value, "Višina", 0, 100000),
+          g: number($("gravity").value, "Gravitacija", 0.001, 1000),
+          mass: number($("mass").value, "Masa", 0.001, 1000),
+        };
+      }
+      function stopAnimation() {
+        if (frame !== null) cancelAnimationFrame(frame);
+        frame = null;
+        $("pause").disabled = true;
+        $("play").disabled = !model || model.T === 0;
+      }
+      function stopTarget() {
+        if (targetFrame !== null) cancelAnimationFrame(targetFrame);
+        targetFrame = null;
+        $("fire").disabled = false;
+      }
+      function adjustControls() {
+        const type = $("type").value;
+        if (type === "fall") {
+          $("speed").value = "0";
+          $("speed-range").value = "0";
+        }
+        $("angle-field").hidden = type !== "oblique";
+        $("speed").disabled = type === "fall";
+        $("speed-range").disabled = type === "fall";
+        $("mode-hint").textContent = {
+          fall: "Začetna hitrost je 0. Spust iz višine, brez začetnega potiska.",
+          up: "Začetna hitrost je usmerjena navzgor; začetna vodoravna hitrost je 0.",
+          down: "Začetna hitrost je usmerjena navzdol, zato je vᵧ₀ negativna.",
+          horizontal: "Začetna navpična hitrost je 0; vodoravna je v₀.",
+          oblique: "Hitrost razcepimo na vodoravno in navpično komponento.",
+        }[type];
+      }
+      function drawTrajectory(
+        id,
+        m,
+        t,
+        { comparison = null, target = null, vectors = false } = {},
+      ) {
+        const s = $(id);
+        s.replaceChildren();
+        svg(s, "title", {}, names[m.type] + " – pot leta");
+        const W = 900,
+          H = 480,
+          L = 70,
+          B = 415,
+          top = 45,
+          right = 835,
+          w = right - L,
+          hh = B - top;
+        const xmax = Math.max(
+            1,
+            m.D * 1.1,
+            comparison ? comparison.D * 1.1 : 0,
+            target ? target.center * 1.2 : 0,
+          ),
+          ymax = Math.max(1, m.H * 1.16, comparison ? comparison.H * 1.16 : 0),
+          scale = Math.min(w / xmax, hh / ymax),
+          X = (x) => L + x * scale,
+          Y = (y) => B - y * scale,
+          viewX = w / scale,
+          viewY = hh / scale;
+        svg(s, "rect", { x: L, y: B, width: w, height: 25, fill: "#d6efdf" });
+        for (let i = 0; i <= 4; i++) {
+          const x = (viewX * i) / 4,
+            y = (viewY * i) / 4;
+          path(s, `M${X(x)} ${top}V${B}`, "#e1e6ef", 1);
+          path(s, `M${L} ${Y(y)}H${right}`, "#e1e6ef", 1);
+          txt(s, X(x), B + 22, fmt(x), 12);
+          if (i) txt(s, L - 10, Y(y) + 4, fmt(y), 12, "#536176", "end");
+        }
+        path(s, `M${L} ${top}V${B}H${right}`);
+        txt(s, 24, 25, "y (m)", 15);
+        txt(s, right, 465, "x (m)", 15, "#202333", "end");
+        function curve(mm, color, dash = "") {
+          let d = "";
+          for (let i = 0; i <= 160; i++) {
+            const p = stateAt(mm, (mm.T * i) / 160);
+            d += (i ? "L" : "M") + X(p.x) + " " + Y(p.y);
+          }
+          path(s, d, color, 3, dash);
+        }
+        if (comparison) {
+          curve(comparison, "#7958df", "7 6");
+          txt(s, 660, 23, "A: " + names[comparison.type], 13, "#7958df");
+        }
+        curve(m, "#087f8c");
+        const p = stateAt(m, t);
+        if (target) {
+          const x = X(target.center - target.width / 2),
+            ww = target.width * scale;
+          svg(s, "rect", {
+            x,
+            y: B - 10,
+            width: ww,
+            height: 20,
+            rx: 3,
+            fill: "#ffe58c",
+            stroke: "#202333",
+            "stroke-width": 2,
+          });
+          txt(s, X(target.center), B - 20, "Tarča", 14);
+        }
+        svg(s, "circle", { cx: X(0), cy: Y(m.h), r: 5, fill: "#202333" });
+        if (m.peakTime > 0) {
+          svg(s, "circle", {
+            cx: X(m.vx * m.peakTime),
+            cy: Y(m.H),
+            r: 4,
+            fill: "#7958df",
+          });
+        }
+        if (vectors) {
+          const maxSpeed = Math.max(
+              1,
+              Math.hypot(m.vx, m.vy),
+              stateAt(m, m.T).speed,
+            ),
+            vs = 85 / maxSpeed;
+          arrow(s, X(p.x), Y(p.y), p.vx * vs, 0, "#087f8c", "vₓ");
+          arrow(s, X(p.x), Y(p.y), 0, -p.vy * vs, "#7958df", "vᵧ");
+          arrow(s, X(p.x) + 12, Y(p.y), 0, 50, "#bc5943", "g");
+        }
+        svg(s, "circle", {
+          cx: X(p.x),
+          cy: Y(p.y),
+          r: 9,
+          fill: "#ffe58c",
+          stroke: "#202333",
+          "stroke-width": 3,
+        });
+        txt(s, 160, 23, "Turkizna: trenutni met", 13, "#087f8c");
+        if (id === "trajectory") sceneMap = { X, Y, m };
+      }
+      function graph(id, m, t, curves, ylabel) {
+        const s = $(id);
+        s.replaceChildren();
+        svg(s, "title", {}, ylabel);
+        if (m.T === 0) {
+          txt(s, 220, 120, "Čas leta je 0 s.", 17);
+          return;
+        }
+        const W = 440,
+          H = 260,
+          L = 65,
+          B = 205,
+          top = 25,
+          right = 420;
+        const samples = curves.flatMap((c) =>
+          Array.from({ length: 51 }, (_, i) =>
+            c.fn(stateAt(m, (m.T * i) / 50)),
+          ),
+        );
+        let min = Math.min(0, ...samples),
+          max = Math.max(0, ...samples);
+        if (max === min) max = min + 1;
+        const span = max - min;
+        min -= span * 0.08;
+        max += span * 0.08;
+        const X = (x) => L + (m.T ? x / m.T : 0) * (right - L),
+          Y = (y) => B - ((y - min) / (max - min)) * (B - top);
+        for (let i = 0; i <= 3; i++) {
+          const y = min + ((max - min) * i) / 3;
+          path(s, `M${L} ${Y(y)}H${right}`, "#e1e6ef", 1);
+          txt(s, L - 7, Y(y) + 4, fmt(y), 11, "#536176", "end");
+          const time = (m.T * i) / 3;
+          txt(s, X(time), 226, fmt(time), 11);
+        }
+        path(s, `M${L} ${top}V${B}H${right}`);
+        if (min < 0 && max > 0) path(s, `M${L} ${Y(0)}H${right}`, "#b6bdc9", 1);
+        curves.forEach((c) => {
+          let d = "";
+          for (let i = 0; i <= 100; i++) {
+            const tt = (m.T * i) / 100,
+              yy = c.fn(stateAt(m, tt));
+            d += (i ? "L" : "M") + X(tt) + " " + Y(yy);
+          }
+          path(s, d, c.color, 2.5);
+          const p = stateAt(m, t);
+          svg(s, "circle", { cx: X(t), cy: Y(c.fn(p)), r: 4, fill: c.color });
+        });
+        path(s, `M${X(t)} ${top}V${B}`, "#b95d48", 1, "4 4");
+        txt(s, 18, 15, ylabel, 12, "#202333", "start");
+        txt(s, 420, 248, "t (s)", 12, "#202333", "end");
+      }
+      function renderFrame() {
+        if (!model) return;
+        const t = (model.T * Number($("time").value)) / 1000,
+          p = stateAt(model, t);
+        $("time-value").textContent = fmt(t) + " s / " + fmt(model.T) + " s";
+        $("position").textContent =
+          `t = ${fmt(t)} s · x = ${fmt(p.x)} m · y = ${fmt(p.y)} m · vₓ = ${fmt(p.vx)} m/s · vᵧ = ${fmt(p.vy)} m/s · |v| = ${fmt(p.speed)} m/s.` +
+          (t === model.T && model.T > 0
+            ? " Stanje tik pred stikom s tlemi."
+            : "");
+        drawTrajectory("trajectory", model, t, {
+          comparison: savedA,
+          vectors: $("vectors").checked,
+        });
+        graph(
+          "height-graph",
+          model,
+          t,
+          [{ fn: (p) => p.y, color: "#087f8c" }],
+          "y (m)",
+        );
+        graph(
+          "velocity-graph",
+          model,
+          t,
+          [{ fn: (p) => p.vy, color: "#7958df" }],
+          "vᵧ (m/s)",
+        );
+        graph(
+          "energy-graph",
+          model,
+          t,
+          [
+            { fn: (p) => p.Ek, color: "#087f8c" },
+            { fn: (p) => p.Ep, color: "#7958df" },
+          ],
+          "E (J)",
+        );
+        $("energy-story").textContent =
+          `V izbranem trenutku: Eₖ = ${fmt(p.Ek)} J, Eₚ = ${fmt(p.Ep)} J, skupaj ${fmt(p.E)} J. Zelena krivulja: kinetična; vijolična: potencialna energija. Masa spremeni energijo, ne poti leta.`;
+      }
+      function updateLab() {
+        stopAnimation();
+        adjustControls();
+        try {
+          model = makeModel(readSettings());
+          $("error").textContent = "";
+          $("time").value = "0";
+          $("time").disabled = model.T === 0;
+          $("play").disabled = model.T === 0;
+          ["apex", "landing", "export", "save-a"].forEach(
+            (id) => ($(id).disabled = false),
+          );
+          metrics("totals", [
+            ["Čas leta", fmt(model.T) + " s"],
+            ["Domet", fmt(model.D) + " m"],
+            ["Največja višina od tal", fmt(model.H) + " m"],
+            ["Hitrost ob tleh", fmt(stateAt(model, model.T).speed) + " m/s"],
+          ]);
+          renderFrame();
+          table(
+            "data-table",
+            [
+              "t (s)",
+              "x (m)",
+              "y (m)",
+              "vₓ (m/s)",
+              "vᵧ (m/s)",
+              "Eₖ (J)",
+              "Eₚ (J)",
+            ],
+            Array.from({ length: 11 }, (_, i) => {
+              const p = stateAt(model, (model.T * i) / 10);
+              return [p.t, p.x, p.y, p.vx, p.vy, p.Ek, p.Ep].map(fmt);
+            }),
+          );
+          renderComparison();
+          if (model.T === 0)
+            $("error").textContent =
+              "Telo je že na tleh in ne leti navzgor: čas do stika s tlemi je 0 s. Za ta poskus izberi pozitivno višino ali smer navzgor.";
+        } catch (e) {
+          model = null;
+          $("error").textContent = e.message;
+          [
+            "totals",
+            "trajectory",
+            "height-graph",
+            "velocity-graph",
+            "energy-graph",
+            "data-table",
+          ].forEach((id) => $(id).replaceChildren());
+          $("position").textContent = "";
+          $("energy-story").textContent = "";
+          $("comparison").replaceChildren();
+          $("compare-info").textContent =
+            "Za primerjavo najprej popravi trenutni vnos.";
+          $("time").disabled = true;
+          ["play", "apex", "landing", "export", "save-a"].forEach(
+            (id) => ($(id).disabled = true),
+          );
+        }
+      }
+      $("settings").addEventListener("submit", (e) => {
+        e.preventDefault();
+        updateLab();
+      });
+      $("settings").addEventListener("input", (e) => {
+        if (e.target.id === "gravity") $("gravity-preset").value = "custom";
+        if (
+          ![
+            "gravity-preset",
+            "speed-range",
+            "angle-range",
+            "height-range",
+          ].includes(e.target.id)
+        )
+          updateLab();
+      });
+      $("type").addEventListener("change", () => {
+        if (
+          ["fall", "down", "horizontal"].includes($("type").value) &&
+          Number($("height").value) === 0
+        ) {
+          $("height").value = "20";
+          $("height-range").value = "20";
+        }
+        updateLab();
+      });
+      for (const [range, input] of [
+        ["speed-range", "speed"],
+        ["angle-range", "angle"],
+        ["height-range", "height"],
+      ]) {
+        $(range).addEventListener("input", () => {
+          $(input).value = $(range).value;
+          updateLab();
+        });
+        $(input).addEventListener("input", () => {
+          const n = Number($(input).value.replace(",", "."));
+          if (Number.isFinite(n)) $(range).value = String(n);
+        });
+      }
+      $("gravity-preset").addEventListener("change", () => {
+        if ($("gravity-preset").value !== "custom")
+          $("gravity").value = $("gravity-preset").value;
+        updateLab();
+      });
+      function setLab(m) {
+        $("type").value = m.type;
+        $("speed").value = String(m.v);
+        $("speed-range").value = String(m.v);
+        $("angle").value = String(m.angle);
+        $("angle-range").value = String(m.angle);
+        $("height").value = String(m.h);
+        $("height-range").value = String(m.h);
+        $("gravity").value = String(m.g);
+        $("gravity-preset").value = ["9.81", "1.62", "3.71"].includes(
+          String(m.g),
+        )
+          ? String(m.g)
+          : "custom";
+        $("mass").value = String(m.mass);
+        updateLab();
+      }
+      $("reset").addEventListener("click", () => setLab(makeModel({})));
+      $("play").addEventListener("click", () => {
+        if (!model || model.T === 0) return;
+        stopAnimation();
+        if (Number($("time").value) >= 1000) $("time").value = "0";
+        startFraction = Number($("time").value) / 1000;
+        animationStart = performance.now();
+        $("play").disabled = true;
+        $("pause").disabled = false;
+        const rate = Number($("playback").value);
+        function step(now) {
+          const fraction = Math.min(
+            1,
+            startFraction + ((now - animationStart) / 6000) * rate,
+          );
+          $("time").value = String(Math.round(fraction * 1000));
+          renderFrame();
+          if (fraction < 1) frame = requestAnimationFrame(step);
+          else {
+            frame = null;
+            $("pause").disabled = true;
+            $("play").disabled = false;
+          }
+        }
+        frame = requestAnimationFrame(step);
+      });
+      $("pause").addEventListener("click", stopAnimation);
+      $("playback").addEventListener("change", stopAnimation);
+      $("time").addEventListener("input", () => {
+        stopAnimation();
+        renderFrame();
+      });
+      $("vectors").addEventListener("change", renderFrame);
+      for (const [id, value] of [
+        ["rewind", 0],
+        ["landing", 1000],
+      ])
+        $(id).addEventListener("click", () => {
+          stopAnimation();
+          $("time").value = String(value);
+          renderFrame();
+        });
+      $("apex").addEventListener("click", () => {
+        if (!model) return;
+        stopAnimation();
+        $("time").value = String(
+          model.T ? (model.peakTime / model.T) * 1000 : 0,
+        );
+        renderFrame();
+      });
+      $("trajectory").addEventListener("click", (e) => {
+        if (!model || !sceneMap) return;
+        const rect = $("trajectory").getBoundingClientRect(),
+          px = ((e.clientX - rect.left) * 900) / rect.width,
+          py = ((e.clientY - rect.top) * 480) / rect.height;
+        let nearest = 0,
+          distance = Infinity;
+        for (let i = 0; i <= 500; i++) {
+          const p = stateAt(model, (model.T * i) / 500),
+            d = (sceneMap.X(p.x) - px) ** 2 + (sceneMap.Y(p.y) - py) ** 2;
+          if (d < distance) {
+            distance = d;
+            nearest = i * 2;
+          }
+        }
+        stopAnimation();
+        $("time").value = String(nearest);
+        renderFrame();
+      });
+      function renderComparison() {
+        $("clear-a").disabled = !savedA;
+        if (!savedA) {
+          $("comparison").replaceChildren();
+          $("compare-info").textContent =
+            "Shrani met A, nato spremeni podatke za primerjavo.";
+          return;
+        }
+        $("compare-info").textContent =
+          "Vijolična črtkana pot je shranjeni met A. Zelena je trenutni met B; isti merili osi veljata za obe poti.";
+        if (model)
+          table(
+            "comparison",
+            [
+              "Met",
+              "v₀ (m/s)",
+              "h₀ (m)",
+              "g (m/s²)",
+              "Čas (s)",
+              "Domet (m)",
+              "H (m)",
+            ],
+            [
+              [
+                "A: " + names[savedA.type],
+                ...["v", "h", "g", "T", "D", "H"].map((k) => fmt(savedA[k])),
+              ],
+              [
+                "B: " + names[model.type],
+                ...["v", "h", "g", "T", "D", "H"].map((k) => fmt(model[k])),
+              ],
+            ],
+          );
+      }
+      $("save-a").addEventListener("click", () => {
+        if (model) {
+          savedA = { ...model };
+          renderComparison();
+          renderFrame();
+        }
+      });
+      $("clear-a").addEventListener("click", () => {
+        savedA = null;
+        renderComparison();
+        renderFrame();
+      });
+      $("export").addEventListener("click", () => {
+        if (!model) return;
+        const rows = [
+          [
+            "t_s",
+            "x_m",
+            "y_m",
+            "vx_m_s",
+            "vy_m_s",
+            "hitrost_m_s",
+            "Ek_J",
+            "Ep_J",
+          ],
+          ...Array.from({ length: 101 }, (_, i) => {
+            const p = stateAt(model, (model.T * i) / 100);
+            return [p.t, p.x, p.y, p.vx, p.vy, p.speed, p.Ek, p.Ep];
+          }),
         ];
+        const content = "\uFEFF" + rows.map((r) => r.join(";")).join("\r\n"),
+          url = URL.createObjectURL(
+            new Blob([content], { type: "text/csv;charset=utf-8" }),
+          ),
+          a = document.createElement("a");
+        a.href = url;
+        a.download = "sidebit-meti-podatki.csv";
+        document.body.append(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      });
 
-        let model = null;
-        let animacija = null;
-
-        function oblikuj(vrednost) {
-            return vrednost.toLocaleString("sl-SI", {
-                maximumFractionDigits: 3
-            });
-        }
-
-        function ustaviAnimacijo() {
-            if (animacija !== null) {
-                cancelAnimationFrame(animacija);
-            }
-            animacija = null;
-            ustavi.disabled = true;
-            predvajaj.disabled = !model || model.casLeta === 0;
-        }
-
-        function pocisti() {
-            ustaviAnimacijo();
-            model = null;
-            napaka.textContent = "";
-            rezultat.replaceChildren();
-            polozaj.textContent = "";
-            drsnik.value = "0";
-            drsnik.disabled = true;
-            predvajaj.disabled = true;
-
-            if (ctx) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
-        }
-
-        function preberi(polje, ime, min, max) {
-            const vrednost = polje.valueAsNumber;
-
-            if (!Number.isFinite(vrednost) ||
-                vrednost < min || vrednost > max) {
-                throw new Error(
-                    `${ime}: vnesi vrednost od ${min} do ${max}.`
-                );
-            }
-
-            return vrednost;
-        }
-
-        function tocka(t) {
-            return {
-                x: model.vx * t,
-                y: Math.max(
-                    0,
-                    model.h + model.vy * t - model.g * t * t / 2
-                )
-            };
-        }
-
-        function narisi() {
-            if (!ctx || !model) return;
-
-            const sirina = canvas.clientWidth;
-            const visina = Math.round(sirina * 7 / 12);
-            const gostota = Math.min(window.devicePixelRatio || 1, 2);
-
-            canvas.width = Math.round(sirina * gostota);
-            canvas.height = Math.round(visina * gostota);
-            ctx.setTransform(gostota, 0, 0, gostota, 0, 0);
-
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, sirina, visina);
-
-            const rob = { levo: 60, desno: 20, zgoraj: 25, spodaj: 45 };
-            const w = Math.max(1, sirina - rob.levo - rob.desno);
-            const h = Math.max(1, visina - rob.zgoraj - rob.spodaj);
-
-            const xmax = Math.max(1, model.domet * 1.1);
-            const ymax = Math.max(1, model.maxVisina * 1.15);
-            const merilo = Math.min(w / xmax, h / ymax);
-
-            const px = x => rob.levo + x * merilo;
-            const py = y => rob.zgoraj + h - y * merilo;
-
-            // Oznake osi so prilagojene dejanskemu vidnemu območju.
-            const vidniX = w / merilo;
-            const vidniY = h / merilo;
-
-            ctx.font = "11px sans-serif";
-            ctx.lineWidth = 1;
-
-            for (let i = 0; i <= 4; i++) {
-                const x = vidniX * i / 4;
-                const y = vidniY * i / 4;
-
-                ctx.strokeStyle = "#e2e8ee";
-                ctx.beginPath();
-                ctx.moveTo(px(x), rob.zgoraj);
-                ctx.lineTo(px(x), py(0));
-                ctx.moveTo(px(0), py(y));
-                ctx.lineTo(rob.levo + w, py(y));
-                ctx.stroke();
-
-                ctx.fillStyle = "#526273";
-                ctx.textAlign = "center";
-                ctx.fillText(oblikaOsi(x), px(x), py(0) + 18);
-                ctx.textAlign = "right";
-                ctx.fillText(oblikaOsi(y), rob.levo - 7, py(y) + 4);
-            }
-
-            ctx.strokeStyle = "#142c43";
-            ctx.beginPath();
-            ctx.moveTo(rob.levo, rob.zgoraj);
-            ctx.lineTo(rob.levo, py(0));
-            ctx.lineTo(rob.levo + w, py(0));
-            ctx.stroke();
-
-            ctx.fillStyle = "#142c43";
-            ctx.textAlign = "right";
-            ctx.fillText("x (m)", rob.levo + w, visina - 5);
-            ctx.textAlign = "left";
-            ctx.fillText("y (m)", 5, 15);
-
-            ctx.strokeStyle = "#087f8c";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-
-            for (let i = 0; i <= 400; i++) {
-                const p = tocka(model.casLeta * i / 400);
-                if (i === 0) ctx.moveTo(px(p.x), py(p.y));
-                else ctx.lineTo(px(p.x), py(p.y));
-            }
-
-            ctx.stroke();
-
-            const t = model.casLeta * Number(drsnik.value) / 1000;
-            const p = tocka(t);
-
-            ctx.fillStyle = "#e56b2f";
-            ctx.beginPath();
-            ctx.arc(px(p.x), py(p.y), 6, 0, Math.PI * 2);
-            ctx.fill();
-
-            polozaj.textContent =
-                `Čas: ${oblikuj(t)} s; ` +
-                `x: ${oblikuj(p.x)} m; y: ${oblikuj(p.y)} m.`;
-        }
-
-        function oblikaOsi(vrednost) {
-            return Number(vrednost.toPrecision(3)).toLocaleString("sl-SI");
-        }
-
-        function dodajRezultat(ime, vrednost, enota) {
-            const p = document.createElement("p");
-            p.textContent = `${ime}: ${oblikuj(vrednost)} ${enota}`;
-            rezultat.appendChild(p);
-        }
-
-        obrazec.addEventListener("submit", event => {
-            event.preventDefault();
-            pocisti();
-
-            try {
-                if (!ctx) {
-                    throw new Error("Brskalnik ne podpira risanja.");
-                }
-
-                const v = preberi(vnosi[0], "Hitrost", 0.01, 10000);
-                const kot = preberi(vnosi[1], "Kot", 0, 90);
-                const h = preberi(vnosi[2], "Višina", 0, 100000);
-                const g = preberi(vnosi[3], "Gravitacija", 0.001, 1000);
-
-                const radiani = kot * Math.PI / 180;
-                const vx = kot === 90 ? 0 : v * Math.cos(radiani);
-                const vy = v * Math.sin(radiani);
-                const casLeta = (vy + Math.sqrt(vy * vy + 2 * g * h)) / g;
-
-                model = {
-                    vx, vy, h, g, casLeta,
-                    domet: vx * casLeta,
-                    maxVisina: h + vy * vy / (2 * g)
-                };
-
-                dodajRezultat("Čas leta", casLeta, "s");
-                dodajRezultat("Domet", model.domet, "m");
-                dodajRezultat("Največja višina", model.maxVisina, "m");
-                dodajRezultat("Vodoravna hitrost", vx, "m/s");
-
-                drsnik.disabled = casLeta === 0;
-                predvajaj.disabled = casLeta === 0;
-
-                if (casLeta === 0) {
-                    const p = document.createElement("p");
-                    p.textContent =
-                        "Pri vodoravnem metu z višine 0 m je " +
-                        "čas do stika s tlemi v tem modelu 0 s.";
-                    rezultat.appendChild(p);
-                }
-
-                narisi();
-            } catch (error) {
-                napaka.textContent = error.message;
-            }
+      // TARČA: rezultat preverimo šele ob izstrelitvi.
+      let targetFrame = null,
+        target = null,
+        targetAttempt = null,
+        targetHits = 0;
+      function newTarget() {
+        stopTarget();
+        const solutionV = rnd(12, 35),
+          solutionAngle = rnd(25, 65),
+          m = makeModel({ v: solutionV, angle: solutionAngle });
+        target = { center: m.D, width: Math.max(1, m.D * 0.04), won: false };
+        targetAttempt = null;
+        $("target-question").textContent =
+          `Pristani v območju od ${fmt(target.center - target.width / 2)} do ${fmt(target.center + target.width / 2)} m. Spreminjaj hitrost in kot.`;
+        $("target-feedback").textContent = "";
+        $("target-help").hidden = true;
+        $("target-svg").replaceChildren();
+        const preview = makeModel({ v: 0 });
+        drawTrajectory("target-svg", preview, 0, { target });
+        updateAim();
+      }
+      function updateAim() {
+        $("target-speed-value").textContent =
+          fmt(Number($("target-speed").value)) + " m/s";
+        $("target-angle-value").textContent = $("target-angle").value + "°";
+        $("target-progress").textContent =
+          "Uspešno doseženih tarč v tej seji: " + targetHits + ".";
+      }
+      $("target-speed").addEventListener("input", () => {
+        stopTarget();
+        updateAim();
+        $("target-feedback").textContent =
+          "Nastavitev je spremenjena. Izstreli za nov preizkus.";
+      });
+      $("target-angle").addEventListener("input", () => {
+        stopTarget();
+        updateAim();
+        $("target-feedback").textContent =
+          "Nastavitev je spremenjena. Izstreli za nov preizkus.";
+      });
+      $("fire").addEventListener("click", () => {
+        stopTarget();
+        targetAttempt = makeModel({
+          v: Number($("target-speed").value),
+          angle: Number($("target-angle").value),
         });
-
-        predvajaj.addEventListener("click", () => {
-            if (!model || model.casLeta === 0) return;
-
-            ustaviAnimacijo();
-
-            if (Number(drsnik.value) >= 1000) drsnik.value = "0";
-
-            const zacetniDelez = Number(drsnik.value) / 1000;
-            const zacetek = performance.now();
-
-            predvajaj.disabled = true;
-            ustavi.disabled = false;
-
-            function korak(zdaj) {
-                const delez = Math.min(
-                    1,
-                    zacetniDelez + (zdaj - zacetek) / 5000
-                );
-
-                drsnik.value = String(Math.round(delez * 1000));
-                narisi();
-
-                if (delez < 1) {
-                    animacija = requestAnimationFrame(korak);
-                } else {
-                    animacija = null;
-                    ustavi.disabled = true;
-                    predvajaj.disabled = false;
-                }
+        const m = targetAttempt,
+          sceneTarget = { ...target },
+          done = () => {
+            const error = m.D - target.center,
+              ok = Math.abs(error) <= target.width / 2;
+            if (ok && !target.won) {
+              target.won = true;
+              targetHits++;
             }
+            $("target-feedback").textContent = ok
+              ? "Zadetek! Domet je " + fmt(m.D) + " m."
+              : (error < 0 ? "Prekratko za " : "Predaleč za ") +
+                fmt(Math.abs(error)) +
+                " m glede na sredino tarče. Domet: " +
+                fmt(m.D) +
+                " m.";
+            updateAim();
+            $("fire").disabled = false;
+          };
+        if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+          drawTrajectory("target-svg", m, m.T, { target: sceneTarget });
+          done();
+          return;
+        }
+        $("fire").disabled = true;
+        const start = performance.now();
+        function tick(now) {
+          const frac = Math.min(1, (now - start) / 2200);
+          drawTrajectory("target-svg", m, m.T * frac, { target: sceneTarget });
+          if (frac < 1) targetFrame = requestAnimationFrame(tick);
+          else {
+            targetFrame = null;
+            done();
+          }
+        }
+        targetFrame = requestAnimationFrame(tick);
+      });
+      $("new-target").addEventListener("click", newTarget);
+      $("target-hint").addEventListener("click", () => {
+        $("target-help").hidden = false;
+        $("target-help").textContent =
+          "D = v₀² sin(2α)/g. Za kot 45° velja v₀ = √(Dg). Za sredino te tarče potrebuješ pri 45° približno " +
+          fmt(Math.sqrt(target.center * 9.81)) +
+          " m/s.";
+      });
+      $("target-to-lab").addEventListener("click", () => {
+        const m =
+          targetAttempt ||
+          makeModel({
+            v: Number($("target-speed").value),
+            angle: Number($("target-angle").value),
+          });
+        setLab(m);
+        tab("lab");
+      });
 
-            animacija = requestAnimationFrame(korak);
+      // VODENA VAJA: naključni podatki, koraki in povratne informacije po pravilih.
+      const KEY = "sidebit-meti-napredek-v1";
+      let score = { attempts: 0, correct: 0, finished: 0 },
+        task = null,
+        stepIndex = 0,
+        session = 0;
+      try {
+        const p = JSON.parse(localStorage.getItem(KEY));
+        if (
+          p &&
+          ["attempts", "correct", "finished"].every(
+            (k) => Number.isSafeInteger(p[k]) && p[k] >= 0,
+          ) &&
+          p.correct <= p.attempts
+        )
+          score = {
+            attempts: p.attempts,
+            correct: p.correct,
+            finished: p.finished,
+          };
+      } catch {}
+      function taskModel(type) {
+        if (type === "mixed")
+          type = ["fall", "up", "down", "horizontal", "oblique"][rnd(0, 4)];
+        return makeModel({
+          type,
+          v: type === "fall" ? 0 : rnd(5, 25),
+          angle: rnd(20, 70),
+          h: ["fall", "down", "horizontal"].includes(type)
+            ? rnd(5, 30)
+            : rnd(0, 1)
+              ? 0
+              : rnd(5, 20),
+          g: 10,
+          mass: 1,
         });
-
-        ustavi.addEventListener("click", ustaviAnimacijo);
-
-        drsnik.addEventListener("input", () => {
-            ustaviAnimacijo();
-            narisi();
+      }
+      function buildSteps(m) {
+        const out = [];
+        if (m.type === "oblique") {
+          out.push({
+            q: "Izračunaj začetno vodoravno hitrost vₓ₀.",
+            unit: "m/s",
+            answer: m.vx,
+            hint: "vₓ₀ = v₀ cos α. Računaj s kotom v stopinjah.",
+            solution: `vₓ₀ = ${m.v} cos(${m.angle}°) = ${fmt(m.vx)} m/s.`,
+          });
+          out.push({
+            q: "Izračunaj začetno navpično hitrost vᵧ₀.",
+            unit: "m/s",
+            answer: m.vy,
+            hint: "vᵧ₀ = v₀ sin α.",
+            solution: `vᵧ₀ = ${m.v} sin(${m.angle}°) = ${fmt(m.vy)} m/s.`,
+          });
+        } else if (m.type === "down") {
+          out.push({
+            q: "Zapiši začetno navpično hitrost vᵧ₀ s pravilnim predznakom.",
+            unit: "m/s",
+            answer: m.vy,
+            hint: "Pozitivna os je navzgor. Začetna hitrost je navzdol.",
+            solution: `vᵧ₀ = −v₀ = ${fmt(m.vy)} m/s.`,
+          });
+        } else if (m.type === "horizontal") {
+          out.push({
+            q: "Kolikšna je začetna navpična hitrost vᵧ₀?",
+            unit: "m/s",
+            answer: 0,
+            hint: "Pri vodoravnem metu začetna hitrost nima navpične komponente.",
+            solution:
+              "vᵧ₀ = 0 m/s. Gravitacija začne navpično hitrost spreminjati takoj.",
+          });
+        }
+        out.push({
+          q: "Izračunaj čas do stika s tlemi.",
+          unit: "s",
+          answer: m.T,
+          hint:
+            m.vy === 0
+              ? "Iz 0 = h₀ − ½gt² sledi t = √(2h₀/g)."
+              : "Postavi y(t) = 0 in izberi čas pristanka: t = (vᵧ₀ + √(vᵧ₀² + 2gh₀))/g.",
+          solution: `0 = ${m.h} + (${fmt(m.vy)})t − ${m.g / 2}t². Čas pristanka je t = ${fmt(m.T)} s.`,
         });
-
-        vnosi.forEach(vnos => vnos.addEventListener("input", pocisti));
-        obrazec.addEventListener("reset", pocisti);
-        window.addEventListener("resize", narisi);
+        if (m.vx > 0)
+          out.push({
+            q: "Izračunaj vodoravni domet.",
+            unit: "m",
+            answer: m.D,
+            hint: "D = vₓ₀ · t. Vodoravna hitrost je stalna.",
+            solution: `D = ${fmt(m.vx)} · ${fmt(m.T)} = ${fmt(m.D)} m.`,
+          });
+        else
+          out.push({
+            q: "Izračunaj največjo višino nad tlemi.",
+            unit: "m",
+            answer: m.H,
+            hint:
+              m.vy > 0
+                ? "Na vrhu je vᵧ = 0. H = h₀ + vᵧ₀²/(2g)."
+                : "Telo se od začetka ne dviga. Največja višina je začetna višina.",
+            solution:
+              m.vy > 0
+                ? `H = ${m.h} + (${fmt(m.vy)})²/(2 · ${m.g}) = ${fmt(m.H)} m.`
+                : `H = h₀ = ${m.h} m.`,
+          });
+        out.push({
+          q: "Kolikšna je velikost hitrosti tik pred stikom s tlemi?",
+          unit: "m/s",
+          answer: stateAt(m, m.T).speed,
+          hint: "Lahko uporabiš energijo: |v| = √(v₀² + 2gh₀). Pri poševnem metu to ni samo navpična hitrost.",
+          solution: `|v| = √(${m.v}² + 2 · ${m.g} · ${m.h}) = ${fmt(stateAt(m, m.T).speed)} m/s.`,
+        });
+        return out.map((s) => ({
+          ...s,
+          attempted: false,
+          passed: false,
+          revealed: false,
+        }));
+      }
+      function logTutor(text) {
+        const d = el("div", null, $("tutor-log"), "chat");
+        el("strong", "Učni spremljevalec", d);
+        el("p", text, d);
+        while ($("tutor-log").children.length > 6)
+          $("tutor-log").firstElementChild.remove();
+      }
+      function newTask() {
+        const m = taskModel($("task-kind").value);
+        task = { m, steps: buildSteps(m), finished: false };
+        stepIndex = 0;
+        $("task-text").textContent =
+          `${names[m.type]}: h₀ = ${m.h} m, v₀ = ${m.v} m/s` +
+          (m.type === "oblique" ? `, α = ${m.angle}°` : "") +
+          `. Uporabi g = ${m.g} m/s². Določi zahtevane veličine v naslednjih korakih.`;
+        $("tutor-log").replaceChildren();
+        logTutor(
+          "Začni s smerjo osi in začetnimi podatki. Vsak korak preveriva posebej.",
+        );
+        renderStep();
+      }
+      function renderStep() {
+        const s = task.steps[stepIndex];
+        $("step-label").textContent =
+          `Korak ${stepIndex + 1} od ${task.steps.length}`;
+        $("step-question").textContent = s.q;
+        $("step-answer-label").textContent = "Odgovor v " + s.unit;
+        $("step-answer").value = "";
+        $("step-feedback").textContent = "";
+        $("hint-box").hidden = true;
+        $("next-step").disabled = !s.passed;
+        $("next-step").textContent =
+          stepIndex === task.steps.length - 1
+            ? "Zaključi nalogo"
+            : "Naslednji korak";
+        const done = task.steps.filter((s) => s.passed).length;
+        setProgress((done / task.steps.length) * 100);
+      }
+      function setProgress(value) {
+        $("step-progress").setAttribute(
+          "aria-valuenow",
+          String(Math.round(value)),
+        );
+        $("step-progress").querySelector("span").style.width = value + "%";
+      }
+      function progress() {
+        metrics("score", [
+          ["Pravilni prvi koraki", score.correct],
+          ["Prvi poskusi", score.attempts],
+          ["Točke", score.correct * 10],
+          ["Zaključene naloge", score.finished],
+        ]);
+        $("break-note").textContent =
+          session >= 5
+            ? "Za tabo je več učnih korakov. Privošči si kratek odmor; nadaljuješ lahko brez časovnega pritiska."
+            : "Za reševanje ni časovne omejitve. Enote so del postopka.";
+        try {
+          localStorage.setItem(KEY, JSON.stringify(score));
+        } catch {}
+      }
+      function answerValue(text) {
+        const ps = text.trim().split("/");
+        if (ps.length > 2) throw Error("Vnesi število ali ulomek.");
+        const a = number(ps[0]),
+          b = ps.length === 2 ? number(ps[1]) : 1;
+        if (b === 0) throw Error("Imenovalec ne sme biti nič.");
+        const v = a / b;
+        if (!Number.isFinite(v)) throw Error("Število je preveliko.");
+        return v;
+      }
+      function feedback(s, v) {
+        if (
+          s.answer < 0 &&
+          v > 0 &&
+          Math.abs(v + s.answer) < Math.max(0.01, Math.abs(s.answer) * 0.02)
+        )
+          return "Velikost je ustrezna, manjka pa minus. Pozitivna smer y je navzgor.";
+        if (s.unit === "s" && v < 0)
+          return "Čas leta mora biti nenegativen. Preveri izbiro korena kvadratne enačbe.";
+        if (
+          task.m.type === "oblique" &&
+          s === task.steps.at(-1) &&
+          Math.abs(v - Math.abs(stateAt(task.m, task.m.T).vy)) < 0.01
+        )
+          return "Upošteval si navpično komponento. Celotna hitrost je √(vₓ² + vᵧ²).";
+        return "Preveri formulo, predznake in enote. Pri kotih naj bo računalo nastavljeno na stopinje. Pomagaš si lahko z namigom.";
+      }
+      $("step-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        try {
+          const s = task.steps[stepIndex],
+            v = answerValue($("step-answer").value),
+            ok =
+              Math.abs(v - s.answer) <=
+              Math.max(1e-4, Math.abs(s.answer) * 1e-5),
+            first = !s.attempted && !s.revealed;
+          if (first) {
+            s.attempted = true;
+            score.attempts++;
+            if (ok) score.correct++;
+            session++;
+            progress();
+          }
+          if (ok) {
+            s.passed = true;
+            $("next-step").disabled = false;
+            $("step-feedback").textContent = first
+              ? "Pravilno! +10 točk."
+              : "Pravilno. Ta korak je opravljen brez dodatnih točk.";
+            logTutor(s.solution);
+            setProgress(
+              (task.steps.filter((x) => x.passed).length / task.steps.length) *
+                100,
+            );
+          } else {
+            $("step-feedback").textContent = "Ta odgovor še ni pravilen.";
+            logTutor(feedback(s, v));
+          }
+        } catch (e) {
+          $("step-feedback").textContent = e.message;
+        }
+      });
+      $("step-hint").addEventListener("click", () => {
+        $("hint-box").hidden = false;
+        $("hint-box").textContent = task.steps[stepIndex].hint;
+      });
+      $("step-solution").addEventListener("click", () => {
+        const s = task.steps[stepIndex];
+        s.revealed = true;
+        s.passed = true;
+        $("hint-box").hidden = false;
+        $("hint-box").textContent = s.solution;
+        $("step-feedback").textContent =
+          "Korak je razkrit. Nadaljuješ lahko brez točk za ta korak.";
+        $("next-step").disabled = false;
+        setProgress(
+          (task.steps.filter((x) => x.passed).length / task.steps.length) * 100,
+        );
+        logTutor(
+          "Poglej, kako so podatki vstavljeni v formulo. Naslednji korak poskusi rešiti sam.",
+        );
+      });
+      $("next-step").addEventListener("click", () => {
+        if (!task.steps[stepIndex].passed) return;
+        if (stepIndex < task.steps.length - 1) {
+          stepIndex++;
+          renderStep();
+        } else if (!task.finished) {
+          task.finished = true;
+          score.finished++;
+          progress();
+          $("step-feedback").textContent =
+            "Naloga je zaključena. Ustvari novo ali primerjaj pot v laboratoriju.";
+          $("next-step").disabled = true;
+          logTutor(
+            "Nalogo si zaključil. Preveri še, ali se rezultat ujema z animacijo in grafi.",
+          );
+        }
+      });
+      $("new-task").addEventListener("click", newTask);
+      $("task-kind").addEventListener("change", newTask);
+      $("task-to-lab").addEventListener("click", () => {
+        setLab(task.m);
+        tab("lab");
+      });
+      $("reset-score").addEventListener("click", () => {
+        if (confirm("Izbrišem shranjeni učni napredek?")) {
+          score = { attempts: 0, correct: 0, finished: 0 };
+          session = 0;
+          newTask();
+          progress();
+        }
+      });
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          stopAnimation();
+          stopTarget();
+        }
+      });
+      updateLab();
+      newTarget();
+      newTask();
+      progress();
     </script>
-</body>
+  </body>
 </html>

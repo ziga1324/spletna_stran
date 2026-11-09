@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivni laboratorij kinematike: animirano gibanje, grafi položaja, hitrosti in pospeška, učni izzivi ter generator nalog z rešitvami.">
+<title>Kinematika – laboratorij gibanja | Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.kin{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.kin *{box-sizing:border-box}.kin [hidden]{display:none!important}
+.kin .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.kin header.wrap{padding:25px 0 22px}.kin a{color:var(--accent);font-weight:750}
+.kin .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.kin .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.kin h1,.kin h2,.kin h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.kin h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.kin h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.kin h3{font-size:1.15rem;margin:0 0 9px}.kin p{margin:0 0 13px}.kin .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.kin .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.kin svg{display:block;width:100%;height:auto;overflow:visible}
+.kin nav,.kin .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.kin nav{margin:12px 0 24px}
+.kin button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.kin button:hover{background:var(--purple)}.kin button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.kin button[aria-pressed=true],.kin .primary{background:var(--yellow)}
+.kin button:disabled{opacity:.55;cursor:default}.kin :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.kin .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.kin .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.kin .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.kin .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.kin label{display:block;font-weight:700;margin:12px 0 4px}.kin label:first-child{margin-top:0}
+.kin input:not([type=checkbox]),.kin select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.kin input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.kin input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.kin output{color:var(--accent);font-weight:800}
+.kin .fine{font-size:.88rem;color:#4d5871}.kin .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.kin .lab-visual,.kin .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.kin .graph{cursor:crosshair}.kin .graph-label{font-weight:800;margin:7px 0 0}
+.kin .graph-group{min-width:0}.kin .graph-group p{margin:7px 0 0}
+.kin .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.kin .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.kin .metric:nth-child(2n){background:var(--mint)}.kin .metric strong{display:block;font-size:1.06rem}
+.kin .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.kin .lav{background:var(--purple)}.kin .accent-card{background:var(--yellow)}.kin .question{font-weight:700;font-size:1.06rem}
+.kin .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.kin details{margin:10px 0}.kin summary{cursor:pointer;font-weight:750}
+.kin .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.kin .question-card .row{margin-top:9px}.kin .question-card label{margin-top:9px}
+.kin .lesson{scroll-margin:15px}.kin .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.kin footer{padding:8px 0 28px}.kin .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.kin .grid,.kin .hero{grid-template-columns:1fr}.kin .hero-art{display:none}.kin .three{grid-template-columns:1fr}.kin .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.kin .wrap{width:calc(100% - 24px)}.kin .two{grid-template-columns:1fr}.kin nav button{flex:1 1 40%}.kin .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.kin{background:#fff;color:#000}body.kin.print-sheet > :not(#paper){display:none!important}body.kin.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+</style>
+</head>
+<body class="kin">
+<header class="wrap">
+<a href="../index.html">← Vsa orodja</a>
+<div class="hero">
+<div><span class="badge">SIDEBIT · FIZIKA</span><h1>Kinematika</h1><p class="lead">Premakni čas, spremljaj telo in preberi grafe. Nato preveri, ali znaš gibanje napovedati tudi brez simulacije.</p></div>
+<svg class="hero-art" viewBox="0 0 310 140" role="img" aria-label="Skica poti poševnega meta"><path d="M20 113H286 M25 119V18" fill="none" stroke="#22253a" stroke-width="3"/><path d="M32 109Q143 -49 277 107" fill="none" stroke="#5634aa" stroke-width="4" stroke-dasharray="7 6"/><circle cx="155" cy="30" r="12" fill="#ffe38b" stroke="#22253a" stroke-width="3"/><path d="M177 31h53m-9-7 9 7-9 7" fill="none" stroke="#22253a" stroke-width="3"/><text x="34" y="24" fill="#22253a" font-size="15" font-weight="750">y</text><text x="282" y="132" fill="#22253a" font-size="15" font-weight="750">x</text></svg>
+</div>
+<nav aria-label="Poglavja kinematike">
+<button type="button" data-tab="lab" aria-controls="lab" aria-pressed="true">Laboratorij</button>
+<button type="button" data-tab="challenges" aria-controls="challenges" aria-pressed="false">Učni izzivi</button>
+<button type="button" data-tab="practice" aria-controls="practice" aria-pressed="false">Generator nalog</button>
+<button type="button" data-tab="theory" aria-controls="theory" aria-pressed="false">Razlaga in formule</button>
+</nav>
+</header>
+<main class="wrap">
+<section id="lab" aria-labelledby="lab-title">
+<div class="grid">
+<div class="card">
+<span class="chip">01 · Nastavi poskus</span>
+<h2 id="lab-title">Laboratorij gibanja</h2>
+<label for="mode">Vrsta gibanja</label><select id="mode"><option value="line">Premočrtno gibanje</option><option value="fall">Prosti pad</option><option value="throw">Poševni met</option><option value="circle">Enakomerno kroženje</option></select>
+<div id="parameters"></div>
+<label for="component" id="component-label" hidden>Os grafov</label><select id="component" hidden><option value="x">Vodoravna x</option><option value="y" selected>Navpična y</option></select>
+<label for="vectors"><input id="vectors" type="checkbox" checked> Prikaži vektorja hitrosti in pospeška</label>
+<div class="row small-gap"><button type="button" id="preset">Vstavi učni primer</button></div>
+<p class="fine small-gap" id="model-note"></p>
+</div>
+<div class="card">
+<span class="chip">02 · Premakni čas</span>
+<h2>Gibanje v živo</h2>
+<svg id="scene" class="lab-visual" viewBox="0 0 680 250" role="img" aria-label="Animirana pot telesa"></svg>
+<label for="time">Čas: <output id="clock"></output></label><input id="time" type="range" min="0" max="1000" step="1" value="0">
+<div class="row"><button type="button" id="play" class="primary">Predvajaj</button><button type="button" id="reset">Na začetek</button><button type="button" id="end">Na konec</button><button type="button" id="event" hidden></button></div>
+<div class="readouts" id="metrics"></div>
+<p class="fine" id="scene-note"></p>
+</div>
+</div>
+<div class="card"><h2>Trije grafi, isti trenutek</h2><p>Klikni graf, da nastaviš čas. Turkizno in vijolično senčenje na srednjem grafu ločita pozitivno in negativno predznačeno ploščino.</p>
+<div class="three">
+<div class="graph-group"><p class="graph-label" id="pos-title">Položaj</p><svg id="pos-graph" class="graph" viewBox="0 0 340 175" role="img" aria-label="Graf položaja v odvisnosti od časa"></svg><p class="fine">Naklon grafa je komponenta hitrosti.</p></div>
+<div class="graph-group"><p class="graph-label" id="vel-title">Hitrost</p><svg id="vel-graph" class="graph" viewBox="0 0 340 175" role="img" aria-label="Graf komponente hitrosti v odvisnosti od časa"></svg><p class="fine">Predznačena ploščina do kazalca je sprememba položaja po izbrani osi.</p></div>
+<div class="graph-group"><p class="graph-label" id="acc-title">Pospešek</p><svg id="acc-graph" class="graph" viewBox="0 0 340 175" role="img" aria-label="Graf komponente pospeška v odvisnosti od časa"></svg><p class="fine">Pospešek opisuje, kako se hitrost spreminja.</p></div>
+</div><p id="graph-note" class="note"></p></div>
+</section>
+<section id="challenges" hidden aria-labelledby="challenge-title">
+<div class="card lav"><span class="chip">Najprej napovej, potem preizkusi</span><h2 id="challenge-title">Učni izzivi</h2><p>Izberi odgovor in nato isti primer odpri v laboratoriju. Preveri svojo razlago z gibanjem in grafi.</p>
+<label for="mission">Izberi izziv</label><select id="mission"><option value="0">Povratek na začetek</option><option value="1">Kaj se zgodi na vrhu meta?</option><option value="2">Kroženje brez spreminjanja velikosti hitrosti</option><option value="3">Negativen pospešek</option></select>
+<div id="mission-body" class="small-gap"></div><p id="mission-feedback" class="feedback" role="status"></p><button type="button" id="mission-open">Odpri primer v laboratoriju</button>
+</div></section>
+<section id="practice" hidden aria-labelledby="practice-title">
+<div class="card accent-card"><span class="chip">Vadi po svoje</span><h2 id="practice-title">Generator nalog</h2><p>Sestavi nov sklop, odgovore preveri sproti ali pripravi delovni list za tisk.</p>
+<div class="three">
+<div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option><option value="uniform">Enakomerno gibanje in pretvorbe</option><option value="accel">Pospeševanje</option><option value="brake">Zaviranje</option><option value="return">Pot in premik</option><option value="graph">Branje grafa v(t)</option><option value="fall">Prosti pad</option><option value="throw">Poševni met</option><option value="circle">Kroženje</option></select></div>
+<div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div>
+<div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div>
+</div>
+<div class="row small-gap"><button type="button" class="primary" id="generate">Ustvari naloge</button><button type="button" id="print">Natisni / shrani PDF</button><label for="print-sol"><input type="checkbox" id="print-sol" checked> Vključi rešitve v izpis</label></div>
+<p id="practice-status" class="feedback" role="status"></p>
+</div>
+<div id="tasks" class="card"></div>
+</section>
+<section id="theory" hidden aria-labelledby="theory-title">
+<div class="card"><h2 id="theory-title">Kako opisujemo gibanje?</h2><p>Kinematika opisuje gibanje. Vprašanja o silah in vzrokih gibanja obravnava dinamika. Za opis najprej izberi izhodišče, pozitivno smer osi in začetni trenutek.</p>
+<div class="two">
+<div class="note lesson"><h3>Položaj, premik in pot</h3><p class="formula">Δx = x − x₀</p><p>Premik je lahko negativen, pot pa je vsota dolžin odsekov. Če greš 10 m desno in 10 m levo, je premik 0 m, pot pa 20 m.</p><p>Povprečna predznačena hitrost je Δx/Δt, povprečna velikost hitrosti pa pot/Δt.</p></div>
+<div class="note lav lesson"><h3>Stalna hitrost in stalni pospešek</h3><p class="formula">v = v₀ + at<br>x = x₀ + v₀t + ½at²</p><p>Pri a = 0 je hitrost stalna. Če imata v in a nasprotna predznaka, se velikost hitrosti zmanjšuje. Če se telo obrne in a ostane enak, nato spet pridobiva hitrost.</p></div>
+<div class="note lav lesson"><h3>Prosti pad in poševni met</h3><p class="formula">aₓ = 0, aᵧ = −g<br>v₀ₓ = v₀ cos α, v₀ᵧ = v₀ sin α</p><p>Brez zračnega upora je pri metu vodoravna komponenta hitrosti stalna. Na vrhu je vᵧ = 0, gravitacijski pospešek pa ostane usmerjen navzdol. Pri prostem padu iz mirovanja je v₀ = 0.</p></div>
+<div class="note lesson"><h3>Enakomerno kroženje</h3><p class="formula">ω = 2π/T, |v| = ωr, |a| = ω²r</p><p>Velikost hitrosti je stalna, njena smer pa se spreminja. Hitrost je tangentna, pospešek kaže proti središču. Komponenti x in y se s časom periodično spreminjata.</p></div>
+</div>
+<details><summary>Kako bereš grafe?</summary><p>Na grafu x(t) naklon tangente pove trenutno hitrost. Na grafu v(t) naklon pove pospešek. Ploščina nad časovno osjo v(t) prispeva pozitiven premik, pod osjo pa negativen. Pri gibanju po premici dobiš pot, če sešteješ velikosti obeh ploščin.</p></details>
+<details><summary>Kako pretvarjaš enote?</summary><p>Iz m/s v km/h množiš s 3,6. Iz km/h v m/s deliš s 3,6. Primer: 72 km/h = 20 m/s. Pred vstavljanjem v enačbo pretvori čas v sekunde in dolžino v metre.</p></details>
+</div></section>
+</main>
+<footer class="wrap fine">Sidebit · Kinematika · Simulacija in naloge delujejo v brskalniku.</footer>
+<div id="paper"></div>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const format = new Intl.NumberFormat("sl-SI", { maximumFractionDigits: 3 });
+const fmt = x => format.format(Math.abs(x) < 0.0005 ? 0 : x);
+const g = 9.81;
+const parameters = {
+  line: [["x0","Začetni položaj x₀","m",-20,20,1,0],["v0","Začetna hitrost v₀","m/s",-18,18,1,12],["a","Pospešek a","m/s²",-8,8,0.25,-3],["T","Čas opazovanja","s",2,18,0.5,8]],
+  fall: [["h","Začetna višina","m",2,80,1,30]],
+  throw: [["h","Začetna višina","m",0,30,1,0],["v0","Začetna velikost hitrosti","m/s",3,40,1,20],["angle","Kot nad vodoravnico","°",0,90,1,40]],
+  circle: [["r","Polmer","m",1,12,0.5,4],["P","Obhodni čas","s",1,12,0.5,5]]
+};
+function model(kind, p) {
+  if (kind === "line") {
+    const turn = p.a ? -p.v0 / p.a : -1;
+    const x = t => p.x0 + p.v0*t + p.a*t*t/2;
+    return { T:p.T, special:turn > 0 && turn <= p.T ? [turn,"Na ustavitev"] : null,
+      state:t=>({x:x(t),y:0,vx:p.v0+p.a*t,vy:0,ax:p.a,ay:0,
+        path:turn>0 && turn<t ? Math.abs(x(turn)-p.x0)+Math.abs(x(t)-x(turn)) : Math.abs(x(t)-p.x0)}) };
+  }
+  if (kind === "circle") {
+    const w=2*Math.PI/p.P;
+    return { T:2*p.P, special:[p.P,"En obhod"], state:t=>{
+      const x=p.r*Math.cos(w*t),y=p.r*Math.sin(w*t);
+      return {x,y,vx:-w*y,vy:w*x,ax:-w*w*x,ay:-w*w*y,path:p.r*w*t};
+    }};
+  }
+  const angle=(p.angle||0)*Math.PI/180, v=p.v0||0;
+  const vx=Math.abs(Math.cos(angle))<1e-12 ? 0 : v*Math.cos(angle),vy=v*Math.sin(angle);
+  const T=(vy+Math.sqrt(vy*vy+2*g*p.h))/g;
+  return { T, special:vy>0 ? [vy/g,"Na vrh meta"] : null, state:t=>({
+    x:vx*t,y:Math.max(0,p.h+vy*t-g*t*t/2),vx,vy:vy-g*t,ax:0,ay:-g,
+    path:kind==="fall" ? Math.min(p.h,g*t*t/2) : null
+  }) };
+}
+let kind="line", values={}, simulation, t=0, playing=false, frame=0, last=null;
+let graphCache=null;
+function setMode(mode, preset={}) {
+  pause(); kind=mode; $("mode").value=mode; values={};
+  $("parameters").replaceChildren();
+  for(const [key,name,unit,min,max,step,def] of parameters[mode]){
+    values[key]=preset[key]??def;
+    const label=document.createElement("label"), input=document.createElement("input"), out=document.createElement("output");
+    input.type="range"; input.id="param-"+key; label.htmlFor=input.id;
+    input.min=min;input.max=max;input.step=step;input.value=values[key];
+    label.append(name+": ",out);out.textContent=fmt(values[key])+" "+unit;
+    input.addEventListener("input",()=>{values[key]=Number(input.value);out.textContent=fmt(values[key])+" "+unit;rebuild();});
+    $("parameters").append(label,input);
+  }
+  $("component").hidden=$("component-label").hidden=kind==="line"||kind==="fall";
+  $("component").value=kind==="circle"?"x":"y";
+  $("model-note").textContent={
+    line:"Pozitivna smer je desno. Pospešek je ves čas enak; negativna hitrost pomeni gibanje v levo.",
+    fall:"Padanje iz mirovanja brez zračnega upora. Os y kaže navzgor in g = 9,81 m/s².",
+    throw:"Brez zračnega upora. Gibanje se konča ob tleh. Vodoravni met dobiš s kotom 0° in pozitivno začetno višino.",
+    circle:"Telo kroži v nasprotni smeri urinega kazalca. Velikost hitrosti ostaja stalna."
+  }[kind];
+  rebuild();
+}
+function rebuild(){
+  pause();
+  simulation=model(kind,values); t=0; graphCache=null;
+  $("event").hidden=!simulation.special;
+  if(simulation.special)$("event").textContent=simulation.special[1];
+  render();
+}
+const circle=(x,y,r,fill,extra="")=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" ${extra}/>`;
+const line=(x,y,u,v,extra="")=>`<line x1="${x}" y1="${y}" x2="${u}" y2="${v}" ${extra}/>`;
+const label=(x,y,s,extra="")=>`<text x="${x}" y="${y}" fill="#39445b" font-size="12" ${extra}>${s}</text>`;
+const path=(d,extra)=>`<path d="${d}" fill="none" ${extra}/>`;
+function points(T,n){return Array.from({length:n+1},(_,i)=>i*T/n);}
+function scene(s){
+  const W=680,H=250;
+  const samples=points(simulation.T,100).map(simulation.state);
+  if(kind==="line"&&simulation.special)samples.push(simulation.state(simulation.special[0]));
+  const minX=Math.min(0,...samples.map(s=>s.x)),maxX=Math.max(0,...samples.map(s=>s.x));
+  const minY=Math.min(0,...samples.map(s=>s.y)),maxY=Math.max(0,...samples.map(s=>s.y));
+  const scale=Math.min((W-110)/Math.max(2,maxX-minX),(H-85)/Math.max(2,maxY-minY));
+  const X=x=>W/2+(x-(minX+maxX)/2)*scale;
+  const Y=y=>H/2+10-(y-(minY+maxY)/2)*scale;
+  const axis='stroke="#a1adbf" stroke-width="1.5"';
+  const xTicks=Array.from({length:5},(_,i)=>minX+(maxX-minX)*i/4);
+  let html=line(24,Y(0),W-24,Y(0),axis)+label(W-35,Y(0)+18,"x");
+  if(kind!=="line")html+=line(X(0),20,X(0),H-24,axis)+label(X(0)+8,22,"y");
+  if(kind==="line"&&maxX>minX)xTicks.forEach(x=>{html+=line(X(x),Y(0)-5,X(x),Y(0)+5,axis)+label(X(x),Y(0)+23,fmt(x)+" m",'text-anchor="middle"')});
+  if(kind!=="line")html+=path(samples.slice(0,101).map((q,i)=>`${i?"L":"M"}${X(q.x)} ${Y(q.y)}`).join(" "),'stroke="#8f77c9" stroke-width="2" stroke-dasharray="5 6"');
+  const trail=points(t,kind==="circle"?20:12).map(simulation.state);
+  trail.forEach((q,i)=>{if(i<trail.length-1)html+=circle(X(q.x),Y(q.y),3,"#8b6ac9",'opacity=".45"')});
+  const bx=X(s.x),by=Y(s.y);
+  const arrow=(vx,vy,color,name)=>{
+    const len=Math.hypot(vx,vy);
+    if(len<1e-8)return "";
+    const size=24+Math.min(19,len*1.25),dx=size*vx/len,dy=-size*vy/len;
+    const ux=dx/size,uy=dy/size,ex=bx+dx,ey=by+dy;
+    return line(bx,by,ex,ey,`stroke="${color}" stroke-width="3"`)+path(`M${ex-8*ux+4*uy} ${ey-8*uy-4*ux} L${ex} ${ey} L${ex-8*ux-4*uy} ${ey-8*uy+4*ux}`,`stroke="${color}" stroke-width="3"`)+label(ex+4,ey-7,name);
+  };
+  if($("vectors").checked)html+=arrow(s.vx,s.vy,"#087b70","v")+arrow(s.ax,s.ay,"#a0446c","a");
+  html+=circle(bx,by,10,"#ffe38b",'stroke="#22253a" stroke-width="3"');
+  $("scene").innerHTML=html;
+}
+function graphData(axis){
+  const T=simulation.T || 1;
+  return ["p","v","a"].map((key,i)=>{
+    const value=t=>simulation.state(Math.min(t,simulation.T))[i===0?axis:key+axis];
+    const times=points(T,120),all=times.map(value);
+    if(simulation.special)all.push(value(simulation.special[0]));
+    let min=Math.min(0,...all),max=Math.max(0,...all);
+    if(max-min<1e-9){min-=1;max+=1}
+    const pad=(max-min)*0.1; min-=pad;max+=pad;
+    const X=t=>48+t/T*274,Y=v=>141-(v-min)/(max-min)*119;
+    let base="";
+    for(let j=0;j<=4;j++){
+      const u=j*T/4,x=X(u);
+      base+=line(x,21,x,141,'stroke="#e0e5ee"')+label(x,158,fmt(u),'text-anchor="middle"');
+    }
+    [min+pad,0,max-pad].filter((v,i,a)=>a.indexOf(v)===i).forEach(v=>{
+      const y=Y(v);
+      base+=line(48,y,322,y,`stroke="${v===0?"#8894ab":"#e0e5ee"}"`)+label(43,y+4,fmt(v),'text-anchor="end"');
+    });
+    base+=label(320,172,"t (s)",'text-anchor="end"')+
+      path(times.map((u,j)=>`${j?"L":"M"}${X(u)} ${Y(value(u))}`).join(" "),'stroke="#5634aa" stroke-width="2.8"');
+    return {X,Y,value,base,i};
+  });
+}
+function drawGraphs(axis){
+  if(!simulation.T){
+    for(const id of ["pos","vel","acc"])$(id+"-graph").innerHTML=label(170,90,"Ni časovnega intervala",'text-anchor="middle"');
+    return;
+  }
+  if(!graphCache)graphCache=graphData(axis);
+  const symbol=["", "v", "a"],unit=["m","m/s","m/s²"];
+  graphCache.forEach(({X,Y,value,base,i})=>{
+    let area="";
+    if(i===1&&t>0){
+      const ts=points(t,70);
+      for(let j=1;j<ts.length;j++){
+        const l=ts[j-1],r=ts[j],vl=value(l),vr=value(r);
+        const patch=(a,b,va,vb)=>`<path d="M${X(a)} ${Y(0)} L${X(a)} ${Y(va)} L${X(b)} ${Y(vb)} L${X(b)} ${Y(0)} Z" fill="${va+vb>=0?"#a8e6d4":"#dac8fc"}" opacity=".65"/>`;
+        if(vl*vr<0){const z=l+(r-l)*(-vl)/(vr-vl);area+=patch(l,z,vl,0)+patch(z,r,0,vr);}
+        else area+=patch(l,r,vl,vr);
+      }
+    }
+    const ids=["pos","vel","acc"],titles=["Položaj","Komponenta hitrosti","Komponenta pospeška"];
+    $(ids[i]+"-title").textContent=titles[i]+" · "+symbol[i]+axis+" ("+unit[i]+")";
+    $(ids[i]+"-graph").innerHTML=area+base+line(X(t),19,X(t),141,'stroke="#b47019" stroke-width="2" stroke-dasharray="4 4"')+circle(X(t),Y(value(t)),4.5,"#ffe38b",'stroke="#22253a" stroke-width="1.5"');
+  });
+}
+function render(){
+  const s=simulation.state(t),initial=simulation.state(0),axis=kind==="line"?"x":kind==="fall"?"y":$("component").value;
+  $("clock").textContent=fmt(t)+" / "+fmt(simulation.T)+" s";
+  $("time").value=simulation.T>0 ? t/simulation.T*1000 : 0;
+  scene(s); drawGraphs(axis);
+  const metrics=[["Položaj "+axis,fmt(s[axis])+" m"],["Velikost hitrosti",fmt(Math.hypot(s.vx,s.vy))+" m/s"],["Velikost pospeška",fmt(Math.hypot(s.ax,s.ay))+" m/s²"],["Premik "+axis,fmt(s[axis]-initial[axis])+" m"]];
+  if(s.path!==null)metrics.push(["Opravljena pot",fmt(s.path)+" m"]);
+  if(t>0&&s.path!==null)metrics.push(["Povprečna velikost hitrosti",fmt(s.path/t)+" m/s"]);
+  $("metrics").innerHTML=metrics.map(([a,b])=>`<div class="metric">${a}<strong>${b}</strong></div>`).join("");
+  $("scene-note").textContent=simulation.T===0?"Telo je že na tleh. Zvišaj začetno višino ali izberi kot nad 0°.":"Pike označujejo prejšnje položaje v enakih časovnih presledkih. Puščici kažeta smer; njuni dolžini sta ponazoritveni.";
+  $("graph-note").textContent=`Pri t = ${fmt(t)} s je v${axis} = ${fmt(s["v"+axis])} m/s, a${axis} = ${fmt(s["a"+axis])} m/s², predznačena ploščina pod grafom v${axis}(t) pa je ${fmt(s[axis]-initial[axis])} m.`;
+  $("play").disabled=simulation.T===0;
+}
+function pause(){playing=false;cancelAnimationFrame(frame);last=null;$("play").textContent="Predvajaj";}
+function animate(ts){
+  if(!playing)return;
+  if(last!==null)t=Math.min(simulation.T,t+Math.min(0.05,(ts-last)/1000)*simulation.T/7);
+  last=ts;render();
+  if(t>=simulation.T)pause();else frame=requestAnimationFrame(animate);
+}
+function seek(next){pause();t=clamp(next,0,simulation.T);render();}
+$("play").onclick=()=>{if(playing){pause();return}if(!simulation.T)return;if(t>=simulation.T)t=0;playing=true;$("play").textContent="Premor";frame=requestAnimationFrame(animate);};
+$("reset").onclick=()=>seek(0);
+$("end").onclick=()=>seek(simulation.T);
+$("event").onclick=()=>{if(simulation.special)seek(simulation.special[0]);};
+$("time").oninput=e=>seek(simulation.T*Number(e.target.value)/1000);
+$("mode").onchange=e=>setMode(e.target.value);
+$("component").onchange=()=>{graphCache=null;render();};
+$("vectors").onchange=render;
+$("preset").onclick=()=>setMode(kind);
+for(const id of ["pos-graph","vel-graph","acc-graph"]){
+  $(id).onclick=e=>{
+    const svg=$(id),point=svg.createSVGPoint();point.x=e.clientX;point.y=e.clientY;
+    const matrix=svg.getScreenCTM();if(matrix)seek(simulation.T*(point.matrixTransform(matrix.inverse()).x-48)/274);
+  };
+}
+function showTab(id){
+  pause();
+  for(const section of document.querySelectorAll("main > section"))section.hidden=section.id!==id;
+  for(const button of document.querySelectorAll("[data-tab]"))button.setAttribute("aria-pressed",String(button.dataset.tab===id));
+}
+for(const button of document.querySelectorAll("[data-tab]"))button.onclick=()=>showTab(button.dataset.tab);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();});
+</script>
+<script>
+const missions=[
+  {kind:"line",preset:{x0:0,v0:12,a:-3,T:8},time:8,
+   q:"Telo začne pri x = 0 m s hitrostjo 12 m/s in stalnim pospeškom −3 m/s². Kaj velja po 8 sekundah?",
+   choices:["Premik in pot sta oba 0 m.","Premik je 0 m, pot pa 48 m.","Premik je −48 m, pot pa 48 m."],correct:1,
+   explain:"Po 4 s se telo ustavi pri x = 24 m in obrne. Nato potuje 24 m nazaj. Ploščini na grafu hitrosti se odštejeta, pri poti pa seštejeta."},
+  {kind:"throw",preset:{h:0,v0:20,angle:40},time:"special",
+   q:"Pri poševnem metu brez zračnega upora telo doseže vrh. Kaj takrat velja?",
+   choices:["Hitrost in pospešek sta nič.","Navpična hitrost je nič, pospešek kaže navzdol.","Pospešek kaže vodoravno v smeri gibanja."],correct:1,
+   explain:"Na vrhu je vᵧ = 0, vₓ pa ostane nespremenjen. Pospešek je ves čas usmerjen navzdol in ima velikost g."},
+  {kind:"circle",preset:{r:4,P:5},time:5,
+   q:"Kaj se pri enem polnem obhodu spremeni in kaj ostane enako?",
+   choices:["Velikost hitrosti je stalna; premik po obhodu je nič.","Ker je velikost hitrosti stalna, je pospešek nič.","Ker je premik nič, je tudi pot nič."],correct:0,
+   explain:"Telo se vrne v začetni položaj, vendar opravi pot 2πr. Pospešek ves čas spreminja smer hitrosti."},
+  {kind:"line",preset:{x0:0,v0:-6,a:-2,T:6},time:3,
+   q:"Telo ima v₀ = −6 m/s in a = −2 m/s². Se njegova velikost hitrosti povečuje ali zmanjšuje?",
+   choices:["Zmanjšuje se, ker je pospešek negativen.","Ostaja enaka.","Povečuje se, ker sta hitrost in pospešek v isti smeri."],correct:2,
+   explain:"Po 3 s je v = −12 m/s. Telo se giblje v levo, velikost hitrosti pa se poveča s 6 na 12 m/s."}
+];
+function mission(){return missions[Number($("mission").value)];}
+function renderMission(){
+  const m=mission(),body=$("mission-body");
+  body.replaceChildren();$("mission-feedback").textContent="";
+  const p=document.createElement("p");p.className="question";p.textContent=m.q;body.append(p);
+  const choices=document.createElement("div");choices.className="row";body.append(choices);
+  m.choices.forEach((choice,i)=>{
+    const button=document.createElement("button");button.type="button";button.textContent=choice;
+    button.setAttribute("aria-pressed","false");
+    button.onclick=()=>{
+      for(const b of choices.children)b.setAttribute("aria-pressed",String(b===button));
+      $("mission-feedback").textContent=(i===m.correct?"Pravilno. ":"Ni čisto tako. ")+m.explain;
+    };
+    choices.append(button);
+  });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{const m=mission();showTab("lab");setMode(m.kind,m.preset);seek(m.time==="special"?simulation.special[0]:m.time);};
+const topics={uniform:"Enakomerno gibanje",accel:"Pospeševanje",brake:"Zaviranje",return:"Pot in premik",graph:"Branje grafa",fall:"Prosti pad",throw:"Poševni met",circle:"Kroženje"};
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function makeTask(key,level){
+  const hard=level===2;
+  let prompt,answer,unit,hint,steps,chart=null;
+  if(key==="uniform"){
+    const v=integer(4,24),t=integer(3,15);
+    prompt=`Telo se giblje enakomerno s hitrostjo ${fmt(v*3.6)} km/h ${t} s. ${hard?"Kolikšno pot opravi?":"Kolikšna je hitrost v m/s?"}`;
+    answer=hard?v*t:v;unit=hard?"m":"m/s";
+    hint=hard?"Najprej pretvori hitrost v m/s. Nato uporabi s = vt.":"Za pretvorbo iz km/h v m/s deli s 3,6.";
+    steps=`v = ${fmt(v*3.6)} ÷ 3,6 = ${v} m/s.`+(hard?` Nato s = ${v} · ${t} = ${answer} m.`:"");
+  }else if(key==="accel"){
+    const v=integer(1,9),a=integer(1,5),t=integer(2,10);
+    prompt=`Telo ima začetno hitrost ${v} m/s in stalni pospešek ${a} m/s². ${hard?"Kolikšno pot":"Kolikšno hitrost"} doseže po ${t} s?`.replace("Kolikšno pot doseže","Kolikšno pot opravi");
+    answer=hard?v*t+a*t*t/2:v+a*t;unit=hard?"m":"m/s";
+    hint=hard?"Za stalni pospešek velja Δx = v₀t + ½at². Telo ves čas potuje v isti smeri.":"Uporabi v = v₀ + at.";
+    steps=hard?`s = ${v} · ${t} + ½ · ${a} · ${t}² = ${fmt(answer)} m.`:`v = ${v} + ${a} · ${t} = ${answer} m/s.`;
+  }else if(key==="brake"){
+    const a=integer(1,6),t=integer(2,8),v=a*t;
+    prompt=`Vozilo začne zavirati pri ${v} m/s s stalnim pospeškom −${a} m/s². ${hard?"Kolikšna je zavorna pot do ustavitve?":"Koliko časa potrebuje do ustavitve?"}`;
+    answer=hard?v*t/2:t;unit=hard?"m":"s";hint="Ob ustavitvi je v = 0. Poišči čas iz v = v₀ + at.";
+    steps=`t = ${v} ÷ ${a} = ${t} s.`+(hard?` Povprečna hitrost med zaviranjem je ${fmt(v/2)} m/s, zato je s = ${fmt(v/2)} · ${t} = ${fmt(answer)} m.`:"");
+  }else if(key==="return"){
+    const a=integer(20,90),b=integer(10,80);
+    prompt=`Oseba gre ${a} m desno in nato ${b} m levo. Pozitivna smer je desno. ${hard?"Kolikšen je predznačen premik?":"Kolikšna je celotna pot?"}`;
+    answer=hard?a-b:a+b;unit="m";hint=hard?"Od položaja na koncu odštej začetni položaj. Gibanje v levo prispeva negativno.":"Seštej dolžini obeh odsekov.";
+    steps=`${hard?"Δx":"s"} = ${a} ${hard?"−":"+"} ${b} = ${answer} m.`;
+  }else if(key==="graph"){
+    const u=integer(2,8),k=integer(2,5),j=integer(2,5),v=hard?-j:u+j,T=hard?k+j:k;
+    chart={u,v,T};
+    prompt=`Na grafu se hitrost linearno spreminja od ${fmt(u)} m/s do ${fmt(v)} m/s v ${T} s. ${hard?"Kolikšna je celotna pot?":"Kolikšen je predznačen premik?"}`;
+    const zero=T*u/(u-v);
+    answer=hard?(u*zero+Math.abs(v)*(T-zero))/2:(u+v)*T/2;unit="m";
+    hint=hard?"Poišči presečišče grafa s časovno osjo in seštej velikosti obeh trikotnih ploščin.":"Izračunaj ploščino trapeza pod grafom hitrosti.";
+    steps=hard?`Hitrost je nič pri t = ${fmt(zero)} s. Pot je vsota velikosti obeh ploščin: ½ · ${u} · ${fmt(zero)} + ½ · ${fmt(Math.abs(v))} · ${fmt(T-zero)} ≈ ${fmt(answer)} m.`:`Δx = ½ · (${u} + ${v}) · ${T} = ${fmt(answer)} m.`;
+  }else if(key==="fall"){
+    const h=integer(5,60),time=Math.sqrt(2*h/g);
+    prompt=`Telo spustiš iz mirovanja z višine ${h} m. Zanemari zračni upor, g = 9,81 m/s². ${hard?"Kolikšna je velikost hitrosti tik pred tlemi?":"Koliko časa pada?"}`;
+    answer=hard?g*time:time;unit=hard?"m/s":"s";hint="Iz h = ½gt² najprej izračunaj čas padanja.";
+    steps=`t = √(2 · ${h} / 9,81) ≈ ${fmt(time)} s.`+(hard?` |v| = gt ≈ ${fmt(answer)} m/s.`:"");
+  }else if(key==="throw"){
+    const v=integer(8,26),angle=[25,30,35,40,45,50,60][integer(0,6)],rad=angle*Math.PI/180,x=v*Math.cos(rad),y=v*Math.sin(rad),T=2*y/g;
+    prompt=`Telo vržemo s tal s hitrostjo ${v} m/s pod kotom ${angle}°. Pristane na isti višini. Zanemari zračni upor, g = 9,81 m/s². ${hard?"Kolikšen je vodoravni domet?":"Kolikšna je začetna navpična komponenta hitrosti?"}`;
+    answer=hard?x*T:y;unit=hard?"m":"m/s";hint=hard?"Razstavi hitrost na komponenti. Čas leta je T = 2v₀ᵧ/g.":"Navpično komponento dobiš s sinusom kota.";
+    steps=`v₀ᵧ = ${v} sin ${angle}° ≈ ${fmt(y)} m/s.`+(hard?` v₀ₓ ≈ ${fmt(x)} m/s in T ≈ ${fmt(T)} s, zato je domet v₀ₓT ≈ ${fmt(answer)} m.`:"");
+  }else{
+    const r=integer(2,10),T=integer(2,12),w=2*Math.PI/T;
+    prompt=`Telo enakomerno kroži po krožnici s polmerom ${r} m in obhodnim časom ${T} s. Kolikšna je velikost ${hard?"centripetalnega pospeška":"hitrosti"}?`;
+    answer=hard?w*w*r:w*r;unit=hard?"m/s²":"m/s";hint=hard?"Iz obhodnega časa izračunaj kotno hitrost ω = 2π/T, nato uporabi a = ω²r.":"V enem obhodu prepotuje obseg kroga 2πr.";
+    steps=hard?`ω = 2π/${T} ≈ ${fmt(w)} rad/s. |a| = ω² · ${r} ≈ ${fmt(answer)} m/s².`:`|v| = 2π · ${r}/${T} ≈ ${fmt(answer)} m/s.`;
+  }
+  return {key,prompt,answer,unit,hint,steps,chart};
+}
+function taskChart({u,v,T}){
+  const peak=Math.max(Math.abs(u),Math.abs(v),1),Y=x=>67-x/peak*39;
+  return `<svg viewBox="0 0 340 138" role="img" aria-label="Hitrost se linearno spremeni iz ${fmt(u)} na ${fmt(v)} metrov na sekundo v ${T} sekundah." style="max-width:420px">
+  ${line(52,20,52,113,'stroke="#657086"')}${line(52,67,317,67,'stroke="#657086"')}
+  ${line(52,Y(u),284,Y(v),'stroke="#5634aa" stroke-width="3"')}
+  ${line(284,Y(v),284,116,'stroke="#8894ab" stroke-dasharray="4 4"')}
+  ${circle(52,Y(u),4,"#5634aa")}${circle(284,Y(v),4,"#5634aa")}
+  ${label(16,15,"v (m/s)")}${label(298,133,"t (s)")}${label(45,Y(u)+4,fmt(u),'text-anchor="end"')}
+  ${label(295,Y(v)+4,fmt(v))}${label(43,71,"0",'text-anchor="end"')}${label(52,132,"0",'text-anchor="middle"')}${label(284,132,fmt(T),'text-anchor="middle"')}</svg>`;
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>${task.chart?taskChart(task.chart):""}
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Kinematika · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p>${q.chart?taskChart(q.chart):""}<p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+setMode("line");renderMission();generate();
+</script>
+</body>
+</html>
