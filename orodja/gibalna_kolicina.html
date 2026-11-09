@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Sistem točkastih delcev, masno središče, trki, sunek sile in tok snovi. Interaktivne simulacije in generator nalog.">
+<title>Gibalna količina – Sidebit | Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.gk{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.gk *{box-sizing:border-box}.gk [hidden]{display:none!important}
+.gk .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.gk header.wrap{padding:25px 0 22px}.gk a{color:var(--accent);font-weight:750}
+.gk .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.gk .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.gk h1,.gk h2,.gk h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.gk h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.gk h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.gk h3{font-size:1.15rem;margin:0 0 9px}.gk p{margin:0 0 13px}.gk .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.gk .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.gk svg{display:block;width:100%;height:auto;overflow:visible}
+.gk nav,.gk .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.gk nav{margin:12px 0 24px}
+.gk button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.gk button:hover{background:var(--purple)}.gk button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.gk button[aria-pressed=true],.gk .primary{background:var(--yellow)}
+.gk button:disabled{opacity:.55;cursor:default}.gk :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.gk .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.gk .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.gk .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.gk .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.gk label{display:block;font-weight:700;margin:12px 0 4px}.gk label:first-child{margin-top:0}
+.gk input:not([type=checkbox]),.gk select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.gk input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.gk input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.gk output{color:var(--accent);font-weight:800}
+.gk .fine{font-size:.88rem;color:#4d5871}.gk .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.gk .lab-visual,.gk .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.gk .graph{cursor:crosshair}.gk .graph-label{font-weight:800;margin:7px 0 0}
+.gk .graph-group{min-width:0}.gk .graph-group p{margin:7px 0 0}
+.gk .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.gk .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.gk .metric:nth-child(2n){background:var(--mint)}.gk .metric strong{display:block;font-size:1.06rem}
+.gk .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.gk .lav{background:var(--purple)}.gk .accent-card{background:var(--yellow)}.gk .question{font-weight:700;font-size:1.06rem}
+.gk .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.gk details{margin:10px 0}.gk summary{cursor:pointer;font-weight:750}
+.gk .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.gk .question-card .row{margin-top:9px}.gk .question-card label{margin-top:9px}
+.gk .lesson{scroll-margin:15px}.gk .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.gk footer{padding:8px 0 28px}.gk .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.gk .grid,.gk .hero{grid-template-columns:1fr}.gk .hero-art{display:none}.gk .three{grid-template-columns:1fr}.gk .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.gk .wrap{width:calc(100% - 24px)}.gk .two{grid-template-columns:1fr}.gk nav button{flex:1 1 40%}.gk .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.gk{background:#fff;color:#000}body.gk.print-sheet > :not(#paper){display:none!important}body.gk.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.gk .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}.gk .graph{cursor:default}.gk .axis-note{margin-top:9px}.gk .field output{display:inline-block}.gk .key{font-size:.88rem;color:#424c64}
+</style></head><body class="gk">
+<header class="wrap"><a href="../index.html">← Vsa orodja</a>
+<div class="hero"><div><span class="badge">SIDEBIT · FIZIKA</span><h1>Gibalna količina</h1><p class="lead">Sledi masnemu središču, primerjaj trke in razišči, kako tekočina prenaša gibalno količino skozi cev.</p></div>
+<svg class="hero-art" viewBox="0 0 310 140" role="img" aria-label="Dva delca z nasprotnima gibalnima količinama"><path d="M18 103H290" stroke="#22253a" stroke-width="3"/><circle cx="65" cy="78" r="25" fill="#ffe38b" stroke="#22253a" stroke-width="3"/><circle cx="252" cy="83" r="20" fill="#c5f0e2" stroke="#22253a" stroke-width="3"/><path d="M98 70h50m-10-8 10 8-10 8m86 11h-48m10-8-10 8 10 8" fill="none" stroke="#5634aa" stroke-width="4"/><text x="117" y="51" font-size="16">p₁</text><text x="191" y="69" font-size="16">p₂</text></svg></div>
+<nav aria-label="Poglavja gibalne količine"><button data-tab="system" aria-pressed="true">Sistem delcev</button><button data-tab="collision" aria-pressed="false">Trki</button><button data-tab="flow" aria-pressed="false">Tok snovi</button><button data-tab="challenges" aria-pressed="false">Učni izzivi</button><button data-tab="practice" aria-pressed="false">Generator nalog</button><button data-tab="theory" aria-pressed="false">Razlaga in formule</button></nav></header>
+<main class="wrap">
+<section id="system"><div class="grid"><div class="card"><span class="chip">01 · Sistem točkastih delcev</span><h2>Notranje in zunanje sile</h2>
+<label for="sys-preset">Pripravljeni poskusi</label><select id="sys-preset"><option value="isolated">Samo notranji sili</option><option value="external">Deluje zunanja sila</option><option value="balanced">Zunanji sili se izničita</option><option value="custom" disabled>Po meri</option></select>
+<div id="sys-input"></div><p class="fine small-gap">Prikaz je enodimenzionalen. Notranji sili sta stalni, enako veliki in nasprotni. Delca sta točkasta in se lahko srečata brez trka; trke preizkusi v ločenem zavihku.</p></div>
+<div class="card"><span class="chip">02 · Spremljaj masno središče</span><h2>Kaj spremeni skupno gibalno količino?</h2>
+<svg id="sys-scene" class="lab-visual" viewBox="0 0 680 215" role="img" aria-label="Položaja delcev in masno središče"></svg>
+<p class="key axis-note">Rumeno: delec A · zeleno: delec B · vijoličen romb: masno središče C. Puščice kažejo smer hitrosti. Delca sta narisana na različnih višinah zaradi preglednosti, gibljeta pa se po isti osi.</p>
+<div id="sys-player"></div><div id="sys-values" class="readouts"></div><p id="sys-note" class="focus-box"></p>
+</div></div><div class="card"><h2>Gibalna količina v odvisnosti od časa</h2><svg id="sys-graph" class="graph" viewBox="0 0 680 200" role="img" aria-label="Graf posameznih in skupne gibalne količine"></svg><p class="key">Oranžna: pₐ · zelena: pᵦ · vijolična: P = pₐ + pᵦ. Naklon P(t) je rezultanta zunanjih sil.</p></div></section>
+<section id="collision" hidden><div class="grid"><div class="card lav"><span class="chip">Poskus brez zunanjih sil</span><h2>Laboratorij trkov</h2><label for="col-preset">Vrsta trka</label><select id="col-preset"><option value="1">Prožen (e = 1)</option><option value="0.5">Delno neprožen (e = 0,5)</option><option value="0">Popolnoma neprožen (e = 0)</option><option value="custom" disabled>Po meri</option></select><div id="col-input"></div><p class="fine small-gap">Pred trkom se delca začneta 6 m narazen. Koeficient restitucije e meri razmerje med hitrostjo razmikanja po trku in približevanja pred trkom. Smer desno je pozitivna.</p></div>
+<div class="card"><h2>Pred trkom in po njem</h2><svg id="col-scene" class="lab-visual" viewBox="0 0 680 215" role="img" aria-label="Animacija približevanja in trka delcev"></svg><div id="col-player"></div><div class="row small-gap"><button id="col-impact">Na trenutek trka</button></div><div id="col-values" class="readouts"></div><p id="col-note" class="focus-box"></p><p class="fine">Pri prožnem trku se ohrani tudi kinetična energija. Pri neprožnem se del pretvori npr. v notranjo energijo. Pri e = 0 delca po trku potujeta skupaj.</p></div></div></section>
+<section id="flow" hidden><div class="grid"><div class="card"><span class="chip">Snov prečka mejo sistema</span><h2>Tok snovi skozi cev</h2><div id="flow-input"></div><p class="fine small-gap">Stalen, enakomeren tok nestisljive tekočine. Hitrosti so povprečja po presekih. Preseki so krožni, cev je vodoravna, gostota je povsod enaka.</p></div>
+<div class="card"><h2>Enak masni pretok, drugačna hitrost</h2><svg id="flow-scene" class="lab-visual" viewBox="0 0 680 220" role="img" aria-label="Vstopni in izstopni presek cevi s tokom tekočine"></svg><div class="row small-gap"><button id="flow-play" class="primary">Predvajaj tok</button></div><div id="flow-values" class="readouts"></div><p id="flow-note" class="focus-box"></p><p class="fine">Puščici prikazujeta povprečni hitrosti v presekih. Pike se v ožjem delu premikajo hitreje. Čas animacije je ponazoritev. Izračunana sila je <strong>vsota zunanjih sil na tekočino</strong>, vključno s tlačnima silama na presekih. Iz tega podatka samega ne moreš določiti sile tekočine na cev.</p></div></div></section>
+<section id="challenges" hidden><div class="card lav"><span class="chip">Napovej in preizkusi</span><h2>Učni izzivi</h2><label for="mission">Izberi izziv</label><select id="mission"><option value="0">Ali notranja sila spremeni P?</option><option value="1">Kaj se spremeni pri neprožnem trku?</option><option value="2">Kaj se zgodi v ožji cevi?</option><option value="3">Kaj spremeni zunanja sila?</option></select><div id="mission-body" class="small-gap"></div><p id="mission-feedback" class="feedback" role="status"></p><button id="mission-open">Odpri poskus</button></div></section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali natisni delovni list.</p>
+<div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option><option value="particle">Gibalna količina delca</option><option value="system">Sistem delcev</option><option value="center">Masno središče</option><option value="impulse">Sunek zunanje sile</option><option value="collision">Trki</option><option value="volume">Prostorninski pretok</option><option value="mass">Masni pretok</option><option value="flow">Tok gibalne količine</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div>
+<div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input type="checkbox" id="print-sol" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden><div class="card"><h2>Od delca do toka snovi</h2><div class="two">
+<div class="note"><h3>Gibalna količina je vektor</h3><p class="formula">p⃗ = m v⃗ · P⃗ = Σ p⃗ᵢ</p><p>V eni dimenziji upoštevaj predznake. Dva delca se lahko hitro gibljeta, vendar je njuna skupna gibalna količina nič, če sta posamezni enaki po velikosti in nasprotni.</p></div>
+<div class="note lav"><h3>Masno središče sistema</h3><p class="formula">x꜀ = Σ(mᵢ xᵢ)/M · v꜀ = P/M</p><p>Pri stalnih masah velja M a꜀ = ΣF<sub>zun</sub>. Če je rezultanta zunanjih sil nič, se masno središče giblje s stalno hitrostjo, tudi če se posamezni delci pospešujejo.</p></div>
+<div class="note lav"><h3>Sunek sile in ohranitev</h3><p class="formula">dP/dt = ΣF<sub>zun</sub> · ΔP = J<sub>zun</sub></p><p>Sunek je ploščina pod grafom zunanje sile v odvisnosti od časa. Za stalno rezultanto velja J = ΣF<sub>zun</sub> Δt. Notranje sile se v vsoti po parih izničijo; če je zunanji sunek nič, se skupna gibalna količina ohrani.</p></div>
+<div class="note"><h3>Trk in energija</h3><p>Ko je zunanji sunek zanemarljiv, velja P<sub>pred</sub> = P<sub>po</sub> pri vseh vrstah trkov. Pri prožnem trku se ohrani tudi kinetična energija. Pri popolnoma neprožnem trku je skupna končna hitrost P/(m₁ + m₂).</p></div>
+<div class="note"><h3>Prostorninski in masni pretok</h3><p class="formula">Q = A v · ṁ = ρQ</p><p>Q pove, koliko prostornine preteče na sekundo (m³/s), ṁ pa koliko mase (kg/s). Pri stalnem toku nestisljive tekočine brez stranskih dotokov je A₁v₁ = A₂v₂. Če prepoloviš premer, se ploščina zmanjša na četrtino.</p></div>
+<div class="note lav"><h3>Tok gibalne količine</h3><p class="formula">ΣF<sub>zun</sub> = ṁ(v₂ − v₁)</p><p>V stacionarnem enodimenzionalnem toku ima tekočina v nadzorovani prostornini stalno skupno gibalno količino, vendar jo tekočina skozi presek prinaša in odnaša. Razlika izstopnega in vstopnega toka gibalne količine je enaka rezultanti zunanjih sil na tekočino.</p></div>
+</div><details><summary>Enote in tipične napake</summary><p>Gibalno količino meriš v kg·m/s, sunek v N·s; enoti sta enakovredni. Pretok v L/s pretvoriš v m³/s z deljenjem s 1000. Površina krožnega preseka je A = πd²/4. Toka gibalne količine ṁv ne zamenjaj z gibalno količino mv: njuni enoti sta N in kg·m/s.</p></details></div></section>
+</main><footer class="wrap fine">Sidebit · Gibalna količina, sistemi delcev in tok snovi</footer><div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const nf=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:3});
+const fmt=x=>nf.format(Math.abs(x)<.0005?0:x);
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const line=(x,y,x2,y2,c,w=2)=>`<line x1="${x}" y1="${y}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}"/>`;
+const txt=(x,y,s,anchor="start")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" font-size="14" font-weight="650" fill="#364058">${s}</text>`;
+const disk=(x,y,r,c)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" stroke="#22253a" stroke-width="2.5"/>`;
+function fields(id,defs,p,change){
+  $(id).replaceChildren();
+  for(const [key,name,unit,min,max,step] of defs){
+    const label=document.createElement("label"), input=document.createElement("input"),out=document.createElement("output");
+    input.type="range";input.id=id+"-"+key;input.min=min;input.max=max;input.step=step;input.value=p[key];
+    label.htmlFor=input.id;label.append(name+": ",out);
+    const show=()=>out.textContent=fmt(p[key])+(unit?" "+unit:"");
+    show();input.oninput=()=>{p[key]=Number(input.value);show();change(key);};
+    input.sync=()=>{input.value=p[key];show();};$(id).append(label,input);
+  }
+}
+function metrics(id,items){$(id).innerHTML=items.map(([n,v])=>`<div class="metric">${n}<strong>${v}</strong></div>`).join("");}
+const sysDefs=[["a","Masa A","kg",1,8,.5],["b","Masa B","kg",1,8,.5],["u","Začetna hitrost A","m/s",-6,6,.5],["v","Začetna hitrost B","m/s",-6,6,.5],["I","Notranja sila na A","N",-12,12,1],["F","Zunanja sila na A","N",-15,15,1],["G","Zunanja sila na B","N",-15,15,1]];
+const sysPresets={isolated:[2,4,-2,1,-4,0,0],external:[2,4,-2,1,-4,6,0],balanced:[2,4,-2,1,-4,6,-6]};
+const colDefs=[...sysDefs.slice(0,4),["e","Koeficient restitucije e","",0,1,.05]];
+const flowDefs=[["rho","Gostota","kg/m³",600,1400,10],["d","Vstopni premer","cm",3,12,.5],["D","Izstopni premer","cm",3,12,.5],["q","Prostorninski pretok","L/s",.5,10,.5]];
+let sys={},col={a:2,b:4,u:3,v:-1,e:1},flow={rho:1000,d:8,D:4,q:2};
+function systemState(p,t){
+  const M=p.a+p.b,A=(p.F+p.I)/p.a,B=(p.G-p.I)/p.b;
+  const x=-3+p.u*t+A*t*t/2,y=3+p.v*t+B*t*t/2,u=p.u+A*t,v=p.v+B*t;
+  const pa=p.a*u,pb=p.b*v,P=pa+pb;
+  return {x,y,u,v,pa,pb,P,M,C:(p.a*x+p.b*y)/M,V:P/M,acc:(p.F+p.G)/M};
+}
+function collision(p){
+  const M=p.a+p.b,P=p.a*p.u+p.b*p.v,approach=p.u-p.v;
+  const hit=approach>0?6/approach:Infinity;
+  const U=approach>0?(P-p.b*p.e*approach)/M:p.u,V=approach>0?(P+p.a*p.e*approach)/M:p.v;
+  const before=(p.a*p.u*p.u+p.b*p.v*p.v)/2,after=(p.a*U*U+p.b*V*V)/2;
+  const T=Number.isFinite(hit)?Math.max(4,hit+2):4;
+  function at(t){
+    if(t<hit)return {x:-3+p.u*t,y:3+p.v*t,u:p.u,v:p.v};
+    const x=-3+p.u*hit,dt=t-hit;return {x:x+U*dt,y:x+V*dt,u:U,v:V};
+  }
+  return {P,U,V,T,hit,before,after,at};
+}
+function fluid(p){
+  const Q=p.q/1000,A=Math.PI*(p.d/100)**2/4,B=Math.PI*(p.D/100)**2/4;
+  const u=Q/A,v=Q/B,m=p.rho*Q;
+  return {Q,A,B,u,v,m,Fin:m*u,Fout:m*v,F:m*(v-u)};
+}
+let run=null,last=null,frame=0,flowPhase=0;
+const time={sys:0,col:0};
+function duration(id){return id==="sys"?4:collision(col).T;}
+for(const id of ["sys","col"]){
+  $(id+"-player").innerHTML=`<label for="${id}-time">Čas: <output id="${id}-clock"></output></label><input id="${id}-time" type="range" min="0" max="1000" value="0"><div class="row"><button id="${id}-play" class="primary">Predvajaj</button><button id="${id}-reset">Na začetek</button><button id="${id}-end">Na konec</button></div>`;
+  $(id+"-play").onclick=()=>play(id);
+  $(id+"-reset").onclick=()=>seek(id,0);
+  $(id+"-end").onclick=()=>seek(id,duration(id));
+  $(id+"-time").oninput=()=>seek(id,Number($(id+"-time").value)*duration(id)/1000);
+}
+function pause(){run=null;last=null;cancelAnimationFrame(frame);for(const id of ["sys","col","flow"])$(id+"-play").textContent=id==="flow"?"Predvajaj tok":"Predvajaj";}
+function play(id){
+  const was=run===id;pause();if(was)return;
+  if(id!=="flow"&&time[id]>=duration(id))time[id]=0;
+  run=id;$(id+"-play").textContent="Premor";frame=requestAnimationFrame(animate);
+}
+function animate(stamp){
+  if(!run)return;
+  const dt=last===null?0:Math.min(.05,(stamp-last)/1000);last=stamp;
+  if(run==="flow"){flowPhase+=dt;renderFlow();}
+  else{
+    const T=duration(run);time[run]=Math.min(T,time[run]+dt*T/7);
+    render(run);if(time[run]>=T){pause();return;}
+  }
+  frame=requestAnimationFrame(animate);
+}
+function render(id){if(id==="sys")renderSystem();else renderCollision();}
+function seek(id,t){pause();time[id]=clamp(t,0,duration(id));render(id);}
+function clock(id,T){$(id+"-clock").textContent=fmt(time[id])+" / "+fmt(T)+" s";$(id+"-time").value=time[id]*1000/T;}
+function arrow(x,y,v,c){
+  if(Math.abs(v)<.001)return "";
+  const end=x+Math.sign(v)*Math.min(47,10+6*Math.abs(v)),d=Math.sign(v)*7;
+  return line(x,y,end,y,c,3)+line(end,y,end-d,y-5,c,2)+line(end,y,end-d,y+5,c,2);
+}
+function track(id,s,samples,center){
+  const positions=samples.flatMap(o=>[o.x,o.y]),lo=Math.min(-3,...positions),hi=Math.max(3,...positions);
+  const X=x=>65+(x-lo)/(hi-lo)*550;
+  let svg=line(35,109,648,109,"#8894ab");
+  for(let i=0;i<5;i++){
+    const v=lo+(hi-lo)*i/4,x=X(v);
+    svg+=line(x,105,x,113,"#8894ab")+txt(x,138,fmt(v)+" m","middle");
+  }
+  const xa=X(s.x),xb=X(s.y);
+  svg+=line(xa,70,xa,105,"#b6bdcb",1)+line(xb,145,xb,113,"#b6bdcb",1);
+  svg+=disk(xa,64,16,"#ffe38b")+txt(xa,69,"A","middle")+disk(xb,163,16,"#c5f0e2")+txt(xb,168,"B","middle");
+  svg+=arrow(xa,37,s.u,"#bc631b")+arrow(xb,190,s.v,"#087b70");
+  if(center!==null){
+    const c=X(center);
+    svg+=`<path d="M${c} 97l12 12-12 12-12-12z" fill="#b79aef" stroke="#5634aa" stroke-width="2"/>`+txt(c+14,96,"C");
+  }
+  $(id).innerHTML=svg;
+}
+function graphSystem(){
+  const first=systemState(sys,0),end=systemState(sys,4),now=systemState(sys,time.sys);
+  const all=[0,...[first,end].flatMap(s=>[s.pa,s.pb,s.P])];
+  let lo=Math.min(...all),hi=Math.max(...all);if(hi-lo<.001){lo=-1;hi=1;}
+  const pad=(hi-lo)*.15;lo-=pad;hi+=pad;
+  const X=t=>70+t/4*580,Y=p=>165-(p-lo)/(hi-lo)*135;
+  let svg=line(70,25,70,165,"#8794a8")+line(70,Y(0),650,Y(0),"#8794a8")+txt(61,Y(0)+5,"0","end")+txt(76,18,"p (kg·m/s)");
+  for(let i=0;i<=4;i++)svg+=line(X(i),30,X(i),165,"#dce2ee",1)+txt(X(i),188,i+" s","middle");
+  svg+=txt(62,Y(Math.max(...all))+5,fmt(Math.max(...all)),"end")+txt(62,Y(Math.min(...all))+5,fmt(Math.min(...all)),"end");
+  [["pa","#bc631b"],["pb","#087b70"],["P","#5634aa"]].forEach(([k,c])=>{svg+=line(X(0),Y(first[k]),X(4),Y(end[k]),c,k==="P"?4:2.5);});
+  svg+=line(X(time.sys),25,X(time.sys),165,"#536079",1)+disk(X(time.sys),Y(now.P),5,"#b79aef");
+  $("sys-graph").innerHTML=svg;
+}
+function renderSystem(){
+  const s=systemState(sys,time.sys),F=sys.F+sys.G,initial=systemState(sys,0);
+  const samples=Array.from({length:81},(_,i)=>systemState(sys,i/20));
+  for(const [x,acc] of [[sys.u,(sys.F+sys.I)/sys.a],[sys.v,(sys.G-sys.I)/sys.b]]){
+    const z=-x/acc;if(z>0&&z<4)samples.push(systemState(sys,z));
+  }
+  track("sys-scene",s,samples,s.C);clock("sys",4);graphSystem();
+  metrics("sys-values",[["Skupna P",fmt(s.P)+" kg·m/s"],["Zunanja rezultanta",fmt(F)+" N"],["Masno središče x꜀",fmt(s.C)+" m"],["Hitrost središča",fmt(s.V)+" m/s"],["Pospešek središča",fmt(s.acc)+" m/s²"],["Sprememba ΔP",fmt(s.P-initial.P)+" kg·m/s"]]);
+  $("sys-note").textContent=F===0?"Zunanja rezultanta je nič. Notranji sili lahko spremenita pₐ in pᵦ, njuna vsota P pa ostaja enaka.":"Notranji sili se v vsoti izničita. Zunanja rezultanta "+fmt(F)+" N spremeni P za "+fmt(F*time.sys)+" kg·m/s.";
+}
+function renderCollision(){
+  const m=collision(col),t=time.col,s=m.at(t),hit=Number.isFinite(m.hit);
+  track("col-scene",s,[m.at(0),m.at(m.T),...(hit?[m.at(m.hit)]:[])],null);clock("col",m.T);
+  $("col-impact").disabled=!hit;
+  metrics("col-values",[["P pred",fmt(m.P)+" kg·m/s"],["P po",hit?fmt(col.a*m.U+col.b*m.V)+" kg·m/s":"—"],["Eₖ pred",fmt(m.before)+" J"],["Eₖ po",hit?fmt(m.after)+" J":"—"],["Hitrost A zdaj",fmt(s.u)+" m/s"],["Hitrost B zdaj",fmt(s.v)+" m/s"]]);
+  $("col-note").textContent=hit?`Trk pri t = ${fmt(m.hit)} s. Po trku: vₐ = ${fmt(m.U)} m/s, vᵦ = ${fmt(m.V)} m/s. Zmanjšanje kinetične energije: ${fmt(m.before-m.after)} J.`:"Delca se ne približujeta: A je levo od B, hitrost A pa ni večja od hitrosti B.";
+}
+function renderFlow(){
+  const f=fluid(flow),r1=5*flow.d,r2=5*flow.D;
+  const radius=x=>x<=240?r1:x>=440?r2:r1+(r2-r1)*(x-240)/200;
+  const yy=108,travel=[0];
+  for(let i=1;i<=178;i++)travel.push(travel[i-1]+radius(72+3*(i-.5))**2);
+  const total=travel[travel.length-1];
+  let svg=`<path d="M65 ${yy-r1}H240L440 ${yy-r2}H615V${yy+r2}H440L240 ${yy+r1}H65Z" fill="#d8ecff" stroke="#22253a" stroke-width="3"/>`;
+  for(let i=0;i<23;i++){
+    const amount=((i*37/23+flowPhase*(.18+.02*flow.q))%1)*total;
+    let l=0,h=travel.length-1;
+    while(h-l>1){const mid=(h+l)>>1;if(travel[mid]<amount)l=mid;else h=mid;}
+    const x=72+3*(l+(amount-travel[l])/(travel[h]-travel[l])),row=(i%3-1)*.48;
+    svg+=`<circle cx="${x}" cy="${yy+radius(x)*row}" r="3.5" fill="#087b70" opacity=".65"/>`;
+  }
+  svg+=arrow(120,yy,f.u,"#5634aa")+arrow(488,yy,f.v,"#5634aa")+txt(110,24,"Vstop · "+fmt(f.u)+" m/s")+txt(465,24,"Izstop · "+fmt(f.v)+" m/s");
+  $("flow-scene").innerHTML=svg;
+  metrics("flow-values",[["Masni pretok",fmt(f.m)+" kg/s"],["Vstopni tok p",fmt(f.Fin)+" N"],["Izstopni tok p",fmt(f.Fout)+" N"],["Rezultanta na tekočino",fmt(f.F)+" N"]]);
+  $("flow-note").textContent=`Q = ${fmt(flow.q)} L/s v obeh presekih. ΣF = ṁ(v₂ − v₁) = ${fmt(f.F)} N. Pozitivna smer je smer toka.`;
+}
+function setSystem(key){
+  $("sys-preset").value=key;
+  sys=Object.fromEntries(sysDefs.map(([k],i)=>[k,sysPresets[key][i]]));
+  fields("sys-input",sysDefs,sys,()=>{$("sys-preset").value="custom";seek("sys",0);});seek("sys",0);
+}
+function setupCollision(){
+  fields("col-input",colDefs,col,()=>{$("col-preset").value="custom";seek("col",0);});
+  seek("col",0);
+}
+function setupFlow(){fields("flow-input",flowDefs,flow,renderFlow);renderFlow();}
+$("sys-preset").onchange=()=>setSystem($("sys-preset").value);
+$("col-preset").onchange=()=>{col.e=Number($("col-preset").value);$("col-input-e").sync();seek("col",0);};
+$("col-impact").onclick=()=>seek("col",collision(col).hit);
+$("flow-play").onclick=()=>play("flow");
+function tab(id){
+  pause();for(const s of document.querySelectorAll("main > section"))s.hidden=s.id!==id;
+  for(const b of document.querySelectorAll("[data-tab]"))b.setAttribute("aria-pressed",String(b.dataset.tab===id));
+}
+for(const b of document.querySelectorAll("[data-tab]"))b.onclick=()=>tab(b.dataset.tab);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();});
+</script>
+<script>
+const missions=[
+ {target:"system",preset:"isolated",q:"Na delca delujeta samo notranji sili. Ali se lahko njuni posamezni gibalni količini spremenita?",options:["Ne, obe morata ostati enaki.","Da, vendar njuna vsota ostane stalna.","Da, in njuna vsota mora narasti."],correct:1,why:"Notranji sili delujeta enako dolgo in sta nasprotni. Posamezna sunka se odštejeta, zato je sprememba skupne gibalne količine nič."},
+ {target:"collision",q:"Delca trčita in obtičita skupaj. Zunanji sunek je nič. Kaj se ohrani?",options:["Samo skupna kinetična energija.","Skupna gibalna količina.","Niti gibalna količina niti energija v vseh oblikah."],correct:1,why:"Skupna gibalna količina ostane enaka. Kinetična energija se pri takem trku zmanjša; del se pretvori v druge oblike energije."},
+ {target:"flow",q:"Izstopni premer je polovica vstopnega. Kolikšna je izstopna hitrost v primerjavi z vstopno?",options:["Pol manjša.","Dvakrat večja.","Štirikrat večja."],correct:2,why:"Ploščina preseka je sorazmerna s kvadratom premera. Četrtinska ploščina pri istem prostorninskem pretoku zahteva štirikrat večjo povprečno hitrost."},
+ {target:"system",preset:"external",q:"Stalna zunanja rezultanta 6 N deluje 4 s. Za koliko se spremeni skupna gibalna količina?",options:["Za +24 kg·m/s.","Za +6 kg·m/s.","Za 0 kg·m/s."],correct:0,why:"Sprememba skupne gibalne količine je enaka zunanjemu sunku: ΔP = 6 N · 4 s = 24 N·s."}
+];
+function currentMission(){return missions[Number($("mission").value)];}
+function renderMission(){
+  const m=currentMission(),body=$("mission-body"),p=document.createElement("p"),choices=document.createElement("div");
+  p.className="question";p.textContent=m.q;choices.className="row";body.replaceChildren(p,choices);$("mission-feedback").textContent="";
+  m.options.forEach((op,i)=>{
+    const b=document.createElement("button");b.textContent=op;b.setAttribute("aria-pressed","false");
+    b.onclick=()=>{for(const other of choices.children)other.setAttribute("aria-pressed",String(other===b));$("mission-feedback").textContent=(i===m.correct?"Pravilno. ":"Ni čisto tako. ")+m.why;};
+    choices.append(b);
+  });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{
+  const m=currentMission();tab(m.target);
+  if(m.target==="system"){setSystem(m.preset);seek("sys",4);}
+  if(m.target==="collision"){Object.assign(col,{a:2,b:4,u:3,v:-1,e:0});$("col-preset").value="0";setupCollision();seek("col",collision(col).hit);}
+  if(m.target==="flow"){Object.assign(flow,{rho:1000,d:8,D:4,q:2});flowPhase=0;setupFlow();}
+};
+const topics={particle:"Gibalna količina delca",system:"Sistem delcev",center:"Masno središče",impulse:"Sunek zunanje sile",collision:"Trki",volume:"Prostorninski pretok",mass:"Masni pretok",flow:"Tok gibalne količine"};
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function makeTask(key,level){
+  const hard=level===2,a=integer(2,12),b=integer(2,12),u=integer(2,14),v=integer(1,8),s=integer(2,9),t=integer(2,12);
+  const rho=integer(7,13)*100;
+  let prompt,answer,unit,hint,steps;
+  if(key==="particle"){
+    const vv=hard?-u:u;
+    prompt=`Delec z maso ${a} kg se giblje s predznačeno hitrostjo ${vv} m/s. Kolikšna je njegova predznačena gibalna količina?`;
+    answer=a*vv;unit="kg·m/s";hint="Pomnoži maso in hitrost. Ohrani predznak hitrosti.";
+    steps=`p = mv = ${a} · (${vv}) = ${answer} kg·m/s.`;
+  }else if(key==="system"){
+    const P=a*u-b*v;
+    prompt=`Delec A (${a} kg) ima hitrost +${u} m/s, delec B (${b} kg) pa −${v} m/s. ${hard?"Kolikšna je predznačena hitrost masnega središča?":"Kolikšna je predznačena skupna gibalna količina?"}`;
+    answer=hard?P/(a+b):P;unit=hard?"m/s":"kg·m/s";hint="Seštej predznačeni gibalni količini."+(hard?" Nato deli s skupno maso.":"");
+    steps=`P = ${a} · ${u} − ${b} · ${v} = ${P} kg·m/s.`+(hard?` v꜀ = P/(${a} + ${b}) ≈ ${fmt(answer)} m/s.`:"");
+  }else if(key==="center"){
+    const x=hard?-s:0,y=t;
+    prompt=`Delec mase ${a} kg je pri x = ${x} m, delec mase ${b} kg pri x = ${y} m. Kje je masno središče?`;
+    answer=(a*x+b*y)/(a+b);unit="m";hint="Položaja uteži z masama in deli z njuno vsoto.";
+    steps=`x꜀ = [${a} · (${x}) + ${b} · ${y}]/(${a} + ${b}) ≈ ${fmt(answer)} m.`;
+  }else if(key==="impulse"){
+    const force=hard?-s:s;
+    prompt=`Na sistem deluje stalna zunanja rezultanta ${force} N ${t} s. ${hard?`Začetna skupna gibalna količina je +${u} kg·m/s. Izračunaj končno predznačeno vrednost.`:"Kolikšna je sprememba skupne gibalne količine?"}`;
+    answer=force*t+(hard?u:0);unit="kg·m/s";hint="Zunanji sunek je enak spremembi skupne gibalne količine.";
+    steps=`ΔP = FΔt = (${force}) · ${t} = ${force*t} kg·m/s.`+(hard?` P = ${u} + (${force*t}) = ${answer} kg·m/s.`:"");
+  }else if(key==="collision"){
+    const w=hard?-v:0,P=a*u+b*w;
+    prompt=`Voziček mase ${a} kg se giblje s hitrostjo +${u} m/s, drugi z maso ${b} kg pa s hitrostjo ${w} m/s. Po trku se sprimeta. Zunanji sunek je zanemarljiv. Kolikšna je skupna predznačena hitrost po trku?`;
+    answer=P/(a+b);unit="m/s";hint="Skupna gibalna količina pred trkom je enaka skupni po trku.";
+    steps=`P = ${a} · ${u} + ${b} · (${w}) = ${P} kg·m/s. v = P/(${a} + ${b}) ≈ ${fmt(answer)} m/s.`;
+  }else if(key==="volume"){
+    const d=s*2,A=d/10000;
+    prompt=hard?`Nestisljiva tekočina ima v vstopnem preseku ${d} cm² povprečno hitrost ${v} m/s. Izstopni presek je ${s} cm². Kolikšna je izstopna hitrost pri stalnem toku?`:`Po cevi s presekom ${d} cm² teče tekočina s povprečno hitrostjo ${v} m/s. Kolikšen je prostorninski pretok v L/s?`;
+    answer=hard?2*v:A*v*1000;unit=hard?"m/s":"L/s";hint=hard?"Uporabi A₁v₁ = A₂v₂. Obe površini sta že v istih enotah.":"Uporabi Q = Av. 1 cm² je 0,0001 m², 1 m³ pa 1000 L.";
+    steps=hard?`v₂ = (${d}/${s}) · ${v} = ${answer} m/s.`:`Q = (${d} · 0,0001) · ${v} m³/s = ${fmt(answer)} L/s.`;
+  }else if(key==="mass"){
+    const q=s/2;
+    prompt=`Tekočina z gostoto ${rho} kg/m³ teče s prostorninskim pretokom ${fmt(q)} L/s. ${hard?`Koliko mase preteče v ${t} s?`:"Kolikšen je masni pretok?"}`;
+    answer=rho*q/1000*(hard?t:1);unit=hard?"kg":"kg/s";hint="Pretvori L/s v m³/s, nato uporabi ṁ = ρQ.";
+    steps=`ṁ = ${rho} · (${fmt(q)}/1000) = ${fmt(rho*q/1000)} kg/s.`+(hard?` m = ṁt = ${fmt(answer)} kg.`:"");
+  }else{
+    const q=s/2; 
+    prompt=hard?`Tekočina gostote ${rho} kg/m³ teče s pretokom ${fmt(q)} L/s. Vstopna hitrost je ${u+v} m/s, izstopna ${v} m/s. Tok je stalen in obe hitrosti kažeta v pozitivno smer. Kolikšna je predznačena rezultanta zunanjih sil na tekočino?`:`Skozi izstopni presek odteka ${s} kg tekočine na sekundo s hitrostjo ${v} m/s. Kolikšen je izstopni tok gibalne količine?`;
+    answer=hard?rho*q/1000*(-u):s*v;unit="N";hint=hard?"Izračunaj ṁ in uporabi ΣF = ṁ(v₂ − v₁).":"Tok gibalne količine je masni pretok krat hitrost.";
+    steps=hard?`ṁ = ${rho} · (${fmt(q)}/1000) = ${fmt(rho*q/1000)} kg/s. ΣF = ṁ(${v} − ${u+v}) = ${fmt(answer)} N.`:`ṁv = ${s} · ${v} = ${answer} N.`;
+  }
+  return {key,prompt,answer,unit,hint,steps};
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Gibalna količina · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+setSystem("isolated");setupCollision();setupFlow();renderMission();generate();
+</script>
+</body>
+</html>
