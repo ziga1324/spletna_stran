@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivna fizika: temperatura, tlak, raztezanje, idealni plini, Maxwellova porazdelitev, delo in specifična toplota.">
+<title>Temperatura, tlak in toplota – Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.tt{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.tt *{box-sizing:border-box}.tt [hidden]{display:none!important}
+.tt .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.tt header.wrap{padding:25px 0 22px}.tt a{color:var(--accent);font-weight:750}
+.tt .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.tt .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.tt h1,.tt h2,.tt h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.tt h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.tt h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.tt h3{font-size:1.15rem;margin:0 0 9px}.tt p{margin:0 0 13px}.tt .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.tt .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.tt svg{display:block;width:100%;height:auto;overflow:visible}
+.tt nav,.tt .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.tt nav{margin:12px 0 24px}
+.tt button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.tt button:hover{background:var(--purple)}.tt button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.tt button[aria-pressed=true],.tt .primary{background:var(--yellow)}
+.tt button:disabled{opacity:.55;cursor:default}.tt :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.tt .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.tt .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.tt .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.tt .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.tt label{display:block;font-weight:700;margin:12px 0 4px}.tt label:first-child{margin-top:0}
+.tt input:not([type=checkbox]),.tt select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.tt input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.tt input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.tt output{color:var(--accent);font-weight:800}
+.tt .fine{font-size:.88rem;color:#4d5871}.tt .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.tt .lab-visual,.tt .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.tt .graph{cursor:crosshair}.tt .graph-label{font-weight:800;margin:7px 0 0}
+.tt .graph-group{min-width:0}.tt .graph-group p{margin:7px 0 0}
+.tt .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.tt .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.tt .metric:nth-child(2n){background:var(--mint)}.tt .metric strong{display:block;font-size:1.06rem}
+.tt .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.tt .lav{background:var(--purple)}.tt .accent-card{background:var(--yellow)}.tt .question{font-weight:700;font-size:1.06rem}
+.tt .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.tt details{margin:10px 0}.tt summary{cursor:pointer;font-weight:750}
+.tt .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.tt .question-card .row{margin-top:9px}.tt .question-card label{margin-top:9px}
+.tt .lesson{scroll-margin:15px}.tt .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.tt footer{padding:8px 0 28px}.tt .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.tt .grid,.tt .hero{grid-template-columns:1fr}.tt .hero-art{display:none}.tt .three{grid-template-columns:1fr}.tt .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.tt .wrap{width:calc(100% - 24px)}.tt .two{grid-template-columns:1fr}.tt nav button{flex:1 1 40%}.tt .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.tt{background:#fff;color:#000}body.tt.print-sheet > :not(#paper){display:none!important}body.tt.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.tt .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.tt .graph{cursor:default}
+.tt .subnote{margin-top:12px}
+.tt .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tt .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.tt .graph-row{grid-template-columns:1fr}.tt .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tt h1{font-size:clamp(44px,7vw,78px)}
+.tt .lab-visual{margin:10px 0 14px}
+.tt .lab-grid{align-items:start}
+.tt .plot-note{margin-top:10px}
+.tt .topic-buttons{margin:12px 0 24px}
+.tt .theory-grid .note{margin:0}
+.tt .theory-grid{margin:14px 0}
+.tt .mono{font-variant-numeric:tabular-nums}
+.tt .unit-table{border-collapse:collapse;width:100%;margin:12px 0}
+.tt .unit-table th,.tt .unit-table td{text-align:left;border-bottom:1px solid #bbc7ce;padding:6px}
+.tt .focus-box{margin-top:12px}
+.tt .hero h1{font-size:clamp(39px,6.4vw,76px);text-wrap:balance}
+</style>
+</head>
+<body class="tt">
+<header class="wrap">
+    <a href="../index.html">← Vsa orodja</a>
+    <div class="hero">
+        <div><span class="badge">SIDEBIT · FIZIKA</span><h1>Temperatura in toplota</h1>
+        <p class="lead">Segrej plin, potisni bat ali primerjaj molekule helija in dušika. Z grafi in poskusi poveži gibanje delcev s tlakom, raztezanjem, toploto in delom.</p></div>
+        <svg class="hero-art" viewBox="0 0 330 145" role="img" aria-label="Bat s plinom in krivulji porazdelitve hitrosti">
+            <rect x="33" y="32" width="102" height="91" rx="9" fill="#fff" stroke="#22253a" stroke-width="3"/>
+            <path d="M35 57h98v57q0 7-7 7H42q-7 0-7-7Z" fill="#ffe38b"/>
+            <path d="M38 58h92M84 58V21m-22 0h44" stroke="#22253a" stroke-width="5" stroke-linecap="round"/>
+            <g fill="#5634aa"><circle cx="56" cy="79" r="4"/><circle cx="83" cy="99" r="4"/><circle cx="112" cy="84" r="4"/><circle cx="113" cy="106" r="4"/><circle cx="58" cy="109" r="4"/></g>
+            <path d="M164 119h145M166 119V24" stroke="#78859a" stroke-width="2"/>
+            <path d="M168 119c19-1 21-76 46-76s20 75 89 76" fill="none" stroke="#5634aa" stroke-width="4"/>
+            <path d="M168 119c29-1 45-51 67-51s28 43 68 48" fill="none" stroke="#00806a" stroke-width="4" stroke-dasharray="7 5"/>
+        </svg>
+    </div>
+    <nav aria-label="Poglavja">
+        <button type="button" data-tab="lab" aria-pressed="true">Laboratorij</button>
+        <button type="button" data-tab="challenge" aria-pressed="false">Učni izzivi</button>
+        <button type="button" data-tab="practice" aria-pressed="false">Generator nalog</button>
+        <button type="button" data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+    </nav>
+</header>
+<main class="wrap">
+<section id="lab">
+    <div class="card lav">
+        <span class="chip">Devet interaktivnih poskusov</span><h2>Izberi poskus</h2>
+        <div id="lab-buttons" class="row topic-buttons"></div>
+    </div>
+    <div class="grid lab-grid">
+        <div class="card">
+            <span class="chip">01 · Nastavi</span><h2 id="lab-title"></h2>
+            <p id="lab-intro"></p><div id="controls"></div>
+            <div class="row small-gap"><button type="button" id="restore">Ponastavi poskus</button></div>
+        </div>
+        <div class="card">
+            <span class="chip">02 · Opazuj</span><h2 id="plot-title"></h2>
+            <svg id="plot" class="lab-visual" viewBox="0 0 550 285" role="img" aria-label="Vizualni prikaz poskusa"></svg>
+            <p id="plot-note" class="fine plot-note"></p>
+            <div id="values" class="readouts mono"></div><p id="conclusion" class="focus-box"></p>
+        </div>
+    </div>
+</section>
+<section id="challenge" hidden>
+    <div class="card lav">
+        <span class="chip">Najprej napovej</span><h2>Učni izzivi</h2>
+        <label for="mission">Izberi izziv</label><select id="mission"></select>
+        <div id="mission-body" class="small-gap"></div>
+        <p id="mission-feedback" class="feedback" role="status"></p>
+        <button type="button" id="mission-open">Odpri poskus</button>
+    </div>
+</section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden>
+    <div class="card">
+        <h2>Od temperature do prvega zakona termodinamike</h2>
+        <p>V računih vedno preveri, kaj ostaja stalno. Enačba stanja pove, katere kombinacije tlaka, prostornine in temperature so mogoče; toplota in delo pa sta odvisna tudi od poti med stanjema.</p>
+        <div class="two theory-grid">
+            <article class="note"><h3>1 · Temperatura in toplotno ravnovesje</h3>
+                <p class="formula">T [K] = t [°C] + 273,15 &nbsp; · &nbsp; ΔT [K] = Δt [°C]</p>
+                <p>V toplotnem ravnovesju imata telesi isto temperaturo in med njima ni neto prenosa toplote. Temperatura je lastnost stanja. Dve telesi imata lahko isto temperaturo in različni notranji energiji.</p>
+                <p>Pri klasičnem idealnem plinu je povprečna translacijska kinetična energija ene molekule 3k<sub>B</sub>T/2. Pri isti T ima lažja molekula v povprečju večjo hitrost, čeprav je njena povprečna translacijska energija enaka.</p>
+            </article>
+            <article class="note lav"><h3>2 · Tlak in enote</h3>
+                <p class="formula">p = F⊥/A &nbsp; · &nbsp; p<sub>abs</sub> = p<sub>okolice</sub> + p<sub>man</sub></p>
+                <p>Pri enakomerni obremenitvi je tlak pravokotna sila na enoto ploščine. Molekule plina ob trkih s stenami prenašajo gibalno količino in tako povzročajo tlak. V mirujoči kapljevini s približno stalno gostoto velja p = p₀ + ρgh, kjer je h globina pod gladino.</p>
+                <p>1 Pa = 1 N/m²; 1 bar = 100 kPa; 1 atm = 101,325 kPa. Manometrski tlak meri razliko glede na okolico. Za plinsko enačbo uporabi absolutni tlak.</p>
+            </article>
+            <article class="note lav"><h3>3 · Temperaturno raztezanje snovi</h3>
+                <p class="formula">ΔL ≈ αL₀ΔT &nbsp; · &nbsp; ΔV ≈ βV₀ΔT</p>
+                <p>Pri majhnih temperaturnih spremembah lahko razteznostni koeficient vzamemo za konstantnega. Pri izotropni trdnini velja β ≈ 3α. Kapljevine nimajo lastne stalne oblike, zato zanje uporabljamo predvsem prostorninsko razteznost β. Če se razteza tudi posoda, opazujemo razliko med raztezkom kapljevine in posode.</p>
+                <p>Pri vodi je gostota največja blizu 4 °C pri običajnem tlaku. Med segrevanjem od 0 °C do približno 4 °C se prostornina določene mase vode zmanjšuje, zato ta primer zahteva več kot model stalnega pozitivnega β.</p>
+            </article>
+            <article class="note"><h3>4 · Idealni plin</h3>
+                <p class="formula">pV = nRT = Nk<sub>B</sub>T</p>
+                <p>n je količina snovi v molih, N pa število molekul. R ≈ 8,314 J/(mol·K). Pri isti količini plina sta pri stalni T tlak in prostornina obratno sorazmerna, pri stalnem p pa sta V in T premo sorazmerna. Pri stalnem V je p sorazmeren s T.</p>
+                <p>V modelu zanemarimo velikost delcev in medmolekulske sile zunaj trkov. Približek je navadno boljši pri nizkem tlaku in dovolj visoki temperaturi, stran od kondenzacije.</p>
+            </article>
+            <article class="note"><h3>5 · Mešanica idealnih plinov</h3>
+                <p class="formula">p = Σpᵢ &nbsp; · &nbsp; pᵢ = nᵢRT/V = xᵢp &nbsp; · &nbsp; xᵢ = nᵢ/n<sub>skupaj</sub></p>
+                <p>Vsaka sestavina pri isti T prispeva tlak, ki bi ga sama imela v celotni prostornini. Daltonov zakon pravi, da je skupni tlak vsota parcialnih tlakov. Molski delež ni enak masnemu deležu; če so podane mase, najprej izračunaj nᵢ = mᵢ/Mᵢ.</p>
+            </article>
+            <article class="note lav"><h3>6 · Idealni plin v težnem polju</h3>
+                <p class="formula">dp/dz = −ρg &nbsp; · &nbsp; ρ = Mp/(RT) &nbsp; · &nbsp; p(z) = p₀ exp(−z/H) &nbsp; · &nbsp; H = RT/(Mg)</p>
+                <p>V hidrostatskem ravnovesju tlak z višino pada, ker mora spodnja plast podpirati težo nad njo. Ko vstavimo gostoto idealnega plina v hidrostatsko enačbo in vzamemo stalne T, M in g, dobimo eksponentni padec tlaka. Pri višini H tlak pade na p₀/e, torej približno 37 % začetnega tlaka.</p>
+                <p>Za M uporabi kg/mol. Toplejši ali lažji plin ima večjo višinsko skalo. Pravo ozračje ni izotermno; graf je približek za primer s konstantno temperaturo in sestavo.</p>
+            </article>
+            <article class="note lav"><h3>7 · Maxwellova porazdelitev hitrosti</h3>
+                <p class="formula">f(v) = 4π (M/(2πRT))<sup>3/2</sup> v² exp(−Mv²/(2RT)), v ≥ 0</p>
+                <p>Krivulja je gostota verjetnosti velikosti hitrosti v tridimenzionalnem klasičnem idealnem plinu v toplotnem ravnovesju. Delež molekul v intervalu je ploščina pod krivuljo na tem intervalu; celotna ploščina je 1.</p>
+                <p class="formula">v<sub>naj</sub> = √(2RT/M) &nbsp; · &nbsp; ⟨v⟩ = √(8RT/(πM)) &nbsp; · &nbsp; v<sub>rms</sub> = √(3RT/M)</p>
+                <p>Najverjetnejša hitrost je pri vrhu krivulje. Povprečna hitrost je nekoliko večja, kvadratna sredina hitrosti pa še večja. Višja temperatura ali manjša molska masa pomakne porazdelitev k večjim hitrostim in jo razširi.</p>
+            </article>
+            <article class="note"><h3>8 · Delo, toplota in notranja energija</h3>
+                <p class="formula">ΔU = Q − W &nbsp; · &nbsp; W = ∫ p dV</p>
+                <p>Tu je Q pozitiven, ko toplota vstopa v sistem, W pa pozitiven, ko plin opravlja delo na okolici. Toplota je prenos energije zaradi temperaturne razlike, delo pa drug način prenosa energije. U je lastnost stanja; Q in W sta odvisna od procesa.</p>
+                <p>Pri kvazistatičnem procesu je delo plina predznačena ploščina pod potjo na diagramu p–V. Pri stalnem tlaku W = pΔV, pri stalni prostornini W = 0, pri izotermnem idealnem plinu pa W = nRT ln(V₂/V₁). Pri adiabatnem procesu je Q = 0, vendar se temperatura lahko spremeni.</p>
+            </article>
+            <article class="note"><h3>9 · Specifična toplota trdnin in kapljevin</h3>
+                <p class="formula">Q ≈ mcΔT &nbsp; · &nbsp; C<sub>telesa</sub> = mc</p>
+                <p>Specifična toplota c je energija na kilogram in kelvin, toplotna kapaciteta C<sub>telesa</sub> pa energija na kelvin za celo telo. Formula z eno vrednostjo c velja, če ni faznega prehoda in se c v temperaturnem območju malo spreminja. Pri faznem prehodu računamo prispevek Q = mL posebej.</p>
+                <table class="unit-table"><caption>Približne vrednosti blizu sobne temperature</caption><thead><tr><th scope="col">Snov</th><th scope="col">c v J/(kg·K)</th></tr></thead><tbody><tr><td>Voda</td><td>4180</td></tr><tr><td>Aluminij</td><td>900</td></tr><tr><td>Baker</td><td>385</td></tr></tbody></table>
+            </article>
+            <article class="note lav"><h3>10 · Specifična in molska toplota plina</h3>
+                <p class="formula">Q<sub>V</sub> = nC<sub>V</sub>ΔT &nbsp; · &nbsp; Q<sub>p</sub> = nC<sub>p</sub>ΔT &nbsp; · &nbsp; C<sub>p</sub> − C<sub>V</sub> = R</p>
+                <p>Pri stalni prostornini plin ne opravlja prostorninskega dela. Pri stalnem tlaku se med segrevanjem razširi in del dovedene energije odda okolici kot delo. Za isti ΔT je zato pri stalnem tlaku treba dovesti več toplote.</p>
+                <p>Za enoatomni idealni plin sta C<sub>V</sub> = 3R/2 in C<sub>p</sub> = 5R/2. Za običajen dvoatomni plin blizu sobne temperature je približno C<sub>V</sub> = 5R/2 in C<sub>p</sub> = 7R/2, ker v modelu sodelujeta tudi dve rotacijski prostostni stopnji, vibracije pa večinoma še ne. Masni vrednosti sta c<sub>V</sub> = C<sub>V</sub>/M in c<sub>p</sub> = C<sub>p</sub>/M.</p>
+            </article>
+        </div>
+        <details><summary>Rešen primer: tlak pri segrevanju zaprte posode</summary><p>Plin pri 300 K ima absolutni tlak 100 kPa. Če ga pri stalnem V in n segrejemo na 450 K, je novi tlak 100 · 450/300 = 150 kPa. Pri računu uporabimo kelvine, ker primerjamo razmerje temperatur.</p></details>
+        <details><summary>Rešen primer: mešanica plinov</summary><p>V posodi sta 1 mol helija in 3 mol dušika. Če je skupni tlak 200 kPa, je p(He) = ¼ · 200 = 50 kPa in p(N₂) = ¾ · 200 = 150 kPa.</p></details>
+        <details><summary>Rešen primer: toplota in delo pri stalnem tlaku</summary><p>En mol enoatomnega idealnega plina segrejemo za 50 K pri stalnem tlaku. Plin opravi W = nRΔT ≈ 416 J dela. Notranja energija se poveča za ΔU = n(3R/2)ΔT ≈ 624 J. Dovesti moramo Q = ΔU + W ≈ 1040 J.</p></details>
+        <details><summary>Rešen primer: koliko toplote potrebuje voda?</summary><p>Za segrevanje 0,5 kg vode z 20 °C na 40 °C je pri c ≈ 4180 J/(kg·K) potrebnih Q ≈ 0,5 · 4180 · 20 = 41 800 J oziroma 41,8 kJ. Račun predpostavlja zanemarljive toplotne izgube.</p></details>
+        <p class="fine small-gap">Za nadaljnje branje: <a href="https://openstax.org/books/university-physics-volume-2/pages/2-summary">OpenStax: kinetična teorija plinov</a>, <a href="https://openstax.org/books/university-physics-volume-2/pages/3-key-equations">OpenStax: termodinamika</a> in <a href="https://www.grc.nasa.gov/WWW/K-12/Numbers/Math/Mathematical_Thinking_ppc/ideal_gases_under_constant.htm">NASA Glenn: izotermno ozračje</a>.</p>
+    </div>
+</section>
+</main>
+<footer class="wrap"><p>Sidebit · Fizika · Temperatura in toplota</p></footer>
+<div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const R=8.314462618, G=9.81, KB=1.380649e-23;
+const formatter=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:4,useGrouping:false});
+const fmt=n=>formatter.format(Math.abs(n)<1e-10?0:n);
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const gases={he:{name:"Helij",mass:.004,cv:1.5*R},n2:{name:"Dušik",mass:.028,cv:2.5*R},air:{name:"Zrak (približek)",mass:.02897,cv:2.5*R},ar:{name:"Argon",mass:.03995,cv:1.5*R}};
+const solids={al:{name:"Aluminij",alpha:23e-6,c:900},cu:{name:"Baker",alpha:17e-6,c:385},steel:{name:"Jeklo",alpha:12e-6,c:470}};
+const liquids={water:{name:"Voda",c:4180},oil:{name:"Jedilno olje (približek)",beta:700e-6,c:2000},glycerol:{name:"Glicerol (približek)",beta:490e-6,c:2400}};
+const gasPressure=(n,T,litres)=>n*R*T/litres; // kPa; 1 kPa·L = 1 J
+const scaleHeight=(T,M)=>R*T/(M*G)/1000;
+const maxwell=(v,T,M)=>4*Math.PI*(M/(2*Math.PI*R*T))**1.5*v*v*Math.exp(-M*v*v/(2*R*T));
+const speeds=(T,M)=>[Math.sqrt(2*R*T/M),Math.sqrt(8*R*T/(Math.PI*M)),Math.sqrt(3*R*T/M)];
+function process(kind,n,T,V,ratio,delta,g){
+    const p1=gasPressure(n,T,V), cv=g.cv, gamma=(cv+R)/cv;
+    let V2=V*ratio,T2=T,W=0,path,description;
+    if(kind==="volume"){
+        V2=V;T2=T+delta;path=null;description="Pri stalni prostornini je W = 0.";
+    }else if(kind==="pressure"){
+        T2=T*ratio;W=p1*(V2-V);path=()=>p1;description="Pri stalnem tlaku velja W = pΔV.";
+    }else if(kind==="adiabatic"){
+        T2=T*ratio**(1-gamma);W=n*cv*(T-T2);path=x=>p1*(V/x)**gamma;description="Pri reverzibilni adiabatni spremembi velja pVᵞ = konstanta in Q = 0.";
+    }else{
+        W=n*R*T*Math.log(ratio);path=x=>p1*V/x;description="Pri stalni temperaturi je ΔU = 0.";
+    }
+    const dU=n*cv*(T2-T);
+    return {p1,p2:gasPressure(n,T2,V2),V2,T2,W,dU,Q:kind==="adiabatic"?0:dU+W,path,description};
+}
+
+const C="#5634aa", B="#00806a", Y="#ffe38b", INK="#22253a";
+const line=(x,y,X,Y,color=INK,width=2,dash="")=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${color}" stroke-width="${width}" ${dash?'stroke-dasharray="'+dash+'"':""}/>`;
+const text=(x,y,s,anchor="middle")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="#364058" font-size="14" font-weight="650">${s}</text>`;
+const disk=(x,y,r=5,fill=Y)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${INK}" stroke-width="2"/>`;
+const rect=(x,y,w,h,fill,stroke=INK)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const series=(a,b,fn)=>Array.from({length:121},(_,i)=>{const x=a+(b-a)*i/120;return [x,fn(x)];});
+const axisFormat=new Intl.NumberFormat("sl-SI",{maximumSignificantDigits:4,useGrouping:false});
+const number=x=>axisFormat.format(x);
+function chart({xmin=0,xmax,ymin=0,ymax,xLabel,yLabel,curves,dots=[],shade=null,markers=[]}){
+    const left=72,right=521,top=35,bottom=222;
+    const X=x=>left+(right-left)*(x-xmin)/(xmax-xmin), Z=y=>bottom-(bottom-top)*(y-ymin)/(ymax-ymin);
+    const path=points=>points.map(([x,y],i)=>(i?"L":"M")+X(x)+" "+Z(y)).join(" ");
+    let svg=text(left,22,yLabel,"start")+text(right,275,xLabel,"end");
+    for(let i=0;i<=4;i++){
+        const x=xmin+(xmax-xmin)*i/4,y=ymin+(ymax-ymin)*i/4;
+        svg+=line(X(x),top,X(x),bottom,"#dce3ef",1)+line(left,Z(y),right,Z(y),"#dce3ef",1);
+        svg+=text(X(x),246,number(x))+text(left-9,Z(y)+5,number(y),"end");
+    }
+    if(shade?.length){
+        const [start]=shade,[end]=shade.slice(-1);
+        svg+=`<path d="${path(shade)} L${X(end[0])} ${Z(0)} L${X(start[0])} ${Z(0)} Z" fill="#ffe38b" opacity=".65"/>`;
+    }
+    svg+=line(left,top,left,bottom)+line(left,bottom,right,bottom);
+    for(const x of markers)svg+=line(X(x),top,X(x),bottom,"#a76b0d",1.5,"5 4");
+    for(const {points,color=C,dash=false} of curves)svg+=`<path d="${path(points)}" stroke="${color}" stroke-width="3.5" fill="none" ${dash?'stroke-dasharray="8 5"':""}/>`;
+    for(const [x,y] of dots)svg+=disk(X(x),Z(y));
+    return svg;
+}
+function bars(data,unit){
+    const max=Math.max(1,...data.map(([,v])=>v));
+    return data.map(([label,value,color],i)=>{
+        const y=41+i*73;
+        return text(45,y,label+" · "+fmt(value)+" "+unit,"start")+rect(45,y+12,460,18,"#e9edf4","#dce3ef")+
+            (value>0 ? rect(45,y+12,460*value/max,18,color) : "");
+    }).join("");
+}
+const metric=(name,v,unit)=>[name,fmt(v)+(unit?" "+unit:"")];
+const slider=(id,label,min,max,step,value,unit="")=>({id,label,min,max,step,value,unit});
+const select=(id,label,value,options)=>({id,label,value,options});
+const entries=o=>Object.entries(o).map(([id,v])=>[id,v.name]);
+const temps=(value=300)=>slider("T","Temperatura",200,800,5,value,"K");
+const volumes=(value=25)=>slider("V","Prostornina",5,80,1,value,"L");
+const moles=(value=1)=>slider("n","Količina plina",.1,4,.1,value,"mol");
+const gas=(id="gas",label="Plin",value="n2")=>select(id,label,value,entries(gases));
+function waterPressure(depth,rho,p0){return p0+rho*G*depth/1000;}
+const lab={
+    temperature:{
+        name:"Temperatura",intro:"Primerjaj Celzijevo in Kelvinovo lestvico. Pri klasičnem idealnem plinu temperatura določa povprečno translacijsko kinetično energijo delcev.",
+        fields:[slider("c","Temperatura",-200,300,1,20,"°C")],title:"Dve temperaturni lestvici",
+        show({c}){
+            const T=c+273.15,x=54+(c+273.15)/(300+273.15)*440;
+            let svg=text(54,35,"°C","start")+text(54,224,"K","start")+line(54,100,494,100)+line(54,170,494,170)+line(x,75,x,195,C,3,"6 4")+disk(x,100)+disk(x,170);
+            for(const q of [-273.15,-150,0,150,300]){
+                const X=54+(q+273.15)/(300+273.15)*440;
+                svg+=line(X,96,X,105)+line(X,165,X,175)+text(X,66,fmt(q))+text(X,210,fmt(q+273.15));
+            }
+            return {svg,note:"Lestvici imata enako velik korak in različno ničlo.",values:[metric("Celzijeva lestvica",c,"°C"),metric("Absolutna temperatura",T,"K"),metric("Povprečna translacijska energija",1.5*KB*T*1e21,"zJ")],conclusion:"1 zJ = 10⁻²¹ J. Pri računu razmerja temperatur uporabi kelvine."};
+        }
+    },
+    pressure:{
+        name:"Tlak",intro:"Potopi merilnik v mirujočo kapljevino. Spremeni globino, gostoto ali tlak na gladini.",
+        fields:[slider("h","Globina",0,30,.5,8,"m"),slider("rho","Gostota",600,1300,10,1000,"kg/m³"),slider("p0","Tlak na gladini",70,120,1,101,"kPa")],title:"Tlak pod gladino",
+        show({h,rho,p0}){
+            const p=waterPressure(h,rho,p0),d=150*h/30;
+            const svg=rect(126,40,298,202,"#d8ecff")+line(127,61,423,61,B,3)+line(275,61,275,61+d,C,2,"5 4")+disk(275,61+d,10)+text(275,29,"Gladina · "+fmt(p0)+" kPa")+text(275,270,"Merilnik · "+fmt(p)+" kPa");
+            return {svg,note:"Globina je merjena navzdol od gladine. Model ima stalno gostoto.",values:[metric("Tlak zaradi kapljevine",p-p0,"kPa"),metric("Absolutni tlak",p,"kPa"),metric("Globina",h,"m")],conclusion:"Če tlak na gladini ustreza tlaku okolice, je ρgh manometrski tlak."};
+        }
+    },
+    expansion:{
+        name:"Temperaturno raztezanje",intro:"Segrej ali ohladi palico in kapljevino. Primerjaj spremembo dolžine z volumskim raztezanjem.",
+        fields:[select("solid","Palica","al",entries(solids)),select("liquid","Kapljevina","oil",entries(liquids).filter(([id])=>id!=="water")),slider("dT","Sprememba temperature",-30,50,1,25,"K"),slider("L","Začetna dolžina palice",.5,8,.5,2,"m"),slider("V","Začetna prostornina kapljevine",.5,8,.5,2,"L")],title:"Pred spremembo in po njej",
+        show({solid,liquid,dT,L,V}){
+            const a=solids[solid].alpha,b=liquids[liquid].beta,dL=a*L*dT*1000,dV=b*V*dT*1000;
+            const svg=text(50,37,"Palica","start")+rect(50,53,300+dL*7,29,Y)+line(350,46,350,89,C,2,"5 4")+
+                text(50,134,"Kapljevina v togi posodi","start")+rect(50,150,440,69,"#edf0f6")+
+                rect(51,151,299+dV*.43,67,"#c5f0e2",B)+line(350,145,350,223,C,2,"5 4")+text(50,254,"Črtkano: začetna meja","start");
+            return {svg,note:"Spremembe so grafično povečane. Koeficienti so približni in v poskusu stalni.",values:[metric("Sprememba dolžine",dL,"mm"),metric("Sprememba prostornine",dV,"mL"),metric("α palice",a*1e6,"µm/(m·K)"),metric("β kapljevine",b*1e6,"µL/(L·K)")],conclusion:dT<0?"Pri ohlajanju se v teh modelih dolžina in prostornina zmanjšata.":"Pozitiven α oziroma β pomeni raztezanje ob segrevanju. Voda blizu 4 °C je posebnost."};
+        }
+    },
+    ideal:{
+        name:"Idealni plin",intro:"Nastavi prostornino, temperaturo in količino. Pika kaže izbrano stanje na izotermi.",
+        fields:[temps(),volumes(),moles()],title:"Izoterma na diagramu p–V",
+        show({T,V,n}){
+            const p=gasPressure(n,T,V), f=x=>gasPressure(n,T,x), base=x=>gasPressure(n,300,x);
+            return {svg:chart({xmin:5,xmax:85,ymax:Math.max(f(5),base(5))*1.08,xLabel:"V (L)",yLabel:"p (kPa)",curves:[{points:series(5,85,base),color:B,dash:true},{points:series(5,85,f)}],dots:[[V,p]]}),note:"Vijolična: izbrana temperatura. Črtkana: primerjava pri 300 K in isti količini plina.",values:[metric("Absolutni tlak",p,"kPa"),metric("Prostornina",V,"L"),metric("pV",p*V,"J")],conclusion:"Pri stalni temperaturi se pV ne spremeni, če se količina plina ohrani."};
+        }
+    },
+    mixture:{
+        name:"Mešanica plinov",intro:"Dodajaj helij in dušik pri isti temperaturi in prostornini. Opazuj, kako vsak prispeva k skupnemu tlaku.",
+        fields:[temps(),volumes(),slider("he","Količina helija",0,4,.1,1,"mol"),slider("n2","Količina dušika",0,4,.1,3,"mol")],title:"Daltonov zakon v posodi",
+        show({T,V,he,n2}){
+            const a=gasPressure(he,T,V),b=gasPressure(n2,T,V),total=he+n2;
+            return {svg:bars([["Parcialni tlak helija",a,Y],["Parcialni tlak dušika",b,"#c5f0e2"],["Skupni tlak",a+b,"#e8ddff"]],"kPa"),note:"Obe sestavini zasedata vso prostornino. Seštevamo parcialne tlake.",values:[metric("Skupni tlak",a+b,"kPa"),metric("Skupna količina",total,"mol"),total?metric("Molski delež helija",100*he/total,"%"):["Molski delež","—"]],conclusion:total?"Razmerje parcialnega in skupnega tlaka je molski delež sestavine.":"Brez plina je tlak v idealnem modelu nič, molski delež pa ni definiran."};
+        }
+    },
+    gravity:{
+        name:"Plin v težnem polju",intro:"Dvigni merilnik v izotermnem plinu. Primerjaj vpliv temperature in molske mase.",
+        fields:[gas("gas","Sestava plina","air"),temps(285),slider("z","Višina",0,30,.5,8,"km"),slider("p0","Tlak pri z = 0",70,120,1,101,"kPa")],title:"Barometrična krivulja",
+        show({gas,T,z,p0}){
+            const H=scaleHeight(T,gases[gas].mass), f=x=>p0*Math.exp(-x/H);
+            return {svg:chart({xmax:30,ymax:p0*1.1,xLabel:"z (km)",yLabel:"p (kPa)",curves:[{points:series(0,30,f)}],dots:[[z,f(z)]],markers:H<=30?[H]:[]}),note:"Konstantni T, g in sestava. Če je H v dosegu grafa, jo označi črtkana črta.",values:[metric("Tlak na izbrani višini",f(z),"kPa"),metric("Višinska skala H",H,"km"),metric("Delež začetnega tlaka",100*f(z)/p0,"%")],conclusion:"Toplejši plin ali plin z manjšo molsko maso ima večjo H: tlak z višino pada počasneje."};
+        }
+    },
+    maxwell:{
+        name:"Maxwellova porazdelitev",intro:"Primerjaj dve porazdelitvi in z rumenim območjem označi interval od 0 do izbrane hitrosti za prvi plin.",
+        fields:[gas("gas","Prva krivulja · vijolična","n2"),temps(),gas("other","Druga krivulja · črtkana","he"),slider("T2","Temperatura drugega plina",200,800,5,300,"K"),slider("limit","Meja osenčenega intervala",0,5500,25,700,"m/s")],title:"Kako hitre so molekule?",
+        show({gas,T,other,T2,limit}){
+            const M=gases[gas].mass,M2=gases[other].mass, a=speeds(T,M),b=speeds(T2,M2), f=x=>maxwell(x,T,M), g=x=>maxwell(x,T2,M2);
+            const maxX=Math.ceil(Math.max(2.9*a[0],2.9*b[0],limit)/500)*500;
+            const shade=series(0,limit,f),dx=limit/120;
+            // Fino neodvisno integriranje, tudi če je osenčeni interval zelo širok.
+            let fraction=0;
+            const steps=800;
+            for(let i=0;i<steps;i++)fraction+=f((i+.5)*limit/steps)*limit/steps;
+            return {svg:chart({xmax:maxX,ymax:Math.max(f(a[0]),g(b[0]))*1.13,xLabel:"v (m/s)",yLabel:"Gostota verjetnosti f(v)",curves:[{points:series(0,maxX,f)},{points:series(0,maxX,g),color:B,dash:true}],shade:dx?shade:null,dots:[[a[0],f(a[0])],[b[0],g(b[0])]]}),note:"Osenčeni delež velja za prvo krivuljo. Obe porazdelitvi imata ploščino 1 na celotnem intervalu do neskončnosti.",values:[metric("Prvi plin · najverjetnejša",a[0],"m/s"),metric("Prvi plin · povprečna",a[1],"m/s"),metric("Prvi plin · RMS",a[2],"m/s"),metric("Prvi plin · delež do meje",100*Math.min(1,fraction),"%")],conclusion:"Rumeni piki označujeta vrhova. Porazdelitev z vrhom bolj desno ima večjo najverjetnejšo hitrost."};
+        }
+    },
+    work:{
+        name:"Delo in toplota",intro:"Primerjaj procese z istim začetnim stanjem. Končno stanje je odvisno od nastavitev procesa. Pri raztezanju je delo plina pozitivno, pri stiskanju negativno.",
+        fields:[select("kind","Proces","isothermal",[["isothermal","Izotermni · stalna temperatura"],["pressure","Izobarni · stalni tlak"],["volume","Izohorni · stalna prostornina"],["adiabatic","Reverzibilni adiabatni · brez toplote"]]),gas(),temps(),volumes(),moles(),{...slider("ratio","Razmerje V₂/V₁",.5,2.5,.05,1.6),hide:s=>s.kind==="volume"},{...slider("delta","Sprememba temperature",-80,150,5,60,"K"),hide:s=>s.kind!=="volume"}],title:"Pot na diagramu p–V",
+        show({kind,n,T,V,ratio,delta,gas}){
+            const r=process(kind,n,T,V,ratio,delta,gases[gas]);
+            const points=r.path?series(V,r.V2,r.path):[[V,r.p1],[V,r.p2]];
+            return {svg:chart({xmin:0,xmax:Math.max(V,r.V2)*1.24,ymax:Math.max(r.p1,r.p2)*1.18,xLabel:"V (L)",yLabel:"p (kPa)",curves:[{points}],dots:[[V,r.p1],[r.V2,r.p2]],shade:r.path?points:null}),
+                note:"Rumeno območje je velikost dela. Predznak določa smer: "+(r.V2>V?"prostornina raste.":r.V2<V?"prostornina pada.":"prostornina se ne spremeni."),
+                values:[metric("Delo plina W",r.W,"J"),metric("Toplota v plin Q",r.Q,"J"),metric("Sprememba energije ΔU",r.dU,"J"),metric("Končna temperatura T₂",r.T2,"K")],conclusion:r.description+" Velja ΔU = Q − W."};
+        }
+    },
+    heat:{
+        name:"Specifična toplota",intro:"Primerjaj segrevanje enakih mas. Pri plinu lahko primerjaš stalni tlak in stalno prostornino.",
+        fields:[select("substance","Izbrana snov","al",[...entries(solids),...entries(liquids),...entries(gases)]),slider("m","Masa vsakega vzorca",.1,3,.1,.5,"kg"),slider("delta","Zvišanje temperature",0,50,1,20,"K")],title:"Koliko toplote potrebuje ista masa?",
+        show({substance,m,delta}){
+            const g=gases[substance], condensed=solids[substance]||liquids[substance], water=m*liquids.water.c*delta;
+            const cV=g?g.cv/g.mass:0,cP=g?(g.cv+R)/g.mass:0;
+            const data=g?[["Plin pri stalni prostornini",m*cV*delta/1000,Y],["Plin pri stalnem tlaku",m*cP*delta/1000,"#e8ddff"],["Voda za primerjavo",water/1000,"#c5f0e2"]]:[[condensed.name,m*condensed.c*delta/1000,Y],["Voda za primerjavo",water/1000,"#c5f0e2"]];
+            return {svg:bars(data,"kJ"),note:"Model uporablja približno stalne vrednosti blizu sobne temperature in zanemari fazne prehode.",values:g?[metric("Masna cᵥ",cV,"J/(kg·K)"),metric("Masna cₚ",cP,"J/(kg·K)"),metric("Molska Cᵥ",g.cv,"J/(mol·K)"),metric("Molska Cₚ",g.cv+R,"J/(mol·K)")]:[metric("Specifična toplota c",condensed.c,"J/(kg·K)"),metric("Toplotna kapaciteta mc",m*condensed.c,"J/K"),metric("Dovedena toplota",m*condensed.c*delta/1000,"kJ")],conclusion:g?"Razlika med dovedenima toplotama pri istem ΔT je delo pri stalnem tlaku: W = (m/M)RΔT.":"Pri enaki masi in istem ΔT večja specifična toplota pomeni več potrebne energije."};
+        }
+    }
+};
+const settings=Object.fromEntries(Object.entries(lab).map(([key,s])=>[key,Object.fromEntries(s.fields.map(f=>[f.id,f.value]))]));
+const labButtons={};
+let active="temperature";
+function renderLab(){
+    const l=lab[active], s=settings[active], r=l.show(s);
+    for(const f of l.fields){
+        if(f.hide)$("field-"+f.id).hidden=f.hide(s);
+        if(!f.options)$("out-"+f.id).textContent=fmt(s[f.id])+(f.unit?" "+f.unit:"");
+    }
+    $("plot-title").textContent=l.title;
+    $("plot").setAttribute("aria-label",l.title);
+    $("plot").innerHTML=r.svg;
+    $("plot-note").textContent=r.note;
+    $("conclusion").textContent=r.conclusion;
+    $("values").innerHTML=r.values.map(([name,value])=>`<div class="metric">${name}<strong>${value}</strong></div>`).join("");
+}
+function fillSelect(el,options){
+    el.replaceChildren(...options.map(([id,name])=>{const o=document.createElement("option");o.value=id;o.textContent=name;return o;}));
+}
+function selectLab(key,focus=false){
+    active=key;
+    for(const [id,button] of Object.entries(labButtons))button.setAttribute("aria-pressed",String(id===key));
+    const l=lab[key],s=settings[key],controls=$("controls");
+    $("lab-title").textContent=l.name;
+    $("lab-intro").textContent=l.intro;
+    controls.replaceChildren();
+    for(const f of l.fields){
+        const row=document.createElement("div"), label=document.createElement("label");
+        const input=document.createElement(f.options?"select":"input");
+        row.id="field-"+f.id;input.id="control-"+f.id;label.htmlFor=input.id;label.textContent=f.label;
+        if(f.options)fillSelect(input,f.options);
+        else{
+            input.type="range";input.min=f.min;input.max=f.max;input.step=f.step;
+            const out=document.createElement("output");out.id="out-"+f.id;label.append(": ",out);
+        }
+        input.value=s[f.id];
+        input.oninput=()=>{s[f.id]=f.options?input.value:Number(input.value);renderLab();};
+        row.append(label,input);controls.append(row);
+    }
+    renderLab();
+    if(focus)$("control-"+l.fields[0].id).focus();
+}
+for(const [key,item] of Object.entries(lab)){
+    const button=document.createElement("button");button.type="button";button.textContent=item.name;
+    button.onclick=()=>selectLab(key,true);
+    $("lab-buttons").append(button);labButtons[key]=button;
+}
+$("restore").onclick=()=>{
+    Object.assign(settings[active],Object.fromEntries(lab[active].fields.map(f=>[f.id,f.value])));
+    selectLab(active,true);
+};
+function tab(id){
+    for(const section of document.querySelectorAll("main > section"))section.hidden=section.id!==id;
+    for(const button of document.querySelectorAll("[data-tab]"))button.setAttribute("aria-pressed",String(button.dataset.tab===id));
+}
+for(const button of document.querySelectorAll("[data-tab]"))button.onclick=()=>tab(button.dataset.tab);
+const missions=[
+    {name:"Od Celzija do kelvinov",key:"temperature",start:{c:20},q:"Temperatura se zviša z 20 °C na 40 °C. Ali se absolutna temperatura podvoji?",a:["Da","Ne, zraste za 20 K"],i:1,why:"293,15 K naraste na 313,15 K. Razlike so enake, razmerja niso."},
+    {name:"Večja globina",key:"pressure",start:{h:5,rho:1000,p0:101},q:"Globino pod gladino podvojimo. Katera količina se podvoji?",a:["Celotni absolutni tlak","Tlačni prispevek ρgh"],i:1,why:"Tlak na gladini se ne spremeni. Podvoji se le prispevek kapljevine."},
+    {name:"Dolžina in raztezek",key:"expansion",start:{solid:"al",L:2,dT:25},q:"Dolžino aluminijaste palice podvojimo. Kako se pri istem ΔT spremeni raztezek ΔL?",a:["Se podvoji","Ostane enak","Se prepolovi"],i:0,why:"Raztezek ΔL = αL₀ΔT je sorazmeren z začetno dolžino."},
+    {name:"Izotermno stiskanje",key:"ideal",start:{n:1,T:300,V:40},q:"Prostornino idealnega plina pri stalni temperaturi prepolovimo. Kaj se zgodi z absolutnim tlakom?",a:["Se prepolovi","Se podvoji","Ostane enak"],i:1,why:"Če sta n in T stalni, je produkt pV stalen."},
+    {name:"Skupni tlak",key:"mixture",start:{he:1,n2:3,T:300,V:25},q:"V posodi je 1 mol He in 3 mol N₂. Kolikšen del skupnega tlaka prispeva helij?",a:["1/3","1/4","3/4"],i:1,why:"Od štirih molov plina je en mol helija. Parcialni tlak je četrtina skupnega."},
+    {name:"Težji plin v ozračju",key:"gravity",start:{gas:"he",T:300,z:8},q:"Helij zamenjamo z argonom pri enaki temperaturi. Kaj se zgodi z višinsko skalo H?",a:["Zmanjša se","Poveča se","Ostane enaka"],i:0,why:"Argon ima večjo molsko maso, H pa je obratno sorazmerna z M."},
+    {name:"Hitrost molekul",key:"maxwell",start:{gas:"n2",other:"he",T:300,T2:300,limit:700},q:"Kateri plin ima pri 300 K večjo najverjetnejšo hitrost?",a:["Dušik","Helij","Oba enako"],i:1,why:"Pri isti temperaturi imajo lažje molekule večje značilne hitrosti."},
+    {name:"Izotermno raztezanje",key:"work",start:{kind:"isothermal",ratio:2,T:300,n:1,V:25},q:"Plin se izotermno razširi. Kako je dovedena toplota povezana z delom?",a:["Q = W","Q = 0","Q = −W"],i:0,why:"Pri idealnem plinu je ΔU = 0, če se T ne spremeni, zato je Q = W."},
+    {name:"Segrevanje pri stalnem tlaku",key:"heat",start:{substance:"n2",m:.5,delta:25},q:"Pri katerem procesu plin za isti ΔT potrebuje več toplote?",a:["Pri stalnem tlaku","Pri stalni prostornini","Potrebujeta enako"],i:0,why:"Pri stalnem tlaku se plin širi in pri tem opravlja delo."}
+];
+fillSelect($("mission"),missions.map((m,i)=>[i,m.name]));
+function currentMission(){return missions[Number($("mission").value||0)];}
+function renderMission(){
+    const m=currentMission(), p=document.createElement("p"), group=document.createElement("div");
+    p.className="question";p.textContent=m.q;group.className="row";
+    $("mission-body").replaceChildren(p,group);$("mission-feedback").textContent="";
+    m.a.forEach((answer,i)=>{
+        const button=document.createElement("button");button.type="button";button.textContent=answer;button.setAttribute("aria-pressed","false");
+        button.onclick=()=>{
+            for(const other of group.children)other.setAttribute("aria-pressed",String(other===button));
+            $("mission-feedback").textContent=i===m.i?"Pravilno. "+m.why:"Poskusi še enkrat ali preveri v poskusu.";
+        };
+        group.append(button);
+    });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{
+    const m=currentMission();Object.assign(settings[m.key],m.start);tab("lab");selectLab(m.key,true);
+};
+
+const topics={temperature:"Temperaturne lestvice",pressure:"Tlak",expansion:"Temperaturno raztezanje",ideal:"Idealni plin",mixture:"Mešanica plinov",gravity:"Plin v težnem polju",maxwell:"Maxwellova porazdelitev",work:"Delo in toplota",heat:"Specifična toplota trdnin in kapljevin",gasHeat:"Specifična toplota plinov"};
+fillSelect($("topic"),[["all","Mešano"],...Object.entries(topics)]);
+function makeTask(key,level){
+    const hard=level===2, c=integer(-50,130), T=integer(28,60)*10, delta=integer(2,20)*5;
+    const p=integer(7,30)*10,n=integer(2,25)/10,V=integer(8,60),h=integer(2,36)/2;
+    const m=integer(2,30)/10, rho=integer(8,12)*100, ratio=integer(6,20)/10;
+    const solid=Object.values(solids)[integer(0,2)], liquid=Object.values(liquids)[integer(1,2)], g=Object.values(gases)[integer(0,3)];
+    const cvFactor=g.cv/R, cpFactor=cvFactor+1;
+    const q=(prompt,answer,unit,hint,steps)=>({key,prompt,answer,unit,hint,steps:steps+" ≈ "+fmt(answer)+" "+unit+"."});
+    switch(key){
+        case "temperature": return hard
+            ? q("Idealni plin segrejemo z "+c+" °C na "+(c+delta)+" °C. Kolikšno je razmerje absolutnih temperatur T₂/T₁?",(c+delta+273.15)/(c+273.15),"brez enote","Pred deljenjem obe temperaturi pretvori v kelvine.","T₂/T₁ = ("+(c+delta)+" + 273,15)/("+c+" + 273,15)")
+            : q("Temperaturo "+c+" °C izrazi v kelvinih.",c+273.15,"K","Celzijevi temperaturi prištej 273,15.","T = "+c+" + 273,15");
+        case "pressure": {
+            const F=integer(5,60)*50,A=integer(8,50)*10;
+            return hard
+                ? q("Na globini "+fmt(h)+" m v kapljevini z gostoto "+rho+" kg/m³ je tlak na gladini "+p+" kPa. Izračunaj absolutni tlak. Uporabi g = 9,81 m/s².",waterPressure(h,rho,p),"kPa","Tlak zaradi kapljevine pretvori iz Pa v kPa in ga prištej tlaku na gladini.","p = "+p+" + "+rho+" · 9,81 · "+fmt(h)+"/1000")
+                : q("Na ploskev s ploščino "+A+" cm² enakomerno pravokotno deluje sila "+F+" N. Kolikšen je tlak v kPa?",10*F/A,"kPa","Ploščino pretvori v m². Nato Pa pretvori v kPa.","p = "+F+"/("+A+" · 10⁻⁴)/1000");
+        }
+        case "expansion":{
+            const L=integer(5,50)/10;
+            return hard
+                ? q("Kapljevina ima β = "+fmt(liquid.beta*1e6)+" · 10⁻⁶ K⁻¹. Iz "+fmt(L)+" L jo pri stalnem tlaku segrejemo za "+delta+" K. Koliko mililitrov se poveča prostornina?",liquid.beta*L*delta*1000,"mL","Uporabi ΔV = βV₀ΔT in pretvori litre v mililitre.","ΔV = "+fmt(liquid.beta*1e6)+" · 10⁻⁶ · "+fmt(L)+" · "+delta+" · 1000")
+                : q("Palica dolžine "+fmt(L)+" m ima α = "+fmt(solid.alpha*1e6)+" · 10⁻⁶ K⁻¹. Za koliko mm se podaljša, če temperaturo zvišamo za "+delta+" K?",solid.alpha*L*delta*1000,"mm","Uporabi ΔL = αL₀ΔT in pretvori metre v milimetre.","ΔL = "+fmt(solid.alpha*1e6)+" · 10⁻⁶ · "+fmt(L)+" · "+delta+" · 1000");
+        }
+        case "ideal": return hard
+            ? q("V posodi "+V+" L je pri temperaturi "+T+" K in absolutnem tlaku "+p+" kPa idealni plin. Koliko molov je v posodi? Uporabi R ≈ 8,314.",p*V/(R*T),"mol","V teh enotah je kPa·L = J. Izrazi n.","n = ("+p+" · "+V+")/(R · "+T+")")
+            : q("V "+V+" L posodi je "+fmt(n)+" mol idealnega plina pri "+T+" K. Izračunaj absolutni tlak v kPa. Uporabi R ≈ 8,314.",gasPressure(n,T,V),"kPa","Vstavi v p = nRT/V. Ker je 1 kPa·L = 1 J, dobiš kPa.","p = ("+fmt(n)+" · R · "+T+")/"+V);
+        case "mixture":{
+            const he=integer(1,8),n2=integer(1,12),massHe=he*4,massN=n2*28;
+            return hard
+                ? q("Zmes vsebuje "+massHe+" g He in "+massN+" g N₂, skupni tlak je "+p+" kPa. Kolikšen je parcialni tlak helija? Uporabi M(He) = 4 g/mol, M(N₂) = 28 g/mol.",p*he/(he+n2),"kPa","Iz mas najprej izračunaj množini snovi. Za tlak potrebuješ molski delež.","p(He) = "+p+" · ("+massHe+"/4)/("+massHe+"/4 + "+massN+"/28)")
+                : q("Mešanica "+he+" mol He in "+n2+" mol N₂ ima skupni tlak "+p+" kPa. Kolikšen je parcialni tlak helija?",p*he/(he+n2),"kPa","Skupni tlak pomnoži z molskim deležem helija.","p(He) = "+p+" · "+he+"/("+he+" + "+n2+")");
+        }
+        case "gravity":{
+            const H=scaleHeight(T,g.mass),M=fmt(g.mass*1000),ref=integer(8,12)*10;
+            return hard
+                ? q("V izotermnem idealnem plinu z M = "+M+" g/mol in T = "+T+" K je pri z = 0 tlak "+ref+" kPa. Izračunaj tlak "+fmt(h)+" km višje. Uporabi g = 9,81 m/s² in R ≈ 8,314.",ref*Math.exp(-h/H),"kPa","Najprej izračunaj H = RT/(Mg). Pretvori M in z v ustrezni enoti.","Za H ≈ "+fmt(H)+" km: p = "+ref+" · exp(−"+fmt(h)+"/"+fmt(H)+")")
+                : q("Izračunaj višinsko skalo izotermnega idealnega plina v km: T = "+T+" K, M = "+M+" g/mol. Uporabi g = 9,81 m/s² in R ≈ 8,314.",H,"km","Pretvori M v kg/mol, rezultat pa iz metrov v kilometre.","H = R · "+T+"/(("+M+"/1000) · 9,81)/1000");
+        }
+        case "maxwell":{
+            const M=fmt(g.mass*1000);
+            return hard
+                ? q("Plin pri "+T+" K ima molsko maso "+M+" g/mol. Izračunaj kvadratno sredino hitrosti (RMS) v m/s. Uporabi R ≈ 8,314.",speeds(T,g.mass)[2],"m/s","Uporabi vᵣₘₛ = √(3RT/M), M v kg/mol.","vᵣₘₛ = √(3 · R · "+T+"/("+M+"/1000))")
+                : q("Izračunaj najverjetnejšo hitrost molekul plina pri "+T+" K, če je M = "+M+" g/mol. Uporabi R ≈ 8,314.",speeds(T,g.mass)[0],"m/s","Uporabi vₙₐⱼ = √(2RT/M), M v kg/mol.","vₙₐⱼ = √(2 · R · "+T+"/("+M+"/1000))");
+        }
+        case "work":{
+            const dV=integer(2,40);
+            return hard
+                ? q("Idealni plin z n = "+fmt(n)+" mol se izotermno spremeni pri "+T+" K, V₂/V₁ = "+fmt(ratio)+". Kolikšna je toplota Q s predznakom? Uporabi R ≈ 8,314.",process("isothermal",n,T,V,ratio,0,g).Q,"J","ΔU = 0, zato je Q = W = nRT ln(V₂/V₁).","Q = "+fmt(n)+" · R · "+T+" · ln("+fmt(ratio)+")")
+                : q("Plin se pri stalnem tlaku "+p+" kPa razširi za "+dV+" L. Koliko dela opravi?",p*dV,"J","Uporabi W = pΔV. Pri kPa in L dobiš J.","W = "+p+" · "+dV);
+        }
+        case "heat":{
+            const substance=hard?liquid:solid;
+            return hard
+                ? q("Kapljevini z maso "+fmt(m)+" kg in c = "+substance.c+" J/(kg·K) dovedemo "+fmt(m*substance.c*delta/1000)+" kJ toplote brez izgub in faznega prehoda. Za koliko se segreje?",delta,"K","Pretvori kJ v J in izrazi ΔT = Q/(mc).","ΔT = ("+fmt(m*substance.c*delta/1000)+" · 1000)/("+fmt(m)+" · "+substance.c+")")
+                : q("Trdnina ima maso "+fmt(m)+" kg in c = "+substance.c+" J/(kg·K). Koliko kJ toplote potrebuje za segrevanje za "+delta+" K?",m*substance.c*delta/1000,"kJ","Uporabi Q = mcΔT in deli s 1000.","Q = "+fmt(m)+" · "+substance.c+" · "+delta+"/1000");
+        }
+        case "gasHeat": return hard
+            ? q("Idealni plin ima M = "+fmt(g.mass*1000)+" g/mol in molsko toploto Cₚ = "+fmt(cpFactor)+"R. Kolikšna je njegova masna specifična toplota cₚ pri stalnem tlaku? Uporabi R ≈ 8,314.",(g.cv+R)/g.mass,"J/(kg·K)","Deli molsko toploto z molsko maso v kg/mol.","cₚ = "+fmt(cpFactor)+"R/("+fmt(g.mass*1000)+"/1000)")
+            : q("Pri stalni prostornini segrejemo "+fmt(n)+" mol idealnega plina za "+delta+" K. Njegova molska toplota je Cᵥ = "+fmt(cvFactor)+"R. Izračunaj toploto v J. Uporabi R ≈ 8,314.",n*g.cv*delta,"J","Uporabi Qᵥ = nCᵥΔT.","Qᵥ = "+fmt(n)+" · "+fmt(cvFactor)+"R · "+delta);
+        default:throw new Error("Neznana tema.");
+    }
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti. Dovoljeno je manjše odstopanje zaradi zaokroževanja konstant.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001 + Math.abs(task.answer)*0.00006){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Temperatura in toplota · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+selectLab("temperature");
+renderMission();
+generate();
+</script>
+</body>
+</html>
