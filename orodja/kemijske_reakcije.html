@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivna kemija: urejanje kemijskih enačb, ohranitev atomov, pisanje formul in vrste reakcij.">
+<title>Kemijske reakcije – Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.kr{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.kr *{box-sizing:border-box}.kr [hidden]{display:none!important}
+.kr .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.kr header.wrap{padding:25px 0 22px}.kr a{color:var(--accent);font-weight:750}
+.kr .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.kr .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.kr h1,.kr h2,.kr h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.kr h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.kr h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.kr h3{font-size:1.15rem;margin:0 0 9px}.kr p{margin:0 0 13px}.kr .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.kr .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.kr svg{display:block;width:100%;height:auto;overflow:visible}
+.kr nav,.kr .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.kr nav{margin:12px 0 24px}
+.kr button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.kr button:hover{background:var(--purple)}.kr button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.kr button[aria-pressed=true],.kr .primary{background:var(--yellow)}
+.kr button:disabled{opacity:.55;cursor:default}.kr :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.kr .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.kr .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.kr .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.kr .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.kr label{display:block;font-weight:700;margin:12px 0 4px}.kr label:first-child{margin-top:0}
+.kr input:not([type=checkbox]),.kr select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.kr input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.kr input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.kr output{color:var(--accent);font-weight:800}
+.kr .fine{font-size:.88rem;color:#4d5871}.kr .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.kr .lab-visual,.kr .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.kr .graph{cursor:crosshair}.kr .graph-label{font-weight:800;margin:7px 0 0}
+.kr .graph-group{min-width:0}.kr .graph-group p{margin:7px 0 0}
+.kr .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.kr .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.kr .metric:nth-child(2n){background:var(--mint)}.kr .metric strong{display:block;font-size:1.06rem}
+.kr .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.kr .lav{background:var(--purple)}.kr .accent-card{background:var(--yellow)}.kr .question{font-weight:700;font-size:1.06rem}
+.kr .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.kr details{margin:10px 0}.kr summary{cursor:pointer;font-weight:750}
+.kr .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.kr .question-card .row{margin-top:9px}.kr .question-card label{margin-top:9px}
+.kr .lesson{scroll-margin:15px}.kr .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.kr footer{padding:8px 0 28px}.kr .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.kr .grid,.kr .hero{grid-template-columns:1fr}.kr .hero-art{display:none}.kr .three{grid-template-columns:1fr}.kr .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.kr .wrap{width:calc(100% - 24px)}.kr .two{grid-template-columns:1fr}.kr nav button{flex:1 1 40%}.kr .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.kr{background:#fff;color:#000}body.kr.print-sheet > :not(#paper){display:none!important}body.kr.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.kr .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.kr .graph{cursor:default}
+.kr .subnote{margin-top:12px}
+.kr .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.kr .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.kr .graph-row{grid-template-columns:1fr}.kr .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kr h1{font-size:clamp(44px,7vw,78px)}
+.kr .lab-visual{margin:10px 0 14px}
+.kr .lab-grid{align-items:start}
+.kr .plot-note{margin-top:10px}
+.kr .topic-buttons{margin:12px 0 24px}
+.kr .theory-grid .note{margin:0}
+.kr .theory-grid{margin:14px 0}
+.kr .mono{font-variant-numeric:tabular-nums}
+.kr .unit-table{border-collapse:collapse;width:100%;margin:12px 0}
+.kr .unit-table th,.kr .unit-table td{text-align:left;border-bottom:1px solid #bbc7ce;padding:6px}
+.kr .focus-box{margin-top:12px}
+.kr .hero h1{font-size:clamp(39px,6.4vw,76px);text-wrap:balance}
+</style>
+</head>
+<body class="kr">
+<header class="wrap">
+    <a href="../index.html">← Vsa orodja</a>
+    <div class="hero">
+        <div><span class="badge">SIDEBIT · KEMIJA</span><h1>Kemijske reakcije</h1>
+        <p class="lead">Uredi enačbo in sproti preštej atome na obeh straneh. Nato sestavi formulo ionske spojine, prepoznaj vrsto reakcije in preveri, katerega reaktanta zmanjka prvega.</p></div>
+        <svg class="hero-art" viewBox="0 0 330 145" role="img" aria-label="Dve molekuli vodika in molekula kisika se prerazporedijo v dve molekuli vode">
+            <path d="M32 55h24m-24 45h24m46-22h26m89-35 25 13 24-13m-49 46 25 13 24-13" stroke="#5634aa" stroke-width="5" fill="none"/>
+            <g fill="#fff" stroke="#22253a" stroke-width="2"><circle cx="32" cy="55" r="9"/><circle cx="56" cy="55" r="9"/><circle cx="32" cy="100" r="9"/><circle cx="56" cy="100" r="9"/><circle cx="217" cy="43" r="9"/><circle cx="266" cy="43" r="9"/><circle cx="217" cy="89" r="9"/><circle cx="266" cy="89" r="9"/></g>
+            <g fill="#ffd3da" stroke="#22253a" stroke-width="2"><circle cx="102" cy="78" r="13"/><circle cx="128" cy="78" r="13"/><circle cx="242" cy="56" r="13"/><circle cx="242" cy="102" r="13"/></g>
+            <path d="M148 78h47m-10-8 10 8-10 8" fill="none" stroke="#5634aa" stroke-width="4"/>
+        </svg>
+    </div>
+    <nav aria-label="Poglavja">
+        <button type="button" data-tab="lab" aria-pressed="true">Laboratorij</button>
+        <button type="button" data-tab="challenge" aria-pressed="false">Učni izzivi</button>
+        <button type="button" data-tab="practice" aria-pressed="false">Generator nalog</button>
+        <button type="button" data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+    </nav>
+</header>
+<main class="wrap">
+<section id="lab">
+    <div class="card lav">
+        <span class="chip">Štirje interaktivni poskusi</span><h2>Izberi poskus</h2>
+        <div id="lab-buttons" class="row topic-buttons"></div>
+    </div>
+    <div class="grid lab-grid">
+        <div class="card">
+            <span class="chip">01 · Nastavi</span><h2 id="lab-title"></h2>
+            <p id="lab-intro"></p><div id="controls"></div>
+            <div class="row small-gap"><button type="button" id="restore">Ponastavi poskus</button></div>
+        </div>
+        <div class="card">
+            <span class="chip">02 · Opazuj</span><h2 id="plot-title"></h2>
+            <svg id="plot" class="lab-visual" viewBox="0 0 550 285" role="img" aria-label="Vizualni prikaz poskusa"></svg>
+            <p id="plot-note" class="fine plot-note"></p>
+            <div id="values" class="readouts mono"></div><p id="conclusion" class="focus-box"></p>
+        </div>
+    </div>
+</section>
+<section id="challenge" hidden>
+    <div class="card lav">
+        <span class="chip">Najprej napovej</span><h2>Učni izzivi</h2>
+        <label for="mission">Izberi izziv</label><select id="mission"></select>
+        <div id="mission-body" class="small-gap"></div>
+        <p id="mission-feedback" class="feedback" role="status"></p>
+        <button type="button" id="mission-open">Odpri poskus</button>
+    </div>
+</section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden>
+ <div class="card">
+  <h2>Kaj se pri reakciji spremeni in kaj se ohrani?</h2>
+  <p>Pri kemijski reakciji se delci prerazporedijo in nastanejo druge snovi. Pri navadni kemijski reakciji se jedra atomov ne spremenijo. Zato mora biti na obeh straneh enačbe enako število atomov vsakega elementa, pri ionski enačbi pa mora biti enak tudi skupni naboj.</p>
+  <p>Če želiš ponoviti zgradbo atomov in kemijske vezi, odpri <a href="zgradba_snovi_kemija.html">Zgradbo snovi pri kemiji</a>.</p>
+  <div class="two theory-grid">
+   <article class="note"><h3>1 · Reaktanti, produkti in oznake stanja</h3>
+    <p><strong>Reaktanti</strong> so levo od puščice, <strong>produkti</strong> pa desno. Oznake (s), (l), (g) in (aq) pomenijo trdno, tekoče, plinasto stanje in raztopljeno v vodi. (aq) torej ni isto kot (l): NaCl(aq) je raztopljen v vodi, NaCl(l) pa je staljen.</p>
+    <p>Enačba pove razmerja med snovmi, ne pa nujno hitrosti reakcije, poti, po kateri poteka, ali deleža, ki se dejansko pretvori. Tudi urejena enačba še ne dokazuje, da se bo reakcija v izbranih pogojih zgodila.</p>
+   </article>
+   <article class="note lav"><h3>2 · Koeficienti in indeksi niso zamenljivi</h3>
+    <p class="formula">2 H₂ + O₂ → 2 H₂O</p>
+    <p>Koeficient pred formulo pomnoži <em>vse</em> atome v njej. Zapis 2 H₂O pomeni dve molekuli vode, skupaj štiri atome H in dva atoma O. Indeks pripada formuli; H₂O₂ ni drugačen zapis za dve molekuli vode, temveč formula vodikovega peroksida.</p>
+    <p>Pri urejanju spreminjaj le koeficiente. Najprej uredi elemente, ki nastopajo v malo formulah; kisik in vodik pri gorenju pogosto pusti za konec. Na koncu preveri vse elemente in koeficiente zapiši v najmanjšem razmerju pozitivnih celih števil. Koeficient 1 navadno izpustimo.</p>
+   </article>
+   <article class="note lav"><h3>3 · Sestavljanje in poimenovanje ionskih formul</h3>
+    <p>Celotna ionska spojina je električno nevtralna. Najprej zapiši kation, nato anion. Poišči najmanjše celoštevilsko razmerje, pri katerem se naboji izničijo. Pri Mg²⁺ in Cl⁻ je razmerje 1 : 2, zato je formula MgCl₂ in ime magnezijev klorid.</p>
+    <p>Če potrebuješ več večatomnih ionov, uporabi oklepaj: Ca(NO₃)₂ vsebuje en Ca²⁺ in dva NO₃⁻. Število 2 velja za celotno skupino NO₃. Če ima kovina več možnih oksidacijskih stanj, ga v imenu lahko navedeš z rimsko številko: FeCl₃ je železov(III) klorid. To pravilo za nevtralizacijo naboja ne sestavlja formul poljubnih kovalentnih molekul.</p>
+   </article>
+   <article class="note"><h3>4 · Vrste reakcij</h3>
+    <p><strong>Spajanje:</strong> iz več reaktantov nastane en produkt. <strong>Razkroj:</strong> iz enega reaktanta nastane več produktov. <strong>Enojna zamenjava:</strong> element v spojini zamenja drug element. <strong>Dvojna izmenjava:</strong> ioni zamenjajo partnerje; reakcijo lahko opazimo na primer zaradi nastanka oborine.</p>
+    <p><strong>Nevtralizacija:</strong> v običajnem primeru reakcije kisline s hidroksidom nastaneta sol in voda. <strong>Popolno gorenje ogljikovodika:</strong> ob dovolj kisika nastaneta CO₂ in H₂O. Pri nepopolnem gorenju lahko nastaneta tudi CO ali saje.</p>
+    <p>Razvrstitve se lahko prekrivajo: nevtralizacija je lahko tudi dvojna izmenjava, gorenje pa je redoks reakcija. Oznaka je odvisna od tega, katero značilnost opazujemo.</p>
+   </article>
+   <article class="note"><h3>5 · Oborina, neto ionska enačba in redoks</h3>
+    <p>Pri mešanju raztopin AgNO₃ in NaCl se izloči slabo topen AgCl. Neto ionska enačba je Ag⁺(aq) + Cl⁻(aq) → AgCl(s). Na⁺ in NO₃⁻ ostaneta v raztopini; iz neto enačbe ju izpustimo kot spremljevalna iona. Na obeh straneh je skupni naboj 0.</p>
+    <p>Pri redoks reakciji se spremenijo oksidacijska števila. Oksidacija pomeni oddajo elektronov oziroma povečanje oksidacijskega števila, redukcija pa sprejem oziroma zmanjšanje. Pri Zn + Cu²⁺ → Zn²⁺ + Cu se cink oksidira, bakrov(II) ion pa reducira. V neto enačbi je naboj na obeh straneh +2.</p>
+   </article>
+   <article class="note lav"><h3>6 · Kaj povedo koeficienti o količinah?</h3>
+    <p>Koeficienti povedo razmerje števil delcev ali množin snovi v molih. Niso razmerja mas. Pri N₂ + 3 H₂ → 2 NH₃ en reakcijski paket porabi eno molekulo N₂ in tri H₂ ter da dve NH₃. V modelu celih delcev lahko izvedemo samo cele pakete. V makroskopskem računu z moli pa količine niso omejene na cela števila molov.</p>
+    <p>Omejujoči reaktant je tisti, ki ga glede na razmerje v enačbi zmanjka prvi. Če oba porabimo hkrati, noben ni v presežku. Če celoštevilski model pusti nekaj delcev obeh vrst, je preostalih delcev premalo za naslednji cel paket.</p>
+   </article>
+  </div>
+  <details><summary>Rešen primer: gorenje propana</summary><p>Za C₃H₈ + O₂ → CO₂ + H₂O najprej zapišemo 3 CO₂ zaradi treh atomov ogljika in 4 H₂O zaradi osmih atomov vodika. Desno je 3·2 + 4 = 10 atomov kisika, zato levo potrebujemo 5 O₂. Rešitev: C₃H₈ + 5 O₂ → 3 CO₂ + 4 H₂O.</p></details>
+  <details><summary>Rešen primer: formula aluminijevega sulfata</summary><p>Al³⁺ in SO₄²⁻ potrebujeta skupno velikost naboja 6: dva Al³⁺ dasta +6, trije SO₄²⁻ pa −6. Formula je Al₂(SO₄)₃. Zunanja trojka velja za tri atome S in dvanajst atomov O.</p></details>
+ </div>
+</section>
+</main>
+<footer class="wrap"><p>Sidebit · Kemija · Kemijske reakcije</p></footer>
+<div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const format=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:4,useGrouping:false});
+const fmt=x=>format.format(x);
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const C="#5634aa", B="#00806a", Y="#ffe38b", INK="#22253a";
+const line=(x,y,X,Y,color=INK,width=2,dash="")=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${color}" stroke-width="${width}" ${dash?'stroke-dasharray="'+dash+'"':""}/>`;
+const text=(x,y,s,anchor="middle")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="#364058" font-size="14" font-weight="650">${s}</text>`;
+const disk=(x,y,r=5,fill=Y)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${INK}" stroke-width="2"/>`;
+const rect=(x,y,w,h,fill,stroke=INK)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+function bars(data,unit,offset=0){
+    const max=Math.max(1,...data.map(([,v])=>v));
+    return data.map(([label,value,color],i)=>{
+        const y=41+i*73+offset;
+        return text(45,y,label+" · "+fmt(value)+" "+unit,"start")+rect(45,y+12,460,18,"#e9edf4","#dce3ef")+
+            (value>0 ? rect(45,y+12,460*value/max,18,color) : "");
+    }).join("");
+}
+const metric=(name,v,unit)=>[name,fmt(v)+(unit?" "+unit:"")];
+const slider=(id,label,min,max,step,value,unit="")=>({id,label,min,max,step,value,unit});
+const select=(id,label,value,options)=>({id,label,value,options});
+
+
+
+
+
+
+
+const sub=s=>String(s).replace(/\d/g,d=>"₀₁₂₃₄₅₆₇₈₉"[Number(d)]);
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const pair=(name,v,unit="")=>metric(name,v,unit);
+const reactions={
+ water:{f:["H2","O2","H2O"],split:2,c:[2,1,2],type:"join",hint:"Najprej uredi kisik. Dva H₂O imata skupaj dva atoma O."},
+ ammonia:{f:["N2","H2","NH3"],split:2,c:[1,3,2],type:"join",hint:"Dva atoma N v N₂ pomenita dva NH₃; desno bo nato šest H."},
+ magnesium:{f:["Mg","O2","MgO"],split:2,c:[2,1,2],type:"join",hint:"O₂ prispeva dva atoma O, zato na desni začni z 2 MgO."},
+ peroxide:{f:["H2O2","H2O","O2"],split:1,c:[2,2,1],type:"split",hint:"Dve molekuli H₂O₂ imata štiri atome O; po nastanku dveh H₂O ostaneta dva."},
+ carbonate:{f:["CaCO3","CaO","CO2"],split:1,c:[1,1,1],type:"split",hint:"Preveri vse tri elemente; začetna enačba je že urejena."},
+ methane:{f:["CH4","O2","CO2","H2O"],split:2,c:[1,2,1,2],type:"burn",hint:"Najprej uredi ogljik in vodik, kisik pusti za konec."},
+ propane:{f:["C3H8","O2","CO2","H2O"],split:2,c:[1,5,3,4],type:"burn",hint:"Začni s tremi CO₂ in štirimi H₂O."},
+ ethane:{f:["C2H6","O2","CO2","H2O"],split:2,c:[2,7,4,6],type:"burn",hint:"Za en C₂H₆ potrebuješ 3,5 O₂. Podvoji vse koeficiente."},
+ iron:{f:["Fe","O2","Fe2O3"],split:2,c:[4,3,2],type:"join",hint:"Najmanjši skupni večkratnik 2 in 3 je 6. Začni s 3 O₂ in 2 Fe₂O₃."},
+ zinc:{f:["Zn","HCl","ZnCl2","H2"],split:2,c:[1,2,1,1],type:"single",hint:"ZnCl₂ zahteva dva klorova atoma; na levi sta potrebna 2 HCl."},
+ silver:{f:["AgNO3","NaCl","AgCl","NaNO3"],split:2,c:[1,1,1,1],type:"double",hint:"Vsak element ima že enako število atomov. Pri tej reakciji nastane oborina AgCl."},
+ neutral:{f:["H2SO4","NaOH","Na2SO4","H2O"],split:2,c:[1,2,1,2],type:"neutral",hint:"Najprej uredi Na. Skupina SO₄ ostane nespremenjena."},
+ hydroxide:{f:["Ca(OH)2","HCl","CaCl2","H2O"],split:2,c:[1,2,1,2],type:"neutral",hint:"Indeks 2 za (OH) velja za dva O in dva H. Za CaCl₂ potrebuješ 2 HCl."}
+};
+const types={join:["Spajanje","Več reaktantov da en produkt."],split:["Razkroj","En reaktant da več produktov."],
+ single:["Enojna zamenjava","Element izrine drug element iz spojine."],double:["Dvojna izmenjava z obarjanjem","Ioni zamenjajo partnerje; AgCl nastane kot oborina."],
+ neutral:["Nevtralizacija","Kislina in hidroksid dasta sol in vodo; gre lahko tudi za dvojno izmenjavo."],burn:["Popolno gorenje ogljikovodika","Ogljikovodik reagira s kisikom v CO₂ in H₂O. To je tudi redoks reakcija."]};
+const cations={na:["Na",1,"natrijev"],mg:["Mg",2,"magnezijev"],ca:["Ca",2,"kalcijev"],al:["Al",3,"aluminijev"],fe2:["Fe",2,"železov(II)"],fe3:["Fe",3,"železov(III)"],nh4:["NH4",1,"amonijev"]};
+const anions={cl:["Cl",1,"klorid"],o:["O",2,"oksid"],s:["S",2,"sulfid"],no3:["NO3",1,"nitrat"],so4:["SO4",2,"sulfat"],oh:["OH",1,"hidroksid"],co3:["CO3",2,"karbonat"]};
+const ionLabel=(v,sign)=>sub(v[0])+(v[1]===1?"":String(v[1]).replace(/[123]/g,d=>"⁰¹²³"[+d]))+sign;
+function formulaCounts(formula){
+    const tokens=formula.match(/[A-Z][a-z]?|\d+|\(|\)/g), stack=[{}];
+    for(let i=0;i<tokens.length;i++){
+        const t=tokens[i];
+        if(t==="("){stack.push({});continue;}
+        const current=t===")"?stack.pop():{[t]:1}, target=stack.at(-1);
+        const mult=/^\d+$/.test(tokens[i+1]||"")?Number(tokens[++i]):1;
+        for(const [key,n] of Object.entries(current))target[key]=(target[key]||0)+n*mult;
+    }
+    return stack[0];
+}
+function atomBalance(r,coeff){
+    const a={},b={};
+    r.f.forEach((f,i)=>{
+        const target=i<r.split?a:b;
+        for(const [s,n] of Object.entries(formulaCounts(f)))target[s]=(target[s]||0)+n*coeff[i];
+    });
+    return [...new Set([...Object.keys(a),...Object.keys(b)])].map(k=>[k,a[k]||0,b[k]||0]);
+}
+function equation(r,coeff=null){
+    const parts=r.f.map((f,i)=>(coeff&&coeff[i]!==1?coeff[i]+" ":"")+sub(f));
+    return parts.slice(0,r.split).join(" + ")+" → "+parts.slice(r.split).join(" + ");
+}
+function compound(c,a,x,y){
+    const segment=(v,n)=>n===1?v[0]:(Object.keys(formulaCounts(v[0])).length>1?"("+v[0]+")":v[0])+n;
+    return sub(segment(c,x)+segment(a,y));
+}
+function neutralRatio(c,a){const d=gcd(c[1],a[1]);return [a[1]/d,c[1]/d];}
+function batches(a,b,coeff){
+    const n=Math.min(Math.floor(a/coeff[0]),Math.floor(b/coeff[1]));
+    return {n,leftA:a-n*coeff[0],leftB:b-n*coeff[1],product:n*coeff[2]};
+}
+function display(lines){
+    return lines.map(([str,y,col])=>`<text x="275" y="${y}" text-anchor="middle" fill="${col||INK}" font-size="19" font-weight="700">${str}</text>`).join("");
+}
+const rxList=Object.entries(reactions).map(([k,v])=>[k,equation(v)]);
+const lab={
+ balance:{
+    name:"Uredi kemijsko enačbo",intro:"Spremeni koeficiente pred formulami. Tabela sproti prešteje atome na obeh straneh.",
+    fields:[select("rx","Enačba","water",rxList),...Array.from({length:4},(_,i)=>({...slider("c"+i,"Koeficient pri formuli št. "+(i+1),1,24,1,1),hide:s=>i>=reactions[s.rx].f.length})),
+      select("help","Pomoč","none",[["none","Brez pomoči"],["hint","Namig"],["answer","Pokaži urejeno enačbo"]])],title:"Ohranitev atomov",
+    show(s){
+        const r=reactions[s.rx], c=r.f.map((_,i)=>s["c"+i]), data=atomBalance(r,c);
+        const equal=data.every(([,a,b])=>a===b),small=c.reduce(gcd)===1;
+        let svg=display([[equation(r,c),38,C]])+text(105,78,"Element")+text(237,78,"Levo")+text(332,78,"Desno")+text(445,78,"Stanje");
+        data.forEach(([k,a,b],i)=>{
+            const y=95+i*39;
+            svg+=rect(49,y,452,32,a===b?"#d9f3e8":"#fff0cc","#c4cddb")+text(105,y+21,k)+text(237,y+21,a)+text(332,y+21,b)+text(445,y+21,a===b?"Enako":"Različno");
+        });
+        return {svg,note:"Vsak drsnik spreminja koeficient pred označeno formulo. Koeficient 1 v enačbi ni izpisan.",
+            values:data.map(([k,a,b])=>[k+" · levo / desno",a+" / "+b]),
+            conclusion:s.help==="answer"?"Rešitev: "+equation(r,r.c)+".":s.help==="hint"?r.hint:equal?(small?"Pravilno! Vsi elementi se ujemajo in koeficienti so v najmanjšem celoštevilskem razmerju.":"Atomi se ujemajo, vendar lahko vse koeficiente še deliš z "+c.reduce(gcd)+"."):"Enačba še ni urejena. Poišči prvo vrstico z različnima številoma."};
+    }
+ },
+ formula:{
+    name:"Sestavi ionsko formulo",intro:"Izberi iona in poišči najmanjši par indeksov, pri katerem je skupni naboj nič.",
+    fields:[select("c","Kation","al",Object.entries(cations).map(([k,v])=>[k,ionLabel(v,"⁺")+" · "+v[2]])),select("a","Anion","so4",Object.entries(anions).map(([k,v])=>[k,ionLabel(v,"⁻")+" · "+v[2]])),slider("x","Število kationov",1,6,1,1),slider("y","Število anionov",1,6,1,1)],title:"Nevtralna spojina potrebuje uravnotežena naboja",
+    show({c,a,x,y}){
+        const p=cations[c],n=anions[a],plus=p[1]*x,minus=n[1]*y,q=plus-minus;
+        return {svg:display([[x+" × "+ionLabel(p,"⁺")+"   +   "+y+" × "+ionLabel(n,"⁻"),64,C],[compound(p,n,x,y),128,INK],["Skupni naboj: "+(q>0?"+":"")+q+" e",194,q===0?B:"#9a5c09"]]),
+            note:"Izpis je kandidat za formulo. Ujemanje nabojev določi razmerje ionov, samo po sebi pa ne dokazuje, da je spojina stabilna.",
+            values:[pair("Pozitivni naboj",plus,"e"),pair("Negativni naboj",-minus,"e"),["Ime ciljne spojine",p[2]+" "+n[2]]],
+            conclusion:q!==0?"Naboja se še ne izničita.":gcd(x,y)>1?"Naboja se izničita, indeksa pa lahko še skrajšaš.":"Pravilno: "+compound(p,n,x,y)+" je zapis najmanjšega razmerja."};
+    }
+ },
+ classify:{
+    name:"Prepoznaj vrsto reakcije",intro:"Izberi primer in napovej najustreznejšo opisno oznako med ponujenimi.",
+    fields:[select("rx","Primer","propane",rxList),select("answer","Tvoja izbira","none",[["none","Izberi vrsto reakcije"],...Object.entries(types).map(([k,v])=>[k,v[0]])])],title:"Razvrščanje reakcij po vzorcu",
+    show({rx,answer}){
+        const r=reactions[rx],ok=answer===r.type;
+        const t=answer==="none"?"Opazuj reaktante in produkte.":ok?"Pravilno!":"Še ni prava izbira.";
+        return {svg:display([[equation(r,r.c),95,C],[t,170,ok?B:INK]]),note:"Ena reakcija lahko spada v več skupin. Tu izbiramo oznako, ki najbolj neposredno opiše prikazani primer.",values:[pair("Število različnih reaktantov",r.split),pair("Število različnih produktov",r.f.length-r.split)],
+            conclusion:ok?types[r.type][1]:answer==="none"?"Izberi vrsto v meniju.":"Namig: "+r.hint};
+    }
+ },
+ model:{
+    name:"Model reakcijskih paketov",intro:"Spremeni začetno število molekul. Poskus izračuna, koliko celih reakcijskih paketov lahko nastane.",
+    fields:[select("rx","Reakcija","ammonia",[["water","Nastanek vode"],["ammonia","Nastanek amonijaka"]]),slider("a","Molekule prvega reaktanta",0,24,1,5),slider("b","Molekule drugega reaktanta",0,24,1,9)],title:"Kaj ostane po reakciji?",
+    show({rx,a,b}){
+        const r=reactions[rx],res=batches(a,b,r.c);
+        return {svg:display([[equation(r,r.c),44,C]])+bars([["Preostanek "+sub(r.f[0]),res.leftA,Y],["Preostanek "+sub(r.f[1]),res.leftB,"#c5f0e2"],["Nastalo "+sub(r.f[2]),res.product,"#e8ddff"]],"molekul",28),
+            note:"Gre za idealiziran model celih delcev, ne za izračun hitrosti ali kemijskega ravnotežja.",
+            values:[pair("Celi reakcijski paketi",res.n),pair("Porabljeno "+sub(r.f[0]),a-res.leftA),pair("Porabljeno "+sub(r.f[1]),b-res.leftB),pair("Nastalo "+sub(r.f[2]),res.product)],
+            conclusion:res.leftA===0&&res.leftB===0?"Noben reaktant ni v presežku.":res.leftA===0?"Za naslednji paket manjka "+sub(r.f[0])+".":res.leftB===0?"Za naslednji paket manjka "+sub(r.f[1])+".":"Delci ostanejo, vendar jih je premalo za nov cel paket."};
+    }
+ }
+};
+const settings=Object.fromEntries(Object.entries(lab).map(([key,s])=>[key,Object.fromEntries(s.fields.map(f=>[f.id,f.value]))]));
+const labButtons={};
+let active="temperature";
+function renderLab(){
+    const l=lab[active], s=settings[active], r=l.show(s);
+    for(const f of l.fields){
+        if(f.hide)$("field-"+f.id).hidden=f.hide(s);
+        if(!f.options)$("out-"+f.id).textContent=fmt(s[f.id])+(f.unit?" "+f.unit:"");
+    }
+    $("plot-title").textContent=l.title;
+    $("plot").setAttribute("aria-label",l.title);
+    $("plot").innerHTML=r.svg;
+    $("plot-note").textContent=r.note;
+    $("conclusion").textContent=r.conclusion;
+    $("values").innerHTML=r.values.map(([name,value])=>`<div class="metric">${name}<strong>${value}</strong></div>`).join("");
+}
+function fillSelect(el,options){
+    el.replaceChildren(...options.map(([id,name])=>{const o=document.createElement("option");o.value=id;o.textContent=name;return o;}));
+}
+function selectLab(key,focus=false){
+    active=key;
+    for(const [id,button] of Object.entries(labButtons))button.setAttribute("aria-pressed",String(id===key));
+    const l=lab[key],s=settings[key],controls=$("controls");
+    $("lab-title").textContent=l.name;
+    $("lab-intro").textContent=l.intro;
+    controls.replaceChildren();
+    for(const f of l.fields){
+        const row=document.createElement("div"), label=document.createElement("label");
+        const input=document.createElement(f.options?"select":"input");
+        row.id="field-"+f.id;input.id="control-"+f.id;label.htmlFor=input.id;label.textContent=active==="balance"&&/^c[0-3]$/.test(f.id)&&reactions[s.rx].f[Number(f.id[1])]? "Koeficient pred "+sub(reactions[s.rx].f[Number(f.id[1])]):f.label;
+        if(f.options)fillSelect(input,f.options);
+        else{
+            input.type="range";input.min=f.min;input.max=f.max;input.step=f.step;
+            const out=document.createElement("output");out.id="out-"+f.id;label.append(": ",out);
+        }
+        input.value=s[f.id];
+        input.oninput=()=>{s[f.id]=f.options?input.value:Number(input.value);if(f.id==="rx"&&active==="balance"){Object.assign(settings.balance,{c0:1,c1:1,c2:1,c3:1,help:"none"});selectLab(active);$("control-rx").focus();}else if(f.id==="rx"&&active==="classify"){settings.classify.answer="none";selectLab(active);$("control-rx").focus();}else renderLab();};
+        row.append(label,input);controls.append(row);
+    }
+    renderLab();
+    if(focus)$("control-"+l.fields[0].id).focus();
+}
+for(const [key,item] of Object.entries(lab)){
+    const button=document.createElement("button");button.type="button";button.textContent=item.name;
+    button.onclick=()=>selectLab(key,true);
+    $("lab-buttons").append(button);labButtons[key]=button;
+}
+$("restore").onclick=()=>{
+    Object.assign(settings[active],Object.fromEntries(lab[active].fields.map(f=>[f.id,f.value])));
+    selectLab(active,true);
+};
+function tab(id){
+    for(const section of document.querySelectorAll("main > section"))section.hidden=section.id!==id;
+    for(const button of document.querySelectorAll("[data-tab]"))button.setAttribute("aria-pressed",String(button.dataset.tab===id));
+}
+for(const button of document.querySelectorAll("[data-tab]"))button.onclick=()=>tab(button.dataset.tab);
+const missions=[
+ {name:"Koeficient ali indeks?",key:"balance",start:{rx:"water",c0:2,c1:1,c2:2},q:"Koliko vodikovih atomov je skupaj v 2 H₂O?",a:["2","4","6"],i:1,why:"Koeficient 2 pomnoži oba vodikova atoma v vsaki molekuli."},
+ {name:"Naboji v magnezijevem kloridu",key:"formula",start:{c:"mg",a:"cl",x:1,y:2},q:"Koliko Cl⁻ potrebujemo za en Mg²⁺?",a:["Enega","Dva","Tri"],i:1,why:"+2 + 2·(−1) = 0. Formula je MgCl₂."},
+ {name:"Kaj nastane pri gorenju?",key:"classify",start:{rx:"propane",answer:"none"},q:"Kaj pri popolnem gorenju propana nastane poleg CO₂?",a:["H₂","O₂","H₂O"],i:2,why:"Vodik iz propana konča v vodi."},
+ {name:"Katerega reaktanta zmanjka?",key:"model",start:{rx:"ammonia",a:5,b:9},q:"Za reakcijo N₂ + 3 H₂ → 2 NH₃ imamo pet N₂ in devet H₂. Katerega reaktanta zmanjka?",a:["N₂","H₂","Obeh"],i:1,why:"Trije paketi porabijo 9 H₂, od petih N₂ pa ostaneta dva."}
+];
+fillSelect($("mission"),missions.map((m,i)=>[i,m.name]));
+function currentMission(){return missions[Number($("mission").value||0)];}
+function renderMission(){
+    const m=currentMission(), p=document.createElement("p"), group=document.createElement("div");
+    p.className="question";p.textContent=m.q;group.className="row";
+    $("mission-body").replaceChildren(p,group);$("mission-feedback").textContent="";
+    m.a.forEach((answer,i)=>{
+        const button=document.createElement("button");button.type="button";button.textContent=answer;button.setAttribute("aria-pressed","false");
+        button.onclick=()=>{
+            for(const other of group.children)other.setAttribute("aria-pressed",String(other===button));
+            $("mission-feedback").textContent=i===m.i?"Pravilno. "+m.why:"Poskusi še enkrat ali preveri v poskusu.";
+        };
+        group.append(button);
+    });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{
+    const m=currentMission();Object.assign(settings[m.key],Object.fromEntries(lab[m.key].fields.map(f=>[f.id,f.value])),m.start);tab("lab");selectLab(m.key,true);
+};
+
+
+
+
+
+
+const topics={balance:"Urejanje enačb",formula:"Ionske formule in naboj",classify:"Prepoznavanje reakcijskih vzorcev",model:"Reakcijski paketi"};
+fillSelect($("topic"),[["all","Mešano"],...Object.entries(topics)]);
+const pick=a=>a[integer(0,a.length-1)];
+function makeTask(key,level){
+ const hard=level===2,n=integer(2,14);
+ const q=(prompt,answer,unit,hint,steps)=>({key,prompt,answer,unit,hint,steps:steps+" = "+fmt(answer)+" "+unit+"."});
+ if(key==="balance"){
+    const r=pick(Object.values(reactions)), i=integer(0,r.f.length-1);
+    return hard
+      ?q("Uredi enačbo "+equation(r)+". Kolikšna je vsota vseh najmanjših celih koeficientov, tudi neizpisanih enic?",r.c.reduce((a,b)=>a+b,0),"brez enote",r.hint,equation(r,r.c)+"; vsota: "+r.c.join(" + "))
+      :q("V enačbi "+equation(r)+" določi najmanjši celi koeficient pri "+sub(r.f[i])+" (tudi če je 1).",r.c[i],"brez enote",r.hint,equation(r,r.c)+"; koeficient pri "+sub(r.f[i]));
+ }
+ if(key==="formula"){
+    const p=pick(Object.values(cations)),a=pick(Object.values(anions)),[x,y]=neutralRatio(p,a),f=compound(p,a,x,y);
+    return hard
+      ?q("V najmanjšem razmerju sestavi formulo iz "+ionLabel(p,"⁺")+" in "+ionLabel(a,"⁻")+". Koliko anionov je v "+n+" formulskih enotah?",n*y,"anionov","Najprej izenači naboje, nato razširi na število formulskih enot.","Formula "+f+"; število anionov: "+n+" · "+y)
+      :q("Pri sestavljanju nevtralne formule iz "+ionLabel(p,"⁺")+" in "+ionLabel(a,"⁻")+" uporabi najmanjše razmerje. Koliko kationov je v eni formulski enoti?",x,"kationov","Seštevek nabojev mora biti nič; razmerje po potrebi okrajšaj.","Formula "+f+"; število kationov");
+ }
+ if(key==="classify"){
+    if(hard){
+        const acid=pick([["HCl",1],["HNO3",1],["H2SO4",2]]), mole=integer(2,16);
+        return q("Pri popolni nevtralizaciji "+mole+" mol "+sub(acid[0])+" z NaOH uporabimo vse kisle protone. Koliko molov vode nastane?",mole*acid[1],"mol","Vsak proton, ki reagira s hidroksidnim ionom, da eno molekulo vode.","n(H₂O) = "+mole+" · "+acid[1]);
+    }
+    const h=integer(1,12), hydrocarbon=h===1?"CH₄":"C"+sub(h)+"H"+sub(2*h+2);
+    return q("Pri popolnem gorenju "+n+" mol ogljikovodika "+hydrocarbon+" vsi njegovi atomi ogljika končajo v CO₂. Koliko molov CO₂ nastane?",n*h,"mol","Za vsak atom C nastane ena molekula CO₂.","n(CO₂) = "+n+" · "+h);
+ }
+ if(key==="model"){
+    const r=pick([reactions.water,reactions.ammonia]), a=integer(2,24), b=integer(2,24), m=batches(a,b,r.c);
+    return hard
+      ?q("Za "+equation(r,r.c)+" imamo "+a+" molekul "+sub(r.f[0])+" in "+b+" molekul "+sub(r.f[1])+". Po vseh možnih celih paketih izračunaj skupno število neporabljenih molekul reaktantov.",m.leftA+m.leftB,"molekul","Za vsak reaktant deli zalogo z njegovim koeficientom in zaokroži navzdol; uporabi manjše število paketov.","Ostane "+m.leftA+" + "+m.leftB)
+      :q("Za "+equation(r,r.c)+" imamo "+a+" molekul "+sub(r.f[0])+" in "+b+" molekul "+sub(r.f[1])+". Koliko molekul produkta lahko nastane v celih paketih?",m.product,"molekul","Poišči, koliko celih paketov omogoča manjša razpoložljiva zaloga glede na koeficient.","N = "+m.n+" · "+r.c[2]);
+ }
+ throw new Error("Neznana tema.");
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti. Dovoljeno je manjše odstopanje zaradi zaokroževanja konstant.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001 + Math.abs(task.answer)*0.00006){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Kemijske reakcije · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+selectLab("balance");
+renderMission();
+generate();
+</script>
+</body>
+</html>
