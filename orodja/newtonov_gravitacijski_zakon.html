@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Newtonov gravitacijski zakon, privlak, gravitacijsko polje in orbite. Interaktivni poskusi, razlage in generator nalog.">
+<title>Newtonov gravitacijski zakon – Sidebit | Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.gz{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.gz *{box-sizing:border-box}.gz [hidden]{display:none!important}
+.gz .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.gz header.wrap{padding:25px 0 22px}.gz a{color:var(--accent);font-weight:750}
+.gz .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.gz .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.gz h1,.gz h2,.gz h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.gz h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.gz h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.gz h3{font-size:1.15rem;margin:0 0 9px}.gz p{margin:0 0 13px}.gz .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.gz .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.gz svg{display:block;width:100%;height:auto;overflow:visible}
+.gz nav,.gz .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.gz nav{margin:12px 0 24px}
+.gz button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.gz button:hover{background:var(--purple)}.gz button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.gz button[aria-pressed=true],.gz .primary{background:var(--yellow)}
+.gz button:disabled{opacity:.55;cursor:default}.gz :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.gz .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.gz .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.gz .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.gz .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.gz label{display:block;font-weight:700;margin:12px 0 4px}.gz label:first-child{margin-top:0}
+.gz input:not([type=checkbox]),.gz select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.gz input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.gz input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.gz output{color:var(--accent);font-weight:800}
+.gz .fine{font-size:.88rem;color:#4d5871}.gz .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.gz .lab-visual,.gz .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.gz .graph{cursor:crosshair}.gz .graph-label{font-weight:800;margin:7px 0 0}
+.gz .graph-group{min-width:0}.gz .graph-group p{margin:7px 0 0}
+.gz .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.gz .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.gz .metric:nth-child(2n){background:var(--mint)}.gz .metric strong{display:block;font-size:1.06rem}
+.gz .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.gz .lav{background:var(--purple)}.gz .accent-card{background:var(--yellow)}.gz .question{font-weight:700;font-size:1.06rem}
+.gz .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.gz details{margin:10px 0}.gz summary{cursor:pointer;font-weight:750}
+.gz .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.gz .question-card .row{margin-top:9px}.gz .question-card label{margin-top:9px}
+.gz .lesson{scroll-margin:15px}.gz .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.gz footer{padding:8px 0 28px}.gz .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.gz .grid,.gz .hero{grid-template-columns:1fr}.gz .hero-art{display:none}.gz .three{grid-template-columns:1fr}.gz .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.gz .wrap{width:calc(100% - 24px)}.gz .two{grid-template-columns:1fr}.gz nav button{flex:1 1 40%}.gz .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.gz{background:#fff;color:#000}body.gz.print-sheet > :not(#paper){display:none!important}body.gz.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.gz .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}.gz .graph{cursor:default}.gz .axis-note{margin-top:9px}.gz .field output{display:inline-block}.gz .key{font-size:.88rem;color:#424c64}
+.gz .warm{background:#fff2c4}.gz .legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.9rem}.gz .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}.gz .outcome{font-weight:750;color:#433186}.gz .lesson h3{margin-bottom:9px}
+@media(max-width:520px){.gz .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.gz .energy-key{display:flex;gap:8px 16px;flex-wrap:wrap;font-size:.9rem}.gz .energy-key span::before{content:"";display:inline-block;width:.75em;height:.75em;border:1px solid #22253a;background:var(--color);margin-right:.35em}
+.gz .subnote{margin-top:12px}.gz .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:520px){.gz .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.gz .equation{font-weight:700;color:#433186}.gz .fine.space{margin-top:12px}.gz .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:520px){.gz .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style></head>
+<body class="gz">
+<header class="wrap"><a href="../index.html">← Vsa orodja</a>
+<div class="hero"><div><span class="badge">SIDEBIT · FIZIKA</span><h1>Newtonov gravitacijski zakon</h1><p class="lead">Dve telesi se privlačita. Kako močno? Preizkusi zakon obratnega kvadrata, primerjaj težo na različnih višinah in izstreli satelit v simulaciji.</p></div>
+<svg class="hero-art" viewBox="0 0 310 140" role="img" aria-label="Planet in satelit na orbiti"><ellipse cx="147" cy="73" rx="119" ry="48" transform="rotate(-16 147 73)" fill="none" stroke="#5634aa" stroke-width="3" stroke-dasharray="6 5"/><circle cx="147" cy="73" r="35" fill="#c5f0e2" stroke="#22253a" stroke-width="3"/><path d="M118 62q25-7 48-12m-50 28q32 0 62-16" fill="none" stroke="#72bba6" stroke-width="4"/><circle cx="250" cy="31" r="11" fill="#ffe38b" stroke="#22253a" stroke-width="3"/><path d="M232 40l-38 17m6-10-6 10 12 1" fill="none" stroke="#5634aa" stroke-width="3"/></svg></div>
+<nav aria-label="Poglavja gravitacije"><button data-tab="force" aria-pressed="true">Privlačna sila</button><button data-tab="field" aria-pressed="false">Polje in teža</button><button data-tab="orbit" aria-pressed="false">Orbita satelita</button><button data-tab="challenge" aria-pressed="false">Učni izzivi</button><button data-tab="practice" aria-pressed="false">Generator nalog</button><button data-tab="theory" aria-pressed="false">Razlaga in formule</button></nav>
+</header>
+<main class="wrap">
+<section id="force"><div class="grid"><div class="card"><span class="chip">01 · Zakon obratnega kvadrata</span><h2>Kolikšen je privlak?</h2><div id="force-controls"></div><div class="row small-gap"><button id="double-r" class="primary">Podvoji razdaljo</button><button id="force-reset">Ponastavi</button></div><p id="force-feedback" class="feedback" role="status"></p><p class="fine">Model točkastih mas. Razdalja je med njunima položajema, pri dveh nepokrivajočih se krogelno simetričnih telesih pa med središčema.</p></div>
+<div class="card"><h2>Enaki sili, različna pospeška</h2><svg id="force-scene" class="lab-visual" viewBox="0 0 680 245" role="img" aria-label="Sili privlaka med telesoma in graf sile glede na razdaljo"></svg><div id="force-values" class="readouts"></div><p id="force-note" class="focus-box"></p><p class="fine">Vijolični puščici sta sili. Sta enako veliki in nasprotno usmerjeni. Njuni dolžini sta ponazoritev. Graf pokaže, kako velikost sile upada z razdaljo pri izbranih masah.</p></div></div></section>
+<section id="field" hidden><div class="grid"><div class="card lav"><span class="chip">02 · Gravitacijsko polje</span><h2>Masa in teža</h2><div id="field-controls"></div><p class="fine space">Zemljo obravnavamo kot krogelno simetrično in ne upoštevamo njenega vrtenja. Masa predmeta se z višino ne spremeni.</p></div><div class="card"><h2>Kaj se spremeni z višino?</h2><svg id="field-scene" class="lab-visual" viewBox="0 0 680 215" role="img" aria-label="Primerjava jakosti gravitacijskega polja na površju in na izbrani višini"></svg><div id="field-values" class="readouts"></div><p id="field-note" class="focus-box"></p><p class="fine">V orbiti je gravitacija še vedno prisotna. Občutek breztežnosti nastane, ker satelit in potnik skupaj prosto padata.</p></div></div></section>
+<section id="orbit" hidden><div class="grid"><div class="card"><span class="chip">03 · Prosti pad okoli Zemlje</span><h2>Izberi začetno hitrost</h2><div id="orbit-controls"></div><div class="row small-gap"><button id="orbit-circular">Krožna hitrost</button><button id="orbit-escape">Ubežna hitrost</button></div><p class="fine space">Začetna hitrost je tangentna na krog okoli središča Zemlje. Model zanemari ozračje, druge planete in premik Zemlje zaradi satelita.</p></div><div class="card"><h2>Od padca do ubežne poti</h2><svg id="orbit-scene" class="lab-visual" viewBox="0 0 680 310" role="img" aria-label="Tir satelita okoli Zemlje"></svg><label for="orbit-time">Čas: <output id="orbit-clock"></output></label><input id="orbit-time" type="range" min="0" max="1000" value="0"><div class="row"><button id="orbit-play" class="primary">Predvajaj</button><button id="orbit-start">Na začetek</button><button id="orbit-end">Na konec</button></div><div id="orbit-values" class="readouts"></div><p id="orbit-note" class="focus-box"></p><p class="fine">Črtkana črta kaže izračunani del tira. Prikaz se konča ob površju ali po določenem času, zato ni nujno viden celoten obhod. Animacija ima pospešen prikaz časa.</p></div></div></section>
+<section id="challenge" hidden><div class="card lav"><span class="chip">Najprej napovej</span><h2>Učni izzivi</h2><label for="mission">Izberi izziv</label><select id="mission"><option value="0">Podvojena razdalja</option><option value="1">Enaki sili</option><option value="2">Višina enega polmera</option><option value="3">Satelit v krožni orbiti</option></select><div id="mission-body" class="small-gap"></div><p id="mission-feedback" class="feedback" role="status"></p><button id="mission-open">Odpri poskus</button></div></section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Preveri odgovor, odpri namig ali pripravi delovni list.</p>
+<div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option><option value="force">Gravitacijska sila</option><option value="ratio">Zakon obratnega kvadrata</option><option value="field">Jakost polja</option><option value="weight">Masa in teža</option><option value="orbit">Krožna hitrost</option><option value="period">Obhodni čas</option><option value="escape">Ubežna hitrost</option><option value="energy">Gravitacijska potencialna energija</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div>
+<div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden><div class="card"><h2>Od gravitacijske sile do orbite</h2><div class="two">
+<div class="note"><h3>Newtonov gravitacijski zakon</h3><p class="formula">F = Gm₁m₂/r²</p><p>To je velikost privlačne sile. Sila na vsako telo kaže proti drugemu. G je gravitacijska konstanta; njena enota je N·m²/kg². Masi vstavi v kilogramih in razdaljo v metrih.</p></div>
+<div class="note lav"><h3>Obratni kvadrat</h3><p class="formula">r → 2r pomeni F → F/4</p><p>Podvojitev ene mase podvoji silo, podvojitev razdalje pa jo zmanjša na četrtino. Če hkrati podvojiš obe masi in razdaljo, ostane sila enaka.</p></div>
+<div class="note lav"><h3>Jakost polja in teža</h3><p class="formula">g = GM/(R + h)² · Fg = mg</p><p>G je univerzalna konstanta, g pa je odvisen od kraja. Pri višini h nad površjem je razdalja do središča R + h. Zunaj krogelno simetričnega telesa lahko njegovo maso v izračunu obravnavaš, kot da je zbrana v središču.</p></div>
+<div class="note"><h3>Krožna orbita</h3><p class="formula">v = √(GM/r) · T = 2πr/v</p><p>Gravitacija zagotavlja centripetalni pospešek: GM/r² = v²/r. Satelit nenehno pada proti Zemlji, njegova tangentna hitrost pa mu omogoča, da jo pri primerni orbiti zgreši.</p></div>
+<div class="note"><h3>Ubežna hitrost</h3><p class="formula">v<sub>ub</sub> = √(2GM/r)</p><p>Najmanjša hitrost za pobeg v idealnem modelu brez nadaljnjega pogona, če pot ne zadene površja. Pri tej hitrosti je skupna mehanska energija nič, ko za ničlo potencialne energije izberemo neskončnost.</p></div>
+<div class="note lav"><h3>Gravitacijska energija</h3><p class="formula">Eₚ = −GMm/r · E = ½mv² − GMm/r</p><p>Ko se telo oddalji, Eₚ narašča proti nič. Blizu površja je za majhne spremembe višine uporabna približna enačba ΔEₚ ≈ mgΔh. Za velike razdalje uporabi izraz z 1/r.</p></div></div>
+<details><summary>Rešen primer: dvakrat dlje od središča</summary><p>Na površju je r = R. Na višini enega Zemljinega polmera je r = 2R, zato je g tam GM/(2R)² = g₀/4. Predmet ima še vedno isto maso, gravitacijska sila nanj pa je štirikrat manjša.</p></details>
+<details><summary>Rešen primer: Luna in Zemlja</summary><p>Luna privlači Zemljo z enako veliko silo kot Zemlja Luno. Pospeška nista enaka: po drugem Newtonovem zakonu je a = F/m, zato ima lažje telo pri isti sili večji pospešek.</p></details></div></section>
+</main><footer class="wrap fine">Sidebit · Newtonov gravitacijski zakon</footer><div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const G=6.67430e-11,M=5.972e24,R=6371,mu=G*M/1e9;
+const nf=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:3});
+const fmt=x=>nf.format(Math.abs(x)<.0005?0:x);
+const fN=x=>x!==0&&(Math.abs(x)<.01||Math.abs(x)>=1e6)?x.toExponential(3).replace(".",",").replace("e+","e"):fmt(x);
+const line=(x,y,X,Y,c,w=2)=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${c}" stroke-width="${w}"/>`;
+const txt=(x,y,s,a="start")=>`<text x="${x}" y="${y}" text-anchor="${a}" font-size="14" font-weight="650" fill="#364058">${s}</text>`;
+const disk=(x,y,r,c)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" stroke="#22253a" stroke-width="2"/>`;
+function arrow(x,y,dx,dy,c){
+ const d=Math.hypot(dx,dy);if(!d)return "";
+ const u=dx/d,v=dy/d,X=x+dx,Y=y+dy;
+ return line(x,y,X,Y,c,3)+`<path d="M${X-9*u+4*v} ${Y-9*v-4*u}L${X} ${Y}L${X-9*u-4*v} ${Y-9*v+4*u}" fill="none" stroke="${c}" stroke-width="3"/>`;
+}
+const settings={force:{a:6,b:2,r:4},field:{h:400,m:60},orbit:{h:400,k:1}};
+const definitions={
+ force:[["a","Masa A","× 10¹⁰ kg",1,20,1],["b","Masa B","× 10¹⁰ kg",1,20,1],["r","Razdalja r","km",1,20,.5]],
+ field:[["h","Višina nad površjem","km",0,20000,1],["m","Masa predmeta","kg",10,120,1]],
+ orbit:[["h","Začetna višina","km",200,14000,50],["k","Začetna hitrost / krožna hitrost","",.45,1.75,"any"]]
+};
+const gravity=(a,b,r)=>G*a*b/(r*r);
+const atHeight=h=>G*M/((R+h)*1000)**2;
+const circular=r=>Math.sqrt(mu/r);
+function metrics(id,items){$(id).innerHTML=items.map(([a,b])=>`<div class="metric">${a}<strong>${b}</strong></div>`).join("");}
+function fields(id){
+ const p=settings[id],root=$(id+"-controls");root.replaceChildren();
+ for(const [key,name,unit,min,max,step] of definitions[id]){
+  const label=document.createElement("label"),input=document.createElement("input"),out=document.createElement("output");
+  input.type="range";input.id=id+"-"+key;input.min=min;input.max=max;input.step=step;input.value=p[key];label.htmlFor=input.id;
+  label.append(name+": ",out);const show=()=>out.textContent=fmt(p[key])+(unit?" "+unit:"");
+  show();input.oninput=()=>{p[key]=Number(input.value);show();update(id);};input.sync=()=>{input.value=p[key];show();};root.append(label,input);
+ }
+}
+function update(id){if(id==="force"){$("force-feedback").textContent="";renderForce();}else if(id==="field")renderField();else rebuildOrbit();}
+function renderForce(){
+ const p=settings.force,a=p.a*1e10,b=p.b*1e10,F=gravity(a,b,p.r*1000),left=55,right=154+p.r*6.5;
+ let svg=disk(left,85,16,"#ffe38b")+disk(right,85,16,"#c5f0e2")+txt(left,91,"A","middle")+txt(right,91,"B","middle")+
+  arrow(left+19,85,38,0,"#5634aa")+arrow(right-19,85,-38,0,"#5634aa")+line(left,136,right,136,"#8794a8")+txt((left+right)/2,159,fmt(p.r)+" km","middle");
+ const X=r=>368+(r-1)*280/19,Y=r=>190-142/(r*r);
+ svg+=line(368,41,368,190,"#8794a8")+line(368,190,650,190,"#8794a8")+txt(368,30,"F glede na vrednost pri 1 km");
+ for(const r of [1,5,10,15,20])svg+=txt(X(r),213,String(r),"middle");
+ const path=Array.from({length:121},(_,i)=>{const r=1+i*19/120;return (i?"L":"M")+X(r)+" "+Y(r);}).join(" ");
+ svg+=`<path d="${path}" fill="none" stroke="#5634aa" stroke-width="3"/>`+disk(X(p.r),Y(p.r),5,"#ffe38b")+txt(649,233,"r (km)","end")+txt(360,53,"1","end")+txt(360,195,"0","end");
+ $("force-scene").innerHTML=svg;
+ metrics("force-values",[["Velikost sile na vsako telo",fN(F)+" N"],["Pospešek A",fN(F/a)+" m/s²"],["Pospešek B",fN(F/b)+" m/s²"]]);
+ $("force-note").textContent=p.a===p.b?"Masi sta enaki, zato sta tudi velikosti pospeškov enaki. Smeri sta nasprotni.":"Sili sta enaki po velikosti. Manjša masa ima pri enaki sili večji pospešek.";
+}
+$("double-r").onclick=()=>{const p=settings.force;if(p.r>10){$("force-feedback").textContent="Za podvojitev najprej nastavi razdaljo največ 10 km.";return;}p.r*=2;$("force-r").sync();renderForce();$("force-feedback").textContent="Razdalja se je podvojila, sila je zdaj četrtina prejšnje."};
+$("force-reset").onclick=()=>{Object.assign(settings.force,{a:6,b:2,r:4});fields("force");update("force");};
+function renderField(){
+ const p=settings.field,s=atHeight(0),g=atHeight(p.h),ratio=g/s;
+ $("field-scene").innerHTML=txt(35,40,"Površje Zemlje · "+fmt(s)+" N/kg")+txt(35,125,"Višina "+fmt(p.h)+" km · "+fmt(g)+" N/kg")+
+  `<rect x="35" y="55" width="585" height="28" rx="7" fill="#e8ddff" stroke="#22253a" stroke-width="2"/><rect x="35" y="140" width="${585*ratio}" height="28" rx="7" fill="#c5f0e2" stroke="#22253a" stroke-width="2"/>`;
+ metrics("field-values",[["Oddaljenost od središča",fmt(R+p.h)+" km"],["Jakost polja g",fmt(g)+" N/kg"],["Gravitacijska sila",fmt(g*p.m)+" N"]]);
+ $("field-note").textContent=`g je ${fmt(100*ratio)} % površinske vrednosti. Masa predmeta ostaja ${p.m} kg.`;
+}
+function orbitModel(p){
+ const r0=R+p.h,v0=p.k*circular(r0),energy=v0*v0/2-mu/r0,ang=r0*v0,e=Math.abs(p.k*p.k-1),rp=ang*ang/(mu*(1+e));
+ const crash=rp<=R&&p.k<1;
+ const horizon=2*Math.PI*r0/circular(r0)*1.18,dt=horizon/2200;
+ let x=r0,y=0,u=0,v=v0,t=0;
+ const path=[{x,y,u,v,t}];
+ function accel(x,y){const z=-mu/Math.hypot(x,y)**3;return [z*x,z*y];}
+ for(let j=0;j<2200;j++){
+  const [ax,ay]=accel(x,y),X=x+u*dt+ax*dt*dt/2,Y=y+v*dt+ay*dt*dt/2;
+  const [bx,by]=accel(X,Y),U=u+(ax+bx)*dt/2,V=v+(ay+by)*dt/2;
+  if(Math.hypot(X,Y)<=R){
+   let lo=0,hi=1;for(let n=0;n<35;n++){const q=(lo+hi)/2;if(Math.hypot(x+(X-x)*q,y+(Y-y)*q)>R)lo=q;else hi=q;}
+   path.push({x:x+(X-x)*hi,y:y+(Y-y)*hi,u:u+(U-u)*hi,v:v+(V-v)*hi,t:t+dt*hi});break;
+  }
+  x=X;y=Y;u=U;v=V;t+=dt;path.push({x,y,u,v,t});
+ }
+ const end=path[path.length-1],extent=Math.max(R,...path.map(s=>Math.hypot(s.x,s.y)));
+ return {path,end,extent,r0,v0,energy,rp,crash,hit:Math.hypot(end.x,end.y)<=R+1e-6};
+}
+let orbit,t=0,playing=false,last=null,frame=0;
+function pause(){playing=false;last=null;cancelAnimationFrame(frame);$("orbit-play").textContent="Predvajaj";}
+function rebuildOrbit(){pause();orbit=orbitModel(settings.orbit);t=0;renderOrbit();}
+function stateAt(model,t){
+ const p=model.path;
+ if(t<=0)return p[0];if(t>=model.end.t)return model.end;
+ let a=0,b=p.length-1;while(b-a>1){const m=(a+b)>>1;if(p[m].t<=t)a=m;else b=m;}
+ const f=(t-p[a].t)/(p[b].t-p[a].t);
+ return Object.fromEntries(["x","y","u","v"].map(k=>[k,p[a][k]+f*(p[b][k]-p[a][k])]));
+}
+function renderOrbit(){
+ const m=orbit,s=stateAt(m,t),r=Math.hypot(s.x,s.y),v=Math.hypot(s.u,s.v),scale=128/m.extent;
+ const X=x=>340+x*scale,Y=y=>151-y*scale;
+ const step=Math.max(1,Math.floor(m.path.length/250)),samples=m.path.filter((_,i)=>i%step===0);if(samples[samples.length-1]!==m.end)samples.push(m.end);
+ const d=samples.map((p,i)=>(i?"L":"M")+X(p.x)+" "+Y(p.y)).join(" ");
+ $("orbit-scene").innerHTML=line(40,151,640,151,"#d6dce8",1)+line(340,19,340,284,"#d6dce8",1)+
+  `<path d="${d}" fill="none" stroke="#8874ba" stroke-width="2" stroke-dasharray="4 4"/>`+disk(340,151,R*scale,"#c5f0e2")+txt(340,157,"Zemlja","middle")+
+  disk(X(s.x),Y(s.y),5,"#ffe38b")+arrow(X(s.x),Y(s.y),-s.x/r*24,s.y/r*24,"#a0446c")+
+  txt(25,283,"Puščica: smer gravitacijske sile");
+ const k=settings.orbit.k;
+ const type=m.hit||m.crash?"Tir seka površje.":Math.abs(k-1)<1e-6?"Krožna orbita.":Math.abs(k-Math.SQRT2)<1e-6?"Parabolična ubežna pot.":m.energy>0?"Hiperbolična ubežna pot.":"Eliptična orbita.";
+ $("orbit-note").textContent=type+" Pri začetni višini je krožna hitrost "+fmt(circular(m.r0))+" km/s, ubežna pa "+fmt(Math.SQRT2*circular(m.r0))+" km/s.";
+ $("orbit-clock").textContent=fmt(t/60)+" / "+fmt(m.end.t/60)+" min";$("orbit-time").value=t/m.end.t*1000;
+ metrics("orbit-values",[["Začetna hitrost",fmt(m.v0)+" km/s"],["Trenutna hitrost",fmt(v)+" km/s"],["Trenutna višina",fmt(Math.max(0,r-R))+" km"]]);
+}
+function seek(value){pause();t=Math.max(0,Math.min(orbit.end.t,value));renderOrbit();}
+function animate(ts){if(!playing)return;if(last!==null)t=Math.min(orbit.end.t,t+Math.min(.05,(ts-last)/1000)*orbit.end.t/7);last=ts;renderOrbit();if(t>=orbit.end.t)pause();else frame=requestAnimationFrame(animate);}
+$("orbit-play").onclick=()=>{const was=playing;pause();if(was)return;if(t>=orbit.end.t)t=0;playing=true;$("orbit-play").textContent="Premor";frame=requestAnimationFrame(animate);};
+$("orbit-time").oninput=()=>seek(Number($("orbit-time").value)*orbit.end.t/1000);
+$("orbit-start").onclick=()=>seek(0);$("orbit-end").onclick=()=>seek(orbit.end.t);
+for(const [id,k] of [["orbit-circular",1],["orbit-escape",Math.SQRT2]])$(id).onclick=()=>{settings.orbit.k=k;$("orbit-k").sync();rebuildOrbit();};
+function tab(id){pause();for(const s of document.querySelectorAll("main > section"))s.hidden=s.id!==id;for(const b of document.querySelectorAll("[data-tab]"))b.setAttribute("aria-pressed",String(b.dataset.tab===id));}
+for(const b of document.querySelectorAll("[data-tab]"))b.onclick=()=>tab(b.dataset.tab);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();});
+</script>
+<script>
+const missions=[
+ {id:"force",p:{a:6,b:2,r:8},q:"Če ob nespremenjenih masah razdaljo podvojiš, kaj se zgodi z gravitacijsko silo?",options:["Prepolovi se.","Zmanjša se na četrtino.","Podvoji se."],correct:1,why:"Razdalja je v imenovalcu na kvadrat, zato je F(2r) = F(r)/4. V poskusu primerjaj 4 km in 8 km."},
+ {id:"force",p:{a:12,b:3,r:4},q:"Masa A je štirikrat večja od mase B. Katera trditev o medsebojnem privlaku drži?",options:["Na A deluje večja sila.","Na B deluje večja sila.","Sili sta enaki po velikosti, B pa ima štirikrat večji pospešek."],correct:2,why:"Sili sta par po tretjem Newtonovem zakonu. Pospešek a = F/m je pri štirikrat manjši masi štirikrat večji."},
+ {id:"field",p:{h:R,m:60},q:"Kolikšen delež površinske jakosti polja izmeriš na višini enega Zemljinega polmera?",options:["25 %","50 %","0 %"],correct:0,why:"Na tej višini je oddaljenost od središča 2R, zato je g = g₀/4."},
+ {id:"orbit",p:{h:400,k:1},q:"Kaj povzroča centripetalni pospešek satelita v krožni orbiti?",options:["Gravitacijska sila.","Tangentna hitrost sama.","Nič, ker satelit ne pada."],correct:0,why:"Gravitacija je usmerjena proti središču in spreminja smer hitrosti, tudi ko njena velikost ostaja stalna."}
+];
+function currentMission(){return missions[Number($("mission").value)];}
+function renderMission(){
+ const m=currentMission(),body=$("mission-body"),p=document.createElement("p"),choices=document.createElement("div");
+ p.className="question";p.textContent=m.q;choices.className="row";body.replaceChildren(p,choices);$("mission-feedback").textContent="";
+ m.options.forEach((option,i)=>{const b=document.createElement("button");b.textContent=option;b.setAttribute("aria-pressed","false");
+  b.onclick=()=>{for(const other of choices.children)other.setAttribute("aria-pressed",String(other===b));$("mission-feedback").textContent=(i===m.correct?"Pravilno. ":"Ni čisto tako. ")+m.why;};choices.append(b);});
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{const m=currentMission();tab(m.id);Object.assign(settings[m.id],m.p);fields(m.id);update(m.id);};
+const topics={force:"Gravitacijska sila",ratio:"Zakon obratnega kvadrata",field:"Jakost polja",weight:"Masa in teža",orbit:"Krožna hitrost",period:"Obhodni čas",escape:"Ubežna hitrost",energy:"Gravitacijska potencialna energija"};
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function makeTask(key,level){
+ const hard=level===2,a=integer(2,16),b=integer(2,12),d=integer(2,10),h=integer(2,20)*100,m=integer(2,15)*5,r=R+h;
+ const earth="Uporabi model Zemlje z R = 6371 km in GM ≈ 398589,196 km³/s².";
+ let prompt,answer,unit,hint,steps;
+ if(key==="force"){
+  const dist=hard?d*1.5:d;
+  prompt=`Točkasti masi ${a} · 10¹⁰ kg in ${b} · 10¹⁰ kg sta ${fmt(dist)} km narazen. Kolikšna je velikost sile na vsako? Uporabi G = 6,67430 · 10⁻¹¹ N·m²/kg².`;
+  answer=gravity(a*1e10,b*1e10,dist*1000);unit="N";hint="Pretvori razdaljo v metre in jo kvadriraj.";
+  steps=`r = ${fmt(dist*1000)} m. F = G · (${a} · 10¹⁰) · (${b} · 10¹⁰)/r² ≈ ${fmt(answer)} N.`;
+ }else if(key==="ratio"){
+  const factor=hard?2:1;answer=a*factor/d**2;unit="N";
+  prompt=`Začetna sila med masama je ${a} N. Razdaljo povečamo ${d}-krat${hard?" in eno maso podvojimo":""}. Kolikšna je nova sila?`;
+  hint="Razdalja vpliva s kvadratom, masa pa linearno.";
+  steps=`F₂ = F₁ · ${factor}/${d}² = ${a} · ${factor}/${d}² ≈ ${fmt(answer)} N.`;
+ }else if(key==="field"){
+  answer=hard?100*atHeight(h)/atHeight(0):atHeight(h);unit=hard?"%":"N/kg";
+  prompt=`Opazujemo gravitacijsko polje na višini ${h} km. ${hard?"Koliko odstotkov površinske jakosti je to?":"Kolikšna je jakost polja?"} ${earth}`;
+  hint=hard?"V razmerju g(h)/g(0) se GM pokrajša.":"Uporabi r = R + h. Iz GM/r² v km/s² dobiš N/kg z množenjem s 1000.";
+  steps=hard?`100 · (R/r)² = 100 · (6371/${r})² ≈ ${fmt(answer)} %.`:`g = 1000 · GM/${r}² ≈ ${fmt(answer)} N/kg.`;
+ }else if(key==="weight"){
+  const g=hard?atHeight(h):9.81;
+  answer=m*g;unit="N";
+  prompt=hard?`Predmet mase ${m} kg je na višini ${h} km. Kolikšna je gravitacijska sila nanj? ${earth}`:`Predmet ima maso ${m} kg, jakost polja je 9,81 N/kg. Kolikšna je gravitacijska sila nanj?`;
+  hint="Izračunaj Fg = mg."+(hard?" Uporabi jakost polja na izbrani višini.":"");
+  steps=(hard?`g = 1000 · GM/${r}² ≈ ${fmt(g)} N/kg. `:"")+`Fg = ${m} · g ≈ ${fmt(answer)} N.`;
+ }else if(key==="orbit"){
+  const radius=hard?r:7000+100*d;
+  prompt=`Satelit kroži ${hard?"na višini "+h+" km nad površjem":"na razdalji "+radius+" km od središča"}. Kolikšna je krožna hitrost? ${earth}`;
+  answer=circular(radius);unit="km/s";hint="Izenači gravitacijski in centripetalni pospešek.";
+  steps=`r = ${radius} km. Iz GM/r² = v²/r sledi v = √(GM/r) ≈ ${fmt(answer)} km/s.`;
+ }else if(key==="period"){
+  const radius=hard?r:7000+100*d,v=circular(radius);
+  answer=2*Math.PI*radius/v/60;unit="min";
+  prompt=hard?`Satelit kroži ${h} km nad površjem. Koliko minut traja en obhod? ${earth}`:`Satelit je v krožni orbiti s polmerom ${radius} km in hitrostjo ${fmt(v)} km/s. Koliko minut traja en obhod?`;
+  if(!hard)answer=2*Math.PI*radius/Number(v.toFixed(3))/60;
+  hint="Dolžino krožnice deli s hitrostjo in pretvori sekunde v minute.";
+  steps=(hard?`v = √(GM/r) ≈ ${fmt(v)} km/s. `:"")+`T = 2π · ${radius}/v s, torej T ≈ ${fmt(answer)} min.`;
+ }else if(key==="escape"){
+  const radius=hard?r:7000+100*d;answer=Math.SQRT2*circular(radius);unit="km/s";
+  prompt=`Kolikšna je ubežna hitrost ${hard?"na višini "+h+" km":"na razdalji "+radius+" km od središča Zemlje"} v idealnem modelu? ${earth}`;
+  hint="Za ubežno hitrost je mehanska energija nič, zato velja ½v² = GM/r.";
+  steps=`r = ${radius} km. vᵤ = √(2GM/r) ≈ ${fmt(answer)} km/s.`;
+ }else{
+  answer=hard?mu*m*(1/R-1/r):-mu*m/r;unit="MJ";
+  prompt=hard?`Telo mase ${m} kg dvignemo s površja na višino ${h} km. Kolikšna je sprememba gravitacijske potencialne energije? ${earth}`:`Telo mase ${m} kg je na višini ${h} km. Kolikšna je gravitacijska potencialna energija, če je ničla v neskončnosti? ${earth}`;
+  hint=hard?"Od končne potencialne energije odštej začetno.":"Uporabi Eₚ = −GMm/r. Enota kg·km²/s² je MJ.";
+  steps=hard?`ΔEₚ = GMm(1/${R} − 1/${r}) ≈ ${fmt(answer)} MJ.`:`Eₚ = −GM · ${m}/${r} ≈ ${fmt(answer)} MJ.`;
+ }
+ return {key,prompt,answer,unit,hint,steps};
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Newtonov gravitacijski zakon · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+for(const id of Object.keys(settings))fields(id);renderForce();renderField();rebuildOrbit();renderMission();generate();
+</script>
+</body></html>
