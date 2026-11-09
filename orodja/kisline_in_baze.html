@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivna kemija: kisline in baze, pH, nevtralizacija, titracija in pufri.">
+<title>Kisline in baze – Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.rs{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.rs *{box-sizing:border-box}.rs [hidden]{display:none!important}
+.rs .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.rs header.wrap{padding:25px 0 22px}.rs a{color:var(--accent);font-weight:750}
+.rs .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.rs .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.rs h1,.rs h2,.rs h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.rs h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.rs h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.rs h3{font-size:1.15rem;margin:0 0 9px}.rs p{margin:0 0 13px}.rs .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.rs .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.rs svg{display:block;width:100%;height:auto;overflow:visible}
+.rs nav,.rs .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.rs nav{margin:12px 0 24px}
+.rs button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.rs button:hover{background:var(--purple)}.rs button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.rs button[aria-pressed=true],.rs .primary{background:var(--yellow)}
+.rs button:disabled{opacity:.55;cursor:default}.rs :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.rs .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.rs .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.rs .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.rs .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.rs label{display:block;font-weight:700;margin:12px 0 4px}.rs label:first-child{margin-top:0}
+.rs input:not([type=checkbox]),.rs select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.rs input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.rs input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.rs output{color:var(--accent);font-weight:800}
+.rs .fine{font-size:.88rem;color:#4d5871}.rs .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.rs .lab-visual,.rs .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.rs .graph{cursor:crosshair}.rs .graph-label{font-weight:800;margin:7px 0 0}
+.rs .graph-group{min-width:0}.rs .graph-group p{margin:7px 0 0}
+.rs .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.rs .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.rs .metric:nth-child(2n){background:var(--mint)}.rs .metric strong{display:block;font-size:1.06rem}
+.rs .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.rs .lav{background:var(--purple)}.rs .accent-card{background:var(--yellow)}.rs .question{font-weight:700;font-size:1.06rem}
+.rs .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.rs details{margin:10px 0}.rs summary{cursor:pointer;font-weight:750}
+.rs .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.rs .question-card .row{margin-top:9px}.rs .question-card label{margin-top:9px}
+.rs .lesson{scroll-margin:15px}.rs .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.rs footer{padding:8px 0 28px}.rs .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.rs .grid,.rs .hero{grid-template-columns:1fr}.rs .hero-art{display:none}.rs .three{grid-template-columns:1fr}.rs .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.rs .wrap{width:calc(100% - 24px)}.rs .two{grid-template-columns:1fr}.rs nav button{flex:1 1 40%}.rs .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.rs{background:#fff;color:#000}body.rs.print-sheet > :not(#paper){display:none!important}body.rs.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.rs .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.rs .graph{cursor:default}
+.rs .subnote{margin-top:12px}
+.rs .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.rs .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.rs .graph-row{grid-template-columns:1fr}.rs .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.rs h1{font-size:clamp(44px,7vw,78px)}
+.rs .lab-visual{margin:10px 0 14px}
+.rs .lab-grid{align-items:start}
+.rs .plot-note{margin-top:10px}
+.rs .topic-buttons{margin:12px 0 24px}
+.rs .theory-grid .note{margin:0}
+.rs .theory-grid{margin:14px 0}
+.rs .mono{font-variant-numeric:tabular-nums}
+.rs .unit-table{border-collapse:collapse;width:100%;margin:12px 0}
+.rs .unit-table th,.rs .unit-table td{text-align:left;border-bottom:1px solid #bbc7ce;padding:6px}
+.rs .focus-box{margin-top:12px}
+.rs .hero h1{font-size:clamp(39px,6.4vw,76px);text-wrap:balance}
+</style>
+</head>
+<body class="rs">
+<header class="wrap">
+    <a href="../index.html">← Vsa orodja</a>
+    <div class="hero">
+        <div><span class="badge">SIDEBIT · KEMIJA</span><h1>Kisline in baze</h1>
+        <p class="lead">Spremeni pH, poišči ekvivalentno točko in preizkusi, kako dolgo pufer kljubuje dodani kislini.</p></div>
+        <svg class="hero-art" viewBox="0 0 330 145" role="img" aria-label="Titracijska krivulja z označeno ekvivalentno točko">
+            <rect x="16" y="12" width="298" height="120" rx="14" fill="#fff9ee" stroke="#22253a" stroke-width="3"/>
+            <path d="M39 31v78h250" stroke="#22253a" stroke-width="3" fill="none"/>
+            <path d="M43 103C140 102 159 94 165 72S180 43 286 36" stroke="#5634aa" stroke-width="5" fill="none"/>
+            <path d="M165 33v74" stroke="#00806a" stroke-width="2" stroke-dasharray="5 5"/>
+            <circle cx="165" cy="72" r="7" fill="#ffe38b" stroke="#22253a" stroke-width="2"/>
+            <text x="49" y="40" fill="#22253a" font-size="16" font-weight="700">pH</text>
+            <text x="284" y="124" text-anchor="end" fill="#22253a" font-size="13">dodani NaOH</text>
+        </svg>
+    </div>
+    <nav aria-label="Poglavja">
+        <button type="button" data-tab="lab" aria-pressed="true">Laboratorij</button>
+        <button type="button" data-tab="challenge" aria-pressed="false">Učni izzivi</button>
+        <button type="button" data-tab="practice" aria-pressed="false">Generator nalog</button>
+        <button type="button" data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+    </nav>
+</header>
+<main class="wrap">
+<section id="lab">
+    <div class="card lav">
+        <span class="chip">Štirje interaktivni poskusi</span><h2>Izberi poskus</h2>
+        <div id="lab-buttons" class="row topic-buttons"></div>
+    </div>
+    <div class="grid lab-grid">
+        <div class="card">
+            <span class="chip">01 · Nastavi</span><h2 id="lab-title"></h2>
+            <p id="lab-intro"></p><div id="controls"></div>
+            <div class="row small-gap"><button type="button" id="restore">Ponastavi poskus</button></div>
+        </div>
+        <div class="card">
+            <span class="chip">02 · Opazuj</span><h2 id="plot-title"></h2>
+            <svg id="plot" class="lab-visual" viewBox="0 0 550 285" role="img" aria-label="Vizualni prikaz poskusa"></svg>
+            <p id="plot-note" class="fine plot-note"></p>
+            <div id="values" class="readouts mono"></div><p id="conclusion" class="focus-box"></p>
+        </div>
+    </div>
+</section>
+<section id="challenge" hidden>
+    <div class="card lav">
+        <span class="chip">Najprej napovej</span><h2>Učni izzivi</h2>
+        <label for="mission">Izberi izziv</label><select id="mission"></select>
+        <div id="mission-body" class="small-gap"></div>
+        <p id="mission-feedback" class="feedback" role="status"></p>
+        <button type="button" id="mission-open">Odpri poskus</button>
+    </div>
+</section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden><div class="card">
+<h2>Od prenosa protona do titracijske krivulje</h2>
+<p>Za računanje množine iz prostornine in koncentracije ponovi <a href="raztopine.html">Raztopine</a>.</p>
+<div class="two theory-grid">
+<article class="note"><h3>1 · Kisline, baze in konjugirani pari</h3><p>Po Brønstedu je kislina donor protona, baza pa akceptor protona. Ko kislina odda proton, nastane njena konjugirana baza: CH₃COOH + H₂O ⇌ H₃O⁺ + CH₃COO⁻. Voda lahko proton sprejme ali odda.</p><p>Močna kislina v razredčeni vodi praktično v celoti odda proton, šibka pa le delno. <strong>Močna</strong> opisuje ravnotežje, <strong>koncentrirana</strong> pa količino snovi na prostornino. To sta različni lastnosti.</p></article>
+<article class="note lav"><h3>2 · pH, pOH in voda</h3><p class="formula">pH ≈ −log₁₀[H₃O⁺] · pOH ≈ −log₁₀[OH⁻]</p><p>V formulah vstavimo številsko vrednost koncentracije v mol/L. Strogo je pH definiran z aktivnostjo. Pri 25 °C velja pH + pOH ≈ 14, nevtralna voda pa ima pH približno 7. Padec pH za 1 pomeni desetkrat večjo aktivnost oksonijevih ionov.</p><p>Pri šibki kislini pH določa tudi Kₐ. Manjši pKₐ = −log₁₀Kₐ pomeni močnejšo kislino.</p></article>
+<article class="note lav"><h3>3 · Nevtralizacija in titracija</h3><p class="formula">H₃O⁺ + OH⁻ → 2 H₂O</p><p>Pri mešanju HCl in NaOH primerjaj množini n = cV. Presežek deli s skupno prostornino. Pri titraciji postopno dodajaš bazo in spremljaš pH. Pri <strong>ekvivalentni točki</strong> je dodana ravno stehiometrična množina baze.</p><p>Pri 25 °C ima titracija HCl z NaOH ekvivalentno točko pri pH približno 7; pri ocetni kislini je pH tam višji, ker acetat z vodo tvori OH⁻. <strong>Končna točka</strong> je trenutek, ko zaznaš npr. barvno spremembo indikatorja; od ekvivalentne lahko nekoliko odstopa.</p></article>
+<article class="note"><h3>4 · Pufri in indikatorji</h3><p class="formula">pH ≈ pKₐ + log₁₀([A⁻]/[HA])</p><p>Pufer vsebuje šibko kislino HA in njeno konjugirano bazo A⁻. A⁻ veže dodani proton, HA pa reagira z dodanim OH⁻. Ko sta količini primerljivi, se pH spreminja manj. Večja skupna količina pufernih komponent pomeni večjo kapaciteto pri istem razmerju.</p><p>Pri titraciji šibke kisline je pri polovici ekvivalentne prostornine pH približno enak pKₐ. Indikator spremeni barvo v določenem območju pH. Izberi ga tako, da njegovo območje leži na strmem delu krivulje.</p></article>
+</div>
+<details><summary>Rešen primer: pH močne baze</summary><p>Za 0,0010 mol/L NaOH je pOH ≈ 3,00. Pri 25 °C je pH ≈ 14 − 3,00 = 11,00.</p></details>
+<details><summary>Rešen primer: ekvivalentna prostornina</summary><p>25 mL 0,10 mol/L HCl vsebuje 2,50 mmol kisline. Pri razmerju 1 : 1 potrebuješ 2,50 mmol NaOH, torej 50 mL raztopine s koncentracijo 0,050 mol/L.</p></details>
+<details><summary>Rešen primer: pufer po dodatku kisline</summary><p>Pufer vsebuje 5 mmol HA in 5 mmol A⁻. Dodani 1 mmol HCl pretvori 1 mmol A⁻ v HA. Novo razmerje je 4/6, zato je pri pKₐ = 4,76 pH ≈ 4,76 + log₁₀(4/6) ≈ 4,58.</p></details>
+<p class="fine">Simulacije so učni model za 25 °C. Zanemarijo vpliv ionske jakosti, uporabijo koncentracije namesto aktivnosti in pri mešanju seštejejo prostornine. Vir: <a href="https://openstax.org/books/chemistry/pages/14-7-acid-base-titrations">OpenStax – kislinsko-bazne titracije</a>.</p>
+</div></section>
+</main>
+<footer class="wrap"><p>Sidebit · Kemija · Kisline in baze</p></footer>
+<div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const format=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:4,useGrouping:false});
+const fmt=x=>format.format(x);
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const C="#5634aa", B="#00806a", Y="#ffe38b", INK="#22253a";
+const line=(x,y,X,Y,color=INK,width=2,dash="")=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${color}" stroke-width="${width}" ${dash?'stroke-dasharray="'+dash+'"':""}/>`;
+const text=(x,y,s,anchor="middle")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="#364058" font-size="14" font-weight="650">${s}</text>`;
+const disk=(x,y,r=5,fill=Y)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${INK}" stroke-width="2"/>`;
+const rect=(x,y,w,h,fill,stroke=INK)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const series=(a,b,fn)=>Array.from({length:121},(_,i)=>{const x=a+(b-a)*i/120;return [x,fn(x)];});
+const axisFormat=new Intl.NumberFormat("sl-SI",{maximumSignificantDigits:4,useGrouping:false});
+const number=x=>axisFormat.format(x);
+function chart({xmin=0,xmax,ymin=0,ymax,xLabel,yLabel,curves,dots=[],shade=null,markers=[]}){
+    const left=72,right=521,top=35,bottom=222;
+    const X=x=>left+(right-left)*(x-xmin)/(xmax-xmin), Z=y=>bottom-(bottom-top)*(y-ymin)/(ymax-ymin);
+    const path=points=>points.map(([x,y],i)=>(i?"L":"M")+X(x)+" "+Z(y)).join(" ");
+    let svg='<defs><clipPath id="acid-plot-clip"><rect x="72" y="35" width="449" height="187"/></clipPath></defs>'+text(left,22,yLabel,"start")+text(right,275,xLabel,"end");
+    for(let i=0;i<=4;i++){
+        const x=xmin+(xmax-xmin)*i/4,y=ymin+(ymax-ymin)*i/4;
+        svg+=line(X(x),top,X(x),bottom,"#dce3ef",1)+line(left,Z(y),right,Z(y),"#dce3ef",1);
+        svg+=text(X(x),246,number(x))+text(left-9,Z(y)+5,number(y),"end");
+    }
+    svg+='<g clip-path="url(#acid-plot-clip)">';
+    if(shade?.length){
+        const [start]=shade,[end]=shade.slice(-1);
+        svg+=`<path d="${path(shade)} L${X(end[0])} ${Z(0)} L${X(start[0])} ${Z(0)} Z" fill="#ffe38b" opacity=".65"/>`;
+    }
+    svg+=line(left,top,left,bottom)+line(left,bottom,right,bottom);
+    for(const x of markers)svg+=line(X(x),top,X(x),bottom,"#a76b0d",1.5,"5 4");
+    for(const {points,color=C,dash=false} of curves)svg+=`<path d="${path(points)}" stroke="${color}" stroke-width="3.5" fill="none" ${dash?'stroke-dasharray="8 5"':""}/>`;
+    for(const [x,y] of dots)svg+=disk(X(x),Z(y));
+    return svg+"</g>";
+}
+function bars(data,unit){
+    const max=Math.max(1,...data.map(([,v])=>v));
+    return data.map(([label,value,color],i)=>{
+        const y=41+i*73;
+        return text(45,y,label+" · "+fmt(value)+" "+unit,"start")+rect(45,y+12,460,18,"#e9edf4","#dce3ef")+
+            (value>0 ? rect(45,y+12,460*value/max,18,color) : "");
+    }).join("");
+}
+const metric=(name,v,unit)=>[name,fmt(v)+(unit?" "+unit:"")];
+const slider=(id,label,min,max,step,value,unit="")=>({id,label,min,max,step,value,unit});
+const select=(id,label,value,options)=>({id,label,value,options});
+
+
+
+
+
+// Elektronevtralnost: [H₃O⁺] − [OH⁻] + presežek spremljevalnih kationov − [A⁻] = 0.
+const KW=1e-14,KA=10**(-4.76);
+function equilibrium(spectators,totalAcid=0){
+    let lo=-2,hi=16;
+    for(let i=0;i<57;i++){
+        const p=(lo+hi)/2,h=10**(-p);
+        const charge=h-KW/h+spectators-totalAcid*KA/(KA+h);
+        if(charge>0)lo=p;else hi=p;
+    }
+    return (lo+hi)/2;
+}
+function sample(kind,c){
+    return kind==="acid"?equilibrium(-c):kind==="base"?equilibrium(c):equilibrium(0,c);
+}
+function titration(kind,ca,va,cb,v){
+    const a=ca*va,b=cb*v,volume=va+v,delta=b-a;
+    return {a,b,delta,eq:a/cb,p:kind==="weak"?equilibrium(b/volume,a/volume):equilibrium(delta/volume)};
+}
+function buffer(total,ratio,addition){
+    const salt=total*ratio/(1+ratio),volume=.1; // Količine v mmol, referenčni volumen 0,100 L.
+    return {salt,acid:total-salt,p:equilibrium((salt+addition)/(1000*volume),total/(1000*volume)),water:equilibrium(addition/(1000*volume))};
+}
+const sci=x=>x.toExponential(2).replace(".",",");
+function phScale(p,color){
+    const ranges=["#ff9b9a","#ffa885","#ffc991","#ffdf91","#ffedaa","#dfebaa","#c2eac8","#a7e2d6","#99ddec","#aed8f8","#b4c4f8","#c4b5f5","#d0aef3","#d6a1e5"];
+    const x=48+454*p/14;
+    return text(48,49,"Kislo","start")+text(275,49,"Nevtralno")+text(502,49,"Bazično","end")+
+        ranges.map((c,i)=>rect(48+i*454/14,105,454/14,52,c,"#fff")).join("")+
+        [0,2,4,6,7,8,10,12,14].map(i=>text(48+i*454/14,188,i)).join("")+
+        line(x,83,x,167,color,3)+disk(x,80,9,color)+text(x<95?75:x>455?475:x,225,"pH "+fmt(p));
+}
+const lab={
+    ph:{name:"pH in jakost",title:"Lestvica pH pri 25 °C",
+        intro:"Primerjaj HCl, ocetno kislino in NaOH pri isti koncentraciji. Drsnik kaže negativni logaritem koncentracije, da lahko izbiraš med več velikostnimi redi.",
+        fields:[select("kind","Raztopljena snov","acid",[["acid","HCl · močna kislina"],["weak","CH₃COOH · šibka kislina"],["base","NaOH · močna baza"]]),slider("exp","Eksponent x pri c = 10⁻ˣ mol/L",1,8,.1,2)],
+        show:s=>{
+            const c=10**(-s.exp),p=sample(s.kind,c);
+            return {svg:phScale(p,C),values:[["Začetna koncentracija",sci(c)+" mol/L"],metric("pH",p),metric("pOH",14-p),["[H₃O⁺]",sci(10**(-p))+" mol/L"],["[OH⁻]",sci(10**(p-14))+" mol/L"]],
+                note:"Barve označujejo območja na lestvici, ne dejanskih barv raztopin ali indikatorjev.",
+                conclusion:s.exp>6?"Pri zelo nizkih koncentracijah vpliva tudi avtoionizacija vode. pH se približa 7.":s.kind==="weak"?"Ocetna kislina odda proton le delno, zato ima višji pH od HCl pri isti začetni koncentraciji.":"Pri močni kislini oziroma bazi je disociacija v tem modelu popolna."};
+        }},
+    neutral:{name:"Nevtralizacija",title:"Kateri reagent ostane v presežku?",
+        intro:"Zmešaj HCl in NaOH. Stolpca primerjata začetni množini, številke pa pokažejo rezultat mešanja.",
+        fields:[slider("ca","Koncentracija HCl",.01,.3,.01,.1,"mol/L"),slider("va","Prostornina HCl",5,100,1,25,"mL"),slider("cb","Koncentracija NaOH",.01,.3,.01,.1,"mol/L"),slider("v","Prostornina NaOH",0,100,1,15,"mL")],
+        show:s=>{
+            const r=titration("strong",s.ca,s.va,s.cb,s.v);
+            return {svg:bars([["HCl pred mešanjem",r.a,"#ffa8a8"],["NaOH pred mešanjem",r.b,"#a9c6ff"],["Množina v presežku",Math.abs(r.delta),"#ffe38b"]],"mmol"),
+                values:[metric("Skupna prostornina",s.va+s.v,"mL"),metric("Nevtralizirana množina",Math.min(r.a,r.b),"mmol"),metric("Končni pH",r.p)],
+                note:"Pri HCl in NaOH je stehiometrično razmerje 1 : 1.",
+                conclusion:Math.abs(r.delta)<1e-10?"Množini sta enaki. Pri teh pogojih je raztopina nevtralna.":r.delta<0?"Kislina je v presežku. Končni pH je pod 7.":"Baza je v presežku. Končni pH je nad 7."};
+        }},
+    titration:{name:"Titracijska krivulja",title:"Titracija kisline z NaOH",
+        intro:"Izberi močno ali šibko kislino. Dodano količino baze nastavi kot odstotek ekvivalentne prostornine in primerjaj obe krivulji.",
+        fields:[select("kind","Kislina","strong",[["strong","HCl"],["weak","Ocetna kislina"]]),slider("ca","Koncentracija kisline",.02,.2,.01,.1,"mol/L"),slider("cb","Koncentracija NaOH",.02,.2,.01,.1,"mol/L"),slider("percent","Dodana prostornina glede na ekvivalentno",0,200,.1,50,"%")],
+        show:s=>{
+            const va=25,eq=s.ca*va/s.cb,v=eq*s.percent/100, r=titration(s.kind,s.ca,va,s.cb,v);
+            const other=s.kind==="weak"?"strong":"weak";
+            const points=kind=>[...new Set([...series(0,200,x=>x).map(([x])=>x),50,99,99.9,99.99,100,100.01,100.1,101])].sort((a,b)=>a-b).map(x=>[x,titration(kind,s.ca,va,s.cb,eq*x/100).p]);
+            return {svg:chart({xmax:200,ymax:14,xLabel:"Dodani NaOH (% ekvivalentne prostornine)",yLabel:"pH",curves:[{points:points(other),color:B,dash:true},{points:points(s.kind)}],dots:[[s.percent,r.p]],markers:[100]}),
+                values:[metric("Začetna prostornina kisline",va,"mL"),metric("Dodana prostornina NaOH",v,"mL"),metric("Ekvivalentna prostornina",eq,"mL"),metric("Trenutni pH",r.p),metric("pH v ekvivalentni točki",titration(s.kind,s.ca,va,s.cb,eq).p)],
+                note:"Polna črta: izbrana kislina. Črtkana: druga kislina pri enakih pogojih. Ekvivalentna točka je pri 100 %.",
+                conclusion:s.kind==="weak"?"Pri 50 % je pH blizu pKₐ = 4,76. Pri 100 % acetat povzroči bazičen pH.":"Pri 100 % je pH približno 7. Poskusi premakniti drsnik z 99 % na 101 %."};
+        }},
+    buffer:{name:"Pufer",title:"Pufer in voda pod enakim dodatkom",
+        intro:"Dodaj HCl (negativno) ali NaOH (pozitivno) v enaki množini v pufer in v vodo. Model ohrani prostornino obeh vzorcev 100 mL.",
+        fields:[slider("total","Skupna količina acetata in ocetne kisline",2,20,.5,10,"mmol"),slider("ratio","Začetno razmerje A⁻ / HA",.25,4,.25,1),slider("add","Dodatek: HCl (−) ali NaOH (+)",-12,12,.25,-1,"mmol")],
+        show:s=>{
+            const r=buffer(s.total,s.ratio,s.add),start=buffer(s.total,s.ratio,0).p;
+            return {svg:chart({xmin:-12,xmax:12,ymax:14,xLabel:"Dodatek (mmol)",yLabel:"pH",curves:[{points:series(-12,12,x=>buffer(s.total,s.ratio,x).p)},{points:[...series(-12,-.1,x=>buffer(s.total,s.ratio,x).water),...series(-.1,.1,x=>buffer(s.total,s.ratio,x).water),...series(.1,12,x=>buffer(s.total,s.ratio,x).water)],color:B,dash:true}],dots:[[s.add,r.p],[s.add,r.water]],markers:[-r.salt,r.acid].filter(x=>x>=-12&&x<=12)}),
+                values:[metric("pH pufra pred dodatkom",start),metric("pH pufra po dodatku",r.p),metric("pH vode po dodatku",r.water),metric("Začetni A⁻",r.salt,"mmol"),metric("Začetni HA",r.acid,"mmol")],
+                note:"Polna črta: pufer. Črtkana: voda. Navpični oznaki kažeta, kje dodatek doseže začetno množino A⁻ ali HA.",
+                conclusion:s.add<=-r.salt||s.add>=r.acid?"Dodatek doseže ali preseže stehiometrično kapaciteto ene komponente. Puferski učinek močno oslabi.":"Pufer se na majhne dodatke odzove z manjšo spremembo pH. Opazuj, kako večja količina obeh komponent razširi položni del krivulje."};
+        }}
+};
+const settings=Object.fromEntries(Object.entries(lab).map(([key,s])=>[key,Object.fromEntries(s.fields.map(f=>[f.id,f.value]))]));
+const labButtons={};
+let active="ph";
+function renderLab(){
+    const l=lab[active], s=settings[active], r=l.show(s);
+    for(const f of l.fields){
+        if(f.hide)$("field-"+f.id).hidden=f.hide(s);
+        if(!f.options)$("out-"+f.id).textContent=fmt(s[f.id])+(f.unit?" "+f.unit:"");
+    }
+    $("plot-title").textContent=l.title;
+    $("plot").setAttribute("aria-label",l.title);
+    $("plot").innerHTML=r.svg;
+    $("plot-note").textContent=r.note;
+    $("conclusion").textContent=r.conclusion;
+    $("values").innerHTML=r.values.map(([name,value])=>`<div class="metric">${name}<strong>${value}</strong></div>`).join("");
+}
+function fillSelect(el,options){
+    el.replaceChildren(...options.map(([id,name])=>{const o=document.createElement("option");o.value=id;o.textContent=name;return o;}));
+}
+function selectLab(key,focus=false){
+    active=key;
+    for(const [id,button] of Object.entries(labButtons))button.setAttribute("aria-pressed",String(id===key));
+    const l=lab[key],s=settings[key],controls=$("controls");
+    $("lab-title").textContent=l.name;
+    $("lab-intro").textContent=l.intro;
+    controls.replaceChildren();
+    for(const f of l.fields){
+        const row=document.createElement("div"), label=document.createElement("label");
+        const input=document.createElement(f.options?"select":"input");
+        row.id="field-"+f.id;input.id="control-"+f.id;label.htmlFor=input.id;label.textContent=f.label;
+        if(f.options)fillSelect(input,f.options);
+        else{
+            input.type="range";input.min=f.min;input.max=f.max;input.step=f.step;
+            const out=document.createElement("output");out.id="out-"+f.id;label.append(": ",out);
+        }
+        input.value=s[f.id];
+        input.oninput=()=>{s[f.id]=f.options?input.value:Number(input.value);renderLab();};
+        row.append(label,input);controls.append(row);
+    }
+    renderLab();
+    if(focus)$("control-"+l.fields[0].id).focus();
+}
+for(const [key,item] of Object.entries(lab)){
+    const button=document.createElement("button");button.type="button";button.textContent=item.name;
+    button.onclick=()=>selectLab(key,true);
+    $("lab-buttons").append(button);labButtons[key]=button;
+}
+$("restore").onclick=()=>{
+    Object.assign(settings[active],Object.fromEntries(lab[active].fields.map(f=>[f.id,f.value])));
+    selectLab(active,true);
+};
+function tab(id){
+    for(const section of document.querySelectorAll("main > section"))section.hidden=section.id!==id;
+    for(const button of document.querySelectorAll("[data-tab]"))button.setAttribute("aria-pressed",String(button.dataset.tab===id));
+}
+for(const button of document.querySelectorAll("[data-tab]"))button.onclick=()=>tab(button.dataset.tab);
+const missions=[
+ {name:"Moč ni koncentracija",key:"ph",start:{kind:"weak",exp:2},q:"Katera raztopina ima nižji pH pri enaki koncentraciji: HCl ali ocetna kislina?",a:["Ocetna kislina","HCl","Imata enak pH"],i:1,why:"HCl v razredčeni vodi praktično v celoti odda proton, ocetna kislina pa le delno."},
+ {name:"Dvakrat več baze?",key:"neutral",start:{ca:.1,va:25,cb:.05,v:50},q:"Za 25 mL 0,10 mol/L HCl imaš 0,050 mol/L NaOH. Koliko baze potrebuješ za nevtralizacijo?",a:["12,5 mL","25 mL","50 mL"],i:2,why:"Koncentracija baze je polovica koncentracije kisline, zato za enako množino potrebuješ dvakratni volumen."},
+ {name:"Ekvivalenca ni vedno pH 7",key:"titration",start:{kind:"weak",percent:100},q:"Kakšen je pH v ekvivalentni točki pri titraciji ocetne kisline z NaOH?",a:["Pod 7","Približno 7","Nad 7"],i:2,why:"Acetat sprejema protone iz vode in pri tem nastaja OH⁻."},
+ {name:"Kam gre dodani proton?",key:"buffer",start:{add:-1},q:"Katera komponenta acetatnega pufra reagira z dodanimi H₃O⁺?",a:["Acetatni ion","Ocetna kislina","Natrijev ion"],i:0,why:"Acetat sprejme proton in se pretvori v ocetno kislino."}
+];
+fillSelect($("mission"),missions.map((m,i)=>[i,m.name]));
+function currentMission(){return missions[Number($("mission").value||0)];}
+function renderMission(){
+    const m=currentMission(), p=document.createElement("p"), group=document.createElement("div");
+    p.className="question";p.textContent=m.q;group.className="row";
+    $("mission-body").replaceChildren(p,group);$("mission-feedback").textContent="";
+    m.a.forEach((answer,i)=>{
+        const button=document.createElement("button");button.type="button";button.textContent=answer;button.setAttribute("aria-pressed","false");
+        button.onclick=()=>{
+            for(const other of group.children)other.setAttribute("aria-pressed",String(other===button));
+            $("mission-feedback").textContent=i===m.i?"Pravilno. "+m.why:"Poskusi še enkrat ali preveri v poskusu.";
+        };
+        group.append(button);
+    });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{
+    const m=currentMission();Object.assign(settings[m.key],Object.fromEntries(lab[m.key].fields.map(f=>[f.id,f.value])),m.start);tab("lab");selectLab(m.key,true);
+};
+
+
+
+
+
+
+const topics={ph:"pH in pOH",neutral:"Nevtralizacija",titration:"Titracija",buffer:"Pufri"};
+fillSelect($("topic"),[["all","Mešano"],...Object.entries(topics)]);
+function makeTask(key,level){
+    const hard=level===2;
+    const task=(prompt,answer,unit,hint,steps)=>({key,prompt,answer,unit,hint,steps});
+    if(key==="ph"){
+        const c=integer(1,25)/1000, p=sample(hard?"base":"acid",c);
+        return task(`Izračunaj pH ${fmt(c)} mol/L raztopine ${hard?"NaOH":"HCl"} pri 25 °C.`,p,"pH",hard?"Najprej izračunaj pOH.":"Koncentracija H₃O⁺ je približno enaka koncentraciji HCl.",hard?`pOH ≈ −log₁₀(${fmt(c)}), zato je pH ≈ 14 − pOH = ${fmt(p)}.`:`pH ≈ −log₁₀(${fmt(c)}) = ${fmt(p)}.`);
+    }
+    if(key==="neutral"){
+        const ca=integer(5,20)/100,va=integer(10,35),v=va+integer(-8,-1),r=titration("strong",ca,va,ca,v);
+        const mix=`Zmešaš ${va} mL HCl in ${v} mL NaOH. Obe raztopini imata koncentracijo ${fmt(ca)} mol/L.`;
+        if(!hard)return task(mix+" Koliko mmol kisline ostane v presežku?",-r.delta,"mmol","Pri n = cV vnesi V v mL, da dobiš n v mmol.",`n(HCl) − n(NaOH) = ${fmt(r.a)} − ${fmt(r.b)} = ${fmt(-r.delta)} mmol.`);
+        return task(mix+" Izračunaj končni pH pri 25 °C.",r.p,"pH","Presežek HCl deli s skupno prostornino.",`[H₃O⁺] ≈ (${fmt(r.a)} − ${fmt(r.b)})/(${va} + ${v}) mol/L. pH ≈ ${fmt(r.p)}.`);
+    }
+    if(key==="titration"){
+        const ca=integer(4,15)/100, cb=integer(5,20)/100, va=integer(12,30),v=ca*va/cb;
+        const mix=`Titriraš ${va} mL HCl z NaOH koncentracije ${fmt(cb)} mol/L.`;
+        if(!hard)return task(mix+` Koncentracija HCl je ${fmt(ca)} mol/L. Kolikšna je ekvivalentna prostornina NaOH?`,v,"mL","V ekvivalentni točki sta množini kisline in baze enaki.",`V(NaOH) = ${va} × ${fmt(ca)}/${fmt(cb)} = ${fmt(v)} mL.`);
+        const vb=integer(10,60)/2;
+        return task(mix+` Ekvivalentno točko dosežeš pri ${fmt(vb)} mL NaOH. Kolikšna je koncentracija HCl?`,cb*vb/va,"mol/L","Izračunaj dodano množino NaOH pri ekvivalenci.",`c(HCl) = ${fmt(cb)} × ${fmt(vb)}/${va} = ${fmt(cb*vb/va)} mol/L.`);
+    }
+    const acid=integer(3,16),salt=integer(3,16),d=hard?integer(1,2):0, p=4.76+Math.log10((salt-d)/(acid+d));
+    return task(`Acetatni pufer vsebuje ${acid} mmol CH₃COOH in ${salt} mmol CH₃COO⁻. ${hard?`Dodaš ${d} mmol HCl. `:""}Oceni pH z enačbo Henderson–Hasselbalch (pKₐ = 4,76).`,p,"pH",hard?"HCl porabi del acetata in za enako množino poveča količino ocetne kisline.":"V logaritem vstavi razmerje med acetatom in ocetno kislino.",`pH ≈ 4,76 + log₁₀(${salt-d}/${acid+d}) = ${fmt(p)}.`);
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti. Dovoljeno je manjše odstopanje zaradi zaokroževanja konstant.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001 + Math.abs(task.answer)*0.00006){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Kisline in baze · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+selectLab("ph");
+renderMission();
+generate();
+</script>
+</body>
+</html>

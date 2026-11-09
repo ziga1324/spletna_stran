@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivna kemija: koncentracija, redčenje, topnost, nasičenost in obarjanje.">
+<title>Raztopine – Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.rs{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.rs *{box-sizing:border-box}.rs [hidden]{display:none!important}
+.rs .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.rs header.wrap{padding:25px 0 22px}.rs a{color:var(--accent);font-weight:750}
+.rs .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.rs .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.rs h1,.rs h2,.rs h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.rs h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.rs h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.rs h3{font-size:1.15rem;margin:0 0 9px}.rs p{margin:0 0 13px}.rs .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.rs .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.rs svg{display:block;width:100%;height:auto;overflow:visible}
+.rs nav,.rs .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.rs nav{margin:12px 0 24px}
+.rs button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.rs button:hover{background:var(--purple)}.rs button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.rs button[aria-pressed=true],.rs .primary{background:var(--yellow)}
+.rs button:disabled{opacity:.55;cursor:default}.rs :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.rs .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.rs .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.rs .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.rs .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.rs label{display:block;font-weight:700;margin:12px 0 4px}.rs label:first-child{margin-top:0}
+.rs input:not([type=checkbox]),.rs select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.rs input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.rs input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.rs output{color:var(--accent);font-weight:800}
+.rs .fine{font-size:.88rem;color:#4d5871}.rs .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.rs .lab-visual,.rs .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.rs .graph{cursor:crosshair}.rs .graph-label{font-weight:800;margin:7px 0 0}
+.rs .graph-group{min-width:0}.rs .graph-group p{margin:7px 0 0}
+.rs .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.rs .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.rs .metric:nth-child(2n){background:var(--mint)}.rs .metric strong{display:block;font-size:1.06rem}
+.rs .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.rs .lav{background:var(--purple)}.rs .accent-card{background:var(--yellow)}.rs .question{font-weight:700;font-size:1.06rem}
+.rs .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.rs details{margin:10px 0}.rs summary{cursor:pointer;font-weight:750}
+.rs .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.rs .question-card .row{margin-top:9px}.rs .question-card label{margin-top:9px}
+.rs .lesson{scroll-margin:15px}.rs .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.rs footer{padding:8px 0 28px}.rs .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.rs .grid,.rs .hero{grid-template-columns:1fr}.rs .hero-art{display:none}.rs .three{grid-template-columns:1fr}.rs .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.rs .wrap{width:calc(100% - 24px)}.rs .two{grid-template-columns:1fr}.rs nav button{flex:1 1 40%}.rs .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.rs{background:#fff;color:#000}body.rs.print-sheet > :not(#paper){display:none!important}body.rs.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.rs .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.rs .graph{cursor:default}
+.rs .subnote{margin-top:12px}
+.rs .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.rs .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.rs .graph-row{grid-template-columns:1fr}.rs .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.rs h1{font-size:clamp(44px,7vw,78px)}
+.rs .lab-visual{margin:10px 0 14px}
+.rs .lab-grid{align-items:start}
+.rs .plot-note{margin-top:10px}
+.rs .topic-buttons{margin:12px 0 24px}
+.rs .theory-grid .note{margin:0}
+.rs .theory-grid{margin:14px 0}
+.rs .mono{font-variant-numeric:tabular-nums}
+.rs .unit-table{border-collapse:collapse;width:100%;margin:12px 0}
+.rs .unit-table th,.rs .unit-table td{text-align:left;border-bottom:1px solid #bbc7ce;padding:6px}
+.rs .focus-box{margin-top:12px}
+.rs .hero h1{font-size:clamp(39px,6.4vw,76px);text-wrap:balance}
+</style>
+</head>
+<body class="rs">
+<header class="wrap">
+    <a href="../index.html">← Vsa orodja</a>
+    <div class="hero">
+        <div><span class="badge">SIDEBIT · KEMIJA</span><h1>Raztopine</h1>
+        <p class="lead">Pripravi raztopino, dodaj vodo in primerjaj topnost dveh soli. Nato zmešaj raztopini in preveri, ali nastane oborina.</p></div>
+        <svg class="hero-art" viewBox="0 0 330 145" role="img" aria-label="Tri čaše z raztopinami">
+            <path d="M27 35v80h76V35M128 35v80h76V35M229 35v80h76V35" fill="none" stroke="#22253a" stroke-width="4"/>
+            <path d="M30 75h70v37H30Z" fill="#ffe38b"/><path d="M131 64h70v48h-70Z" fill="#c5f0e2"/><path d="M232 55h70v57h-70Z" fill="#d8ecff"/>
+            <g fill="#5634aa"><circle cx="45" cy="85" r="4"/><circle cx="65" cy="95" r="4"/><circle cx="82" cy="84" r="4"/><circle cx="58" cy="106" r="4"/><circle cx="85" cy="105" r="4"/><circle cx="152" cy="78" r="4"/><circle cx="182" cy="96" r="4"/><circle cx="251" cy="104" r="5"/><circle cx="264" cy="108" r="4"/><circle cx="276" cy="102" r="5"/><circle cx="289" cy="108" r="4"/></g>
+        </svg>
+    </div>
+    <nav aria-label="Poglavja">
+        <button type="button" data-tab="lab" aria-pressed="true">Laboratorij</button>
+        <button type="button" data-tab="challenge" aria-pressed="false">Učni izzivi</button>
+        <button type="button" data-tab="practice" aria-pressed="false">Generator nalog</button>
+        <button type="button" data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+    </nav>
+</header>
+<main class="wrap">
+<section id="lab">
+    <div class="card lav">
+        <span class="chip">Štirje interaktivni poskusi</span><h2>Izberi poskus</h2>
+        <div id="lab-buttons" class="row topic-buttons"></div>
+    </div>
+    <div class="grid lab-grid">
+        <div class="card">
+            <span class="chip">01 · Nastavi</span><h2 id="lab-title"></h2>
+            <p id="lab-intro"></p><div id="controls"></div>
+            <div class="row small-gap"><button type="button" id="restore">Ponastavi poskus</button></div>
+        </div>
+        <div class="card">
+            <span class="chip">02 · Opazuj</span><h2 id="plot-title"></h2>
+            <svg id="plot" class="lab-visual" viewBox="0 0 550 285" role="img" aria-label="Vizualni prikaz poskusa"></svg>
+            <p id="plot-note" class="fine plot-note"></p>
+            <div id="values" class="readouts mono"></div><p id="conclusion" class="focus-box"></p>
+        </div>
+    </div>
+</section>
+<section id="challenge" hidden>
+    <div class="card lav">
+        <span class="chip">Najprej napovej</span><h2>Učni izzivi</h2>
+        <label for="mission">Izberi izziv</label><select id="mission"></select>
+        <div id="mission-body" class="small-gap"></div>
+        <p id="mission-feedback" class="feedback" role="status"></p>
+        <button type="button" id="mission-open">Odpri poskus</button>
+    </div>
+</section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden>
+ <div class="card">
+  <h2>Od koncentracije do oborine</h2>
+  <p>Raztopina je homogena zmes. Topilo je snov, v kateri se topljenec raztopi. Pri vodnih raztopinah je topilo voda. Za pretvorbe med grami in moli ponovi <a href="kemijski_racuni.html">Kemijske račune</a>.</p>
+  <div class="two theory-grid">
+   <article class="note"><h3>1 · Načini izražanja koncentracije</h3>
+    <p class="formula">c = n/V &nbsp; · &nbsp; γ = m/V &nbsp; · &nbsp; w = m<sub>topljenca</sub>/m<sub>raztopine</sub></p>
+    <p>Množinska koncentracija c ima enoto mol/L, masna koncentracija γ pa običajno g/L. Pri obeh je V <strong>končna prostornina raztopine</strong>. Masni delež w deli maso topljenca z maso celotne raztopine; w × 100 je masni odstotek.</p>
+    <p>Če poznaš molsko maso M v g/mol, velja γ = cM. Masni odstotek in g/L nista zamenljiva. Za pretvorbo med njima potrebuješ gostoto raztopine.</p>
+   </article>
+   <article class="note lav"><h3>2 · Redčenje z vodo</h3>
+    <p class="formula">c₁V₁ = c₂V₂</p>
+    <p>Pri dodajanju čistega topila ostane množina topljenca enaka, zato koncentracija pade. V enačbi uporabi prostornini v istih enotah. V laboratoriju merimo končno prostornino V₂, saj se prostornine pri mešanju ne seštevajo vedno natančno. Če med postopkom topljenec reagira, izhlapi ali se izloči, preprosto pravilo ne zadošča.</p>
+   </article>
+   <article class="note lav"><h3>3 · Topnost, nasičenost in temperatura</h3>
+    <p>Topnost pove, koliko topljenca se lahko raztopi pri danih pogojih. Tukaj jo izražamo v gramih topljenca na <strong>100 g vode</strong>. Če je topnost 32 g/100 g vode, se v 50 g vode raztopi največ 16 g topljenca. Nasičena raztopina je na meji topnosti. Če je prisotna tudi trdna snov, se ta v ravnovesju raztaplja in izloča z enako hitrostjo.</p>
+    <p>Topnost kalijevega nitrata s temperaturo močno naraste, pri natrijevem kloridu pa precej manj. Če nasičeno raztopino ohladimo, se lahko del topljenca izloči kot kristali. Včasih nastane prenasičena raztopina, ki je nestabilna glede na kristalizacijo in lahko začasno obstaja; simulacija prikazuje končno ravnovesje.</p>
+   </article>
+   <article class="note"><h3>4 · Obarjanje in topnostni produkt</h3>
+    <p class="formula">AgCl(s) ⇌ Ag⁺(aq) + Cl⁻(aq) &nbsp; · &nbsp; Q ≈ [Ag⁺][Cl⁻]</p>
+    <p>Po mešanju najprej izračunaj koncentraciji v <strong>skupni prostornini</strong>, nato ionski produkt Q. Če je Q &gt; K<sub>sp</sub>, se v ravnovesnem modelu izloči oborina. Če je Q &lt; K<sub>sp</sub>, se ne izloči; pri enakosti smo na meji nasičenja. Po obarjanju nekaj ionov ostane v raztopini. Na⁺ in NO₃⁻ sta v tem primeru spremljevalna iona.</p>
+    <p>Model uporablja koncentracije namesto aktivnosti, privzame seštevanje prostornin in ne obravnava kompleksnih ionov. Za soli z drugačnimi stehiometričnimi koeficienti ima izraz za topnostni produkt drugačne potence.</p>
+   </article>
+  </div>
+  <details><summary>Rešen primer: redčenje</summary><p>50 mL raztopine s c₁ = 0,40 mol/L razredčimo do 200 mL. Množina topljenca ostane 0,020 mol, nova koncentracija pa je 0,40 × 50/200 = 0,10 mol/L.</p></details>
+  <details><summary>Rešen primer: topnost in preostanek</summary><p>Če je topnost 32 g na 100 g vode, se v 150 g vode raztopi največ 48 g. Če dodamo 60 g topljenca, ostane v ravnovesju 12 g trdne snovi.</p></details>
+  <details><summary>Rešen primer: ali nastane AgCl?</summary><p>Zmešamo enaki prostornini 0,00020 mol/L AgNO₃ in 0,00020 mol/L NaCl. Začetni koncentraciji Ag⁺ in Cl⁻ po mešanju sta po 0,00010 mol/L. Tako je Q ≈ 1,0 × 10⁻⁸, kar presega K<sub>sp</sub> ≈ 1,8 × 10⁻¹⁰ pri 25 °C, zato nastane oborina.</p></details>
+  <p class="fine small-gap">Viri: <a href="https://openstax.org/books/chemistry/pages/15-1-precipitation-and-dissolution">OpenStax: obarjanje in raztapljanje</a>, <a href="https://openstax.org/books/chemistry-2e/pages/j-solubility-products">tabela topnostnih produktov</a>. Topnostni krivulji sta približka iz zaokroženih učnih vrednosti.</p>
+ </div>
+</section>
+</main>
+<footer class="wrap"><p>Sidebit · Kemija · Raztopine</p></footer>
+<div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id),KSP=1.8e-10;
+const format=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:4,useGrouping:false});
+const fmt=x=>format.format(x);
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const C="#5634aa", B="#00806a", Y="#ffe38b", INK="#22253a";
+const line=(x,y,X,Y,color=INK,width=2,dash="")=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${color}" stroke-width="${width}" ${dash?'stroke-dasharray="'+dash+'"':""}/>`;
+const text=(x,y,s,anchor="middle")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="#364058" font-size="14" font-weight="650">${s}</text>`;
+const disk=(x,y,r=5,fill=Y)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${INK}" stroke-width="2"/>`;
+const rect=(x,y,w,h,fill,stroke=INK)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const series=(a,b,fn)=>Array.from({length:121},(_,i)=>{const x=a+(b-a)*i/120;return [x,fn(x)];});
+const axisFormat=new Intl.NumberFormat("sl-SI",{maximumSignificantDigits:4,useGrouping:false});
+const number=x=>axisFormat.format(x);
+function chart({xmin=0,xmax,ymin=0,ymax,xLabel,yLabel,curves,dots=[],shade=null,markers=[]}){
+    const left=72,right=521,top=35,bottom=222;
+    const X=x=>left+(right-left)*(x-xmin)/(xmax-xmin), Z=y=>bottom-(bottom-top)*(y-ymin)/(ymax-ymin);
+    const path=points=>points.map(([x,y],i)=>(i?"L":"M")+X(x)+" "+Z(y)).join(" ");
+    let svg='<defs><clipPath id="solutions-plot-clip"><rect x="72" y="35" width="449" height="187"/></clipPath></defs>'+text(left,22,yLabel,"start")+text(right,275,xLabel,"end");
+    for(let i=0;i<=4;i++){
+        const x=xmin+(xmax-xmin)*i/4,y=ymin+(ymax-ymin)*i/4;
+        svg+=line(X(x),top,X(x),bottom,"#dce3ef",1)+line(left,Z(y),right,Z(y),"#dce3ef",1);
+        svg+=text(X(x),246,number(x))+text(left-9,Z(y)+5,number(y),"end");
+    }
+    svg+='<g clip-path="url(#solutions-plot-clip)">';
+    if(shade?.length){
+        const [start]=shade,[end]=shade.slice(-1);
+        svg+=`<path d="${path(shade)} L${X(end[0])} ${Z(0)} L${X(start[0])} ${Z(0)} Z" fill="#ffe38b" opacity=".65"/>`;
+    }
+    svg+=line(left,top,left,bottom)+line(left,bottom,right,bottom);
+    for(const x of markers)svg+=line(X(x),top,X(x),bottom,"#a76b0d",1.5,"5 4");
+    for(const {points,color=C,dash=false} of curves)svg+=`<path d="${path(points)}" stroke="${color}" stroke-width="3.5" fill="none" ${dash?'stroke-dasharray="8 5"':""}/>`;
+    for(const [x,y] of dots)svg+=disk(X(x),Z(y));
+    return svg+"</g>";
+}
+function bars(data,unit){
+    const max=Math.max(1,...data.map(([,v])=>v));
+    return data.map(([label,value,color],i)=>{
+        const y=41+i*73;
+        return text(45,y,label+" · "+fmt(value)+" "+unit,"start")+rect(45,y+12,460,18,"#e9edf4","#dce3ef")+
+            (value>0 ? rect(45,y+12,460*value/max,18,color) : "");
+    }).join("");
+}
+const metric=(name,v,unit)=>[name,fmt(v)+(unit?" "+unit:"")];
+const slider=(id,label,min,max,step,value,unit="")=>({id,label,min,max,step,value,unit});
+const select=(id,label,value,options)=>({id,label,value,options});
+
+
+
+
+
+const SOLUTES={NaCl:58.44,KNO3:101.10,glukoza:180.16};
+const scientific=x=>x===0?"0":x.toExponential(3).replace(".",",");
+function concentration(m,water,rho,M){
+    const volume=(m+water)/rho;
+    const gamma=1000*m/volume;
+    return {volume,gamma,c:gamma/M,percent:100*m/(m+water)};
+}
+function dilution(c,v,extra){return {v2:v+extra,n:c*v/1000,c2:c*v/(v+extra)};}
+const solubilities={NaCl:[35.7,35.9,36.5,37.1,38],KNO3:[13.3,31.6,63.9,110,169]};
+function solubility(key,t){
+    const i=Math.min(3,Math.floor(t/20)), a=solubilities[key];
+    return a[i]+(a[i+1]-a[i])*(t-20*i)/20;
+}
+function saturation(key,t,water,m){
+    const capacity=solubility(key,t)*water/100;
+    return {capacity,dissolved:Math.min(capacity,m),solid:Math.max(0,m-capacity)};
+}
+function precipitation(ca,va,cb,vb){
+    const total=va+vb,x=ca*1e-3*va/total,y=cb*1e-3*vb/total,q=x*y;
+    const diff=Math.abs(x-y);
+    const remainingSmall=q>KSP?2*KSP/(diff+Math.hypot(diff,2*Math.sqrt(KSP))):Math.min(x,y);
+    const d=Math.max(0,Math.min(x,y)-remainingSmall);
+    return {x,y,q,d,ag:x<=y?remainingSmall:remainingSmall+diff,cl:y<=x?remainingSmall:remainingSmall+diff,mg:d*total*143.32};
+}
+function glass(x,bottom,height,color,label){
+    return rect(x,bottom-height,116,height,color,color)+
+        line(x,bottom-130,x,bottom)+line(x,bottom,x+116,bottom)+line(x+116,bottom,x+116,bottom-130)+
+        text(x+58,bottom+27,label);
+}
+const lab={
+    concentration:{
+        name:"Koncentracija",title:"Topljenec, topilo in raztopina",
+        intro:"Spremeni maso topljenca, maso vode in gostoto. Izračun prostornine temelji na gostoti celotne raztopine.",
+        fields:[select("solute","Topljenec","NaCl",[["NaCl","Natrijev klorid (NaCl)"],["KNO3","Kalijev nitrat (KNO₃)"],["glukoza","Glukoza (C₆H₁₂O₆)"]]),slider("m","Masa topljenca",0,20,0.5,10,"g"),slider("water","Masa vode",100,500,10,190,"g"),slider("rho","Gostota raztopine",0.95,1.20,0.01,1.02,"g/mL")],
+        show:s=>{
+            const r=concentration(s.m,s.water,s.rho,SOLUTES[s.solute]);
+            const width=460*r.percent/100;
+            return {svg:text(45,56,"Sestava raztopine po masi","start")+rect(45,80,460,46,"#b5eee4")+ (width?rect(45,80,width,46,"#b7a5fb"):"")+rect(45,166,18,18,"#b7a5fb")+text(73,181,"Topljenec · "+fmt(s.m)+" g","start")+rect(45,208,18,18,"#b5eee4")+text(73,223,"Voda · "+fmt(s.water)+" g","start"),
+                values:[metric("Prostornina raztopine",r.volume,"mL"),metric("Masni delež",r.percent,"%"),metric("Masna koncentracija γ",r.gamma,"g/L"),metric("Množinska koncentracija c",r.c,"mol/L")],
+                note:"Trak predstavlja masna deleža. Gostoto vneseš sam; model ne napoveduje gostote ali topnosti.",
+                conclusion:"Pri isti masi topljenca višja gostota pomeni manjšo prostornino in zato višjo koncentracijo v g/L in mol/L."};
+        }
+    },
+    dilution:{
+        name:"Redčenje",title:"Večja prostornina, manjša koncentracija",
+        intro:"Dodajaj vodo. Spremljaj, kaj se zgodi s koncentracijo in kaj se ohrani.",
+        fields:[slider("c","Začetna koncentracija",0,3,0.1,0.8,"mol/L"),slider("v","Začetna prostornina",25,500,25,100,"mL"),slider("extra","Dodana voda",0,1000,25,300,"mL")],
+        show:s=>{
+            const r=dilution(s.c,s.v,s.extra);
+            return {svg:chart({xmin:s.v,xmax:s.v+1000,ymax:Math.max(0.25,s.c*1.1),xLabel:"Prostornina (mL)",yLabel:"c (mol/L)",curves:[{points:series(s.v,s.v+1000,v=>s.c*s.v/v)}],dots:[[r.v2,r.c2]]}),
+                values:[metric("Začetna koncentracija",s.c,"mol/L"),metric("Končna prostornina",r.v2,"mL"),metric("Končna koncentracija",r.c2,"mol/L"),metric("Množina topljenca",r.n,"mol")],
+                note:"Pika prikazuje trenutno stanje. Pri seštevanju prostornin uporabljamo približek.",
+                conclusion:"Velja c₁V₁ = c₂V₂. Pri dodajanju same vode ostane množina topljenca enaka."};
+        }
+    },
+    saturation:{
+        name:"Topnost in nasičenje",title:"Topnost kot funkcija temperature",
+        intro:"Izberi sol in spreminjaj temperaturo. Ugotovi, koliko soli ostane raztopljene, ko raztopino ohladiš.",
+        fields:[select("salt","Sol","KNO3",[["KNO3","Kalijev nitrat (KNO₃)"],["NaCl","Natrijev klorid (NaCl)"]]),slider("t","Temperatura",0,80,1,40,"°C"),slider("water","Masa vode",50,300,10,100,"g"),slider("m","Dodana masa soli",0,220,1,50,"g")],
+        show:s=>{
+            const r=saturation(s.salt,s.t,s.water,s.m);
+            const other=s.salt==="NaCl"?"KNO3":"NaCl";
+            const state=r.solid>1e-9?"Nasičena raztopina z neraztopljeno trdno soljo.":Math.abs(r.capacity-s.m)<1e-9?"Nasičena raztopina na meji topnosti.":"Nenasičena raztopina. Vsa dodana sol se lahko raztopi.";
+            return {svg:chart({xmax:80,ymax:180,xLabel:"Temperatura (°C)",yLabel:"Topnost (g/100 g vode)",curves:[{points:series(0,80,t=>solubility(other,t)),color:B,dash:true},{points:series(0,80,t=>solubility(s.salt,t))}],dots:[[s.t,solubility(s.salt,s.t)]]}),
+                values:[metric("Topnost pri izbrani T",solubility(s.salt,s.t),"g/100 g vode"),metric("Največ raztopljene soli",r.capacity,"g"),metric("Raztopljena sol",r.dissolved,"g"),metric("Trdna sol",r.solid,"g")],
+                note:"Polna krivulja: "+(s.salt==="KNO3"?"KNO₃":"NaCl")+". Črtkana: "+(other==="KNO3"?"KNO₃":"NaCl")+". Pika označuje mejo nasičenja. Med podatkovnimi točkami so vrednosti interpolirane.",
+                conclusion:state};
+        }
+    },
+    precip:{
+        name:"Obarjanje AgCl",title:"Zmešaj raztopini in opazuj oborino",
+        intro:"Raztopina AgNO₃ prispeva Ag⁺, raztopina NaCl pa Cl⁻. Poskus pri 25 °C najprej izračuna razredčitev, nato novo ravnotežje.",
+        fields:[slider("ca","AgNO₃ pred mešanjem",0,4,0.01,0.2,"mmol/L"),slider("va","Prostornina AgNO₃",10,200,10,100,"mL"),slider("cb","NaCl pred mešanjem",0,4,0.01,0.2,"mmol/L"),slider("vb","Prostornina NaCl",10,200,10,100,"mL")],
+        show:s=>{
+            const r=precipitation(s.ca,s.va,s.cb,s.vb);
+            let svg=glass(45,179,20+s.va/2,"#ded5ff","AgNO₃")+glass(217,179,20+s.vb/2,"#bcf4e9","NaCl")+glass(389,179,20+(s.va+s.vb)/4,"#dbe9fa","Po mešanju");
+            if(r.d>0){
+                svg+=rect(395,165,104,10,"#fff9df");
+                for(let i=0;i<9;i++)svg+=disk(405+i*10,161-(i%3)*4,3,"#fff9df");
+            }
+            svg+=text(275,255,r.d>0?"Nastane trdni AgCl":"Oborina se ne tvori");
+            return {svg,values:[["Q takoj po mešanju",scientific(r.q)],["Kₛₚ pri 25 °C",scientific(KSP)],metric("Ag⁺ v ravnotežju",r.ag*1000,"mmol/L"),metric("Cl⁻ v ravnotežju",r.cl*1000,"mmol/L"),metric("Masa AgCl",r.mg,"mg")],
+                note:"Shematski prikaz. Debelina plasti oborine ne predstavlja njene mase. Model uporablja koncentracije namesto aktivnosti.",
+                conclusion:r.d>0?"Q > Kₛₚ: del ionov se izloči kot AgCl, dokler produkt ravnotežnih koncentracij ne doseže Kₛₚ.":"Q ≤ Kₛₚ: po tem modelu ob mešanju ne nastane nova oborina."};
+        }
+    }
+};
+const settings=Object.fromEntries(Object.entries(lab).map(([key,s])=>[key,Object.fromEntries(s.fields.map(f=>[f.id,f.value]))]));
+const labButtons={};
+let active="concentration";
+function renderLab(){
+    const l=lab[active], s=settings[active], r=l.show(s);
+    for(const f of l.fields){
+        if(f.hide)$("field-"+f.id).hidden=f.hide(s);
+        if(!f.options)$("out-"+f.id).textContent=fmt(s[f.id])+(f.unit?" "+f.unit:"");
+    }
+    $("plot-title").textContent=l.title;
+    $("plot").setAttribute("aria-label",l.title);
+    $("plot").innerHTML=r.svg;
+    $("plot-note").textContent=r.note;
+    $("conclusion").textContent=r.conclusion;
+    $("values").innerHTML=r.values.map(([name,value])=>`<div class="metric">${name}<strong>${value}</strong></div>`).join("");
+}
+function fillSelect(el,options){
+    el.replaceChildren(...options.map(([id,name])=>{const o=document.createElement("option");o.value=id;o.textContent=name;return o;}));
+}
+function selectLab(key,focus=false){
+    active=key;
+    for(const [id,button] of Object.entries(labButtons))button.setAttribute("aria-pressed",String(id===key));
+    const l=lab[key],s=settings[key],controls=$("controls");
+    $("lab-title").textContent=l.name;
+    $("lab-intro").textContent=l.intro;
+    controls.replaceChildren();
+    for(const f of l.fields){
+        const row=document.createElement("div"), label=document.createElement("label");
+        const input=document.createElement(f.options?"select":"input");
+        row.id="field-"+f.id;input.id="control-"+f.id;label.htmlFor=input.id;label.textContent=f.label;
+        if(f.options)fillSelect(input,f.options);
+        else{
+            input.type="range";input.min=f.min;input.max=f.max;input.step=f.step;
+            const out=document.createElement("output");out.id="out-"+f.id;label.append(": ",out);
+        }
+        input.value=s[f.id];
+        input.oninput=()=>{s[f.id]=f.options?input.value:Number(input.value);renderLab();};
+        row.append(label,input);controls.append(row);
+    }
+    renderLab();
+    if(focus)$("control-"+l.fields[0].id).focus();
+}
+for(const [key,item] of Object.entries(lab)){
+    const button=document.createElement("button");button.type="button";button.textContent=item.name;
+    button.onclick=()=>selectLab(key,true);
+    $("lab-buttons").append(button);labButtons[key]=button;
+}
+$("restore").onclick=()=>{
+    Object.assign(settings[active],Object.fromEntries(lab[active].fields.map(f=>[f.id,f.value])));
+    selectLab(active,true);
+};
+function tab(id){
+    for(const section of document.querySelectorAll("main > section"))section.hidden=section.id!==id;
+    for(const button of document.querySelectorAll("[data-tab]"))button.setAttribute("aria-pressed",String(button.dataset.tab===id));
+}
+for(const button of document.querySelectorAll("[data-tab]"))button.onclick=()=>tab(button.dataset.tab);
+const missions=[
+ {name:"Voda ali raztopina?",key:"concentration",start:{m:10,water:190},q:"V 190 g vode je raztopljenih 10 g soli. Kolikšen je masni delež soli?",a:["5 %","5,26 %","10 %"],i:0,why:"Celotna masa je 200 g, zato je 100 × 10/200 = 5 %."},
+ {name:"Tri enake porcije vode",key:"dilution",start:{c:0.8,v:100,extra:300},q:"K 100 mL 0,80 mol/L raztopine dodaš 300 mL vode. Kolikšna je končna koncentracija?",a:["0,20 mol/L","0,27 mol/L","0,80 mol/L"],i:0,why:"Končna prostornina je 400 mL, štirikrat večja od začetne."},
+ {name:"Kristali pri ohlajanju",key:"saturation",start:{salt:"KNO3",t:20,water:100,m:50},q:"50 g KNO₃ v 100 g vode ohladiš s 40 °C na 20 °C. Koliko soli se približno izloči?",a:["0 g","18,4 g","31,6 g"],i:1,why:"Pri 20 °C v 100 g vode ostane raztopljenih 31,6 g. Razlika je 50 − 31,6 = 18,4 g."},
+ {name:"Najprej redčenje",key:"precip",start:{ca:0.02,cb:0.02,va:100,vb:100},q:"Zmešaš enaki prostornini raztopin z 0,02 mmol/L Ag⁺ in 0,02 mmol/L Cl⁻. Ali nastane AgCl?",a:["Da, ker sta prisotna oba iona","Ne, ker je Q po mešanju 1,0 × 10⁻¹⁰","Da, ker je Q pred mešanjem 4,0 × 10⁻¹⁰"],i:1,why:"Koncentraciji se prepolovita na 1,0 × 10⁻⁵ mol/L. Q je manjši od Kₛₚ = 1,8 × 10⁻¹⁰."}
+];
+fillSelect($("mission"),missions.map((m,i)=>[i,m.name]));
+function currentMission(){return missions[Number($("mission").value||0)];}
+function renderMission(){
+    const m=currentMission(), p=document.createElement("p"), group=document.createElement("div");
+    p.className="question";p.textContent=m.q;group.className="row";
+    $("mission-body").replaceChildren(p,group);$("mission-feedback").textContent="";
+    m.a.forEach((answer,i)=>{
+        const button=document.createElement("button");button.type="button";button.textContent=answer;button.setAttribute("aria-pressed","false");
+        button.onclick=()=>{
+            for(const other of group.children)other.setAttribute("aria-pressed",String(other===button));
+            $("mission-feedback").textContent=i===m.i?"Pravilno. "+m.why:"Poskusi še enkrat ali preveri v poskusu.";
+        };
+        group.append(button);
+    });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{
+    const m=currentMission();Object.assign(settings[m.key],Object.fromEntries(lab[m.key].fields.map(f=>[f.id,f.value])),m.start);tab("lab");selectLab(m.key,true);
+};
+
+
+
+
+
+
+const topics={concentration:"Koncentracija",dilution:"Redčenje",saturation:"Topnost in nasičenje",precip:"Obarjanje"};
+fillSelect($("topic"),[["all","Mešano"],...Object.entries(topics)]);
+function makeTask(key,level){
+    const hard=level===2;
+    const exercise=(prompt,answer,unit,hint,steps)=>({key,prompt,answer,unit,hint,steps});
+    if(key==="concentration"){
+        const m=integer(3,25),water=integer(10,45)*10;
+        if(!hard)return exercise(`V ${water} g vode raztopiš ${m} g NaCl. Kolikšen je masni delež v odstotkih?`,100*m/(m+water),"%","Imenovalec je masa raztopine.",`w = 100 × ${m}/(${water} + ${m}) = ${fmt(100*m/(m+water))} %.`);
+        const rho=integer(100,115)/100,r=concentration(m,water,rho,SOLUTES.NaCl);
+        return exercise(`V ${water} g vode raztopiš ${m} g NaCl. Gostota raztopine je ${fmt(rho)} g/mL. Izračunaj množinsko koncentracijo (M = 58,44 g/mol).`,r.c,"mol/L","Najprej izračunaj prostornino in jo pretvori v litre.",`V = (${water} + ${m})/${fmt(rho)} mL = ${fmt(r.volume/1000)} L. n = ${m}/58,44 mol. c = n/V = ${fmt(r.c)} mol/L.`);
+    }
+    if(key==="dilution"){
+        const c=integer(4,20)/10,v=integer(2,16)*25, factor=integer(2,8),r=dilution(c,v,v*(factor-1));
+        if(!hard)return exercise(`Imaš ${v} mL raztopine s koncentracijo ${fmt(c)} mol/L. Razredčiš jo na ${r.v2} mL. Kolikšna je končna koncentracija?`,r.c2,"mol/L","Uporabi c₁V₁ = c₂V₂.",`c₂ = ${fmt(c)} × ${v}/${r.v2} = ${fmt(r.c2)} mol/L.`);
+        return exercise(`Iz ${fmt(c)} mol/L zaloge pripraviš ${r.v2} mL raztopine s koncentracijo, ki je ${factor}-krat manjša od koncentracije zaloge. Koliko mL vode približno dodaš?`,r.v2-v,"mL","Določi prostornino začetne raztopine in jo odštej od končne.",`V₁ = ${r.v2}/${factor} = ${v} mL. Dodana voda: ${r.v2} − ${v} = ${r.v2-v} mL.`);
+    }
+    if(key==="saturation"){
+        const water=integer(4,20)*10,low=integer(0,2)*20, high=low+20, lo=solubility("KNO3",low),hi=solubility("KNO3",high);
+        if(!hard)return exercise(`Topnost KNO₃ pri ${low} °C je ${fmt(lo)} g na 100 g vode. Koliko gramov ga lahko raztopiš v ${water} g vode?`,lo*water/100,"g","Topnost pomnoži z razmerjem med maso vode in 100 g.",`m = ${fmt(lo)} × ${water}/100 = ${fmt(lo*water/100)} g.`);
+        const m=(hi-lo)*water/100;
+        return exercise(`Nasičeno raztopino KNO₃ z ${water} g vode ohladiš z ${high} °C na ${low} °C, brez izhlapevanja. Topnosti sta ${fmt(hi)} in ${fmt(lo)} g na 100 g vode. Koliko gramov se izloči?`,m,"g","Izračunaj razliko topnosti in upoštevaj maso vode.",`m = (${fmt(hi)} − ${fmt(lo)}) × ${water}/100 = ${fmt(m)} g.`);
+    }
+    const ca=integer(1,7)/10,cb=integer(1,7)/10,va=integer(2,12)*10,vb=hard?integer(2,12)*10:va;
+    const r=precipitation(ca,va,cb,vb);
+    const mix=`Zmešaš ${va} mL ${fmt(ca)} mmol/L AgNO₃ in ${vb} mL ${fmt(cb)} mmol/L NaCl.`;
+    if(!hard)return exercise(mix+" Kolikšna je koncentracija Ag⁺ takoj po razredčitvi, pred obarjanjem?",r.x*1000,"mmol/L","Množino Ag⁺ deli s skupno prostornino obeh raztopin.",`[Ag⁺] = ${fmt(ca)} × ${va}/(${va} + ${vb}) = ${fmt(r.x*1000)} mmol/L.`);
+    return exercise(mix+" Izračunaj Q = [Ag⁺][Cl⁻] takoj po mešanju (uporabi mol/L). Kolikšen je koeficient pred 10⁻¹⁰?",r.q/1e-10,"× 10⁻¹⁰","Obe koncentraciji razredči in pretvori iz mmol/L v mol/L.",`Q = (${scientific(r.x)}) × (${scientific(r.y)}) = ${fmt(r.q/1e-10)} × 10⁻¹⁰. ${r.q>KSP?"Q je večji od Kₛₚ.":"Q ne preseže Kₛₚ."}`);
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti. Dovoljeno je manjše odstopanje zaradi zaokroževanja konstant.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001 + Math.abs(task.answer)*0.00006){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Raztopine · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+selectLab("concentration");
+renderMission();
+generate();
+</script>
+</body>
+</html>
