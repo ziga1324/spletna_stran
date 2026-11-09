@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivna fizika faznih sprememb: fazni diagram vode, vrelna krivulja, kritična in trojna točka, van der Waals in tekoči kristali.">
+<title>Fazne spremembe – Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.fs{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.fs *{box-sizing:border-box}.fs [hidden]{display:none!important}
+.fs .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.fs header.wrap{padding:25px 0 22px}.fs a{color:var(--accent);font-weight:750}
+.fs .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.fs .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.fs h1,.fs h2,.fs h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.fs h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.fs h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.fs h3{font-size:1.15rem;margin:0 0 9px}.fs p{margin:0 0 13px}.fs .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.fs .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.fs svg{display:block;width:100%;height:auto;overflow:visible}
+.fs nav,.fs .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.fs nav{margin:12px 0 24px}
+.fs button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.fs button:hover{background:var(--purple)}.fs button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.fs button[aria-pressed=true],.fs .primary{background:var(--yellow)}
+.fs button:disabled{opacity:.55;cursor:default}.fs :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.fs .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.fs .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.fs .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.fs .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.fs label{display:block;font-weight:700;margin:12px 0 4px}.fs label:first-child{margin-top:0}
+.fs input:not([type=checkbox]),.fs select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.fs input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.fs input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.fs output{color:var(--accent);font-weight:800}
+.fs .fine{font-size:.88rem;color:#4d5871}.fs .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.fs .lab-visual,.fs .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.fs .graph{cursor:crosshair}.fs .graph-label{font-weight:800;margin:7px 0 0}
+.fs .graph-group{min-width:0}.fs .graph-group p{margin:7px 0 0}
+.fs .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.fs .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.fs .metric:nth-child(2n){background:var(--mint)}.fs .metric strong{display:block;font-size:1.06rem}
+.fs .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.fs .lav{background:var(--purple)}.fs .accent-card{background:var(--yellow)}.fs .question{font-weight:700;font-size:1.06rem}
+.fs .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.fs details{margin:10px 0}.fs summary{cursor:pointer;font-weight:750}
+.fs .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.fs .question-card .row{margin-top:9px}.fs .question-card label{margin-top:9px}
+.fs .lesson{scroll-margin:15px}.fs .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.fs footer{padding:8px 0 28px}.fs .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.fs .grid,.fs .hero{grid-template-columns:1fr}.fs .hero-art{display:none}.fs .three{grid-template-columns:1fr}.fs .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.fs .wrap{width:calc(100% - 24px)}.fs .two{grid-template-columns:1fr}.fs nav button{flex:1 1 40%}.fs .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.fs{background:#fff;color:#000}body.fs.print-sheet > :not(#paper){display:none!important}body.fs.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.fs .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.fs .graph{cursor:default}
+.fs .subnote{margin-top:12px}
+.fs .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.fs .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.fs .graph-row{grid-template-columns:1fr}.fs .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.fs h1{font-size:clamp(44px,7vw,78px)}
+.fs .lab-visual{margin:10px 0 14px}
+.fs .lab-grid{align-items:start}
+.fs .plot-note{margin-top:10px}
+.fs .topic-buttons{margin:12px 0 24px}
+.fs .theory-grid .note{margin:0}
+.fs .theory-grid{margin:14px 0}
+.fs .mono{font-variant-numeric:tabular-nums}
+.fs .unit-table{border-collapse:collapse;width:100%;margin:12px 0}
+.fs .unit-table th,.fs .unit-table td{text-align:left;border-bottom:1px solid #bbc7ce;padding:6px}
+.fs .focus-box{margin-top:12px}
+.fs .hero h1{font-size:clamp(39px,6.4vw,76px);text-wrap:balance}
+</style>
+</head>
+<body class="fs">
+<header class="wrap">
+    <a href="../index.html">← Vsa orodja</a>
+    <div class="hero">
+        <div><span class="badge">SIDEBIT · FIZIKA</span><h1>Fazne spremembe</h1>
+        <p class="lead">Segrevaj led, poišči trojno točko in opazuj, kako na kritični točki izgine meja med kapljevino in paro. Nato primerjaj fazno ravnovesje z urejanjem tekočih kristalov.</p></div>
+        <svg class="hero-art" viewBox="0 0 330 145" role="img" aria-label="Shematski fazni diagram z označenima trojno in kritično točko">
+            <path d="M33 22V123H303" fill="none" stroke="#22253a" stroke-width="3"/>
+            <path d="M58 115Q86 109 117 94L100 28M117 94Q178 85 268 38" fill="none" stroke="#5634aa" stroke-width="4"/>
+            <g fill="#ffe38b" stroke="#22253a" stroke-width="2"><circle cx="117" cy="94" r="7"/><circle cx="268" cy="38" r="7"/></g>
+            <g fill="#22253a" font-size="14" font-weight="700"><text x="42" y="57">trdnina</text><text x="144" y="55">kapljevina</text><text x="203" y="109">para</text><text x="16" y="28">p</text><text x="296" y="141">T</text></g>
+        </svg>
+    </div>
+    <nav aria-label="Poglavja">
+        <button type="button" data-tab="lab" aria-pressed="true">Laboratorij</button>
+        <button type="button" data-tab="challenge" aria-pressed="false">Učni izzivi</button>
+        <button type="button" data-tab="practice" aria-pressed="false">Generator nalog</button>
+        <button type="button" data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+    </nav>
+</header>
+<main class="wrap">
+<section id="lab">
+    <div class="card lav">
+        <span class="chip">Sedem interaktivnih poskusov</span><h2>Izberi poskus</h2>
+        <div id="lab-buttons" class="row topic-buttons"></div>
+    </div>
+    <div class="grid lab-grid">
+        <div class="card">
+            <span class="chip">01 · Nastavi</span><h2 id="lab-title"></h2>
+            <p id="lab-intro"></p><div id="controls"></div>
+            <div class="row small-gap"><button type="button" id="restore">Ponastavi poskus</button></div>
+        </div>
+        <div class="card">
+            <span class="chip">02 · Opazuj</span><h2 id="plot-title"></h2>
+            <svg id="plot" class="lab-visual" viewBox="0 0 550 285" role="img" aria-label="Vizualni prikaz poskusa"></svg>
+            <p id="plot-note" class="fine plot-note"></p>
+            <div id="values" class="readouts mono"></div><p id="conclusion" class="focus-box"></p>
+        </div>
+    </div>
+</section>
+<section id="challenge" hidden>
+    <div class="card lav">
+        <span class="chip">Najprej napovej</span><h2>Učni izzivi</h2>
+        <label for="mission">Izberi izziv</label><select id="mission"></select>
+        <div id="mission-body" class="small-gap"></div>
+        <p id="mission-feedback" class="feedback" role="status"></p>
+        <button type="button" id="mission-open">Odpri poskus</button>
+    </div>
+</section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden>
+ <div class="card">
+  <h2>Fazno ravnovesje in lastnosti snovi</h2>
+  <p>Pri teh poskusih spremljamo, kako tlak, temperatura in energija spremenijo fizikalno stanje snovi. Pri taljenju ali vrenju vode so gradniki še vedno molekule H₂O. Spremenijo se njihove razdalje, gibanje in razporeditev.</p>
+  <div class="two theory-grid">
+   <article class="note"><h3>1 · Faze snovi in latentna toplota</h3>
+    <p>Faza je homogeno območje sistema z določenimi fizikalnimi lastnostmi. Trdnina ima strižno togost, kapljevina teče in je razmeroma malo stisljiva, plin pa se razširi po dostopni prostornini. Ena snov ima lahko več trdnih faz, če se njeni gradniki uredijo v različne kristalne mreže.</p>
+    <p class="formula">Znotraj faze: Q ≈ mcΔT &nbsp; · &nbsp; Med prehodom: Q = mℓ</p>
+    <p>Pri taljenju, uparjanju in sublimaciji sistem sprejema toploto; pri strjevanju, kondenzaciji in resublimaciji jo oddaja. Pri ravnovesnem prehodu čiste snovi ob stalnem tlaku se med dovajanjem toplote spreminja delež faz, temperatura pa ostaja stalna. Specifično latentno toploto ℓ merimo v J/kg. Pri stalnem tlaku in zgolj prostorninskem delu je dovedena toplota enaka spremembi entalpije.</p>
+   </article>
+   <article class="note lav"><h3>2 · Clapeyronova in Clausius–Clapeyronova enačba</h3>
+    <p class="formula">dpₛ/dT = Δs/Δv = ℓ/(TΔv)</p>
+    <p>Na meji med fazama sta njuni specifični Gibbsovi energiji enaki. Vzdolž meje imata enako spremembo dg = −s dT + v dp, od koder dobimo naklon. V tem zapisu sta ℓ in Δv na kilogram. Lahko uporabiš tudi molsko latentno toploto ΔH in razliko molskih prostornin ΔV, a ne mešaj enot.</p>
+    <p>Pri uparjanju predpostavimo, da je para približno idealni plin in je njena molska prostornina mnogo večja od prostornine kapljevine. Tedaj je d ln pₛ/dT ≈ ΔH/(RT²). Če je ΔH v izbranem intervalu približno stalna, sledi:</p>
+    <p class="formula">ln(p₂/p₁) ≈ −(ΔH/R)(1/T₂ − 1/T₁)</p>
+    <p>Na grafu ln(pₛ/p₁) proti 1/T tako dobimo približno premico z naklonom −ΔH/R. Iz meritev lahko ocenimo latentno toploto. Približek se poslabša blizu kritične točke, kjer prostornin faz ne moremo obravnavati kot zelo različnih.</p>
+   </article>
+   <article class="note lav"><h3>3 · Vrelna krivulja</h3>
+    <p>Vrelna oziroma krivulja nasičenja kapljevina–para podaja ravnovesni tlak nasičene pare pₛ pri vsaki temperaturi med trojno in kritično točko. Na njej kapljevina in para lahko soobstajata, če sta prisotni obe in je sistem v ravnovesju. Krivulja ne pove njunih deležev.</p>
+    <p class="formula">Pogoj za vrelišče: pₛ(Tᵥ) = p<sub>zun</sub></p>
+    <p>Pri manjšem zunanjem tlaku voda zavre pri nižji temperaturi; v tlačnem loncu je obratno. Izhlapevanje poteka s površine tudi pod vreliščem, pri vrenju pa se tvorijo mehurčki po prostornini. Pri zelo majhnih mehurčkih ali pomanjkanju mest za nastanek mehurčkov lahko površinska napetost in metastabilnost premakneta dejanski začetek vrenja.</p>
+   </article>
+   <article class="note"><h3>4 · Kritična točka</h3>
+    <p>Kritična točka je konec krivulje kapljevina–para. Ko se ji približujemo po krivulji nasičenja, se gostoti faz približujeta. Na kritični točki izgine razlika med fazama in z njo latentna toplota uparjanja. Za vodo je T𝒸 ≈ 647,096 K in p𝒸 ≈ 22,064 MPa.</p>
+    <p>Če sta temperatura in tlak nad kritičnima vrednostma, govorimo o superkritičnem fluidu. Iz kapljevine lahko preidemo v plinu podobno stanje tudi po poti okoli kritične točke, brez prečkanja meje kapljevina–para. Nad kritično temperaturo fluid zgolj s stiskanjem ne preide skozi običajno kondenzacijo kapljevina–para. V bližini kritične točke so močna gostotna nihanja; zaradi sipanja svetlobe lahko nastopi kritična opalescenca.</p>
+   </article>
+   <article class="note"><h3>5 · Van der Waalsova enačba</h3>
+    <p class="formula">p = RT/(vₘ − b) − a/vₘ² &nbsp; · &nbsp; vₘ = V/n</p>
+    <p>Konstanta b opisuje izključeno molsko prostornino, a pa približno upošteva privlak. Pri veliki molski prostornini se model približa idealnemu plinu. Zahtevamo vₘ &gt; b. Za vₘ v m³/mol je b v m³/mol, a pa v Pa·m⁶/mol².</p>
+    <p class="formula">(∂p/∂vₘ)ₜ = (∂²p/∂vₘ²)ₜ = 0 &nbsp; ⇒ &nbsp; v𝒸 = 3b, p𝒸 = a/(27b²), T𝒸 = 8a/(27Rb)</p>
+    <p>Pod T𝒸 model izriše zanko. Odsek s pozitivnim naklonom pomeni negativno izotermno stisljivost in je mehansko nestabilen. Ravnovesni potek nadomestimo z vodoravno Maxwellovo veznico: ploščini med modelno krivuljo in veznico sta nad in pod njo enaki. Krajišči sta molski prostornini nasičene kapljevine in pare. Vmes se ob stalnih T in p spreminja molski delež pare. Maxwellova konstrukcija je pravilo faznega ravnovesja, ne Maxwellova porazdelitev molekul po hitrosti.</p>
+   </article>
+   <article class="note lav"><h3>6 · Trojna točka in fazni diagram p–T</h3>
+    <p>Na trojni točki so v ravnovesju tri faze: pri običajni trojni točki vode led Ih, kapljevina in para. Približni koordinati sta 273,16 K in 611,657 Pa. Trojna točka ni kritična točka: pri trojni točki se stikajo tri meje, pri kritični pa se vrelna krivulja konča.</p>
+    <p>Za eno sestavino velja Gibbsovo fazno pravilo F = 3 − P, kjer je P število faz. V območju ene faze lahko neodvisno spreminjamo T in p. Na meji dveh faz imamo eno prostostno stopnjo, na trojni točki nobene. Deležev faz to pravilo ne določa.</p>
+    <p>Pod tlakom trojne točke led ob ravnovesnem segrevanju sublimira. Meja taljenja ledu Ih ima negativen naklon, ker se ob taljenju prostornina zmanjša. Pri večini snovi je naklon talilne krivulje pozitiven. Pri višjih tlakih ima voda še druge oblike ledu, ki jih ta laboratorij ne prikazuje.</p>
+   </article>
+   <article class="note"><h3>7 · Tekoči kristali in optična anizotropija</h3>
+    <p>Tekoči kristal teče, a lahko ohranja orientacijski red. V <strong>nematični</strong> fazi imajo dolge molekule prednostno os, imenovano direktor; smeri n in −n sta enakovredni. V <strong>smektični</strong> fazi je poleg orientacijskega reda prisotna tudi razporeditev v plasteh. V izotropni kapljevini ni prednostne osi. To so faze z različnim redom, ne navadne zmesi trdnine in kapljevine.</p>
+    <p>Pri optični anizotropiji je lomni količnik odvisen od smeri polarizacije. V modelu enakomerno dvolomne plasti med prekrižanima polarizatorjema je:</p>
+    <p class="formula">I/I₀ = sin²(2θ) sin²(πΔn d/λ)</p>
+    <p>θ je kot direktorja glede na prvi polarizator, Δn d optična zakasnitev izražena v dolžini, λ valovna dolžina, I₀ pa intenziteta za prvim polarizatorjem. Pri θ = 0° ali 90° je pogled temen. Pri 45° je kotni faktor največji, vendar je intenziteta odvisna tudi od fazne zakasnitve. V zaslonih lahko električno polje preusmeri direktor in spremeni prepustnost; posamezne izvedbe zaslonov imajo različne optične geometrije.</p>
+   </article>
+  </div>
+  <details><summary>Rešen primer: delno taljenje</summary><p>Če 0,20 kg ledu pri 0 °C prejme 33,4 kJ, pri ℓₜ = 334 kJ/kg lahko stalimo 33,4/334 = 0,10 kg. Polovica mase je kapljevina, temperatura pa je med ravnovesnim taljenjem še vedno približno 0 °C pri 1 atm.</p></details>
+  <details><summary>Rešen primer: vrelišče pri manjšem tlaku</summary><p>Za T₁ = 373,15 K, p₁ = 101,325 kPa, p₂ = 80 kPa in ΔH = 40,7 kJ/mol dobimo 1/T₂ ≈ 1/T₁ − (R/ΔH) ln(p₂/p₁). Od tod sledi T₂ ≈ 366,5 K oziroma približno 93,4 °C. To je ocena s stalno latentno toploto.</p></details>
+  <details><summary>Rešen primer: fazni delež na Maxwellovi veznici</summary><p>Če sta molski prostornini faz 0,6 in 2,6 v enakih enotah, skupna pa 1,1, je molski delež pare x = (1,1 − 0,6)/(2,6 − 0,6) = 0,25. Povprečna molska prostornina je utežena z molskima deležema, ne s prostorninskima deležema.</p></details>
+  <p class="fine small-gap">Viri za nadaljnje branje: <a href="https://iapws.org/technical-guidance/release/Supp-sat">IAPWS: nasičenje vode</a>, <a href="https://courses.ems.psu.edu/meteo300/node/584">Penn State: Clausius–Clapeyron</a>, <a href="https://home.phy.iitb.ac.in/~mithun/ph543/vdW_maxwell.html">IIT Bombay: Maxwellova konstrukcija</a> in <a href="https://www.nature.com/articles/lsa201494">fizika tekočih kristalov in optičnih naprav</a>.</p>
+ </div>
+</section>
+</main>
+<footer class="wrap"><p>Sidebit · Fizika · Fazne spremembe</p></footer>
+<div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id),R=8.314462618;
+const format=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:4,useGrouping:false});
+const fmt=x=>format.format(Math.abs(x)<1e-10?0:x);
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const C="#5634aa", B="#00806a", Y="#ffe38b", INK="#22253a";
+const line=(x,y,X,Y,color=INK,width=2,dash="")=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${color}" stroke-width="${width}" ${dash?'stroke-dasharray="'+dash+'"':""}/>`;
+const text=(x,y,s,anchor="middle")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="#364058" font-size="14" font-weight="650">${s}</text>`;
+const disk=(x,y,r=5,fill=Y)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${INK}" stroke-width="2"/>`;
+const rect=(x,y,w,h,fill,stroke=INK)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const series=(a,b,fn)=>Array.from({length:121},(_,i)=>{const x=a+(b-a)*i/120;return [x,fn(x)];});
+const axisFormat=new Intl.NumberFormat("sl-SI",{maximumSignificantDigits:4,useGrouping:false});
+const number=x=>axisFormat.format(x);
+function chart({xmin=0,xmax,ymin=0,ymax,xLabel,yLabel,curves,dots=[],shade=null,markers=[]}){
+    const left=72,right=521,top=35,bottom=222;
+    const X=x=>left+(right-left)*(x-xmin)/(xmax-xmin), Z=y=>bottom-(bottom-top)*(y-ymin)/(ymax-ymin);
+    const path=points=>points.map(([x,y],i)=>(i?"L":"M")+X(x)+" "+Z(y)).join(" ");
+    let svg='<defs><clipPath id="phase-plot-clip"><rect x="72" y="35" width="449" height="187"/></clipPath></defs>'+text(left,22,yLabel,"start")+text(right,275,xLabel,"end");
+    for(let i=0;i<=4;i++){
+        const x=xmin+(xmax-xmin)*i/4,y=ymin+(ymax-ymin)*i/4;
+        svg+=line(X(x),top,X(x),bottom,"#dce3ef",1)+line(left,Z(y),right,Z(y),"#dce3ef",1);
+        svg+=text(X(x),246,number(x))+text(left-9,Z(y)+5,number(y),"end");
+    }
+    svg+='<g clip-path="url(#phase-plot-clip)">';
+    if(shade?.length){
+        const [start]=shade,[end]=shade.slice(-1);
+        svg+=`<path d="${path(shade)} L${X(end[0])} ${Z(0)} L${X(start[0])} ${Z(0)} Z" fill="#ffe38b" opacity=".65"/>`;
+    }
+    svg+=line(left,top,left,bottom)+line(left,bottom,right,bottom);
+    for(const x of markers)svg+=line(X(x),top,X(x),bottom,"#a76b0d",1.5,"5 4");
+    for(const {points,color=C,dash=false} of curves)svg+=`<path d="${path(points)}" stroke="${color}" stroke-width="3.5" fill="none" ${dash?'stroke-dasharray="8 5"':""}/>`;
+    for(const [x,y] of dots)svg+=disk(X(x),Z(y));
+    return svg+"</g>";
+}
+function bars(data,unit){
+    const max=Math.max(1,...data.map(([,v])=>v));
+    return data.map(([label,value,color],i)=>{
+        const y=41+i*73;
+        return text(45,y,label+" · "+fmt(value)+" "+unit,"start")+rect(45,y+12,460,18,"#e9edf4","#dce3ef")+
+            (value>0 ? rect(45,y+12,460*value/max,18,color) : "");
+    }).join("");
+}
+const metric=(name,v,unit)=>[name,fmt(v)+(unit?" "+unit:"")];
+const slider=(id,label,min,max,step,value,unit="")=>({id,label,min,max,step,value,unit});
+const select=(id,label,value,options)=>({id,label,value,options});
+
+
+const Tt=273.16,pt=.611657,Tc=647.096,pc=22064;
+function saturation(T){
+    if(T<=Tt)return pt;
+    if(T>=Tc)return pc;
+    const x=1-T/Tc;
+    return pc*Math.exp(Tc/T*(-7.85951783*x+1.84408259*x**1.5-11.7866497*x**3+22.6807411*x**3.5-15.9618719*x**4+1.80122502*x**7.5));
+}
+function densities(T){
+    const x=Math.max(0,1-T/Tc),a=[1.99274064,1.09965342,-.510839303,-1.75493479,-45.5170352,-6.74694450e5],k=[1/3,2/3,5/3,16/3,43/3,110/3];
+    const b=[-2.03150240,-2.68302940,-5.38626492,-17.2991605,-44.7586581,-63.9201063],j=[1/3,2/3,4/3,3,37/6,71/6];
+    return [322*(1+a.reduce((s,v,i)=>s+v*x**k[i],0)),322*Math.exp(b.reduce((s,v,i)=>s+v*x**j[i],0))];
+}
+const cc=(T,T1,p1,H)=>p1*Math.exp(-H*1000/R*(1/T-1/T1));
+const sub=T=>cc(T,Tt,pt,51);
+const melt=p=>Tt-(p-pt)/13500;
+function bisect(lo,hi,f){
+    let negative=f(lo)<0;
+    for(let i=0;i<70;i++){
+        const mid=(lo+hi)/2, val=f(mid);
+        if(val===0)return mid;
+        if((val<0)===negative)lo=mid;else hi=mid;
+    }
+    return (lo+hi)/2;
+}
+const boiling=p=>bisect(Tt,Tc,T=>saturation(T)-p);
+function phaseAt(T,p){
+    const close=(a,b)=>Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(b));
+    if(close(T,Tt)&&close(p,pt))return "Trojna točka: led, kapljevina in para";
+    if(close(T,Tc)&&close(p,pc))return "Kritična točka";
+    if(T>=Tc)return T>Tc&&p>pc?"Superkritični fluid":"Enofazni fluid brez meje kapljevina–para";
+    if(p<pt){
+        if(T<Tt&&close(p,sub(T)))return "Sublimacijska meja: led in para";
+        return T<Tt&&p>sub(T)?"Led Ih":"Para";
+    }
+    if(T<=Tt){
+        if(close(T,melt(p)))return "Talilna meja: led in kapljevina";
+        return T<melt(p)?"Led Ih":"Kapljevina";
+    }
+    const sat=saturation(T);
+    if(close(p,sat))return "Vrelna krivulja: kapljevina in para";
+    return p>sat?"Kapljevina":"Para";
+}
+const thresholds=[0,42,376,794,3051]; // kJ/kg, od −20 °C pri približno 1 atm
+function heating(q){
+    if(q<42)return {t:-20+q/2.1,phase:"Led",progress:0};
+    if(q<=376)return {t:0,phase:"Taljenje ledu",progress:(q-42)/334};
+    if(q<794)return {t:(q-376)/4.18,phase:"Kapljevina",progress:0};
+    if(q<=3051)return {t:100,phase:"Uparjanje",progress:(q-794)/2257};
+    return {t:100+(q-3051)/2,phase:"Vodna para",progress:0};
+}
+const vdw=(T,v)=>8*T/(3*v-1)-3/v**2;
+function maxwell(T){
+    if(T>=1)return null;
+    const s=v=>(3*v-1)**2/(4*v**3)-T, a=bisect(1/3,1,s), b=bisect(1,5,s);
+    const P=v=>vdw(T,v), low=Math.max(0,P(a)), high=P(b);
+    const primitive=v=>8*T/3*Math.log(3*v-1)+3/v;
+    function ends(p){
+        let upper=Math.max(2*b,4*T/p);
+        while(P(upper)>p)upper*=2;
+        return [bisect(1/3+1e-9,a,v=>P(v)-p),bisect(b,upper,v=>P(v)-p)];
+    }
+    function area(p){
+        const [l,g]=ends(p);
+        return primitive(g)-primitive(l)-p*(g-l);
+    }
+    const d=(high-low)*1e-7, p=bisect(low+d,high-d,area);
+    const [l,g]=ends(p);
+    return {p,l,g,area:area(p),a,b};
+}
+function transmission(theta,d,lambda,deltaN){
+    return Math.sin(2*theta*Math.PI/180)**2*Math.sin(Math.PI*deltaN*d*1000/lambda)**2;
+}
+const log=p=>Math.log10(p), absolute=c=>c+273.15;
+const pair=(a,b,unit="")=>metric(a,b,unit);
+const pointField=()=>select("preset","Stanje","manual",[["manual","Ročno nastavljanje"],["triple","Točno na trojni točki"],["critical","Točno na kritični točki"],["super","Nad kritičnima vrednostma"]]);
+const lab={
+ phases:{
+    name:"Faze in segrevanje",intro:"Začni z ledom pri −20 °C in dovajaj toploto. Poišči odseka, na katerih se temperatura ne spremeni.",
+    fields:[slider("q","Dovedena toplota na kilogram",0,3350,1,180,"kJ/kg"),slider("m","Masa vzorca",.1,2,.1,.5,"kg")],title:"Segrevalna krivulja vode pri približno 1 atm",
+    show({q,m}){
+        const r=heating(q),points=[...thresholds,3350].map(x=>[x,heating(x).t]);
+        const mix=q>=42&&q<=376||q>=794&&q<=3051;
+        return {svg:chart({xmax:3350,ymin:-30,ymax:275,xLabel:"Q/m (kJ/kg)",yLabel:"Temperatura (°C)",curves:[{points}],dots:[[q,r.t]],markers:[42,376,794,3051]}),
+            note:"Stalne približne vrednosti c; 334 kJ/kg za taljenje in 2257 kJ/kg za uparjanje. Vodoravni del označuje fazni prehod pri stalnem tlaku.",
+            values:[["Stanje",r.phase],pair("Temperatura",r.t,"°C"),pair("Skupna toplota",q*m,"kJ"),...(mix?[pair(q<=376?"Delež staljene mase":"Delež uparjene mase",100*r.progress,"%")]:[])],
+            conclusion:mix?"Dovedena energija na tem odseku spreminja deleža faz.":"Na tem odseku toplota zvišuje temperaturo ene faze."};
+    }
+ },
+ clausius:{
+    name:"Clausius–Clapeyron",intro:"Primerjaj oceno s stalno molsko latentno toploto in referenčno krivuljo nasičenja vode. Obe sidramo pri 100 °C.",
+    fields:[slider("t","Temperatura",15,300,1,75,"°C"),slider("H","Molska latentna toplota ΔH",33,49,.1,40.7,"kJ/mol")],title:"Približek in referenčna krivulja",
+    show({t,H}){
+        const T=absolute(t), T1=373.15,p1=saturation(T1),f=x=>cc(1000/x,T1,p1,H),g=x=>saturation(1000/x),x=1000/T, xmin=1000/573.15,xmax=1000/288.15;
+        const F=u=>Math.log(f(u)/p1),G=u=>Math.log(g(u)/p1);
+        return {svg:chart({xmin,xmax,ymin:Math.min(F(xmax),G(xmax))-.35,ymax:Math.max(F(xmin),G(xmin))+.35,xLabel:"1000/T (1000/K)",yLabel:"ln(pₛ/p₁)",curves:[{points:series(xmin,xmax,F)},{points:series(xmin,xmax,G),color:B,dash:true}],dots:[[x,F(x)],[x,G(x)]]}),
+            note:"Vijolično: Clausius–Clapeyron s stalnim ΔH. Črtkano: IAPWS. Če je x = 1000/T, je naklon vijolične premice −ΔH/(1000R), pri ΔH v J/mol.",
+            values:[pair("Približni nasičeni tlak",f(x),"kPa"),pair("Referenčni tlak",g(x),"kPa"),pair("Relativno odstopanje",100*(f(x)/g(x)-1),"%")],
+            conclusion:"Višja latentna toplota pomeni strmejšo premico. S širšim temperaturnim intervalom približki postanejo pomembnejši."};
+    }
+ },
+ boiling:{
+    name:"Vrelna krivulja",intro:"Znižaj zunanji tlak ali ga zvišaj, kot v tlačnem loncu. Presečišče z vrelno krivuljo določi ravnovesno vrelišče.",
+    fields:[slider("p","Zunanji tlak",2,500,"any",101.325,"kPa")],title:"Vrelišče je odvisno od tlaka",
+    show({p}){
+        const t=boiling(p), L=log(p), xmin=.01,xmax=160;
+        const curve=x=>log(saturation(absolute(x)));
+        return {svg:chart({xmin,xmax,ymin:-.4,ymax:3,xLabel:"Temperatura (°C)",yLabel:"log₁₀(p/kPa)",curves:[{points:series(xmin,xmax,curve)},{points:[[xmin,L],[xmax,L]],color:B,dash:true}],dots:[[t-273.15,L]]}),
+            note:"Črtkano je izbrani zunanji tlak. Na navpični osi so logaritmi tlaka: korak za 1 pomeni desetkrat večji tlak.",
+            values:[pair("Zunanji tlak",p,"kPa"),pair("Vrelišče",t-273.15,"°C"),pair("Absolutna temperatura",t,"K")],
+            conclusion:p===101.325?"Pri standardnem atmosferskem tlaku je ravnovesno vrelišče približno 100 °C.":p<101.325?"Pri nižjem tlaku nasičena para doseže zunanji tlak pri nižji temperaturi.":"Pri višjem tlaku je za ravnovesno vrenje potrebna višja temperatura."};
+    }
+ },
+ critical:{
+    name:"Kritična točka",intro:"Premakni se po vrelni krivulji do kritične točke. Primerjaj gostoti nasičene kapljevine in pare.",
+    fields:[slider("u","Delež poti od 100 °C do kritične točke",0,100,.1,85,"%")],title:"Gostoti se na kritični točki izenačita",
+    show({u}){
+        const min=373.15,T=min+(Tc-min)*u/100,[l,v]=densities(T);
+        const a=series(100,Tc-273.15,t=>densities(absolute(t))[0]),b=series(100,Tc-273.15,t=>densities(absolute(t))[1]);
+        return {svg:chart({xmin:100,xmax:390,ymax:1050,xLabel:"Temperatura (°C)",yLabel:"Gostota (kg/m³)",curves:[{points:a},{points:b,color:B,dash:true}],dots:[[T-273.15,l],[T-273.15,v]],markers:[Tc-273.15]}),
+            note:"Vijolična: nasičena kapljevina. Črtkana: nasičena para. Krivulji veljata vzdolž nasičenja in se končata pri kritični temperaturi.",
+            values:[pair("Temperatura",T,"K"),pair("Nasičeni tlak",saturation(T)/1000,"MPa"),pair("Gostota kapljevine",l,"kg/m³"),pair("Gostota pare",v,"kg/m³")],
+            conclusion:u===100?"Obe gostoti dosežeta kritično gostoto 322 kg/m³. Nad to temperaturo vrelne meje ni.":"Ko se približamo kritični točki, se razlika gostot zmanjšuje."};
+    }
+ },
+ waals:{
+    name:"Van der Waals in Maxwell",intro:"Spreminjaj reducirano temperaturo T/T𝒸 in povprečno molsko prostornino v/v𝒸. Pod kritično temperaturo primerjaj modelno zanko z ravnovesno Maxwellovo veznico.",
+    fields:[slider("T","Reducirana temperatura T/T𝒸",.78,1.2,.001,.9),slider("v","Reducirana prostornina v/v𝒸",.49,7,.001,1.6),select("mode","Prikaz","both",[["both","Modelna izoterma in Maxwellova veznica"],["raw","Samo modelna izoterma"]])],title:"Izoterma realnega plina v reduciranih enotah",
+    show({T,v,mode}){
+        const w=maxwell(T),xmin=.45,xmax=Math.max(7,w?w.g*1.05:0), f=x=>vdw(T,x);
+        const use=mode==="both"&&w, p=use&&v>=w.l&&v<=w.g?w.p:f(v);
+        let curves=[{points:series(xmin,xmax,f),color:use?"#8991a5":C,dash:!!use}];
+        if(use)curves.push({points:series(xmin,w.l,f)},{points:[[w.l,w.p],[w.g,w.p]],color:B},{points:series(w.g,xmax,f)});
+        const values=[pair(use?"Ravnovesni tlak p/p𝒸":"Modelni tlak p/p𝒸",p),pair("Reducirana prostornina",v)];
+        if(use){
+            values.push(pair("Tlak soobstoja pₛ/p𝒸",w.p));
+            if(v>=w.l&&v<=w.g)values.push(pair("Molski delež pare",100*(v-w.l)/(w.g-w.l),"%"));
+        }
+        return {svg:chart({xmin,xmax,ymin:-.35,ymax:2.35,xLabel:"v/v𝒸",yLabel:"p/p𝒸",curves,dots:[[v,p],...(use?[[w.l,w.p],[w.g,w.p]]:[])]}),
+            note:"Graf je izrez okoli faznega prehoda. Črtkano: izvorna izoterma. Zelena veznica: enaki ploščini med krivuljo in ravnovesnim tlakom.",
+            values,conclusion:use?"Na veznici se pri stalnem tlaku spreminja molski delež pare. To ni homogeno stanje s srednjo gostoto.":T===1?"Pri reducirani T = 1 je v točki (1; 1) vodoravni prevoj.":T<1?"Zanka ni v celoti fizikalno stabilna; preklopi na Maxwellovo konstrukcijo.":"Nad kritično temperaturo zanke in meje kapljevina–para ni."};
+    }
+ },
+ triple:{
+    name:"Trojna točka in fazni diagram",intro:"Na diagramu p–T poišči tri meje faz. Približaj okolico trojne točke ali preklopi na kritično in superkritično lego.",
+    fields:[pointField(),select("zoom","Pogled","full",[["full","Celoten diagram"],["near","Okolica trojne točke"]]),{...slider("t","Temperatura",-38.15,405,"any",.01,"°C"),hide:s=>s.preset!=="manual"},{...slider("lp","Logaritem tlaka log₁₀(p/kPa)",-2,4.602059991,"any",-.21),hide:s=>s.preset!=="manual"}],
+    title:"Fazni diagram vode p–T",
+    show({preset,t,lp,zoom}){
+        const fixed={triple:[Tt,pt],critical:[Tc,pc],super:[670,30000]};
+        const [T,p]=fixed[preset]||[absolute(t),10**lp],c=T-273.15;
+        const near=zoom==="near",xmin=near?-8:-38.15,xmax=near?10:405,ymin=near?-.6:-2,ymax=near?1.2:4.60206;
+        const curves=[{points:series(xmin,.01,x=>log(sub(absolute(x)))),color:C},{points:series(.01,Math.min(xmax,Tc-273.15),x=>log(saturation(absolute(x)))),color:B},{points:series(log(pt),ymax,y=>melt(10**y)-273.15).map(([y,x])=>[x,y]),color:"#a04578"}];
+        return {svg:chart({xmin,xmax,ymin,ymax,xLabel:"Temperatura (°C)",yLabel:"log₁₀(p/kPa)",curves,dots:[[Tt-273.15,log(pt)],[Tc-273.15,log(pc)],[c,log(p)]]}),
+            note:"Vijolično: sublimacija. Rožnato: taljenje ledu Ih. Zeleno: kapljevina–para (IAPWS). Sublimacijska in talilna krivulja sta približka; druge oblike ledu so zunaj obsega."+(c<xmin||c>xmax||log(p)<ymin||log(p)>ymax?" Izbrano stanje je zunaj prikazanega izreza.":""),
+            values:[["Ravnovesno stanje",phaseAt(T,p)],pair("Temperatura",T,"K"),pair("Tlak",p,"kPa")],
+            conclusion:preset==="triple"?"Tu se stikajo vse tri fazne meje. Sprememba temperature ali tlaka spremeni ravnovesje.":preset==="critical"?"Tu se zelena vrelna krivulja konča.":preset==="super"?"Obe vrednosti presegata kritični: stanje je superkritično.":"Pri majhnih tlakih je para stabilna. Pod tlakom trojne točke ob segrevanju led preide neposredno v paro."};
+    }
+ },
+ crystals:{
+    name:"Tekoči kristali",intro:"Primerjaj orientacijski red treh faz. Nato zavrti direktor glede na prekrižana polarizatorja in spremljaj optično prepustnost.",
+    fields:[select("phase","Ureditev","nematic",[["isotropic","Izotropna kapljevina"],["nematic","Nematična faza"],["smectic","Smektična faza"]]),slider("theta","Kot direktorja θ",0,90,1,45,"°"),slider("d","Debelina plasti",0,12,.1,2.8,"µm"),slider("lambda","Valovna dolžina λ",400,700,5,550,"nm"),slider("dn","Dvolomnost Δn",0,.3,.005,.1)],title:"Molekulski red in prekrižana polarizatorja",
+    show({phase,theta,d,lambda,dn}){
+        const dnEff=phase==="isotropic"?0:dn, I=transmission(theta,d,lambda,dnEff);
+        let rods="";
+        for(let j=0;j<5;j++)for(let i=0;i<6;i++){
+            const x=(i-2.5)*31+Math.sin(j*3+i)*6,y=(j-2)*22+(phase==="smectic"?0:Math.cos(i*2+j)*7);
+            const a=(phase==="isotropic"?(i+6*j)*137.5:90+12*Math.cos(i*4+j))*Math.PI/180;
+            rods+=line(x-8*Math.cos(a),y-8*Math.sin(a),x+8*Math.cos(a),y+8*Math.sin(a),C,4);
+        }
+        let layers="";
+        if(phase==="smectic")for(let j=-2;j<=2;j++)layers+=line(-94,j*22,94,j*22,"#8e9cae",1.5,"4 4");
+        const light=Math.round(18+237*I);
+        const svg=rect(25,36,263,206,"#f2ecff")+rect(322,36,202,206,`rgb(${light},${light},${light})`)+
+            text(156,23,"Shematska razporeditev")+text(423,23,"Pogled skozi polarizatorja")+
+            `<g transform="translate(156 137) rotate(${phase==="isotropic"?0:90-theta})">${layers+rods}</g>`+
+            text(423,266,fmt(100*I)+" % intenzitete");
+        return {svg,note:"Optični model: enakomerna plast med idealnima prekrižanima polarizatorjema, brez absorpcije. Pri izotropni fazi uporabimo Δn = 0.",values:[pair("Relativna prepustnost",100*I,"%"),pair("Uporabljena dvolomnost",dnEff),pair("Optična zakasnitev Δn·d",1000*dnEff*d,"nm")],
+            conclusion:phase==="isotropic"?"Izotropni model nima direktorja in med prekrižanima polarizatorjema ostane temen.":phase==="smectic"?"Poleg orientacijskega reda so v smektični skici vidne plasti.":"V nematični fazi imajo molekule skupno prednostno os, vendar niso razvrščene v plasti."};
+    }
+ }
+};
+const settings=Object.fromEntries(Object.entries(lab).map(([key,s])=>[key,Object.fromEntries(s.fields.map(f=>[f.id,f.value]))]));
+const labButtons={};
+let active="temperature";
+function renderLab(){
+    const l=lab[active], s=settings[active], r=l.show(s);
+    for(const f of l.fields){
+        if(f.hide)$("field-"+f.id).hidden=f.hide(s);
+        if(!f.options)$("out-"+f.id).textContent=fmt(s[f.id])+(f.unit?" "+f.unit:"");
+    }
+    $("plot-title").textContent=l.title;
+    $("plot").setAttribute("aria-label",l.title);
+    $("plot").innerHTML=r.svg;
+    $("plot-note").textContent=r.note;
+    $("conclusion").textContent=r.conclusion;
+    $("values").innerHTML=r.values.map(([name,value])=>`<div class="metric">${name}<strong>${value}</strong></div>`).join("");
+}
+function fillSelect(el,options){
+    el.replaceChildren(...options.map(([id,name])=>{const o=document.createElement("option");o.value=id;o.textContent=name;return o;}));
+}
+function selectLab(key,focus=false){
+    active=key;
+    for(const [id,button] of Object.entries(labButtons))button.setAttribute("aria-pressed",String(id===key));
+    const l=lab[key],s=settings[key],controls=$("controls");
+    $("lab-title").textContent=l.name;
+    $("lab-intro").textContent=l.intro;
+    controls.replaceChildren();
+    for(const f of l.fields){
+        const row=document.createElement("div"), label=document.createElement("label");
+        const input=document.createElement(f.options?"select":"input");
+        row.id="field-"+f.id;input.id="control-"+f.id;label.htmlFor=input.id;label.textContent=f.label;
+        if(f.options)fillSelect(input,f.options);
+        else{
+            input.type="range";input.min=f.min;input.max=f.max;input.step=f.step;
+            const out=document.createElement("output");out.id="out-"+f.id;label.append(": ",out);
+        }
+        input.value=s[f.id];
+        input.oninput=()=>{s[f.id]=f.options?input.value:Number(input.value);renderLab();};
+        row.append(label,input);controls.append(row);
+    }
+    renderLab();
+    if(focus)$("control-"+l.fields[0].id).focus();
+}
+for(const [key,item] of Object.entries(lab)){
+    const button=document.createElement("button");button.type="button";button.textContent=item.name;
+    button.onclick=()=>selectLab(key,true);
+    $("lab-buttons").append(button);labButtons[key]=button;
+}
+$("restore").onclick=()=>{
+    Object.assign(settings[active],Object.fromEntries(lab[active].fields.map(f=>[f.id,f.value])));
+    selectLab(active,true);
+};
+function tab(id){
+    for(const section of document.querySelectorAll("main > section"))section.hidden=section.id!==id;
+    for(const button of document.querySelectorAll("[data-tab]"))button.setAttribute("aria-pressed",String(button.dataset.tab===id));
+}
+for(const button of document.querySelectorAll("[data-tab]"))button.onclick=()=>tab(button.dataset.tab);
+const missions=[
+ {name:"Led pri 0 °C",key:"phases",start:{q:209},q:"Po segrevanju led ravno tališ in še naprej dovajaš toploto. Kaj v idealiziranem poskusu ostaja stalno?",a:["Temperatura","Masa ledu","Masa kapljevine"],i:0,why:"Energija spreminja deleža faz. Pri stalnem tlaku je temperatura taljenja približno stalna."},
+ {name:"Naklon Clausius–Clapeyronove premice",key:"clausius",start:{H:45,t:60},q:"Kaj naredi večja latentna toplota naklonu grafa ln(pₛ/p₁) proti 1/T?",a:["Postane bolj negativen","Postane pozitiven","Ostane enak"],i:0,why:"Naklon proti 1/T je −ΔH/R."},
+ {name:"Vrelišče in manjši tlak",key:"boiling",start:{p:80},q:"Kaj se pri manjšem zunanjem tlaku zgodi z vreliščem vode?",a:["Zviša se","Zniža se","Ne spremeni se"],i:1,why:"Nasičeni tlak doseže manjši zunanji tlak pri nižji temperaturi."},
+ {name:"Gostoti na kritični točki",key:"critical",start:{u:100},q:"Kako se na kritični točki primerjata gostoti nasičene kapljevine in pare?",a:["Izenačita se","Gostota pare je nič","Kapljevina ostane gostejša"],i:0,why:"Na koncu vrelne krivulje se razlika gostot izniči."},
+ {name:"Kaj se spremeni na veznici?",key:"waals",start:{T:.9,v:1.5,mode:"both"},q:"Pri stalni T premaknemo stanje po Maxwellovi veznici v desno. Kaj naraste?",a:["Tlak","Molski delež pare","Temperatura"],i:1,why:"Para ima večjo molsko prostornino. Ob stalnem tlaku in temperaturi je z večjim deležem pare povprečna molska prostornina večja."},
+ {name:"Tri faze v ravnovesju",key:"triple",start:{preset:"triple",zoom:"near"},q:"Koliko neodvisnih sprememb T in p dovoljuje ravnovesje treh faz ene čiste snovi?",a:["Nobene","Eno","Dve"],i:0,why:"F = 3 − P, za P = 3 je F = 0. Trojna točka določa obe koordinati."},
+ {name:"Temen pogled",key:"crystals",start:{phase:"nematic",theta:0},q:"Kaj napove model, ko je direktor nematika vzporeden s prvim polarizatorjem?",a:["Prepustnost je največja","Prepustnost je nič","Vedno preide polovica svetlobe"],i:1,why:"Pri θ = 0° je sin²(2θ) = 0, ne glede na fazno zakasnitev."}
+];
+fillSelect($("mission"),missions.map((m,i)=>[i,m.name]));
+function currentMission(){return missions[Number($("mission").value||0)];}
+function renderMission(){
+    const m=currentMission(), p=document.createElement("p"), group=document.createElement("div");
+    p.className="question";p.textContent=m.q;group.className="row";
+    $("mission-body").replaceChildren(p,group);$("mission-feedback").textContent="";
+    m.a.forEach((answer,i)=>{
+        const button=document.createElement("button");button.type="button";button.textContent=answer;button.setAttribute("aria-pressed","false");
+        button.onclick=()=>{
+            for(const other of group.children)other.setAttribute("aria-pressed",String(other===button));
+            $("mission-feedback").textContent=i===m.i?"Pravilno. "+m.why:"Poskusi še enkrat ali preveri v poskusu.";
+        };
+        group.append(button);
+    });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{
+    const m=currentMission();Object.assign(settings[m.key],Object.fromEntries(lab[m.key].fields.map(f=>[f.id,f.value])),m.start);tab("lab");selectLab(m.key,true);
+};
+
+
+
+const topics={phases:"Latentna toplota in faze",clausius:"Clausius–Clapeyron",boiling:"Vrelna krivulja",critical:"Kritična točka",waals:"Van der Waals in Maxwell",triple:"Trojna točka",crystals:"Tekoči kristali"};
+fillSelect($("topic"),[["all","Mešano"],...Object.entries(topics)]);
+function makeTask(key,level){
+ const hard=level===2,m=integer(2,28)/10,q0=integer(2,17)*5,T=integer(30,44)*10,
+       dT=integer(4,30),H=integer(36,46),p=integer(45,200), r=integer(2,15)/10;
+ const q=(prompt,answer,unit,hint,steps)=>({key,prompt,answer,unit,hint,steps:steps+" ≈ "+fmt(answer)+" "+unit+"."});
+ switch(key){
+  case "phases":return hard
+   ? q("Maso "+fmt(m)+" kg ledu segrejemo od −"+dT+" °C do 0 °C in jo nato v celoti stalimo. Uporabi c = 2,1 kJ/(kg·K) in ℓ = 334 kJ/kg. Koliko toplote dovajamo?",m*(2.1*dT+334),"kJ","Seštej toploto za segrevanje ledu in latentno toploto za taljenje.","Q = "+fmt(m)+" · (2,1 · "+dT+" + 334)")
+   : q("Koliko kJ toplote potrebujemo, da stalimo "+fmt(m)+" kg ledu pri temperaturi taljenja? Uporabi ℓ = 334 kJ/kg.",334*m,"kJ","Pri samem taljenju uporabi Q = mℓ.","Q = "+fmt(m)+" · 334");
+  case "clausius":return hard
+   ? q("V ozkem temperaturnem intervalu sta nasičena tlaka "+p+" kPa pri "+T+" K in "+fmt(cc(T+dT,T,p,H))+" kPa pri "+(T+dT)+" K. Oceni molsko latentno toploto v kJ/mol. Uporabi R ≈ 8,314.",H,"kJ/mol","Izrazi ΔH = −R ln(p₂/p₁)/(1/T₂ − 1/T₁), nato deli s 1000.","ΔH ≈ −R ln("+fmt(cc(T+dT,T,p,H))+"/"+p+")/(1/"+(T+dT)+" − 1/"+T+")/1000")
+   : q("Nasičeni tlak je pri "+T+" K enak "+p+" kPa. Oceni ga pri "+(T+dT)+" K z molsko latentno toploto "+H+" kJ/mol. Uporabi R ≈ 8,314.",cc(T+dT,T,p,H),"kPa","Izračunaj ln(p₂/p₁) in uporabi eksponentno funkcijo.","p₂ = "+p+" exp[−"+(H*1000)+"/R · (1/"+(T+dT)+" − 1/"+T+")]");
+  case "boiling":{
+   const target=integer(25,95),base=373.15;
+   return hard
+    ? q("S stalno ΔH = 40,7 kJ/mol oceni temperaturo vrelišča v °C pri "+target+" kPa. Pri 101,325 kPa je približno 373,15 K. Uporabi R ≈ 8,314.",1/(1/base-R/40700*Math.log(target/101.325))-273.15,"°C","Najprej izrazi 1/T₂, nato rezultat pretvori v °C.","t₂ ≈ [1/373,15 − R ln("+target+"/101,325)/40700]⁻¹ − 273,15")
+    : q("Pri izbrani temperaturi je nasičeni tlak vode "+p+" kPa. Kolikšen zunanji tlak ustreza ravnovesnemu vrelišču pri tej temperaturi?",p,"kPa","Pri vrelišču sta zunanji tlak in nasičeni tlak enaka.","p zun = pₛ");
+  }
+  case "critical":{
+   const b=integer(4,12)*1e-5,a=integer(4,21)/10;
+   return hard
+    ? q("Van der Waalsov model ima a = "+fmt(a)+" Pa·m⁶/mol² in b = "+fmt(b*1e6)+" · 10⁻⁶ m³/mol. Izračunaj kritični tlak v MPa.",a/(27*b*b)/1e6,"MPa","Uporabi p𝒸 = a/(27b²) in pretvori Pa v MPa.","p𝒸 = "+fmt(a)+"/[27 · ("+fmt(b*1e6)+" · 10⁻⁶)²] · 10⁻⁶")
+    : q("Temperatura tekočine je "+(600+q0)+" K, njena kritična temperatura pa 600 K. Za koliko kelvinov je temperatura nad kritično?",q0,"K","Temperaturni odmik je razlika.","T − T𝒸 = "+(600+q0)+" − 600");
+  }
+  case "waals":{
+   const liquid=integer(5,9)/10,vapor=integer(20,45)/10,part=integer(1,9)/10,v=liquid+(vapor-liquid)*part;
+   return hard
+    ? q("Na Maxwellovi veznici sta reducirani molski prostornini kapljevine "+fmt(liquid)+" in pare "+fmt(vapor)+". Povprečna je "+fmt(v)+". Izrazi molski delež pare v odstotkih.",100*part,"%","Uporabi vzvodno pravilo: x = (v−vₗ)/(vᵍ−vₗ).","100x = 100 · ("+fmt(v)+"−"+fmt(liquid)+")/("+fmt(vapor)+"−"+fmt(liquid)+")")
+    : q("V van der Waalsovem modelu sta reducirani temperatura 1 in reducirana molska prostornina "+fmt(1+r)+". Izračunaj reducirani tlak p/p𝒸.",vdw(1,1+r),"brez enote","Uporabi pᵣ = 8Tᵣ/(3vᵣ−1) − 3/vᵣ².","pᵣ = 8/(3·"+fmt(1+r)+"−1) − 3/"+fmt(1+r)+"²");
+  }
+  case "triple":return hard
+   ? q("Tlak v komori je "+q0+" Pa pod ravnovesnim tlakom trojne točke vode (611,657 Pa). Izrazi tlak v Pa.",611.657-q0,"Pa","Odštej razliko od tlaka trojne točke.","p = 611,657 − "+q0)
+   : q("Tlak v posodi je "+p+" Pa nad tlakom trojne točke vode, 611,657 Pa. Kolikšen je absolutni tlak v Pa?",611.657+p,"Pa","Prištej razliko tlakov.","p = 611,657 + "+p);
+  case "crystals":{
+   const theta=integer(1,17)*5,lambda=integer(42,68)*10,deltaN=integer(5,19)/100,d=integer(10,45)/10;
+   return hard
+    ? q("Dvolomna plast debeline "+fmt(d)+" µm ima Δn = "+fmt(deltaN)+". Med prekrižanima polarizatorjema je θ = "+theta+"°, λ = "+lambda+" nm. Kolikšna je prepustnost v odstotkih?",100*transmission(theta,d,lambda,deltaN),"%","Pretvori d v nm in uporabi oba faktorja prepustnosti. Pri kotnem faktorju uporabi stopinje.","100 I/I₀ = 100 sin²(2 · "+theta+"°) sin²(π · "+fmt(deltaN)+" · "+fmt(d*1000)+"/"+lambda+")")
+    : q("Optična plast ima debelino "+fmt(d)+" µm in dvolomnost Δn = "+fmt(deltaN)+". Izračunaj optično zakasnitev Δn·d v nm.",deltaN*d*1000,"nm","Debelino v µm pomnoži s 1000, nato z Δn.","Δn·d = "+fmt(deltaN)+" · "+fmt(d)+" · 1000");
+  }
+  default:throw new Error("Neznana tema.");
+ }
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti. Dovoljeno je manjše odstopanje zaradi zaokroževanja konstant.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001 + Math.abs(task.answer)*0.00006){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Fazne spremembe · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+selectLab("phases");
+renderMission();
+generate();
+</script>
+</body>
+</html>
