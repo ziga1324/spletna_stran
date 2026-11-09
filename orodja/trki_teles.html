@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Simuliraj elastične in neelastične trke teles na premici in v ravnini. Spremljaj gibalno količino in energijo ter vadi z generatorjem nalog.">
+<title>Trki teles na premici in v ravnini – Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.tr{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.tr *{box-sizing:border-box}.tr [hidden]{display:none!important}
+.tr .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.tr header.wrap{padding:25px 0 22px}.tr a{color:var(--accent);font-weight:750}
+.tr .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.tr .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.tr h1,.tr h2,.tr h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.tr h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.tr h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.tr h3{font-size:1.15rem;margin:0 0 9px}.tr p{margin:0 0 13px}.tr .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.tr .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.tr svg{display:block;width:100%;height:auto;overflow:visible}
+.tr nav,.tr .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.tr nav{margin:12px 0 24px}
+.tr button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.tr button:hover{background:var(--purple)}.tr button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.tr button[aria-pressed=true],.tr .primary{background:var(--yellow)}
+.tr button:disabled{opacity:.55;cursor:default}.tr :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.tr .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.tr .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.tr .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.tr .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.tr label{display:block;font-weight:700;margin:12px 0 4px}.tr label:first-child{margin-top:0}
+.tr input:not([type=checkbox]),.tr select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.tr input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.tr input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.tr output{color:var(--accent);font-weight:800}
+.tr .fine{font-size:.88rem;color:#4d5871}.tr .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.tr .lab-visual,.tr .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.tr .graph{cursor:crosshair}.tr .graph-label{font-weight:800;margin:7px 0 0}
+.tr .graph-group{min-width:0}.tr .graph-group p{margin:7px 0 0}
+.tr .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.tr .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.tr .metric:nth-child(2n){background:var(--mint)}.tr .metric strong{display:block;font-size:1.06rem}
+.tr .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.tr .lav{background:var(--purple)}.tr .accent-card{background:var(--yellow)}.tr .question{font-weight:700;font-size:1.06rem}
+.tr .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.tr details{margin:10px 0}.tr summary{cursor:pointer;font-weight:750}
+.tr .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.tr .question-card .row{margin-top:9px}.tr .question-card label{margin-top:9px}
+.tr .lesson{scroll-margin:15px}.tr .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.tr footer{padding:8px 0 28px}.tr .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.tr .grid,.tr .hero{grid-template-columns:1fr}.tr .hero-art{display:none}.tr .three{grid-template-columns:1fr}.tr .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.tr .wrap{width:calc(100% - 24px)}.tr .two{grid-template-columns:1fr}.tr nav button{flex:1 1 40%}.tr .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.tr{background:#fff;color:#000}body.tr.print-sheet > :not(#paper){display:none!important}body.tr.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.tr .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.tr .graph{cursor:default}
+.tr .subnote{margin-top:12px}
+.tr .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tr .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.tr .graph-row{grid-template-columns:1fr}.tr .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tr h1{font-size:clamp(44px,7vw,78px)}
+.tr .control-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tr .control-pair label{margin-top:10px}
+.tr .value-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.tr .value-table th,.tr .value-table td{padding:9px 5px;border-bottom:1px solid #ccd2df;text-align:left;overflow-wrap:anywhere}
+.tr .value-table thead th{font-size:.88rem}
+.tr .view-switch{margin-top:12px}
+.tr .body-key{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.tr .dot{display:inline-block;width:.75em;height:.75em;border-radius:50%;border:1px solid var(--ink);margin-right:.35em}
+.tr .ready{margin-top:12px}
+.tr .playline{margin-top:8px}
+.tr .table-note{margin-top:12px}
+@media(max-width:420px){.tr .control-pair{grid-template-columns:1fr}.tr .value-table{font-size:.82rem}}
+</style>
+</head>
+<body class="tr">
+<header class="wrap">
+    <a href="../index.html">← Vsa orodja</a>
+    <div class="hero">
+        <div>
+            <span class="badge">SIDEBIT · FIZIKA</span>
+            <h1>Trki teles</h1>
+            <p class="lead">Spusti vozička po tirnici ali pošlji diska v poševen trk. Zavrti smer stika in odkrij, zakaj se pri trku v ravnini gibalna količina ohranja v dveh smereh.</p>
+        </div>
+        <svg class="hero-art" viewBox="0 0 330 145" role="img" aria-label="Diska pri poševnem trku">
+            <path d="M36 100H288M162 121V24" stroke="#8794a8" stroke-width="2" stroke-dasharray="5 5"/>
+            <circle cx="123" cy="83" r="24" fill="#ffe38b" stroke="#22253a" stroke-width="3"/>
+            <circle cx="166" cy="60" r="24" fill="#c5f0e2" stroke="#22253a" stroke-width="3"/>
+            <path d="M55 83h41m0 0-11-7m11 7-11 7M184 49l57-29m0 0-11-1m11 1-6 10M110 106l-21 27m0 0 1-12m-1 12 12-3" fill="none" stroke="#5634aa" stroke-width="3"/>
+        </svg>
+    </div>
+    <nav aria-label="Poglavja">
+        <button type="button" data-tab="lab" aria-pressed="true">Laboratorij</button>
+        <button type="button" data-tab="challenge" aria-pressed="false">Učni izzivi</button>
+        <button type="button" data-tab="practice" aria-pressed="false">Generator nalog</button>
+        <button type="button" data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+    </nav>
+</header>
+<main class="wrap">
+<section id="lab">
+    <div class="grid">
+        <div class="card">
+            <span class="chip">01 · Pripravi poskus</span>
+            <h2>Nastavitve trka</h2>
+            <label for="dimension">Prostor gibanja</label>
+            <select id="dimension"><option value="line">Na premici (1D)</option><option value="plane" selected>V ravnini (2D)</option></select>
+            <label for="kind">Vrsta trka</label>
+            <select id="kind">
+                <option value="elastic">Elastični (e = 1)</option>
+                <option value="partial">Neelastični (izberi e)</option>
+                <option value="stick">Popolnoma neelastični (telesi se sprimeta)</option>
+            </select>
+            <div id="restitution-block" hidden>
+                <label for="restitution">Koeficient restitucije: <output id="restitution-out"></output></label>
+                <input id="restitution" type="range" min="0" max=".95" step=".05" value=".5">
+            </div>
+            <div id="angle-block">
+                <label for="angle">Kot normale glede na +x: <output id="angle-out"></output></label>
+                <input id="angle" type="range" min="-85" max="85" step="1" value="35">
+                <p class="fine">Normala je smer od središča telesa 1 proti središču telesa 2 v trenutku dotika.</p>
+            </div>
+            <div class="control-pair">
+                <div>
+                    <label for="m1">Masa 1: <output id="m1-out"></output></label><input id="m1" type="range" min=".5" max="8" step=".5" value="2">
+                    <label for="u1x">Hitrost 1 po x: <output id="u1x-out"></output></label><input id="u1x" type="range" min="-6" max="6" step=".5" value="4">
+                    <div data-plane><label for="u1y">Hitrost 1 po y: <output id="u1y-out"></output></label><input id="u1y" type="range" min="-6" max="6" step=".5" value="0"></div>
+                </div>
+                <div>
+                    <label for="m2">Masa 2: <output id="m2-out"></output></label><input id="m2" type="range" min=".5" max="8" step=".5" value="2">
+                    <label for="u2x">Hitrost 2 po x: <output id="u2x-out"></output></label><input id="u2x" type="range" min="-6" max="6" step=".5" value="0">
+                    <div data-plane><label for="u2y">Hitrost 2 po y: <output id="u2y-out"></output></label><input id="u2y" type="range" min="-6" max="6" step=".5" value="0"></div>
+                </div>
+            </div>
+            <p class="fine ready">Skica predpostavi mesto dotika pri t = 0. Masa ne določa velikosti diskov. Model nima zunanjega sunka; diska sta pri odboju gladka, brez vrtenja.</p>
+        </div>
+        <div class="card">
+            <span class="chip">02 · Predvajaj in primerjaj</span>
+            <h2>Trk v počasnem posnetku</h2>
+            <svg id="scene" class="lab-visual" viewBox="0 0 660 375" role="img" aria-label="Gibanje dveh teles in vektorja hitrosti"></svg>
+            <div class="body-key fine">
+                <span><i class="dot" style="background:#ffe38b"></i>Telo 1</span>
+                <span><i class="dot" style="background:#c5f0e2"></i>Telo 2</span>
+                <span>Črtkano: normala v trenutku stika (2D)</span>
+            </div>
+            <label for="time">Čas glede na trk: <output id="time-out"></output></label>
+            <input id="time" type="range" min="-100" max="100" step="1" value="-100">
+            <div class="row playline">
+                <button type="button" id="play" class="primary">Predvajaj</button>
+                <button type="button" id="before">Pred trkom</button>
+                <button type="button" id="contact">Dotik</button>
+                <button type="button" id="after">Po trku</button>
+            </div>
+            <label class="view-switch"><input type="checkbox" id="vectors" checked> Prikaži vektorja hitrosti</label>
+            <p id="message" class="focus-box ready" role="status"></p>
+        </div>
+    </div>
+    <div class="card">
+        <span class="chip">03 · Preveri ohranitev</span>
+        <h2>Pred trkom in po njem</h2>
+        <table class="value-table">
+            <thead><tr><th scope="col">Količina</th><th scope="col">Pred</th><th scope="col">Po</th></tr></thead>
+            <tbody id="comparison"></tbody>
+        </table>
+        <p id="energy-note" class="fine table-note"></p>
+    </div>
+</section>
+<section id="challenge" hidden>
+    <div class="card lav">
+        <span class="chip">Najprej napovej</span>
+        <h2>Učni izzivi</h2>
+        <label for="mission">Izberi izziv</label>
+        <select id="mission">
+            <option value="0">Dve enaki masi na premici</option>
+            <option value="1">Pravokotni smeri po trku</option>
+            <option value="2">Dva diska se sprimeta</option>
+            <option value="3">Kaj pomeni e = 0?</option>
+        </select>
+        <div id="mission-body" class="small-gap"></div>
+        <p id="mission-feedback" class="feedback" role="status"></p>
+        <button type="button" id="mission-open">Odpri poskus</button>
+    </div>
+</section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option><option value="momentum">Gibalna količina</option><option value="stick">Sprijem na premici</option><option value="elastic">Elastični trk na premici</option><option value="restitution">Koeficient restitucije</option><option value="components">Komponente v ravnini</option><option value="plane">Poševni trk</option><option value="energy">Kinetična energija</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden>
+    <div class="card">
+        <h2>Kaj se pri trku ohrani?</h2>
+        <div class="two">
+            <article class="note"><h3>Gibalna količina je vektor</h3><p class="formula">p⃗ = mv⃗ &nbsp; · &nbsp; Σp⃗ pred = Σp⃗ po</p><p>Če je zunanji sunek med trkom zanemarljiv, se skupna gibalna količina sistema ohrani. Na premici določi pozitivno smer in upoštevaj predznake hitrosti. V ravnini zapiši ločeni enačbi za x in y.</p></article>
+            <article class="note lav"><h3>Elastični in neelastični trki</h3><p class="formula">Eₖ = ½mv²</p><p>Pri elastičnem trku se ohrani tudi skupna kinetična energija. Pri neelastičnem trku se del kinetične energije pretvori v druge oblike, na primer deformacijo, notranjo energijo ali zvok. Kinetična energija nima smeri.</p></article>
+            <article class="note lav"><h3>Popolnoma neelastični trk</h3><p class="formula">v⃗ = (m₁u⃗₁ + m₂u⃗₂)/(m₁ + m₂)</p><p>Če se telesi sprimeta, v učnem modelu brez vrtenja po trku potujeta s skupno hitrostjo. V resničnem trku izven središča se lahko spojeni telesi tudi vrtita; formula vedno določa hitrost njunega masnega središča, če ni zunanjega sunka.</p></article>
+            <article class="note"><h3>Koeficient restitucije</h3><p class="formula">e = hitrost razmikanja po normali / hitrost približevanja po normali</p><p>e = 1 pomeni elastični odboj v tem modelu. Pri e = 0 je relativna normalna hitrost po trku nič. V ravnini lahko gladka diska vseeno drsita drug mimo drugega v tangencialni smeri, zato se ne sprimeta nujno.</p></article>
+            <article class="note"><h3>Poševni trk gladkih diskov</h3><p class="formula">uₙ = uₓ cos θ + uᵧ sin θ &nbsp; · &nbsp; uₜ = −uₓ sin θ + uᵧ cos θ</p><p>Pri dotiku razstavi hitrost na normalno komponento (v smeri med središčema) in tangencialno komponento (pravokotno nanjo). Brez trenja deluje sunek samo v smeri normale, zato se tangencialna komponenta hitrosti vsakega diska ne spremeni. Po računu pretvori komponenti nazaj v x in y.</p></article>
+            <article class="note lav"><h3>Sunek sile</h3><p class="formula">J⃗ = Δp⃗</p><p>Diska si med trkom izmenjata enaka in nasprotno usmerjena sunka. Gibalna količina posameznega telesa se lahko zelo spremeni, njuna vsota pa ostane ista.</p></article>
+        </div>
+        <details><summary>Rešen primer 1D: vozička se sprimeta</summary><p>Voziček z maso 2 kg se premika s 3 m/s, drugi (1 kg) pa z −3 m/s. Skupna gibalna količina je 6 − 3 = 3 kg·m/s, zato je skupna hitrost 3/3 = 1 m/s v pozitivni smeri. Kinetična energija pade s 13,5 J na 1,5 J.</p></details>
+        <details><summary>Rešen primer 2D: dva enaka diska, elastični trk</summary><p>Prvi disk ima hitrost (4; 0) m/s, drugi miruje. Normala je nagnjena za 45° glede na os x. Prvi disk ima normalno komponento 2√2 m/s in tangencialno −2√2 m/s. Enaki masi si pri elastičnem trku izmenjata normalni komponenti, tangencialni pa obdržita. Po pretvorbi nazaj dobimo (2; −2) m/s za prvi disk in (2; 2) m/s za drugega. Vektorja sta pravokotna.</p></details>
+    </div>
+</section>
+</main>
+<footer class="wrap"><p>Sidebit · Fizika · Trki teles</p></footer>
+<div id="paper"></div>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const format = new Intl.NumberFormat("sl-SI", {maximumFractionDigits: 4, useGrouping: false});
+const fmt = n => format.format(Math.abs(n) < .00005 ? 0 : n);
+const integer = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const rad = degrees => degrees * Math.PI / 180;
+const sum = (a, b) => [a[0] + b[0], a[1] + b[1]];
+const mul = (a, c) => [a[0] * c, a[1] * c];
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
+const momentum = (m1, m2, a, b) => sum(mul(a, m1), mul(b, m2));
+const energy = (m1, m2, a, b) => .5 * (m1 * dot(a, a) + m2 * dot(b, b));
+
+// Normala kaže od telesa 1 proti telesu 2. Pozitivni zapiralni
+// hitrosti ustreza približevanje v predvideni konfiguraciji stika.
+function collision({m1, m2, u1, u2, angle, kind, e}) {
+    const n = [Math.cos(rad(angle)), Math.sin(rad(angle))];
+    const close = dot(sum(u1, mul(u2, -1)), n);
+    const p = momentum(m1, m2, u1, u2);
+    const kinetic = energy(m1, m2, u1, u2);
+    if (close <= 1e-9) return {n, valid:false, p, kinetic};
+    let v1, v2;
+    if (kind === "stick") {
+        v1 = v2 = mul(p, 1 / (m1 + m2));
+    } else {
+        const J = (1 + (kind === "elastic" ? 1 : e)) * close / (1/m1 + 1/m2);
+        v1 = sum(u1, mul(n, -J/m1));
+        v2 = sum(u2, mul(n, J/m2));
+    }
+    return {n, valid:true, p, kinetic, v1, v2, pAfter:momentum(m1,m2,v1,v2),
+        kAfter:energy(m1,m2,v1,v2), impulse:mul(sum(v2,mul(u2,-1)),m2)};
+}
+
+const controlIds = ["m1","m2","u1x","u1y","u2x","u2y","angle","restitution"];
+const read = id => Number($(id).value);
+let scenario, outcome, clock = -1, animation = 0, started = null, origin = -1;
+function getScenario() {
+    const plane = $("dimension").value === "plane";
+    return {plane, kind:$("kind").value, angle:plane ? read("angle") : 0, e:read("restitution"),
+        m1:read("m1"), m2:read("m2"),
+        u1:[read("u1x"),plane ? read("u1y") : 0],
+        u2:[read("u2x"),plane ? read("u2y") : 0]};
+}
+function pause() {
+    cancelAnimationFrame(animation);
+    animation = 0;
+    started = null;
+    $("play").textContent = "Predvajaj";
+}
+function refresh() {
+    pause();
+    scenario = getScenario();
+    outcome = collision(scenario);
+    clock = outcome.valid ? -1 : 0;
+    for (const id of controlIds) {
+        const unit = id.startsWith("m") ? " kg" : id.startsWith("u") ? " m/s" : id === "angle" ? "°" : "";
+        $(id+"-out").textContent = fmt(read(id)) + unit;
+    }
+    $("angle-block").hidden = !scenario.plane;
+    for (const node of document.querySelectorAll("[data-plane]")) node.hidden = !scenario.plane;
+    $("restitution-block").hidden = scenario.kind !== "partial";
+    for (const id of ["time","play","before","contact","after"]) $(id).disabled = !outcome.valid;
+    $("message").textContent = outcome.valid
+        ? (scenario.kind === "stick" ? "Model sprijema: po trku se telesi gibljeta skupaj brez vrtenja."
+            : "Premakni čas skozi t = 0. Puščici pokažeta hitrost tik pred stikom ali po njem.")
+        : "Pri izbrani smeri stika se telesi po normali ne približujeta. Spremeni hitrosti ali kot, da nastaviš trk.";
+    renderTable();
+    renderScene();
+}
+
+function renderTable() {
+    const {plane, u1, u2} = scenario;
+    const {valid, v1, v2, p, pAfter, kinetic, kAfter, impulse} = outcome;
+    const velocity = v => plane ? "(" + fmt(v[0]) + "; " + fmt(v[1]) + ") m/s" : fmt(v[0]) + " m/s";
+    const kgms = x => fmt(x) + " kg·m/s";
+    const rows = [
+        ["Hitrost telesa 1",velocity(u1),valid ? velocity(v1) : "—"],
+        ["Hitrost telesa 2",velocity(u2),valid ? velocity(v2) : "—"],
+        ["Skupna gibalna količina pₓ",kgms(p[0]),valid ? kgms(pAfter[0]) : "—"]
+    ];
+    if (plane) rows.push(["Skupna gibalna količina pᵧ",kgms(p[1]),valid ? kgms(pAfter[1]) : "—"]);
+    rows.push(["Skupna kinetična energija",fmt(kinetic)+" J",valid ? fmt(kAfter)+" J" : "—"]);
+    $("comparison").innerHTML = rows.map(([a,b,c]) => `<tr><th scope="row">${a}</th><td>${b}</td><td>${c}</td></tr>`).join("");
+    $("energy-note").textContent = !valid ? "Pri teh nastavitvah ni trka v prikazani konfiguraciji."
+        : "Zmanjšanje kinetične energije: " + fmt(Math.max(0, kinetic - kAfter)) + " J. " +
+          "Velikost sunka na vsako telo: " + fmt(Math.hypot(...impulse)) + " N·s.";
+}
+
+function renderScene() {
+    const {n, valid, v1, v2} = outcome, {plane, u1, u2, kind} = scenario;
+    const t = clock, isAfter = valid && t >= 0;
+    const moving = isAfter ? [v1,v2] : [u1,u2];
+    const start = [mul(n,-.44),mul(n,.44)];
+    const allSpeeds = [...u1,...u2,...(valid ? [...v1,...v2] : [])];
+    const scale = 115 / (Math.max(2.4,...allSpeeds.map(Math.abs)) + .44);
+    const X = p => 330 + p[0] * scale, Y = p => 178 - p[1] * scale;
+    const point = p => X(p) + "," + Y(p);
+    const line = (a,b,stroke,width=2,dash="") =>
+        `<path d="M${point(a)} L${point(b)}" fill="none" stroke="${stroke}" stroke-width="${width}" ${dash ? 'stroke-dasharray="'+dash+'"' : ""}/>`;
+    const mark = (x,y,text,fill="#364058") => `<text x="${x}" y="${y}" fill="${fill}" font-size="17" font-weight="700" text-anchor="middle">${text}</text>`;
+    let svg = '<path d="M35 178H620m0 0-10-6m10 6-10 6" fill="none" stroke="#9aa4b8" stroke-width="2"/>' + mark(632,184,"+x");
+    if (plane) {
+        svg += '<path d="M330 326V28m0 0-6 10m6-10 6 10" fill="none" stroke="#9aa4b8" stroke-width="2"/>' + mark(352,28,"+y");
+        svg += line(mul(n,-1.8),mul(n,1.8),"#5634aa",2,"6 5");
+    }
+    if (valid) {
+        start.forEach((a,i) => {
+            svg += line(sum(a,mul([u1,u2][i],-1)),a,"#a4adc0",2,"4 5");
+            svg += line(a,sum(a,[v1,v2][i]),i ? "#358571" : "#a77424",2,"4 5");
+        });
+    }
+    const centers = start.map((a,i) => valid ? sum(a,mul(moving[i],t)) : a);
+    if (isAfter && kind === "stick") svg += line(centers[0],centers[1],"#22253a",7);
+    centers.forEach((p,i) => {
+        const color = i ? "#c5f0e2" : "#ffe38b", v = moving[i];
+        const radius = .44 * scale;
+        svg += `<circle cx="${X(p)}" cy="${Y(p)}" r="${radius}" fill="${color}" stroke="#22253a" stroke-width="2"/>`;
+        if ($("vectors").checked && valid && Math.hypot(...v) > 1e-9) {
+            const tip = sum(p,mul(v,.44)), direction = mul(v,1/Math.hypot(...v));
+            const head = Math.min(7, Math.hypot(...v)*.22*scale);
+            const back = sum(tip,mul(direction,-head/scale)), left = mul([-direction[1],direction[0]],.57*head/scale);
+            const ink = i ? "#246451" : "#8d540b";
+            svg += line(p,tip,ink,3) + `<polygon points="${point(tip)} ${point(sum(back,left))} ${point(sum(back,mul(left,-1)))}" fill="${ink}"/>`;
+        }
+    });
+    svg += mark(330,353,!valid ? "Predvideni stik brez približevanja" : t === 0 ? "Dotik · hitrosti takoj po trku" : t < 0 ? "Pred trkom" : "Po trku");
+    $("scene").innerHTML = svg;
+    $("time").value = String(Math.round(t*100));
+    $("time-out").textContent = fmt(Math.round(t*100)/100) + " s";
+}
+function jump(t) {
+    if (!outcome.valid) return;
+    pause();
+    clock = t;
+    renderScene();
+}
+function tick(now) {
+    if (started === null) started = now;
+    clock = Math.min(1, origin + (now-started)/1800);
+    renderScene();
+    if (clock >= 1) pause(); else animation = requestAnimationFrame(tick);
+}
+$("play").onclick = () => {
+    if (!outcome.valid) return;
+    if (animation) { pause(); return; }
+    if (clock >= 1) clock = -1;
+    origin = clock;
+    $("play").textContent = "Premor";
+    animation = requestAnimationFrame(tick);
+};
+$("time").oninput = () => jump(read("time")/100);
+$("vectors").onchange = renderScene;
+$("before").onclick = () => jump(-1);
+$("contact").onclick = () => jump(0);
+$("after").onclick = () => jump(1);
+for (const id of [...controlIds,"dimension","kind"]) $(id).addEventListener("input",refresh);
+document.addEventListener("visibilitychange",() => {if(document.hidden) pause();});
+
+function tab(id) {
+    if (id !== "lab") pause();
+    for (const section of document.querySelectorAll("main > section")) section.hidden = section.id !== id;
+    for (const button of document.querySelectorAll("[data-tab]")) {
+        button.setAttribute("aria-pressed", String(button.dataset.tab === id));
+    }
+}
+for (const button of document.querySelectorAll("[data-tab]")) button.onclick = () => tab(button.dataset.tab);
+
+const missions = [
+    {dimension:"line",kind:"elastic",angle:0,question:"Dve enaki masi trčita elastično na premici. Telo 2 pred trkom miruje. Kaj se zgodi?", answers:["Prvo obstane, drugo prevzame njegovo hitrost","Telesi se sprimeta","Prvo se odbije nazaj, drugo ostane pri miru"], correct:0, why:"Pri čelnem elastičnem trku si enaki masi izmenjata hitrosti."},
+    {dimension:"plane",kind:"elastic",angle:45,question:"Dva enaka diska elastično trčita pod kotom, drugi je sprva pri miru. Kakšen je kot med njunima hitrostma po tem trku?",answers:["45°","90°","180°"],correct:1,why:"Prvi disk obdrži tangencialno komponento, drugi prevzame normalno. Smeri sta pravokotni."},
+    {dimension:"plane",kind:"stick",angle:35,u1y:1,u2y:3,question:"Pred sprijemom imata enaka diska hitrosti (4; 1) in (0; 3) m/s. Kolikšna je skupna hitrost po trku?",answers:["(2; 2) m/s","(4; 4) m/s","(2; 0) m/s"],correct:0,why:"Pri enakih masah je vsaka komponenta skupne hitrosti aritmetična sredina začetnih komponent."},
+    {dimension:"plane",kind:"partial",angle:45,e:0,question:"Pri poševnem trku gladkih diskov je e = 0. Ali se morata diska sprijeti?",answers:["Da, vedno","Ne, tangencialna relativna hitrost lahko ostane"],correct:1,why:"Ničelna restitucija izniči le relativno hitrost po normali. Tangencialni komponenti ostaneta nespremenjeni."}
+];
+const currentMission = () => missions[Number($("mission").value)];
+function renderMission() {
+    const m = currentMission(), prompt = document.createElement("p"), choices = document.createElement("div");
+    prompt.className = "question";
+    prompt.textContent = m.question;
+    choices.className = "row";
+    $("mission-body").replaceChildren(prompt,choices);
+    $("mission-feedback").textContent = "";
+    m.answers.forEach((answer,i) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = answer;
+        button.setAttribute("aria-pressed","false");
+        button.onclick = () => {
+            for (const other of choices.children) other.setAttribute("aria-pressed",String(other === button));
+            $("mission-feedback").textContent = i === m.correct ? "Pravilno. "+m.why : "Poskusi še enkrat ali preveri napoved v poskusu.";
+        };
+        choices.append(button);
+    });
+}
+$("mission").onchange = renderMission;
+$("mission-open").onclick = () => {
+    const m = currentMission();
+    const settings = {dimension:m.dimension,kind:m.kind,angle:m.angle,restitution:m.e??.5,m1:2,m2:2,u1x:4,u1y:m.u1y??0,u2x:0,u2y:m.u2y??0};
+    for (const [id,value] of Object.entries(settings)) $(id).value = value;
+    tab("lab");
+    refresh();
+    $("play").focus();
+};
+
+const topics = {momentum:"Gibalna količina",stick:"Sprijem na premici",elastic:"Elastični trk na premici",restitution:"Koeficient restitucije",components:"Komponente v ravnini",plane:"Poševni trk",energy:"Kinetična energija"};
+function makeTask(key,level) {
+    const hard = level === 2;
+    const m = integer(1,9), M = integer(1,9), u = integer(2,12), w = integer(1,9), a = integer(1,10), b = integer(1,10);
+    const e = integer(0,9)/10, angle = integer(2,7)*10, theta = rad(angle);
+    const signed = n => n < 0 ? "−"+Math.abs(n) : String(n);
+    const q = (prompt,answer,unit,hint,steps) => ({key,prompt,answer,unit,hint,steps:steps+" = "+fmt(answer)+" "+unit+"."});
+    switch (key) {
+    case "momentum": return hard
+        ? q("Na premici ima prvo telo maso "+m+" kg in hitrost "+u+" m/s, drugo pa maso "+M+" kg in hitrost −"+w+" m/s. Izračunaj skupno gibalno količino s predznakom.",m*u-M*w,"kg·m/s","Pomnoži vsako maso s predznačeno hitrostjo in seštej.","pₓ = "+m+"·"+u+" − "+M+"·"+w)
+        : q("Telo z maso "+m+" kg se giblje s hitrostjo "+u+" m/s. Kolikšna je velikost njegove gibalne količine?",m*u,"kg·m/s","Uporabi p = mv.","p = "+m+"·"+u);
+    case "stick": {
+        const start = hard ? -w : 0;
+        return q("Po trku na premici se telesi sprimeta. Masi sta "+m+" kg in "+M+" kg, začetni hitrosti pa "+u+" m/s in "+signed(start)+" m/s. Kolikšna je skupna hitrost s predznakom?",(m*u+M*start)/(m+M),"m/s","Predznačeno skupno gibalno količino deli s skupno maso.","v = ("+m+"·"+u+" + "+M+"·("+signed(start)+"))/("+m+"+"+M+")");
+    }
+    case "elastic": return hard
+        ? q("Telo z maso "+m+" kg in hitrostjo "+u+" m/s čelno in elastično trči v mirujoče telo z maso "+M+" kg. Določi hitrost prvega telesa s predznakom.",(m-M)*u/(m+M),"m/s","Za mirujoče drugo telo velja v₁ = (m₁−m₂)u₁/(m₁+m₂).","v₁ = ("+m+"−"+M+")·"+u+"/("+m+"+"+M+")")
+        : q("Enaki masi po "+m+" kg elastično trčita na premici. Prva ima hitrost "+u+" m/s, druga miruje. Kolikšna je hitrost druge takoj po trku?",u,"m/s","Pri čelnem elastičnem trku enaki masi izmenjata hitrosti.","v₂ = u₁");
+    case "restitution": return hard
+        ? q("Gladki telesi se po normali približujeta z relativno hitrostjo "+(u+w)+" m/s. Koeficient restitucije je "+fmt(e)+". Kolikšna je relativna hitrost razmikanja po normali po trku?",e*(u+w),"m/s","Pomnoži hitrost približevanja z e.","vᵣ = "+fmt(e)+"·"+(u+w))
+        : q("Pri trku se telesi po normali približujeta z relativno hitrostjo "+(u+w)+" m/s in razmikata z relativno hitrostjo "+w+" m/s. Izračunaj e.",w/(u+w),"brez enote","Deli hitrost razmikanja s hitrostjo približevanja.","e = "+w+"/"+(u+w));
+    case "components": return hard
+        ? q("Telo mase "+m+" kg ima v ravnini hitrost ("+a+"; "+signed(-b)+") m/s. Telo mase "+M+" kg ima hitrost ("+u+"; "+w+") m/s. Kolikšna je skupna komponenta gibalne količine pᵧ?",-m*b+M*w,"kg·m/s","Za komponento pᵧ uporabi samo hitrosti v smeri y.","pᵧ = "+m+"·("+signed(-b)+") + "+M+"·"+w)
+        : q("Telo mase "+m+" kg ima hitrost ("+a+"; "+signed(-b)+") m/s. Izračunaj velikost njegove gibalne količine.",m*Math.hypot(a,b),"kg·m/s","Najprej iz komponent izračunaj velikost hitrosti.","|p⃗| = "+m+"·√("+a+"² + "+b+"²)");
+    case "plane": return hard
+        ? q("Enaka gladka diska elastično trčita. Prvi se pred trkom giblje v smeri +x s hitrostjo "+u+" m/s, drugi miruje. Normala je nagnjena za "+angle+"° glede na +x. Izračunaj komponento v₂ᵧ.",u*Math.cos(theta)*Math.sin(theta),"m/s","Drugi disk prevzame normalno komponento u₁cos θ. Nato jo projiciraj na y.","v₂ᵧ = "+u+"·cos("+angle+"°)·sin("+angle+"°)")
+        : q("Disk se pred trkom giblje po +x s hitrostjo "+u+" m/s. Normala stika je nagnjena za "+angle+"° od +x. Izračunaj komponento hitrosti vzdolž normale.",u*Math.cos(theta),"m/s","Normalna komponenta je projekcija hitrosti na normalo.","uₙ = "+u+"·cos("+angle+"°)");
+    case "energy": return hard
+        ? q("Telo mase "+m+" kg in hitrosti "+u+" m/s trči v mirujoče telo mase "+M+" kg. Telesi se sprimeta. Za koliko se zmanjša kinetična energija?",.5*m*u*u-.5*(m+M)*(m*u/(m+M))**2,"J","Najprej iz gibalne količine določi skupno hitrost. Od začetne kinetične energije odštej končno.","ΔEₖ = ½·"+m+"·"+u+"² − ½·"+(m+M)+"·("+m+"·"+u+"/"+(m+M)+")²")
+        : q("Telo z maso "+m+" kg ima hitrost ("+a+"; "+signed(-b)+") m/s. Izračunaj kinetično energijo.",.5*m*(a*a+b*b),"J","Kvadrat velikosti hitrosti je vsota kvadratov komponent.","Eₖ = ½·"+m+"·("+a+"²+"+b+"²)");
+    default: throw new Error("Neznana tema.");
+    }
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Trki teles · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+refresh();
+renderMission();
+generate();
+</script>
+</body>
+</html>
