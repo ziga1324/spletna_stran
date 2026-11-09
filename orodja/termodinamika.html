@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivna termodinamika: adiabatni procesi, Joule–Kelvinov pojav, stacionarni tok, Carnotov cikel, toplotni stroji in entropija.">
+<title>Termodinamika – Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.td{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.td *{box-sizing:border-box}.td [hidden]{display:none!important}
+.td .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.td header.wrap{padding:25px 0 22px}.td a{color:var(--accent);font-weight:750}
+.td .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.td .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.td h1,.td h2,.td h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.td h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.td h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.td h3{font-size:1.15rem;margin:0 0 9px}.td p{margin:0 0 13px}.td .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.td .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.td svg{display:block;width:100%;height:auto;overflow:visible}
+.td nav,.td .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.td nav{margin:12px 0 24px}
+.td button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.td button:hover{background:var(--purple)}.td button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.td button[aria-pressed=true],.td .primary{background:var(--yellow)}
+.td button:disabled{opacity:.55;cursor:default}.td :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.td .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.td .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.td .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.td .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.td label{display:block;font-weight:700;margin:12px 0 4px}.td label:first-child{margin-top:0}
+.td input:not([type=checkbox]),.td select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.td input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.td input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.td output{color:var(--accent);font-weight:800}
+.td .fine{font-size:.88rem;color:#4d5871}.td .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.td .lab-visual,.td .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.td .graph{cursor:crosshair}.td .graph-label{font-weight:800;margin:7px 0 0}
+.td .graph-group{min-width:0}.td .graph-group p{margin:7px 0 0}
+.td .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.td .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.td .metric:nth-child(2n){background:var(--mint)}.td .metric strong{display:block;font-size:1.06rem}
+.td .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.td .lav{background:var(--purple)}.td .accent-card{background:var(--yellow)}.td .question{font-weight:700;font-size:1.06rem}
+.td .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.td details{margin:10px 0}.td summary{cursor:pointer;font-weight:750}
+.td .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.td .question-card .row{margin-top:9px}.td .question-card label{margin-top:9px}
+.td .lesson{scroll-margin:15px}.td .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.td footer{padding:8px 0 28px}.td .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.td .grid,.td .hero{grid-template-columns:1fr}.td .hero-art{display:none}.td .three{grid-template-columns:1fr}.td .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.td .wrap{width:calc(100% - 24px)}.td .two{grid-template-columns:1fr}.td nav button{flex:1 1 40%}.td .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.td{background:#fff;color:#000}body.td.print-sheet > :not(#paper){display:none!important}body.td.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.td .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.td .graph{cursor:default}
+.td .subnote{margin-top:12px}
+.td .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.td .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.td .graph-row{grid-template-columns:1fr}.td .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.td h1{font-size:clamp(44px,7vw,78px)}
+.td .lab-visual{margin:10px 0 14px}
+.td .lab-grid{align-items:start}
+.td .plot-note{margin-top:10px}
+.td .topic-buttons{margin:12px 0 24px}
+.td .theory-grid .note{margin:0}
+.td .theory-grid{margin:14px 0}
+.td .mono{font-variant-numeric:tabular-nums}
+.td .unit-table{border-collapse:collapse;width:100%;margin:12px 0}
+.td .unit-table th,.td .unit-table td{text-align:left;border-bottom:1px solid #bbc7ce;padding:6px}
+.td .focus-box{margin-top:12px}
+.td .hero h1{font-size:clamp(39px,6.4vw,76px);text-wrap:balance}
+</style>
+</head>
+<body class="td">
+<header class="wrap">
+    <a href="../index.html">← Vsa orodja</a>
+    <div class="hero">
+        <div><span class="badge">SIDEBIT · FIZIKA</span><h1>Termodinamika</h1>
+        <p class="lead">Stisni plin brez dovoda toplote, primerjaj ventil s turbino in preizkusi Carnotov cikel. Z devetimi poskusi razišči, zakaj prvi zakon dopušča več procesov, kot jih v naravi dovoljuje drugi zakon.</p></div>
+        <svg class="hero-art" viewBox="0 0 330 145" role="img" aria-label="Bat s plinom in skica krožnega procesa">
+            <rect x="33" y="32" width="102" height="91" rx="9" fill="#fff" stroke="#22253a" stroke-width="3"/>
+            <path d="M35 57h98v57q0 7-7 7H42q-7 0-7-7Z" fill="#ffe38b"/>
+            <path d="M38 58h92M84 58V21m-22 0h44" stroke="#22253a" stroke-width="5" stroke-linecap="round"/>
+            <g fill="#5634aa"><circle cx="56" cy="79" r="4"/><circle cx="83" cy="99" r="4"/><circle cx="112" cy="84" r="4"/><circle cx="113" cy="106" r="4"/><circle cx="58" cy="109" r="4"/></g>
+            <path d="M164 119h145M166 119V24" stroke="#78859a" stroke-width="2"/>
+            <path d="M190 53 Q220 69 271 78 Q280 87 290 100 Q235 96 208 83 Q197 65 190 53Z" fill="#c5f0e2" stroke="#5634aa" stroke-width="4"/>
+
+        </svg>
+    </div>
+    <nav aria-label="Poglavja">
+        <button type="button" data-tab="lab" aria-pressed="true">Laboratorij</button>
+        <button type="button" data-tab="challenge" aria-pressed="false">Učni izzivi</button>
+        <button type="button" data-tab="practice" aria-pressed="false">Generator nalog</button>
+        <button type="button" data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+    </nav>
+</header>
+<main class="wrap">
+<section id="lab">
+    <div class="card lav">
+        <span class="chip">Devet interaktivnih poskusov</span><h2>Izberi poskus</h2>
+        <div id="lab-buttons" class="row topic-buttons"></div>
+    </div>
+    <div class="grid lab-grid">
+        <div class="card">
+            <span class="chip">01 · Nastavi</span><h2 id="lab-title"></h2>
+            <p id="lab-intro"></p><div id="controls"></div>
+            <div class="row small-gap"><button type="button" id="restore">Ponastavi poskus</button></div>
+        </div>
+        <div class="card">
+            <span class="chip">02 · Opazuj</span><h2 id="plot-title"></h2>
+            <svg id="plot" class="lab-visual" viewBox="0 0 550 285" role="img" aria-label="Vizualni prikaz poskusa"></svg>
+            <p id="plot-note" class="fine plot-note"></p>
+            <div id="values" class="readouts mono"></div><p id="conclusion" class="focus-box"></p>
+        </div>
+    </div>
+</section>
+<section id="challenge" hidden>
+    <div class="card lav">
+        <span class="chip">Najprej napovej</span><h2>Učni izzivi</h2>
+        <label for="mission">Izberi izziv</label><select id="mission"></select>
+        <div id="mission-body" class="small-gap"></div>
+        <p id="mission-feedback" class="feedback" role="status"></p>
+        <button type="button" id="mission-open">Odpri poskus</button>
+    </div>
+</section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden>
+ <div class="card">
+  <h2>Prvi zakon pove, koliko energije. Drugi pove, v katero smer.</h2>
+  <p>V tem poglavju je Q pozitiven, ko sistem prejema toploto, W pa pozitiven, ko sistem opravlja delo. Velja ΔU = Q − W. Pri krožnem procesu se delovna snov vrne v začetno stanje, zato sta njeni ΔU in ΔS po celotnem ciklu nič. To ne pomeni, da sta toplota in delo nič ali da okolica nima spremembe entropije.</p>
+  <div class="two theory-grid">
+   <article class="note"><h3>1 · Adiabatni procesi</h3>
+    <p class="formula">Q = 0 &nbsp; · &nbsp; ΔU = −W</p>
+    <p>Adiabatno pomeni brez izmenjave toplote. Tako spremembo približno dosežemo s toplotno izolacijo ali kadar je čas za prenos toplote zelo kratek. Če idealni plin pri raztezanju opravlja delo in nima dovoda toplote, se mu notranja energija zmanjša in temperatura pade. Pri stiskanju je obratno.</p>
+    <p class="formula">pVᵞ = konst. &nbsp; · &nbsp; TVᵞ⁻¹ = konst. &nbsp; · &nbsp; γ = Cₚ/Cᵥ</p>
+    <p>Potenčni enačbi veljata za <strong>reverzibilno</strong> adiabatno spremembo idealnega plina s približno stalnima toplotnima kapacitetama. Izpeljava: nCᵥ dT = −p dV; vstavimo p = nRT/V, delimo s T in uporabimo R/Cᵥ = γ − 1. Proces je tedaj tudi izentropen. Adiabatni proces z disipacijo pa ima S<sub>gen</sub> &gt; 0.</p>
+   </article>
+   <article class="note lav"><h3>2 · Joule–Kelvinov oziroma Joule–Thomsonov proces</h3>
+    <p class="formula">h = u + p/ρ &nbsp; · &nbsp; h₂ ≈ h₁ &nbsp; · &nbsp; μ<sub>JT</sub> = (∂T/∂p)<sub>h</sub></p>
+    <p>Plin stacionarno teče skozi ventil ali porozni čep. Če je naprava izolirana, brez grednega dela in so razlike hitrosti ter višine med merilnima mestoma zanemarljive, se ohranja specifična entalpija. Proces je ireverzibilen. Padec tlaka sam ne določa, ali se plin ohladi.</p>
+    <p>Za majhen padec tlaka uporabimo ΔT ≈ μ<sub>JT</sub>(p₂ − p₁). Če je μ pozitiven, se plin pri padcu tlaka ohladi; pri negativnem se segreje. Pri inverziji je μ = 0. Koeficient realnega plina je odvisen od T in p, zato ga čez velik padec tlaka ne smemo samodejno vzeti za stalnega.</p>
+    <p>Idealni plin ima h = h(T), zato se pri idealnem dušenju njegova T ne spremeni. V turbini lahko plin odda gredno delo in se ohladi. Pri prostem raztezanju v izolirani zaprti posodi pa ni niti dela niti toplote; tam se ohrani U, ne uporabljamo pogoja h₂ = h₁.</p>
+   </article>
+   <article class="note lav"><h3>3 · Stacionarni tok tekočin</h3>
+    <p class="formula">ṁ = ρAv &nbsp; · &nbsp; A₁v₁ = A₂v₂ pri stalni ρ</p>
+    <p>Pri stacionarnem toku se tlak, gostota in hitrost na istem mestu s časom ne spreminjajo, lahko pa se spreminjajo vzdolž cevi. Masni pretok je pri enem vstopu in enem izstopu enak na obeh mestih. Za stisljiv plin volumenski pretok ni nujno enak.</p>
+    <p class="formula">q − w<sub>g</sub> = Δh + Δ(v²/2) + gΔz</p>
+    <p>Energijska bilanca odprtega sistema z enim vstopom in izstopom: q in w<sub>g</sub> sta toplota in oddano gredno delo na kilogram. Entalpija vsebuje notranjo energijo in pretočno delo. Pri črpalki je oddano gredno delo negativno, pri turbini pozitivno.</p>
+    <p class="formula">p₁/(ρg) + v₁²/(2g) + z₁ = p₂/(ρg) + v₂²/(2g) + z₂ + h<sub>L</sub></p>
+    <p>Za nestisljiv tok brez črpalke ali turbine, pri h<sub>L</sub> = 0 in zanemarljivi viskoznosti vzdolž tokovnice, dobimo Bernoullijevo enačbo. Pozitivna izguba tlačne višine h<sub>L</sub> pomeni pretvorbo mehanske energije v notranjo. Ožja cev sama še ne določi tlaka: pomembni so tudi višina, izgube in morebitno delo črpalke.</p>
+   </article>
+   <article class="note"><h3>4 · Ireverzibilnost in drugi zakon</h3>
+    <p>Reverzibilen proces je idealna meja, pri kateri lahko sistem in okolico povrnemo v prvotno stanje brez drugih sprememb. Počasen proces sam po sebi še ni reverzibilen: če je prisotno trenje, nastaja entropija. Prenos toplote prek končne temperaturne razlike, prosto raztezanje, mešanje in viskoznost so primeri ireverzibilnosti.</p>
+    <p>Kelvin–Planckova oblika drugega zakona izključi krožni stroj, katerega edini učinek bi bila popolna pretvorba toplote iz enega rezervoarja v delo. Clausiusova oblika izključi napravo, katere edini učinek bi bil prenos toplote s hladnega telesa na toplejše. Hladilnik to doseže z dodatnim delom in zato ni izjema.</p>
+   </article>
+   <article class="note"><h3>5 · Carnotova krožna sprememba</h3>
+    <p>Carnotov motor ima dve reverzibilni izotermi in dve reverzibilni adiabati. Na diagramu p–V teče v smeri urnega kazalca, ploščina znotraj zanke pa je neto delo.</p>
+    <ol><li>Izotermno raztezanje pri Tₕ: plin prejme Qₕ.</li><li>Adiabatno raztezanje: plin se ohladi do T𝒸, Q = 0.</li><li>Izotermno stiskanje pri T𝒸: plin odda |Q𝒸|.</li><li>Adiabatno stiskanje: plin se vrne na Tₕ, Q = 0.</li></ol>
+    <p class="formula">η<sub>C</sub> = 1 − T𝒸/Tₕ &nbsp; · &nbsp; W = Qₕ − |Q𝒸|</p>
+    <p>Rezervoarja primerjamo v kelvinih. Ker je cikel reverzibilen, je |Q𝒸|/T𝒸 = Qₕ/Tₕ. Noben toplotni stroj med istima rezervoarjema ne more imeti višjega izkoristka. Na diagramu T–S sta izotermi vodoravni, adiabati pa navpični.</p>
+   </article>
+   <article class="note lav"><h3>6 · Hladilni stroji in toplotne črpalke</h3>
+    <p class="formula">Qₕ = Q𝒸 + W<sub>vhod</sub> &nbsp; · &nbsp; COP<sub>hl</sub> = Q𝒸/W<sub>vhod</sub> &nbsp; · &nbsp; COP<sub>g</sub> = Qₕ/W<sub>vhod</sub></p>
+    <p>V tem zapisu so vse tri količine pozitivne velikosti. Hladilnik želi odvzeti toploto hladnemu prostoru, toplotna črpalka pa jo oddati toplemu prostoru. Zato je pri istem ciklu COP<sub>g</sub> = COP<sub>hl</sub> + 1. COP je lahko večji od 1, saj naprava poleg vloženega dela prenaša tudi toploto.</p>
+    <p class="formula">COP<sub>hl,C</sub> = T𝒸/(Tₕ − T𝒸) &nbsp; · &nbsp; COP<sub>g,C</sub> = Tₕ/(Tₕ − T𝒸)</p>
+    <p>Večji temperaturni dvig zmanjša zgornjo mejo COP. V kompresijskem ciklu uparjalnik odvzame toploto, kompresor z delom dvigne tlak, kondenzator odda toploto, ekspanzijski ventil pa z dušenjem zniža tlak. Hladivo se pri tem praviloma tudi fazno spreminja. Nazivni COP v eni točki ni enako kot sezonsko povprečje.</p>
+   </article>
+   <article class="note lav"><h3>7 · Toplotni stroji v praksi</h3>
+    <p><strong>Ottov cikel</strong> je približek motorja z vžigom s svečko. V idealnem modelu dodamo toploto pri stalni prostornini; η = 1 − 1/rᵞ⁻¹, kjer je r kompresijsko razmerje. <strong>Dieslov cikel</strong> modelira dovod toplote pri stalnem tlaku; poleg r je pomembno tudi razmerje prostornin med dovajanjem toplote.</p>
+    <p><strong>Braytonov cikel</strong> modelira plinsko turbino: kompresor, dovod toplote pri približno stalnem tlaku, turbina in odvod toplote. <strong>Rankinov cikel</strong> uporabljajo parne elektrarne: črpalka zviša tlak kapljevine, kotel upari delovno snov, para poganja turbino, kondenzator pa jo utekočini.</p>
+    <p>Idealni cikli pomagajo primerjati vpliv kompresije in temperatur. Dejanski izkoristek je odvisen od trenja, toplotnih izgub, nepopolnega zgorevanja, padcev tlaka ter izkoristka kompresorja in turbine. Pri vozilu ali elektrarni je pomembno tudi, ali merimo izhodno energijo na gredi, na kolesih ali na električnem priključku.</p>
+   </article>
+   <article class="note"><h3>8 · Mikroskopska narava ireverzibilnosti</h3>
+    <p class="formula">S = k<sub>B</sub> ln Ω</p>
+    <p>Makrostanje opisujejo na primer tlak, temperatura ali število delcev v polovici posode. Mikrostanje podrobneje določa stanje posameznih delcev. Ω je število enako verjetnih mikrostanov, ki ustrezajo makrostanju. V preprostem modelu ima razporeditev polovice delcev na vsaki strani veliko več možnih izvedb kot razporeditev vseh na eni strani.</p>
+    <p>Trki pri trenju razpršijo urejeno gibanje med številne mikroskopske načine gibanja. Naključna vrnitev v začetno makrostanje v majhnem sistemu ni načeloma nemogoča, pri makroskopskem številu delcev pa je zanemarljivo verjetna. Entropijo zato povezujemo z množico mikrostanov, ne le z vsakdanjo predstavo o neredu.</p>
+   </article>
+   <article class="note"><h3>9 · Entropija in njena bilanca</h3>
+    <p class="formula">ΔS = ∫ δQ<sub>rev</sub>/T &nbsp; · &nbsp; ΔS<sub>sistem</sub> = ∫ δQ/T<sub>meje</sub> + S<sub>gen</sub></p>
+    <p>Entropija je funkcija stanja z enoto J/K. Za račun ΔS lahko izberemo namišljeno reverzibilno pot med ravnovesnima stanjema. Pri resnični ireverzibilni poti ne smemo kar uporabiti dejanskega Q/T za celotno spremembo. Druga enačba je bilanca zaprtega sistema, pri katerem temperaturo uporabimo na mestu prenosa toplote. S<sub>gen</sub> ≥ 0; entropijo lahko iz sistema tudi odvajamo, zato se S posameznega telesa lahko zmanjša.</p>
+    <p class="formula">ΔS<sub>idealni plin</sub> = nCᵥ ln(T₂/T₁) + nR ln(V₂/V₁)</p>
+    <p>Formula velja za zaprti idealni plin s stalnim Cᵥ. Pri prostem raztezanju idealnega plina v vakuum sta Q = 0 in W = 0, T ostane ista, entropija pa naraste za nR ln(V₂/V₁). Za prenos količine toplote Q iz velikega rezervoarja Tₕ v hladnejšega T𝒸 je skupna sprememba Q(1/T𝒸 − 1/Tₕ) &gt; 0.</p>
+   </article>
+  </div>
+  <details><summary>Rešen primer: adiabatno stiskanje</summary><p>En mol zraka s približkom γ = 1,4 začnemo stiskati pri 300 K. Če se prostornina prepolovi, je T₂ = 300 · 2<sup>0,4</sup> ≈ 396 K. Ker je Q = 0 in se U poveča, je delo plina negativno: okolica je opravila delo na plinu.</p></details>
+  <details><summary>Rešen primer: Joule–Kelvinovo dušenje</summary><p>Če je v ozkem območju μ<sub>JT</sub> = 0,25 K/bar, tlak pade s 15 na 7 bar. Δp = −8 bar, zato je ΔT ≈ −2 K. Približek predpostavlja stalni koeficient in zanemarljivo razliko hitrosti ter višine.</p></details>
+  <details><summary>Rešen primer: Carnotov motor in obrnjeni cikel</summary><p>Med 300 K in 450 K je največji izkoristek 1 − 300/450 = 1/3. Obrnjeni Carnotov cikel ima COP hladilnika 300/150 = 2 in COP ogrevanja 450/150 = 3.</p></details>
+  <details><summary>Rešen primer: entropija pri toku toplote</summary><p>Ko 1200 J preide iz rezervoarja pri 400 K v rezervoar pri 300 K, se prvemu entropija zmanjša za 3 J/K, drugemu naraste za 4 J/K. Skupaj nastane 1 J/K entropije.</p></details>
+  <p class="fine small-gap">Za nadaljnje branje: <a href="https://openstax.org/books/university-physics-volume-2/pages/4-introduction">OpenStax: drugi zakon termodinamike</a> in <a href="https://repository.tudelft.nl/file/File_2abceb88-4ce4-4317-af29-bbce63b3f5b3">TU Delft: Joule–Thomsonova sprememba</a> ter <a href="https://web.mit.edu/16.unified/www/FALL/thermodynamics/notes/node27.html">MIT: idealni Dieslov cikel</a>.</p>
+ </div>
+</section>
+</main>
+<footer class="wrap"><p>Sidebit · Fizika · Termodinamika</p></footer>
+<div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const R=8.314462618,G=9.81;
+const format=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:4,useGrouping:false});
+const fmt=x=>format.format(Math.abs(x)<1e-10?0:x);
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const C="#5634aa", B="#00806a", Y="#ffe38b", INK="#22253a";
+const line=(x,y,X,Y,color=INK,width=2,dash="")=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${color}" stroke-width="${width}" ${dash?'stroke-dasharray="'+dash+'"':""}/>`;
+const text=(x,y,s,anchor="middle")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="#364058" font-size="14" font-weight="650">${s}</text>`;
+const disk=(x,y,r=5,fill=Y)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${INK}" stroke-width="2"/>`;
+const rect=(x,y,w,h,fill,stroke=INK)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const series=(a,b,fn)=>Array.from({length:121},(_,i)=>{const x=a+(b-a)*i/120;return [x,fn(x)];});
+const axisFormat=new Intl.NumberFormat("sl-SI",{maximumSignificantDigits:4,useGrouping:false});
+const number=x=>axisFormat.format(x);
+function chart({xmin=0,xmax,ymin=0,ymax,xLabel,yLabel,curves,dots=[],shade=null,markers=[]}){
+    const left=72,right=521,top=35,bottom=222;
+    const X=x=>left+(right-left)*(x-xmin)/(xmax-xmin), Z=y=>bottom-(bottom-top)*(y-ymin)/(ymax-ymin);
+    const path=points=>points.map(([x,y],i)=>(i?"L":"M")+X(x)+" "+Z(y)).join(" ");
+    let svg=text(left,22,yLabel,"start")+text(right,275,xLabel,"end");
+    for(let i=0;i<=4;i++){
+        const x=xmin+(xmax-xmin)*i/4,y=ymin+(ymax-ymin)*i/4;
+        svg+=line(X(x),top,X(x),bottom,"#dce3ef",1)+line(left,Z(y),right,Z(y),"#dce3ef",1);
+        svg+=text(X(x),246,number(x))+text(left-9,Z(y)+5,number(y),"end");
+    }
+    if(shade?.length){
+        const [start]=shade,[end]=shade.slice(-1);
+        svg+=`<path d="${path(shade)} L${X(end[0])} ${Z(0)} L${X(start[0])} ${Z(0)} Z" fill="#ffe38b" opacity=".65"/>`;
+    }
+    svg+=line(left,top,left,bottom)+line(left,bottom,right,bottom);
+    for(const x of markers)svg+=line(X(x),top,X(x),bottom,"#a76b0d",1.5,"5 4");
+    for(const {points,color=C,dash=false} of curves)svg+=`<path d="${path(points)}" stroke="${color}" stroke-width="3.5" fill="none" ${dash?'stroke-dasharray="8 5"':""}/>`;
+    for(const [x,y] of dots)svg+=disk(X(x),Z(y));
+    return svg;
+}
+function bars(data,unit){
+    const max=Math.max(1,...data.map(([,v])=>v));
+    return data.map(([label,value,color],i)=>{
+        const y=41+i*73;
+        return text(45,y,label+" · "+fmt(value)+" "+unit,"start")+rect(45,y+12,460,18,"#e9edf4","#dce3ef")+
+            (value>0 ? rect(45,y+12,460*value/max,18,color) : "");
+    }).join("");
+}
+const metric=(name,v,unit)=>[name,fmt(v)+(unit?" "+unit:"")];
+const slider=(id,label,min,max,step,value,unit="")=>({id,label,min,max,step,value,unit});
+const select=(id,label,value,options)=>({id,label,value,options});
+
+const cv=gamma=>R/(gamma-1);
+const pGas=(n,T,V)=>n*R*T/V; // V v L, rezultat v kPa.
+function adiabatic(n,T,V,ratio,gamma){
+    const T2=T*ratio**(1-gamma), V2=V*ratio, dU=n*cv(gamma)*(T2-T);
+    return {T2,V2,p2:pGas(n,T2,V2),W:-dU,dU};
+}
+const throttle=(T,drop,mu)=>T-drop*mu;
+function flow({rho,A,r,v,z,loss,p}){
+    const v2=v/r, volume=A*1e-4*v;
+    return {v2,volume,mass:rho*volume,p2:p+rho*((v*v-v2*v2)/2-G*(z+loss))/1000};
+}
+function carnot(Th,Tc,n,r,gamma,V=10){
+    const s=n*R*Math.log(r),a=(Th/Tc)**(1/(gamma-1)),V1=V,V2=V*r,V3=V*r*a,V4=V*a;
+    return {s,Qh:Th*s,Qc:Tc*s,W:(Th-Tc)*s,eta:1-Tc/Th,V1,V2,V3,V4};
+}
+function pump(Th,Tc,W,fraction){
+    const idealCool=Tc/(Th-Tc),cool=fraction*idealCool,heat=cool+1;
+    return {idealCool,cool,heat,Qc:cool*W,Qh:heat*W};
+}
+function engine(cycle,r,cutoff,gamma){
+    if(cycle==="diesel")return 1-(cutoff**gamma-1)/(gamma*(cutoff-1)*r**(gamma-1));
+    if(cycle==="brayton")return 1-r**((1-gamma)/gamma);
+    return 1-r**(1-gamma);
+}
+function multiplicity(N,k){
+    let v=1;
+    for(let i=1;i<=Math.min(k,N-k);i++)v=v*(N+1-i)/i;
+    return Math.round(v);
+}
+const reservoirs=(Q,Th,Tc)=>({hot:-Q/Th,cold:Q/Tc,total:Q*(1/Tc-1/Th)});
+const gammaField=()=>select("gamma","Model plina","1.4",[["1.4","Dvoatomni plin · γ = 1,4"],["1.6666666666666667","Enoatomni plin · γ = 5/3"]]);
+const temps=(value=300)=>slider("T","Začetna temperatura",240,650,5,value,"K");
+const nField=()=>slider("n","Količina plina",.2,3,.1,1,"mol");
+const ratioField=(value=1.8)=>slider("ratio","Razmerje V₂/V₁",.5,3,.05,value);
+const VField=()=>slider("V","Začetna prostornina",10,40,1,20,"L");
+const pair=(a,b,unit="")=>metric(a,b,unit);
+const lab={
+ adiabatic:{
+    name:"Adiabatni proces",intro:"Stisni ali raztegni idealni plin v izoliranem batu. Primerjaj reverzibilno adiabato z izotermo, ki poteka skozi isto začetno stanje.",
+    fields:[gammaField(),temps(),VField(),nField(),ratioField()],title:"Adiabata je strmejša od izoterme",
+    show({gamma,T,V,n,ratio}){
+        const r=adiabatic(n,T,V,ratio,gamma),min=Math.min(V,r.V2)*.85,max=Math.max(V,r.V2)*1.15;
+        const p1=pGas(n,T,V),p=x=>p1*(V/x)**gamma,i=x=>p1*V/x;
+        return {svg:chart({xmin:min,xmax:max,ymax:1.13*Math.max(p(min),i(min)),xLabel:"V (L)",yLabel:"p (kPa)",curves:[{points:series(min,max,i),color:B,dash:true},{points:series(min,max,p)}],shade:series(V,r.V2,p),dots:[[V,p1],[r.V2,r.p2]]}),note:"Vijolično: reverzibilna adiabata. Črtkano: izoterma. Rumeno: velikost dela samo med izbranima prostorninama.",values:[pair("Končna temperatura",r.T2,"K"),pair("Končni tlak",r.p2,"kPa"),pair("Delo plina W",r.W,"J"),pair("ΔU",r.dU,"J")],conclusion:"Q = 0 in ΔS = 0 za ta reverzibilni proces. Pri stiskanju je W negativen, pri raztezanju pozitiven."};
+    }
+ },
+ jt:{
+    name:"Joule–Kelvinov proces",intro:"Spusti plin skozi izoliran ventil. Uporabi lokalni koeficient μ pri izbranem začetnem stanju in spreminjaj padec tlaka.",
+    fields:[temps(),slider("p","Vstopni tlak",12,40,1,20,"bar"),slider("drop","Padec tlaka",1,10,1,6,"bar"),slider("mu","Lokalni μ",-.7,.9,.05,.3,"K/bar")],title:"Ventil: padec tlaka pri približno stalni entalpiji",
+    show({T,p,drop,mu}){
+        const end=throttle(T,drop,mu), p2=p-drop;
+        const ymin=Math.min(T,end)-2,ymax=Math.max(T,end)+2;
+        return {svg:chart({xmin:p2-1,xmax:p+1,ymin,ymax,xLabel:"p (bar)",yLabel:"T (K)",curves:[{points:[[p,T],[p2,end]]}],dots:[[p,T],[p2,end]]}),note:"Tok gre od desne proti levi. Prikaz je linearni približek pri stalnem μ, ne lastnost določenega hladiva.",values:[pair("Izstopni tlak",p2,"bar"),pair("Izstopna temperatura",end,"K"),pair("Sprememba temperature",end-T,"K"),pair("Približni Δh",0,"J/kg")],conclusion:mu>0?"Pozitiven μ ob padcu tlaka pomeni ohlajanje.":mu<0?"Negativen μ ob padcu tlaka pomeni segrevanje.":"Pri μ = 0 v tem približku temperatura ostane ista. Tako je pri idealnem plinu."};
+    }
+ },
+ flow:{
+    name:"Stacionarni tok",intro:"Opazuj nestisljivo tekočino med dvema prerezoma cevi. Dodaj višinsko razliko in izgube, da ločiš njihov vpliv od zožitve.",
+    fields:[slider("A","Vstopni presek",5,40,1,20,"cm²"),slider("r","Razmerje presekov A₂/A₁",.5,2,.05,.6),slider("v","Vstopna hitrost",1,5,.25,3,"m/s"),slider("rho","Gostota",700,1200,10,1000,"kg/m³"),slider("p","Vstopni absolutni tlak",200,500,5,250,"kPa"),slider("z","Višinska razlika z₂ − z₁",-4,4,.25,1,"m"),slider("loss","Izguba tlačne višine",0,4,.25,.75,"m")],title:"Dva merilna prereza iste cevi",
+    show(s){
+        const r=flow(s), h=38*Math.sqrt(s.r), y=130-10*s.z;
+        const svg=`<path d="M55 92H186L365 ${y-h}H492V${y+h}H365L186 168H55Z" fill="#d8ecff" stroke="#22253a" stroke-width="3"/>`+
+        line(132,92,132,168,C,2,"5 4")+line(413,y-h,413,y+h,C,2,"5 4")+line(70,130,111,130,B,3)+line(425,y,472,y,B,3)+
+        text(112,215,"Prerez 1: "+fmt(s.v)+" m/s")+text(420,215,"Prerez 2: "+fmt(r.v2)+" m/s")+text(275,255,"Masni pretok je v obeh prerezih enak.");
+        return {svg,note:"Cev je skica, ne merilo. Model je brez črpalke ali turbine. Izgube znižajo razpoložljivo mehansko energijo.",values:[pair("Izstopna hitrost",r.v2,"m/s"),pair("Volumenski pretok",1000*r.volume,"L/s"),pair("Masni pretok",r.mass,"kg/s"),pair("Izstopni tlak",r.p2,"kPa")],conclusion:"Če je gostota stalna, manjši presek pomeni večjo hitrost. Končni tlak določajo tudi višina in izgube."};
+    }
+ },
+ irreversible:{
+    name:"Ireverzibilni procesi",intro:"Primerjaj dve poti z istima začetnim in končnim ravnovesnim stanjem: reverzibilno izotermno raztezanje in prosto raztezanje idealnega plina.",
+    fields:[select("path","Izberi pot","free",[["free","Prosto raztezanje v vakuum"],["rev","Reverzibilno izotermno raztezanje"]]),temps(),VField(),nField(),slider("ratio","Razmerje V₂/V₁",1.1,4,.1,2)],title:"Enaki stanji, različni poti",
+    show({path,T,V,n,ratio}){
+        const V2=V*ratio,p=x=>pGas(n,T,x),rev=path==="rev",dS=n*R*Math.log(ratio),W=rev?T*dS:0;
+        return {svg:chart({xmin:V*.8,xmax:V2*1.1,ymax:p(V)*1.15,xLabel:"V (L)",yLabel:"p (kPa)",curves:rev?[{points:series(V,V2,p)}]:[],shade:rev?series(V,V2,p):null,dots:[[V,p(V)],[V2,p(V2)]]}),note:rev?"Reverzibilna pot je narisana. Osenčena ploščina je delo plina.":"Piki sta ravnovesni stanji. Med prostim raztezanjem plin ni v ravnovesju, zato med pikama ni narisana pot p–V.",values:[pair("Delo W",W,"J"),pair("Dovedena toplota Q",W,"J"),pair("ΔS plina",dS,"J/K"),pair("Nastala entropija",rev?0:dS,"J/K")],conclusion:rev?"Plin prejme entropijo s toploto; za plin in rezervoar skupaj entropija ne nastaja.":"Plin ne prejme toplote in ne opravi dela. Entropija se kljub temu poveča."};
+    }
+ },
+ carnot:{
+    name:"Carnotov cikel",intro:"Izberi temperaturi in količino plina. Preklopi med diagramoma p–V in T–S ter označi posamezni korak.",
+    fields:[slider("Th","Temperatura toplega rezervoarja",390,660,5,480,"K"),slider("Tc","Temperatura hladnega rezervoarja",260,365,5,300,"K"),nField(),gammaField(),slider("r","Razmerje V₂/V₁ na topli izotermi",1.1,2.7,.1,1.7),select("diagram","Diagram","pv",[["pv","Tlak–prostornina (p–V)"],["ts","Temperatura–entropija (T–S)"]]),select("step","Korak","0",[["0","1 → 2 · topla izoterma"],["1","2 → 3 · adiabatno raztezanje"],["2","3 → 4 · hladna izoterma"],["3","4 → 1 · adiabatno stiskanje"]])],title:"Štiri poti v krožnem procesu",
+    show({Th,Tc,n,gamma,r,diagram,step}){
+        const c=carnot(Th,Tc,n,r,gamma),{V1,V2,V3,V4}=c,k=Number(step);
+        const color=i=>i===k?C:"#7d96a6";
+        const heat=[c.Qh,0,-c.Qc,0],descriptions=["Plin prejema toploto iz toplega rezervoarja.","Plin se razteza brez prenosa toplote.","Plin oddaja toploto hladnemu rezervoarju.","Plin se stiska brez prenosa toplote."];
+        let svg;
+        if(diagram==="ts"){
+            const nodes=[[0,Th],[c.s,Th],[c.s,Tc],[0,Tc]];
+            svg=chart({xmin:-c.s*.15,xmax:c.s*1.15,ymin:Tc-20,ymax:Th+20,xLabel:"S − S₁ (J/K)",yLabel:"T (K)",curves:nodes.map((p,i)=>({points:[p,nodes[(i+1)%4]],color:color(i)})),dots:nodes});
+        }else{
+            const p1=pGas(n,Th,V1),p2=pGas(n,Th,V2),p3=pGas(n,Tc,V3),p4=pGas(n,Tc,V4);
+            const paths=[series(V1,V2,x=>pGas(n,Th,x)),series(V2,V3,x=>p2*(V2/x)**gamma),series(V3,V4,x=>pGas(n,Tc,x)),series(V4,V1,x=>p4*(V4/x)**gamma)];
+            svg=chart({xmin:V1*.75,xmax:V3*1.1,ymax:p1*1.13,xLabel:"V (L)",yLabel:"p (kPa)",curves:paths.map((points,i)=>({points,color:color(i)})),dots:[[V1,p1],[V2,p2],[V3,p3],[V4,p4]]});
+        }
+        return {svg,note:"Vijolično je izbrani korak. Na T–S je začetek S₁ = 0 izbran kot referenca, ne kot absolutna entropija.",values:[pair("Izkoristek",100*c.eta,"%"),pair("Neto delo na cikel",c.W,"J"),pair("Toplota izbranega koraka",heat[k],"J"),pair("Toplota iz toplega vira",c.Qh,"J")],conclusion:descriptions[k]+" Po celotnem reverzibilnem ciklu je nastala entropija nič."};
+    }
+ },
+ pump:{
+    name:"Hladilnik in toplotna črpalka",intro:"Spreminjaj temperaturi in dovedeno moč. Izračunaj oba COP za isto napravo in ju primerjaj s Carnotovo mejo.",
+    fields:[slider("Tc","Temperatura hladne strani",250,295,1,273,"K"),slider("Th","Temperatura tople strani",300,360,1,313,"K"),slider("W","Dovedena moč",.2,4,.1,1,"kW"),slider("fraction","Delež idealnega hladilnega COP",.15,1,.05,.5)],title:"Od kod pride toplota za ogrevanje?",
+    show({Th,Tc,W,fraction}){
+        const p=pump(Th,Tc,W,fraction);
+        return {svg:bars([["Toplotni tok iz hladnega vira",p.Qc,"#c5f0e2"],["Vhodna moč",W,Y],["Toplotni tok v topli prostor",p.Qh,"#e8ddff"]],"kW"),note:"Delež idealnega COP je učna nastavitev, ne model izkoristka posameznega kompresorja.",values:[pair("COP hladilnika",p.cool),pair("COP ogrevanja",p.heat),pair("Carnotov COP ogrevanja",p.idealCool+1),pair("Temperaturni dvig",Th-Tc,"K")],conclusion:"V topli prostor gre vsota toplote iz hladnega vira in dovedenega dela. Zato je COP ogrevanja za 1 večji."};
+    }
+ },
+ engines:{
+    name:"Toplotni stroji v praksi",intro:"Primerjaj idealizirani Ottov, Dieslov ali Braytonov cikel z učnim scenarijem, v katerem naprava doseže le del idealnega izkoristka.",
+    fields:[select("cycle","Referenčni cikel","otto",[["otto","Otto · motor na vžig s svečko"],["diesel","Diesel · motor na kompresijski vžig"],["brayton","Brayton · plinska turbina"]]),
+        {...slider("r","Kompresijsko razmerje Vₘₐₓ/Vₘᵢₙ",5,22,.5,10),hide:s=>s.cycle==="brayton"},
+        {...slider("pr","Tlačno razmerje kompresorja",2,30,.5,10),hide:s=>s.cycle!=="brayton"},
+        {...slider("cut","Razmerje prostornin med dovajanjem toplote",1.2,2.5,.1,1.6),hide:s=>s.cycle!=="diesel"},
+        slider("Q","Dovedena energija",20,200,5,100,"kJ"),slider("fraction","Doseženi delež idealnega izkoristka",.25,1,.05,.65)],title:"Energijska bilanca motorja",
+    show({cycle,r,pr,cut,Q,fraction}){
+        const ideal=engine(cycle,cycle==="brayton"?pr:r,cut,1.4),eta=ideal*fraction, W=Q*eta;
+        return {svg:bars([["Dovedena energija",Q,Y],["Koristno delo",W,"#c5f0e2"],["Energija, oddana okolici",Q-W,"#e8ddff"]],"kJ"),note:"Idealni model uporablja stalni γ = 1,4. Nastavljivi delež ponazarja izgube; ne napoveduje izkoristka konkretnega stroja.",values:[pair("Idealni izkoristek",100*ideal,"%"),pair("Izkoristek scenarija",100*eta,"%"),pair("Koristno delo",W,"kJ"),pair("Oddana energija",Q-W,"kJ")],conclusion:cycle==="diesel"?"Pri istem kompresijskem razmerju idealni Dieslov izkoristek je odvisen tudi od razmerja prostornin med dovodom toplote.":cycle==="brayton"?"V idealnem Braytonovem modelu je izkoristek odvisen od tlačnega razmerja. V resnični turbini nanj vplivajo tudi temperature in izgube.":"Idealni Ottov izkoristek raste s kompresijskim razmerjem. Resničnega motorja ni mogoče oceniti le iz tega razmerja."};
+    }
+ },
+ micro:{
+    name:"Narava ireverzibilnosti",intro:"Vsak od N razločljivih delcev ima v tem modelu dve enako verjetni možnosti: levo ali desno. Primerjaj makrostanja z različnim številom delcev na levi.",
+    fields:[slider("N","Število delcev",4,30,1,16),slider("position","Delež delcev na levi (zaokrožen na cele delce)",0,100,1,50,"%")],title:"Verjetnost makrostanja s k delci na levi",
+    show({N,position}){
+        const k=Math.round(N*position/100), omega=multiplicity(N,k), prob=i=>multiplicity(N,i)/2**N,points=Array.from({length:N+1},(_,i)=>[i,100*prob(i)]);
+        const percent=100*prob(k), asPercent=percent<.0001 ? percent.toExponential(3).replace(".",",")+" %" : fmt(percent)+" %";
+        return {svg:chart({xmax:N,ymax:1.12*100*prob(Math.floor(N/2)),xLabel:"k · delci na levi",yLabel:"Verjetnost (%)",curves:[{points}],dots:[[k,percent]],markers:[k]}),
+            note:"Možna so le cela števila k. Črta poveže točke za lažje branje. Model predpostavi neodvisno izbiro polovice za vsak delec.",
+            values:[pair("Izbrano število na levi k",k),pair("Mikrostanja Ω",omega),pair("Entropija makrostanja S/kᴮ",Math.log(omega)),["Verjetnost",asPercent]],
+            conclusion:"Ω = N!/[k!(N−k)!]. Približno enakomerna razporeditev ima veliko več mikrostanov kot razporeditev vseh delcev na eni strani."};
+    }
+ },
+ entropy:{
+    name:"Entropija",intro:"Prenesi toploto iz velikega toplega rezervoarja v hladnejšega. Oba ostajata pri stalni temperaturi.",
+    fields:[slider("Th","Topli rezervoar",340,650,5,400,"K"),slider("Tc","Hladni rezervoar",240,335,5,300,"K"),slider("Q","Prenesena toplota",100,5000,100,1200,"J")],title:"Sprememba entropije obeh rezervoarjev",
+    show({Th,Tc,Q}){
+        const s=reservoirs(Q,Th,Tc);
+        return {svg:bars([["Zmanjšanje pri toplem viru (velikost)",-s.hot,Y],["Povečanje pri hladnem viru",s.cold,"#c5f0e2"],["Skupaj nastane",s.total,"#e8ddff"]],"J/K"),
+            note:"Prvi stolpec prikazuje velikost negativne spremembe. Predznaki so spodaj.",
+            values:[pair("ΔS toplega vira",s.hot,"J/K"),pair("ΔS hladnega vira",s.cold,"J/K"),pair("Skupna ΔS",s.total,"J/K")],
+            conclusion:"Izguba entropije toplega vira je manjša od prirastka hladnega. Če se temperaturi približata, se nastanek entropije pri istem Q zmanjša."};
+    }
+ }
+};
+const settings=Object.fromEntries(Object.entries(lab).map(([key,s])=>[key,Object.fromEntries(s.fields.map(f=>[f.id,f.value]))]));
+const labButtons={};
+let active="temperature";
+function renderLab(){
+    const l=lab[active], s=settings[active], r=l.show(s);
+    for(const f of l.fields){
+        if(f.hide)$("field-"+f.id).hidden=f.hide(s);
+        if(!f.options)$("out-"+f.id).textContent=fmt(s[f.id])+(f.unit?" "+f.unit:"");
+    }
+    $("plot-title").textContent=l.title;
+    $("plot").setAttribute("aria-label",l.title);
+    $("plot").innerHTML=r.svg;
+    $("plot-note").textContent=r.note;
+    $("conclusion").textContent=r.conclusion;
+    $("values").innerHTML=r.values.map(([name,value])=>`<div class="metric">${name}<strong>${value}</strong></div>`).join("");
+}
+function fillSelect(el,options){
+    el.replaceChildren(...options.map(([id,name])=>{const o=document.createElement("option");o.value=id;o.textContent=name;return o;}));
+}
+function selectLab(key,focus=false){
+    active=key;
+    for(const [id,button] of Object.entries(labButtons))button.setAttribute("aria-pressed",String(id===key));
+    const l=lab[key],s=settings[key],controls=$("controls");
+    $("lab-title").textContent=l.name;
+    $("lab-intro").textContent=l.intro;
+    controls.replaceChildren();
+    for(const f of l.fields){
+        const row=document.createElement("div"), label=document.createElement("label");
+        const input=document.createElement(f.options?"select":"input");
+        row.id="field-"+f.id;input.id="control-"+f.id;label.htmlFor=input.id;label.textContent=f.label;
+        if(f.options)fillSelect(input,f.options);
+        else{
+            input.type="range";input.min=f.min;input.max=f.max;input.step=f.step;
+            const out=document.createElement("output");out.id="out-"+f.id;label.append(": ",out);
+        }
+        input.value=s[f.id];
+        input.oninput=()=>{s[f.id]=f.options?input.value:Number(input.value);renderLab();};
+        row.append(label,input);controls.append(row);
+    }
+    renderLab();
+    if(focus)$("control-"+l.fields[0].id).focus();
+}
+for(const [key,item] of Object.entries(lab)){
+    const button=document.createElement("button");button.type="button";button.textContent=item.name;
+    button.onclick=()=>selectLab(key,true);
+    $("lab-buttons").append(button);labButtons[key]=button;
+}
+$("restore").onclick=()=>{
+    Object.assign(settings[active],Object.fromEntries(lab[active].fields.map(f=>[f.id,f.value])));
+    selectLab(active,true);
+};
+function tab(id){
+    for(const section of document.querySelectorAll("main > section"))section.hidden=section.id!==id;
+    for(const button of document.querySelectorAll("[data-tab]"))button.setAttribute("aria-pressed",String(button.dataset.tab===id));
+}
+for(const button of document.querySelectorAll("[data-tab]"))button.onclick=()=>tab(button.dataset.tab);
+const missions=[
+ {name:"Stiskanje brez toplote",key:"adiabatic",start:{ratio:.5,T:300},q:"Izoliran idealni plin reverzibilno stisnemo. Kaj se zgodi s temperaturo?",a:["Pade","Naraste","Ostane ista"],i:1,why:"Okolica opravi delo na plinu, zato se povečata notranja energija in temperatura."},
+ {name:"Predznak Joule–Kelvinovega koeficienta",key:"jt",start:{mu:-.3,p:20,drop:6},q:"Lokalni μ je negativen. Kaj povzroči padec tlaka v ventilu?",a:["Ohlajanje","Segrevanje","Ničelno spremembo"],i:1,why:"Tako μ kot Δp sta negativna, njun produkt je pozitiven."},
+ {name:"Dvakrat manjši prerez",key:"flow",start:{r:.5,v:3,loss:0,z:0},q:"Prerez cevi za nestisljivo tekočino se prepolovi. Kaj se zgodi s hitrostjo pri enakem pretoku?",a:["Podvoji se","Prepolovi se","Ostane enaka"],i:0,why:"A₁v₁ = A₂v₂, zato mora v manjšem prerezu teči hitreje."},
+ {name:"Entropija brez toplote",key:"irreversible",start:{path:"free",ratio:2},q:"Idealen plin se prosto razširi v vakuum v izolirani posodi. Kaj se zgodi z njegovo entropijo?",a:["Zmanjša se","Ostane ista","Naraste"],i:2,why:"Prostornina se poveča. Entropija nastane zaradi ireverzibilnosti, čeprav je Q = 0."},
+ {name:"Carnotova meja",key:"carnot",start:{Th:450,Tc:300,diagram:"ts",step:"0"},q:"Motor deluje med 450 K in 300 K. Kateri izkoristek je zgornja meja?",a:["Približno 33 %","Približno 67 %","100 %"],i:0,why:"η = 1 − 300/450 = 1/3."},
+ {name:"Dva COP, ena naprava",key:"pump",start:{Th:320,Tc:280,fraction:1},q:"Če ima hladilnik COP 3, koliko znaša COP ogrevanja za isti cikel?",a:["2","3","4"],i:2,why:"Qₕ = Q𝒸 + W, zato je COP ogrevanja za 1 večji."},
+ {name:"Izkoristek v praksi",key:"engines",start:{cycle:"otto",fraction:.65,Q:100},q:"Naprava iz 100 kJ dovedene energije dobi 35 kJ koristnega dela. Koliko energije odda okolici v enostavni bilanci?",a:["35 kJ","65 kJ","100 kJ"],i:1,why:"Pri ciklu je ΔU = 0. Preostanek 100 − 35 = 65 kJ odda okolici."},
+ {name:"Vsi na eni strani",key:"micro",start:{N:20,position:100},q:"Kaj se zgodi z verjetnostjo, da so vsi delci na levi, ko število delcev podvojimo?",a:["Poveča se","Zmanjša se","Ostane ista"],i:1,why:"Verjetnost je (1/2)ᴺ. Z več delci je vse manjša."},
+ {name:"Od kod nastane entropija?",key:"entropy",start:{Q:1200,Th:400,Tc:300},q:"Iz toplega vira odteče 1200 J pri 400 K v hladnega pri 300 K. Kolikšna je skupna sprememba entropije?",a:["−1 J/K","0 J/K","1 J/K"],i:2,why:"Topli vir izgubi 3 J/K, hladni pridobi 4 J/K. Skupaj nastane 1 J/K."}
+];
+fillSelect($("mission"),missions.map((m,i)=>[i,m.name]));
+function currentMission(){return missions[Number($("mission").value||0)];}
+function renderMission(){
+    const m=currentMission(), p=document.createElement("p"), group=document.createElement("div");
+    p.className="question";p.textContent=m.q;group.className="row";
+    $("mission-body").replaceChildren(p,group);$("mission-feedback").textContent="";
+    m.a.forEach((answer,i)=>{
+        const button=document.createElement("button");button.type="button";button.textContent=answer;button.setAttribute("aria-pressed","false");
+        button.onclick=()=>{
+            for(const other of group.children)other.setAttribute("aria-pressed",String(other===button));
+            $("mission-feedback").textContent=i===m.i?"Pravilno. "+m.why:"Poskusi še enkrat ali preveri v poskusu.";
+        };
+        group.append(button);
+    });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{
+    const m=currentMission();Object.assign(settings[m.key],Object.fromEntries(lab[m.key].fields.map(f=>[f.id,f.value])),m.start);tab("lab");selectLab(m.key,true);
+};
+
+
+const topics={adiabatic:"Adiabatni procesi",jt:"Joule–Kelvinov proces",flow:"Stacionarni tok",irreversible:"Ireverzibilni procesi",carnot:"Carnotov cikel",pump:"Hladilni stroji in toplotne črpalke",engines:"Toplotni stroji v praksi",micro:"Mikrostanja in verjetnost",entropy:"Entropija"};
+fillSelect($("topic"),[["all","Mešano"],...Object.entries(topics)]);
+function makeTask(key,level){
+ const hard=level===2,T=integer(26,56)*10,Th=integer(40,70)*10,Tc=integer(24,35)*10;
+ const n=integer(5,28)/10, ratio=integer(6,30)/10,Q=integer(4,30)*100;
+ const g=1.4;
+ const q=(prompt,answer,unit,hint,steps)=>({key,prompt,answer,unit,hint,steps:steps+" ≈ "+fmt(answer)+" "+unit+"."});
+ switch(key){
+  case "adiabatic":{
+   const r=adiabatic(n,T,20,ratio,g);
+   return hard
+    ? q("Pri reverzibilni adiabatni spremembi "+fmt(n)+" mol idealnega plina je T₁ = "+T+" K in V₂/V₁ = "+fmt(ratio)+". Uporabi γ = 1,4 in R = 8,314 J/(mol·K). Izračunaj delo plina W s predznakom.",r.W,"J","Najprej izračunaj T₂ = T₁(V₂/V₁)^(1−γ). Potem W = −nCᵥ(T₂−T₁).","T₂ ≈ "+fmt(r.T2)+" K; W = −"+fmt(n)+" · (R/0,4) · (T₂ − "+T+")")
+    : q("Idealni plin pri "+T+" K reverzibilno adiabatno spremeni prostornino tako, da je V₂/V₁ = "+fmt(ratio)+". Kolikšna je T₂? Uporabi γ = 1,4.",r.T2,"K","Uporabi TV^(γ−1) = konstanta.","T₂ = "+T+" · "+fmt(ratio)+"^(−0,4)");
+  }
+  case "jt":{
+   const mu=integer(-12,15)/20,d=integer(2,10),p=integer(15,30);
+   return hard
+    ? q("V izoliranem ventilu tlak pade s "+p+" na "+(p-d)+" bar. Temperatura se spremeni z "+T+" na "+fmt(throttle(T,d,mu))+" K. Oceni μ pri stalni entalpiji.",mu,"K/bar","V lokalnem približku uporabi predznačeni količnik ΔT/Δp.","μ = ("+fmt(throttle(T,d,mu))+" − "+T+")/("+ (p-d)+" − "+p+")")
+    : q("V ventilu tlak pade za "+d+" bar. Lokalni Joule–Kelvinov koeficient je "+fmt(mu)+" K/bar. Kolikšna je sprememba temperature T₂ − T₁?",-mu*d,"K","Padec tlaka pomeni negativni Δp.","ΔT = "+fmt(mu)+" · (−"+d+")");
+  }
+  case "flow":{
+   const A1=integer(10,60),A2=integer(Math.ceil(A1/2),2*A1),v=integer(4,18)/4,z=integer(-8,12)/4,loss=integer(0,8)/4;
+   const r=flow({rho:1000,A:A1,r:A2/A1,v,z,loss,p:300});
+   return hard
+    ? q("Voda (ρ = 1000 kg/m³) teče iz prereza "+A1+" cm² v prerez "+A2+" cm². Vstopna hitrost je "+fmt(v)+" m/s in p₁ = 300 kPa. Višinska razlika z₂−z₁ je "+fmt(z)+" m, izguba tlačne višine pa "+fmt(loss)+" m. Izračunaj p₂ v kPa; g = 9,81 m/s².",r.p2,"kPa","Iz kontinuitete dobi v₂, nato uporabi Bernoullijevo bilanco z izgubami.","v₂ = "+fmt(r.v2)+" m/s; p₂ = 300 + ρ[(v₁² − v₂²)/2 − g(z₂−z₁+hₗ)]/1000")
+    : q("Nestisljiva tekočina v prerezu "+A1+" cm² teče s hitrostjo "+fmt(v)+" m/s. Kolikšna je hitrost v prerezu "+A2+" cm²?",r.v2,"m/s","Uporabi A₁v₁ = A₂v₂.","v₂ = "+A1+" · "+fmt(v)+"/"+A2);
+  }
+  case "irreversible":{
+   const r=integer(13,40)/10,ds=n*R*Math.log(r);
+   return hard
+    ? q("Isti idealni plin lahko prosto razširimo v izolirani posodi ali reverzibilno izotermno pri "+T+" K, obakrat iz V₁ na "+fmt(r)+" V₁. Koliko več dela opravi pri reverzibilni poti, če je n = "+fmt(n)+" mol? R = 8,314 J/(mol·K).",T*ds,"J","Pri prostem raztezanju je W = 0; pri reverzibilni izotermi je W = nRT ln(V₂/V₁).","Razlika = "+fmt(n)+" · R · "+T+" · ln("+fmt(r)+")")
+    : q("Izoliran idealni plin, n = "+fmt(n)+" mol, se prosto razširi v vakuum do prostornine "+fmt(r)+" V₁. Za koliko se spremeni entropija? R = 8,314 J/(mol·K).",ds,"J/K","Za idealni plin je ΔT = 0. Entropijo izračunaj po namišljeni izotermi.","ΔS = "+fmt(n)+" · R · ln("+fmt(r)+")");
+  }
+  case "carnot":
+   return hard
+    ? q("Carnotov motor med "+Th+" K in "+Tc+" K prejme "+Q+" J toplote na cikel. Koliko toplote po velikosti odda hladnemu viru?",Q*Tc/Th,"J","Pri reverzibilnem ciklu je |Q𝒸|/T𝒸 = Qₕ/Tₕ.","|Q𝒸| = "+Q+" · "+Tc+"/"+Th)
+    : q("Kolikšen je največji izkoristek motorja med "+Th+" K in "+Tc+" K? Odgovor podaj v odstotkih.",100*(1-Tc/Th),"%","Uporabi Carnotovo mejo.","η v % = 100 · (1 − "+Tc+"/"+Th+")");
+  case "pump":{
+   const W=integer(2,36)/10;
+   return hard
+    ? q("Idealna reverzibilna toplotna črpalka ogreva pri "+Th+" K in odvzema toploto pri "+Tc+" K. Dovedena moč je "+fmt(W)+" kW. Kolikšen je oddani toplotni tok v kW?",W*Th/(Th-Tc),"kW","COP ogrevanja pomnoži z dovedeno močjo.","Pₕ = "+fmt(W)+" · "+Th+"/("+Th+" − "+Tc+")")
+    : q("Kolikšen je Carnotov COP hladilnika med hladno stranjo "+Tc+" K in toplo stranjo "+Th+" K?",Tc/(Th-Tc),"brez enote","Hladilnik ocenjujemo po odvzeti toploti s hladne strani.","COP = "+Tc+"/("+Th+" − "+Tc+")");
+  }
+  case "engines":{
+   const r=integer(7,20),pct=integer(20,55);
+   return hard
+    ? q("V idealnem Ottovem ciklu je kompresijsko razmerje "+r+" in γ = 1,4. Dovedemo "+Q+" J toplote. Koliko dela idealno dobimo na cikel?",Q*engine("otto",r,0,g),"J","Uporabi η = 1 − r^(1−γ) in W = ηQ.","W = "+Q+" · (1 − "+r+"^(−0,4))")
+    : q("Toplotni stroj prejme "+Q+" J na cikel in ima izkoristek "+pct+" %. Koliko toplote po velikosti odda okolici?",Q*(1-pct/100),"J","Oddana toplota je dovod minus koristno delo.","|Q𝒸| = "+Q+" · (1 − "+pct+"/100)");
+  }
+  case "micro":{
+   const N=integer(5,14),k=integer(0,N);
+   return hard
+    ? q("V modelu je "+N+" neodvisnih delcev, vsak je z enako verjetnostjo na levi ali desni. Kolikšna je verjetnost v odstotkih, da jih je točno "+k+" na levi?",100*multiplicity(N,k)/2**N,"%","Preštej načine z izbiro k od N in deli z 2ᴺ.","P v % = 100 · "+multiplicity(N,k)+"/2^"+N)
+    : q("Med "+N+" razločljivimi delci jih je točno "+k+" na levi. Koliko različnih mikrostanov ima to makrostanje, če šteje samo stran posameznega delca?",multiplicity(N,k),"mikrostanov","Izberi k delcev od N, vrstni red ni pomemben.","Ω = "+N+"!/[ "+k+"! · ("+N+"−"+k+")! ]");
+  }
+  case "entropy":{
+   const d=reservoirs(Q,Th,Tc);
+   return hard
+    ? q("Toplota "+Q+" J preide iz vira pri "+Th+" K v hladnejši vir pri "+Tc+" K. Koliko entropije pri tem nastane skupaj?",d.total,"J/K","Upoštevaj negativno spremembo toplega in pozitivno spremembo hladnega vira.","ΔS = −"+Q+"/"+Th+" + "+Q+"/"+Tc)
+    : q("Rezervoar pri stalni temperaturi "+T+" K odda "+Q+" J toplote. Kolikšna je sprememba njegove entropije s predznakom?",-Q/T,"J/K","Toplota zapušča rezervoar, zato ima pri računu negativen predznak.","ΔS = −"+Q+"/"+T);
+  }
+  default: throw new Error("Neznana tema.");
+ }
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti. Dovoljeno je manjše odstopanje zaradi zaokroževanja konstant.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001 + Math.abs(task.answer)*0.00006){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Termodinamika · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+selectLab("adiabatic");
+renderMission();
+generate();
+</script>
+</body>
+</html>
