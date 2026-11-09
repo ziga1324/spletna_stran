@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivna kemija: oksidacija, redukcija, galvanski členi, Nernstova enačba in elektroliza.">
+<title>Oksidacija, redukcija in elektrokemija – Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.rs{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.rs *{box-sizing:border-box}.rs [hidden]{display:none!important}
+.rs .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.rs header.wrap{padding:25px 0 22px}.rs a{color:var(--accent);font-weight:750}
+.rs .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.rs .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.rs h1,.rs h2,.rs h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.rs h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.rs h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.rs h3{font-size:1.15rem;margin:0 0 9px}.rs p{margin:0 0 13px}.rs .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.rs .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.rs svg{display:block;width:100%;height:auto;overflow:visible}
+.rs nav,.rs .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.rs nav{margin:12px 0 24px}
+.rs button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.rs button:hover{background:var(--purple)}.rs button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.rs button[aria-pressed=true],.rs .primary{background:var(--yellow)}
+.rs button:disabled{opacity:.55;cursor:default}.rs :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.rs .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.rs .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.rs .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.rs .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.rs label{display:block;font-weight:700;margin:12px 0 4px}.rs label:first-child{margin-top:0}
+.rs input:not([type=checkbox]),.rs select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.rs input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.rs input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.rs output{color:var(--accent);font-weight:800}
+.rs .fine{font-size:.88rem;color:#4d5871}.rs .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.rs .lab-visual,.rs .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.rs .graph{cursor:crosshair}.rs .graph-label{font-weight:800;margin:7px 0 0}
+.rs .graph-group{min-width:0}.rs .graph-group p{margin:7px 0 0}
+.rs .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.rs .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.rs .metric:nth-child(2n){background:var(--mint)}.rs .metric strong{display:block;font-size:1.06rem}
+.rs .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.rs .lav{background:var(--purple)}.rs .accent-card{background:var(--yellow)}.rs .question{font-weight:700;font-size:1.06rem}
+.rs .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.rs details{margin:10px 0}.rs summary{cursor:pointer;font-weight:750}
+.rs .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.rs .question-card .row{margin-top:9px}.rs .question-card label{margin-top:9px}
+.rs .lesson{scroll-margin:15px}.rs .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.rs footer{padding:8px 0 28px}.rs .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.rs .grid,.rs .hero{grid-template-columns:1fr}.rs .hero-art{display:none}.rs .three{grid-template-columns:1fr}.rs .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.rs .wrap{width:calc(100% - 24px)}.rs .two{grid-template-columns:1fr}.rs nav button{flex:1 1 40%}.rs .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.rs{background:#fff;color:#000}body.rs.print-sheet > :not(#paper){display:none!important}body.rs.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.rs .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.rs .graph{cursor:default}
+.rs .subnote{margin-top:12px}
+.rs .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.rs .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.rs .graph-row{grid-template-columns:1fr}.rs .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.rs h1{font-size:clamp(44px,7vw,78px)}
+.rs .lab-visual{margin:10px 0 14px}
+.rs .lab-grid{align-items:start}
+.rs .plot-note{margin-top:10px}
+.rs .topic-buttons{margin:12px 0 24px}
+.rs .theory-grid .note{margin:0}
+.rs .theory-grid{margin:14px 0}
+.rs .mono{font-variant-numeric:tabular-nums}
+.rs .unit-table{border-collapse:collapse;width:100%;margin:12px 0}
+.rs .unit-table th,.rs .unit-table td{text-align:left;border-bottom:1px solid #bbc7ce;padding:6px}
+.rs .focus-box{margin-top:12px}
+.rs .hero h1{font-size:clamp(39px,6.4vw,76px);text-wrap:balance}
+</style>
+</head>
+<body class="rs">
+<header class="wrap">
+    <a href="../index.html">← Vsa orodja</a>
+    <div class="hero">
+        <div><span class="badge">SIDEBIT · KEMIJA</span><h1>Redoks in elektrokemija</h1>
+        <p class="lead">Sledi elektronom od anode do katode. Sestavi galvanski člen, spreminjaj napetost in izračunaj maso kovine, ki se izloči pri elektrolizi.</p></div>
+        <svg class="hero-art" viewBox="0 0 330 145" role="img" aria-label="Shematski galvanski člen iz cinka in bakra">
+            <path d="M30 69v54h103V69 M197 69v54h103V69" stroke="#22253a" stroke-width="4" fill="none"/>
+            <path d="M33 83h97v37H33z" fill="#d8ecff"/><path d="M200 83h97v37H200z" fill="#c5f0e2"/>
+            <path d="M80 95V31h170v64" stroke="#22253a" stroke-width="4" fill="none"/>
+            <path d="M115 101V76h100v25" stroke="#5634aa" stroke-width="5" fill="none"/>
+            <path d="M130 19h65m-9-7 9 7-9 7" stroke="#5634aa" stroke-width="3" fill="none"/>
+            <text x="163" y="53" text-anchor="middle" font-weight="800" fill="#22253a">e⁻</text>
+            <text x="80" y="111" text-anchor="middle" font-weight="800" fill="#22253a">Zn</text>
+            <text x="250" y="111" text-anchor="middle" font-weight="800" fill="#22253a">Cu</text>
+        </svg>
+    </div>
+    <nav aria-label="Poglavja">
+        <button type="button" data-tab="lab" aria-pressed="true">Laboratorij</button>
+        <button type="button" data-tab="challenge" aria-pressed="false">Učni izzivi</button>
+        <button type="button" data-tab="practice" aria-pressed="false">Generator nalog</button>
+        <button type="button" data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+    </nav>
+</header>
+<main class="wrap">
+<section id="lab">
+    <div class="card lav">
+        <span class="chip">Štirje interaktivni poskusi</span><h2>Izberi poskus</h2>
+        <div id="lab-buttons" class="row topic-buttons"></div>
+    </div>
+    <div class="grid lab-grid">
+        <div class="card">
+            <span class="chip">01 · Nastavi</span><h2 id="lab-title"></h2>
+            <p id="lab-intro"></p><div id="controls"></div>
+            <div class="row small-gap"><button type="button" id="restore">Ponastavi poskus</button></div>
+        </div>
+        <div class="card">
+            <span class="chip">02 · Opazuj</span><h2 id="plot-title"></h2>
+            <svg id="plot" class="lab-visual" viewBox="0 0 550 285" role="img" aria-label="Vizualni prikaz poskusa"></svg>
+            <p id="plot-note" class="fine plot-note"></p>
+            <div id="values" class="readouts mono"></div><p id="conclusion" class="focus-box"></p>
+        </div>
+    </div>
+</section>
+<section id="challenge" hidden>
+    <div class="card lav">
+        <span class="chip">Najprej napovej</span><h2>Učni izzivi</h2>
+        <label for="mission">Izberi izziv</label><select id="mission"></select>
+        <div id="mission-body" class="small-gap"></div>
+        <p id="mission-feedback" class="feedback" role="status"></p>
+        <button type="button" id="mission-open">Odpri poskus</button>
+    </div>
+</section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden><div class="card">
+<h2>Od oksidacijskega števila do baterije</h2>
+<p>Za računanje množin ponovi <a href="kemijski_racuni.html">Kemijske račune</a>. Prenos elektrona je drugačen od prenosa protona pri <a href="kisline_in_baze.html">kislinah in bazah</a>.</p>
+<div class="two theory-grid">
+<article class="note"><h3>1 · Oksidacija, redukcija in oksidacijska števila</h3>
+<p>Pri oksidaciji delček odda elektrone, njegovo oksidacijsko število pa naraste. Pri redukciji delček sprejme elektrone, zato število pade. Redukcent se sam oksidira, oksidant pa se sam reducira.</p>
+<p>Elementarna snov ima oksidacijsko število 0. Pri enoatomskem ionu je število enako naboju. Kisik ima običajno −2 (v peroksidih −1), vodik običajno +1 (v kovinskih hidridih −1). Vsota števil je enaka celotnemu naboju delca: v MnO₄⁻ velja x + 4(−2) = −1, zato ima mangan +7.</p>
+</article>
+<article class="note lav"><h3>2 · Urejanje s polreakcijami</h3>
+<p>Loči oksidacijo in redukcijo. V kislem mediju izenači kisik s H₂O, vodik s H⁺ in naboj z e⁻. Nato pomnoži polreakciji tako, da se elektroni pri seštevanju pokrajšajo. V bazičnem mediju lahko po tem dodaš enako količino OH⁻ na obe strani, pretvoriš H⁺ v vodo in pokrajšaš odvečno vodo.</p>
+<p class="formula">MnO₄⁻ + 8 H⁺ + 5 e⁻ → Mn²⁺ + 4 H₂O<br>Fe²⁺ → Fe³⁺ + e⁻</p>
+<p>Drugo polreakcijo pomnožiš s 5. Skupaj: MnO₄⁻ + 8 H⁺ + 5 Fe²⁺ → Mn²⁺ + 4 H₂O + 5 Fe³⁺.</p>
+</article>
+<article class="note lav"><h3>3 · Galvanski člen in napetost</h3>
+<p>V galvanskem členu spontana reakcija poganja električni tok. Na anodi poteka oksidacija, na katodi redukcija. V galvanskem členu je anoda negativna, katoda pozitivna. Pri elektrolizi je polariteta obrnjena, poimenovanji po reakciji pa ostaneta.</p>
+<p class="formula">E°člena = E°red(katoda) − E°red(anoda)</p>
+<p>Potencialov ne množimo s koeficienti polreakcij. Pri 25 °C velja približek E = E° − (0,05916 V / z) log₁₀ Q, kjer z pomeni število izmenjanih elektronov na zapisano reakcijo. Za Daniellov člen Zn/Cu je Q = a(Zn²⁺)/a(Cu²⁺), kjer a označuje aktivnost.</p>
+</article>
+<article class="note"><h3>4 · Elektroliza in Faradayev zakon</h3>
+<p>Zunanji vir napaja reakcijo, ki v dani smeri sama ne bi potekala. Na katodi lahko npr. poteče Cu²⁺ + 2 e⁻ → Cu. Pretekli naboj je Q<sub>el</sub> = I t, pri čemer je t v sekundah. To ni isti Q kot reakcijski količnik.</p>
+<p class="formula">m = η M I t / (z F) · F ≈ 96 485 C/mol</p>
+<p>M je molska masa, z je število elektronov na ion in η je tokovni izkoristek kot delež od 0 do 1. Dejanski produkti so odvisni od elektrod, raztopine in pogojev; poskus modelira samo izločanje izbrane kovine.</p>
+</article></div>
+<details><summary>Rešen primer: standardna napetost Zn/Cu</summary><p>E°red(Cu²⁺/Cu) = +0,34 V, E°red(Zn²⁺/Zn) = −0,76 V. Baker je katoda, zato E° = 0,34 − (−0,76) = 1,10 V.</p></details>
+<details><summary>Rešen primer: koncentracije in napetost</summary><p>Za člen Zn/Cu z a(Zn²⁺) = 0,01 in a(Cu²⁺) = 0,10 je Q = 0,1 in log₁₀ Q = −1. Pri 25 °C je E ≈ 1,10 + 0,05916/2 = 1,13 V.</p></details>
+<details><summary>Rešen primer: masa bakra</summary><p>Tok 2,0 A v 10 min prenese 1200 C. Pri 100 % izkoristku je masa bakra približno 63,55 × 1200/(2 × 96 485) = 0,395 g.</p></details>
+<p class="fine">Viri: OpenStax, <a href="https://openstax.org/books/chemistry/pages/17-3-standard-reduction-potentials">standardni redukcijski potenciali</a>, <a href="https://openstax.org/books/chemistry/pages/17-4-the-nernst-equation">Nernstova enačba</a> in <a href="https://openstax.org/books/chemistry/pages/17-7-electrolysis">elektroliza</a>.</p>
+</div></section>
+</main>
+<footer class="wrap"><p>Sidebit · Kemija · Redoks in elektrokemija</p></footer>
+<div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const format=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:4,useGrouping:false});
+const fmt=x=>format.format(x);
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const C="#5634aa", B="#00806a", Y="#ffe38b", INK="#22253a";
+const line=(x,y,X,Y,color=INK,width=2,dash="")=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${color}" stroke-width="${width}" ${dash?'stroke-dasharray="'+dash+'"':""}/>`;
+const text=(x,y,s,anchor="middle")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="#364058" font-size="14" font-weight="650">${s}</text>`;
+const disk=(x,y,r=5,fill=Y)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${INK}" stroke-width="2"/>`;
+const rect=(x,y,w,h,fill,stroke=INK)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const series=(a,b,fn)=>Array.from({length:121},(_,i)=>{const x=a+(b-a)*i/120;return [x,fn(x)];});
+const axisFormat=new Intl.NumberFormat("sl-SI",{maximumSignificantDigits:4,useGrouping:false});
+const number=x=>axisFormat.format(x);
+function chart({xmin=0,xmax,ymin=0,ymax,xLabel,yLabel,curves,dots=[],shade=null,markers=[]}){
+    const left=72,right=521,top=35,bottom=222;
+    const X=x=>left+(right-left)*(x-xmin)/(xmax-xmin), Z=y=>bottom-(bottom-top)*(y-ymin)/(ymax-ymin);
+    const path=points=>points.map(([x,y],i)=>(i?"L":"M")+X(x)+" "+Z(y)).join(" ");
+    let svg='<defs><clipPath id="redox-plot-clip"><rect x="72" y="35" width="449" height="187"/></clipPath></defs>'+text(left,22,yLabel,"start")+text(right,275,xLabel,"end");
+    for(let i=0;i<=4;i++){
+        const x=xmin+(xmax-xmin)*i/4,y=ymin+(ymax-ymin)*i/4;
+        svg+=line(X(x),top,X(x),bottom,"#dce3ef",1)+line(left,Z(y),right,Z(y),"#dce3ef",1);
+        svg+=text(X(x),246,number(x))+text(left-9,Z(y)+5,number(y),"end");
+    }
+    svg+='<g clip-path="url(#redox-plot-clip)">';
+    if(shade?.length){
+        const [start]=shade,[end]=shade.slice(-1);
+        svg+=`<path d="${path(shade)} L${X(end[0])} ${Z(0)} L${X(start[0])} ${Z(0)} Z" fill="#ffe38b" opacity=".65"/>`;
+    }
+    svg+=line(left,top,left,bottom)+line(left,bottom,right,bottom);
+    for(const x of markers)svg+=line(X(x),top,X(x),bottom,"#a76b0d",1.5,"5 4");
+    for(const {points,color=C,dash=false} of curves)svg+=`<path d="${path(points)}" stroke="${color}" stroke-width="3.5" fill="none" ${dash?'stroke-dasharray="8 5"':""}/>`;
+    for(const [x,y] of dots)svg+=disk(X(x),Z(y));
+    return svg+"</g>";
+}
+function bars(data,unit){
+    const max=Math.max(1,...data.map(([,v])=>v));
+    return data.map(([label,value,color],i)=>{
+        const y=41+i*73;
+        return text(45,y,label+" · "+fmt(value)+" "+unit,"start")+rect(45,y+12,460,18,"#e9edf4","#dce3ef")+
+            (value>0 ? rect(45,y+12,460*value/max,18,color) : "");
+    }).join("");
+}
+const metric=(name,v,unit)=>[name,fmt(v)+(unit?" "+unit:"")];
+const slider=(id,label,min,max,step,value,unit="")=>({id,label,min,max,step,value,unit});
+const select=(id,label,value,options)=>({id,label,value,options});
+
+
+
+
+
+// Za E° uporabljamo zaokrožene standardne redukcijske potenciale.
+const F=96485,R=8.314462618,T=298.15;
+const metals={
+    Zn:{label:"Cink",ion:"Zn²⁺",z:2,e:-.76,m:65.38},
+    Cu:{label:"Baker",ion:"Cu²⁺",z:2,e:.34,m:63.55},
+    Ag:{label:"Srebro",ion:"Ag⁺",z:1,e:.80,m:107.87}
+};
+const pairs={zncu:["Zn","Cu"],cuag:["Cu","Ag"],znag:["Zn","Ag"]};
+const pairOptions=Object.entries(pairs).map(([key,[a,b]])=>[key,a+" / "+b]);
+const coef=n=>n===1?"":n+" ";
+function reaction(pair){
+    const [a,b]=pairs[pair], A=metals[a], B=metals[b], z=Math.max(A.z,B.z), u=z/A.z,v=z/B.z;
+    return {a,b,A,B,z,u,v,e0:B.e-A.e,
+        ox:coef(u)+a+" → "+coef(u)+A.ion+" + "+z+" e⁻",
+        red:coef(v)+B.ion+" + "+z+" e⁻ → "+coef(v)+b,
+        sum:coef(u)+a+" + "+coef(v)+B.ion+" → "+coef(u)+A.ion+" + "+coef(v)+b};
+}
+function nernst(pair,la,lb){
+    const r=reaction(pair), logQ=r.u*la-r.v*lb;
+    return {...r,logQ,e:r.e0-(R*T*Math.LN10/(r.z*F))*logQ};
+}
+function deposit(metal,current,minutes,eff){
+    const M=metals[metal], charge=current*minutes*60, electrons=charge/F;
+    return {charge,electrons,mass:M.m*electrons/M.z*eff/100};
+}
+const sci=x=>x.toExponential(2).replace(".",",");
+function arrow(x,y,X,Y,color=C){
+    const angle=Math.atan2(Y-y,X-x);
+    return line(x,y,X,Y,color,3)+line(X,Y,X-11*Math.cos(angle-.55),Y-11*Math.sin(angle-.55),color,3)+line(X,Y,X-11*Math.cos(angle+.55),Y-11*Math.sin(angle+.55),color,3);
+}
+const lab={
+  transfer:{name:"Prenos elektronov",title:"Polreakciji pod drobnogledom",
+    intro:"Izberi reakcijo in se pomakni od začetnih delcev do prenosa elektronov ter produktov. Oksidacijsko število kovine v elementarni obliki je 0.",
+    fields:[select("pair","Reakcijski par","zncu",pairOptions),slider("step","Korak (0: reaktanti, 1: prenos, 2: produkti)",0,2,1,1)],
+    show:s=>{
+        const r=reaction(s.pair);
+        const phases=[[coef(r.u)+r.a,coef(r.v)+r.B.ion],[coef(r.u)+r.a+" → "+coef(r.u)+r.A.ion,coef(r.v)+r.B.ion+" → "+coef(r.v)+r.b],[coef(r.u)+r.A.ion,coef(r.v)+r.b]];
+        const [left,right]=phases[s.step];
+        return {svg:rect(32,72,190,97,"#ffe0b4")+rect(328,72,190,97,"#c5f0e2")+
+            text(127,102,"Oddajalec elektronov")+text(423,102,"Prejemnik elektronov")+text(127,139,left)+text(423,139,right)+
+            (s.step===1?arrow(234,120,315,120)+text(275,101,r.z+" e⁻"):"")+
+            text(275,215,["Reaktanti","Formalni prenos elektronov","Produkti"][s.step]),
+            values:[["Oksidacija",r.ox],["Redukcija",r.red],["Skupna reakcija",r.sum]],
+            note:"Prikaz predstavlja računanje z elektroni; koraki niso časovni potek posameznih trkov.",
+            conclusion:r.a+" je reducent: odda elektrone. "+r.B.ion+" je oksidant: sprejme elektrone."};
+    }},
+  cell:{name:"Galvanski člen",title:"Pot elektronov in ionov",
+    intro:"Odpri ali skleni zunanji tokokrog. Elektroni se gibljejo po vodniku, ionski tok pa omogoča solni mostiček.",
+    fields:[select("pair","Elektrodi","zncu",pairOptions),select("closed","Zunanji tokokrog","yes",[["yes","Sklenjen (s porabnikom)"],["no","Odprt"]])],
+    show:s=>{
+        const r=reaction(s.pair), on=s.closed==="yes";
+        let svg=rect(44,124,161,106,"#d5e6ff")+rect(345,124,161,106,"#c5f0e2")+
+            rect(105,70,25,133,"#9aa9bd")+rect(420,70,25,133,"#d59570")+
+            line(117,70,117,43)+line(433,70,433,43)+line(117,43,240,43)+line(310,43,433,43)+
+            (on?rect(240,32,70,22,"#ffe38b"):line(240,43,302,23))+
+            '<path d="M 182 161 V 103 Q 182 89 197 89 H 353 Q 368 89 368 103 V 161" stroke="#5634aa" stroke-width="7" fill="none"/>'+
+            text(116,260,"Anoda (−) · "+r.a)+text(433,260,"Katoda (+) · "+r.b)+text(118,221,r.A.ion)+text(433,221,r.B.ion);
+        if(on)svg+=arrow(151,22,217,22)+text(181,18,"e⁻")+arrow(263,111,202,111)+arrow(287,111,348,111)+text(214,141,"anioni")+text(338,141,"kationi");
+        return {svg,values:[metric("Standardna napetost E°",r.e0,"V"),["Na anodi",r.ox],["Na katodi",r.red]],
+            note:"Shematsko. E° velja za standardne pogoje; dejanska napetost pod bremenom je lahko manjša.",
+            conclusion:on?"Po zunanjem vodniku elektroni potujejo od anode proti katodi. Mostiček ohranja elektronevtralnost obeh raztopin.":"Odprt tokokrog prekine trajen tok, med elektrodama pa lahko še vedno izmeriš napetost."};
+    }},
+  nernst:{name:"Nernstova enačba",title:"Kako koncentracija vpliva na napetost?",
+    intro:"Nastavi logaritma koncentracij anodnih in katodnih ionov. Vrednost −2 pomeni koncentracijo 0,01 mol/L.",
+    fields:[select("pair","Elektrodi","zncu",pairOptions),slider("a","log₁₀ koncentracije anodnih ionov",-4,0,.25,-1),slider("b","log₁₀ koncentracije katodnih ionov",-4,0,.25,-2)],
+    show:s=>{
+        const r=nernst(s.pair,s.a,s.b), ymin=r.e0-.3,ymax=r.e0+.3;
+        return {svg:chart({xmin:-8,xmax:8,ymin,ymax,xLabel:"log₁₀ Q",yLabel:"E (V)",curves:[{points:series(-8,8,x=>r.e0-R*T*Math.LN10/(r.z*F)*x)}],dots:[[r.logQ,r.e]],markers:[0]}),
+            values:[metric("E°",r.e0,"V"),metric("E pri 25 °C",r.e,"V"),["Reakcijski količnik Q",sci(10**r.logQ)],["Koncentraciji (anoda / katoda)",sci(10**s.a)+" / "+sci(10**s.b)+" mol/L"]],
+            note:"Q je izračunan iz približnih aktivnosti ionov. Čiste trdne kovine v Q ne nastopajo.",
+            conclusion:r.logQ===0?"Q = 1, zato je E = E°.":r.logQ>0?"Q > 1: napetost je manjša od standardne.":"Q < 1: napetost je večja od standardne."};
+    }},
+  electrolysis:{name:"Elektroliza",title:"Koliko kovine se izloči na katodi?",
+    intro:"Izberi kovinski ion, nastavi tok, čas in delež toka, ki prispeva k nalaganju kovine.",
+    fields:[select("metal","Kovina na katodi","Cu",[["Cu","Cu²⁺ → Cu"],["Ag","Ag⁺ → Ag"]]),slider("i","Tok",0,5,.1,2,"A"),slider("min","Čas",0,60,1,15,"min"),slider("eff","Tokovni izkoristek",0,100,5,90,"%")],
+    show:s=>{
+        const d=deposit(s.metal,s.i,s.min,s.eff), ideal=deposit(s.metal,s.i,s.min,100);
+        return {svg:chart({xmax:60,ymax:Math.max(.1,deposit(s.metal,s.i,60,100).mass*1.08),xLabel:"Čas (min)",yLabel:"Masa (g)",curves:[{points:series(0,60,x=>deposit(s.metal,s.i,x,s.eff).mass)},{points:series(0,60,x=>deposit(s.metal,s.i,x,100).mass),color:B,dash:true}],dots:[[s.min,d.mass]]}),
+            values:[metric("Pretekli naboj",d.charge,"C"),metric("Množina elektronov",d.electrons,"mol"),metric("Masa pri izbranem izkoristku",d.mass,"g"),metric("Teoretična masa",ideal.mass,"g")],
+            note:"Polna črta: izbrani izkoristek. Črtkana: 100 %. Model predpostavi konstanten tok in dovolj kovinskih ionov.",
+            conclusion:"Masa je sorazmerna toku, času in tokovnemu izkoristku. Pri "+metals[s.metal].ion+" vsak ion sprejme "+metals[s.metal].z+(metals[s.metal].z===1?" elektron.":" elektrona.")};
+    }}
+};
+const settings=Object.fromEntries(Object.entries(lab).map(([key,s])=>[key,Object.fromEntries(s.fields.map(f=>[f.id,f.value]))]));
+const labButtons={};
+let active="transfer";
+function renderLab(){
+    const l=lab[active], s=settings[active], r=l.show(s);
+    for(const f of l.fields){
+        if(f.hide)$("field-"+f.id).hidden=f.hide(s);
+        if(!f.options)$("out-"+f.id).textContent=fmt(s[f.id])+(f.unit?" "+f.unit:"");
+    }
+    $("plot-title").textContent=l.title;
+    $("plot").setAttribute("aria-label",l.title);
+    $("plot").innerHTML=r.svg;
+    $("plot-note").textContent=r.note;
+    $("conclusion").textContent=r.conclusion;
+    $("values").innerHTML=r.values.map(([name,value])=>`<div class="metric">${name}<strong>${value}</strong></div>`).join("");
+}
+function fillSelect(el,options){
+    el.replaceChildren(...options.map(([id,name])=>{const o=document.createElement("option");o.value=id;o.textContent=name;return o;}));
+}
+function selectLab(key,focus=false){
+    active=key;
+    for(const [id,button] of Object.entries(labButtons))button.setAttribute("aria-pressed",String(id===key));
+    const l=lab[key],s=settings[key],controls=$("controls");
+    $("lab-title").textContent=l.name;
+    $("lab-intro").textContent=l.intro;
+    controls.replaceChildren();
+    for(const f of l.fields){
+        const row=document.createElement("div"), label=document.createElement("label");
+        const input=document.createElement(f.options?"select":"input");
+        row.id="field-"+f.id;input.id="control-"+f.id;label.htmlFor=input.id;label.textContent=f.label;
+        if(f.options)fillSelect(input,f.options);
+        else{
+            input.type="range";input.min=f.min;input.max=f.max;input.step=f.step;
+            const out=document.createElement("output");out.id="out-"+f.id;label.append(": ",out);
+        }
+        input.value=s[f.id];
+        input.oninput=()=>{s[f.id]=f.options?input.value:Number(input.value);renderLab();};
+        row.append(label,input);controls.append(row);
+    }
+    renderLab();
+    if(focus)$("control-"+l.fields[0].id).focus();
+}
+for(const [key,item] of Object.entries(lab)){
+    const button=document.createElement("button");button.type="button";button.textContent=item.name;
+    button.onclick=()=>selectLab(key,true);
+    $("lab-buttons").append(button);labButtons[key]=button;
+}
+$("restore").onclick=()=>{
+    Object.assign(settings[active],Object.fromEntries(lab[active].fields.map(f=>[f.id,f.value])));
+    selectLab(active,true);
+};
+function tab(id){
+    for(const section of document.querySelectorAll("main > section"))section.hidden=section.id!==id;
+    for(const button of document.querySelectorAll("[data-tab]"))button.setAttribute("aria-pressed",String(button.dataset.tab===id));
+}
+for(const button of document.querySelectorAll("[data-tab]"))button.onclick=()=>tab(button.dataset.tab);
+const missions=[
+ {name:"Kdo sprejme elektrone?",key:"transfer",start:{pair:"cuag",step:1},q:"V reakciji Cu + 2 Ag⁺ → Cu²⁺ + 2 Ag je oksidant …",a:["Cu","Ag⁺","Cu²⁺"],i:1,why:"Ag⁺ sprejme elektron. Dva iona Ag⁺ skupaj sprejmeta dva elektrona."},
+ {name:"Odprt tokokrog",key:"cell",start:{closed:"no"},q:"Kaj se zgodi, ko odpremo zunanji tokokrog galvanskega člena?",a:["Trajen tok preneha, napetost pa lahko ostane","Anoda postane katoda","Solni mostiček začne prevajati elektrone"],i:0,why:"Odprta povezava prekine elektronsko pot. Med elektrodama še vedno obstaja potencialna razlika."},
+ {name:"Več bakrovih ionov",key:"nernst",start:{a:-2,b:-1},q:"Pri členu Zn/Cu zvišamo koncentracijo Cu²⁺, koncentracija Zn²⁺ pa ostane ista. Kaj se zgodi z E v modelu?",a:["Zmanjša se","Poveča se","Ostane enaka"],i:1,why:"Q = a(Zn²⁺)/a(Cu²⁺) se zmanjša. Manjši log₁₀ Q pomeni večji E."},
+ {name:"Dvakrat daljši čas",key:"electrolysis",start:{min:30,eff:100},q:"Pri stalnem toku in izkoristku čas elektrolize podvojimo. Kako se spremeni masa izločene kovine?",a:["Ostane enaka","Se prepolovi","Se podvoji"],i:2,why:"Pri enakih drugih pogojih je masa neposredno sorazmerna s časom."}
+];
+fillSelect($("mission"),missions.map((m,i)=>[i,m.name]));
+function currentMission(){return missions[Number($("mission").value||0)];}
+function renderMission(){
+    const m=currentMission(), p=document.createElement("p"), group=document.createElement("div");
+    p.className="question";p.textContent=m.q;group.className="row";
+    $("mission-body").replaceChildren(p,group);$("mission-feedback").textContent="";
+    m.a.forEach((answer,i)=>{
+        const button=document.createElement("button");button.type="button";button.textContent=answer;button.setAttribute("aria-pressed","false");
+        button.onclick=()=>{
+            for(const other of group.children)other.setAttribute("aria-pressed",String(other===button));
+            $("mission-feedback").textContent=i===m.i?"Pravilno. "+m.why:"Poskusi še enkrat ali preveri v poskusu.";
+        };
+        group.append(button);
+    });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{
+    const m=currentMission();Object.assign(settings[m.key],Object.fromEntries(lab[m.key].fields.map(f=>[f.id,f.value])),m.start);tab("lab");selectLab(m.key,true);
+};
+
+
+
+
+
+
+const topics={transfer:"Oksidacijska števila in elektroni",cell:"Galvanski člen",nernst:"Nernstova enačba",electrolysis:"Elektroliza"};
+fillSelect($("topic"),[["all","Mešano"],...Object.entries(topics)]);
+function makeTask(key,level){
+    const hard=level===2;
+    const task=(prompt,answer,unit,hint,steps)=>({key,prompt,answer,unit,hint,steps});
+    const pair=Object.keys(pairs)[integer(0,2)], r=reaction(pair);
+    if(key==="transfer"){
+        if(integer(0,2)===0){
+            const options=hard?[["MnO₄⁻","Mn",4,-1],["CrO₄²⁻","Cr",4,-2],["SO₃²⁻","S",3,-2],["NO₂⁻","N",2,-1],["ClO₃⁻","Cl",3,-1],["CO₃²⁻","C",3,-2]]:[["CO₂","C",2,0],["SO₂","S",2,0],["SO₃","S",3,0],["MgO","Mg",1,0],["ClO⁻","Cl",1,-1],["NO₃⁻","N",3,-1]];
+            const [species,atom,oxygen,charge]=options[integer(0,options.length-1)], value=charge+2*oxygen;
+            return task(`Določi oksidacijsko število atoma ${atom} v ${species}. Za kisik vzemi −2.`,value,"brez enote","Vsota oksidacijskih števil je enaka naboju delca.",`x + ${oxygen} × (−2) = ${charge}. Sledi x = +${value} (brez enote).`);
+        }
+        const amount=integer(1,40);
+        if(!hard)return task(`Kolikšno množino elektronov odda ${amount} mmol kovine ${r.a}, če nastane ${r.A.ion}?`,amount*r.A.z,"mmol","Pri enoatomskem ionu je oksidacijsko število enako naboju.",`Vsak atom odda ${r.A.z} elektrona. Skupaj ${amount} × ${r.A.z} = ${amount*r.A.z} mmol elektronov.`);
+        return task(`Pri oksidaciji ${r.a} nastaja ${r.A.ion}. Koliko mmol ${r.B.ion} se lahko reducira v ${r.b}, če oksidira ${amount} mmol kovine ${r.a}?`,amount*r.A.z/r.B.z,"mmol","Oddani in sprejeti elektroni se morajo ujemati.",`Odda se ${amount*r.A.z} mmol elektronov. Potrebujemo ${r.B.z} na ion, zato nastane ${fmt(amount*r.A.z/r.B.z)} mmol kovine.`);
+    }
+    if(key==="cell"){
+        const low=integer(-85,-5)/100, high=integer(15,85)/100, difference=high-low;
+        const description=`Standardna redukcijska potenciala elektrod X in Y sta ${fmt(low)} V in +${fmt(high)} V.`;
+        if(!hard)return task(description+" Kolikšna je standardna napetost spontanega galvanskega člena?",difference,"V","Na katodi je večji redukcijski potencial.",`E° = ${fmt(high)} − (${fmt(low)}) = ${fmt(difference)} V.`);
+        return task(description+" Izračunaj E° za obratno smer, v kateri se X reducira.",-difference,"V","V zahtevani smeri je X katoda, Y pa anoda.",`E° = ${fmt(low)} − ${fmt(high)} = ${fmt(-difference)} V. Negativen predznak pomeni, da ta smer v standardnih pogojih ni spontana.`);
+    }
+    if(key==="nernst"){
+        const a=-integer(0,4),b=-integer(0,4),n=nernst(pair,a,b);
+        const description=`Za člen ${r.a}/${r.b} sta koncentraciji ${r.A.ion} in ${r.B.ion} v mol/L 10^(${a}) in 10^(${b}).`;
+        if(!hard)return task(description+" Izračunaj log₁₀ Q.",n.logQ,"brez enote","V Q sta eksponenta enaka koeficientoma ionov v urejeni reakciji.",`${r.sum}. log₁₀ Q = ${r.u} × (${a}) − ${r.v} × (${b}) = ${n.logQ} (brez enote).`);
+        return task(description+` E° je ${fmt(r.e0)} V. Izračunaj E pri 25 °C.`,n.e,"V","Najprej določi log₁₀ Q, nato uporabi Nernstovo enačbo.",`${r.sum}. log₁₀ Q = ${n.logQ}. E ≈ ${fmt(r.e0)} − (0,05916/${r.z}) × (${n.logQ}) = ${fmt(n.e)} V.`);
+    }
+    const metal=hard?"Ag":"Cu",i=integer(5,40)/10,t=integer(5,45),eff=hard?integer(12,19)*5:100,d=deposit(metal,i,t,eff),m=metals[metal];
+    return task(`Pri izločanju ${metal} iz ${m.ion} teče tok ${fmt(i)} A ${t} min. Izkoristek je ${eff} %, M = ${fmt(m.m)} g/mol. Izračunaj maso izločene kovine (F = 96 485 C/mol).`,d.mass,"g","Čas pretvori v sekunde, izkoristek pa v delež.",`Q = ${fmt(i)} × ${t*60} = ${fmt(d.charge)} C. m = (${eff}/100) × ${fmt(m.m)} × ${fmt(d.charge)}/(${m.z} × 96485) ≈ ${fmt(d.mass)} g.`);
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti. Dovoljeno je manjše odstopanje zaradi zaokroževanja konstant.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001 + Math.abs(task.answer)*0.00006){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Redoks in elektrokemija · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+selectLab("transfer");
+renderMission();
+generate();
+</script>
+</body>
+</html>
