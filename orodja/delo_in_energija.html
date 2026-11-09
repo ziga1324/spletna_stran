@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Mehansko delo, moč, kinetična, potencialna in prožnostna energija. Interaktivne simulacije in generator fizikalnih nalog.">
+<title>Delo in energija – Sidebit | Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.de{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.de *{box-sizing:border-box}.de [hidden]{display:none!important}
+.de .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.de header.wrap{padding:25px 0 22px}.de a{color:var(--accent);font-weight:750}
+.de .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.de .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.de h1,.de h2,.de h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.de h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.de h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.de h3{font-size:1.15rem;margin:0 0 9px}.de p{margin:0 0 13px}.de .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.de .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.de svg{display:block;width:100%;height:auto;overflow:visible}
+.de nav,.de .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.de nav{margin:12px 0 24px}
+.de button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.de button:hover{background:var(--purple)}.de button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.de button[aria-pressed=true],.de .primary{background:var(--yellow)}
+.de button:disabled{opacity:.55;cursor:default}.de :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.de .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.de .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.de .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.de .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.de label{display:block;font-weight:700;margin:12px 0 4px}.de label:first-child{margin-top:0}
+.de input:not([type=checkbox]),.de select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.de input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.de input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.de output{color:var(--accent);font-weight:800}
+.de .fine{font-size:.88rem;color:#4d5871}.de .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.de .lab-visual,.de .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.de .graph{cursor:crosshair}.de .graph-label{font-weight:800;margin:7px 0 0}
+.de .graph-group{min-width:0}.de .graph-group p{margin:7px 0 0}
+.de .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.de .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.de .metric:nth-child(2n){background:var(--mint)}.de .metric strong{display:block;font-size:1.06rem}
+.de .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.de .lav{background:var(--purple)}.de .accent-card{background:var(--yellow)}.de .question{font-weight:700;font-size:1.06rem}
+.de .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.de details{margin:10px 0}.de summary{cursor:pointer;font-weight:750}
+.de .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.de .question-card .row{margin-top:9px}.de .question-card label{margin-top:9px}
+.de .lesson{scroll-margin:15px}.de .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.de footer{padding:8px 0 28px}.de .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.de .grid,.de .hero{grid-template-columns:1fr}.de .hero-art{display:none}.de .three{grid-template-columns:1fr}.de .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.de .wrap{width:calc(100% - 24px)}.de .two{grid-template-columns:1fr}.de nav button{flex:1 1 40%}.de .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.de{background:#fff;color:#000}body.de.print-sheet > :not(#paper){display:none!important}body.de.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.de .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}.de .graph{cursor:default}.de .axis-note{margin-top:9px}.de .field output{display:inline-block}.de .key{font-size:.88rem;color:#424c64}
+.de .warm{background:#fff2c4}.de .legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.9rem}.de .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}.de .outcome{font-weight:750;color:#433186}.de .lesson h3{margin-bottom:9px}
+@media(max-width:520px){.de .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.de .energy-key{display:flex;gap:8px 16px;flex-wrap:wrap;font-size:.9rem}.de .energy-key span::before{content:"";display:inline-block;width:.75em;height:.75em;border:1px solid #22253a;background:var(--color);margin-right:.35em}
+.de .subnote{margin-top:12px}.de .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:520px){.de .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style></head>
+<body class="de">
+<header class="wrap"><a href="../index.html">← Vsa orodja</a>
+<div class="hero"><div><span class="badge">SIDEBIT · FIZIKA</span><h1>Delo in energija</h1><p class="lead">Kdaj sila opravi delo? Kam gre energija, ko zaboj drsi po klancu? Spreminjaj pogoje in spremljaj, kako se energija prenaša in pretvarja.</p></div>
+<svg class="hero-art" viewBox="0 0 310 140" role="img" aria-label="Zaboj na klancu in stolpci energije"><path d="M23 114V37l173 77Z" fill="#c5f0e2" stroke="#22253a" stroke-width="3"/><rect x="70" y="38" width="41" height="29" rx="5" fill="#ffe38b" stroke="#22253a" stroke-width="3" transform="rotate(24 70 38)"/><path d="M208 114h80" stroke="#22253a" stroke-width="3"/><path d="M216 113V48h18v65M241 113V66h18v47M266 113V88h18v25" fill="#b79aef" stroke="#22253a" stroke-width="2"/><text x="207" y="26" font-size="15" fill="#22253a">Energija</text></svg></div>
+<nav aria-label="Poglavja dela in energije"><button data-tab="work" aria-pressed="true">Delo in moč</button><button data-tab="ramp" aria-pressed="false">Energija na klancu</button><button data-tab="spring" aria-pressed="false">Vzmet</button><button data-tab="challenge" aria-pressed="false">Učni izzivi</button><button data-tab="practice" aria-pressed="false">Generator nalog</button><button data-tab="theory" aria-pressed="false">Razlaga in formule</button></nav></header>
+<main class="wrap">
+<section id="work"><div class="grid"><div class="card"><span class="chip">01 · Sila in premik</span><h2>Kdaj sila opravi delo?</h2><div id="work-controls"></div><p class="fine subnote">Premik je vedno usmerjen desno. Kot meriš med silo in premikom. Čas je trajanje premika; z njim računaš povprečno moč.</p></div>
+<div class="card"><h2>Poglej projekcijo sile</h2><svg id="work-scene" class="lab-visual" viewBox="0 0 680 248" role="img" aria-label="Sila pod kotom glede na premik"></svg><div id="work-values" class="readouts"></div><p id="work-note" class="focus-box"></p><p class="fine">Računamo delo izbrane stalne sile. Druge sile lahko hkrati opravljajo delo. Za spremembo kinetične energije potrebuješ vsoto del vseh sil.</p></div></div></section>
+<section id="ramp" hidden><div class="grid"><div class="card lav"><span class="chip">02 · Pretvorbe energije</span><h2>Zaboj na klancu</h2><div id="ramp-controls"></div><p class="fine subnote">Zaboj začne drseti iz mirovanja; model zanemari statično trenje in zračni upor. Ničelna višina je pri dnu klanca. Za bilanco obravnavamo zaboj, Zemljo in podlago kot sistem.</p></div>
+<div class="card"><h2>Kam gre energija?</h2><svg id="ramp-scene" class="lab-visual" viewBox="0 0 680 272" role="img" aria-label="Zaboj na klancu in energijski stolpci"></svg><div class="energy-key"><span style="--color:#e8ddff">Potencialna</span><span style="--color:#c5f0e2">Kinetična</span><span style="--color:#ffe38b">Povečanje notranje energije</span></div><div id="ramp-player"></div><div id="ramp-values" class="readouts"></div><p id="ramp-note" class="focus-box"></p></div></div></section>
+<section id="spring" hidden><div class="grid"><div class="card"><span class="chip">03 · Prožnost</span><h2>Iz stisnjene vzmeti v gibanje</h2><div id="spring-controls"></div><p class="fine subnote">Vodoravna podlaga je brez trenja. Voziček ni pritrjen na idealno vzmet: ko ta doseže naravno dolžino, voziček nadaljuje s stalno hitrostjo.</p></div>
+<div class="card"><h2>Od sprostitve do odhoda</h2><svg id="spring-scene" class="lab-visual" viewBox="0 0 680 248" role="img" aria-label="Vzmet potiska voziček, ob strani je bilanca energije"></svg><div class="energy-key"><span style="--color:#e8ddff">Prožnostna</span><span style="--color:#c5f0e2">Kinetična</span></div><div id="spring-player"></div><div id="spring-values" class="readouts"></div><p id="spring-note" class="focus-box"></p></div></div></section>
+<section id="challenge" hidden><div class="card lav"><span class="chip">Najprej napovej</span><h2>Učni izzivi</h2><label for="mission">Izberi izziv</label><select id="mission"><option value="0">Pravokotna sila</option><option value="1">Nasprotna sila</option><option value="2">Trenje in energija</option><option value="3">Dvakrat večji stisk</option></select><div id="mission-body" class="small-gap"></div><p id="mission-feedback" class="feedback" role="status"></p><button id="mission-open">Odpri poskus</button></div></section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Preveri odgovor, odpri namig ali sestavi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option><option value="work">Delo in predznak</option><option value="power">Povprečna moč</option><option value="kinetic">Kinetična energija</option><option value="potential">Gravitacijska potencialna energija</option><option value="net">Izrek o delu in energiji</option><option value="conserve">Ohranitev mehanske energije</option><option value="friction">Delo trenja</option><option value="spring">Prožnostna energija</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div>
+<div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden><div class="card"><h2>Kako vodiš energijsko bilanco?</h2><p>Najprej izberi sistem, začetno in končno stanje ter ničelno višino. Nato zapiši oblike energije in prenose čez mejo sistema.</p><div class="two">
+<div class="note"><h3>Delo stalne sile</h3><p class="formula">W = F s cos φ</p><p>Uporabi komponento sile v smeri premika. Sila v smeri premika opravi pozitivno delo; sila v nasprotni smeri negativno. Pravokotna sila ne opravi dela. Pri spreminjajoči se sili uporabi predznačeno ploščino pod grafom vzdolžne komponente sile v odvisnosti od položaja.</p></div>
+<div class="note lav"><h3>Kinetična energija</h3><p class="formula">Eₖ = ½mv² · W<sub>vse sile</sub> = ΔEₖ</p><p>Pri dvakrat večji hitrosti ima telo štirikrat večjo kinetično energijo. Delo samo ene sile je enako spremembi kinetične energije le, če je skupno delo drugih sil nič.</p></div>
+<div class="note lav"><h3>Gravitacijska potencialna energija</h3><p class="formula">Eₚ = mgh · W<sub>teže</sub> = −ΔEₚ</p><p>Blizu površja Zemlje velja približno stalni g. Višino meriš od izbrane ničelne ravni; za spremembo energije je pomembna razlika višin. Delo teže je pri padanju pozitivno.</p></div>
+<div class="note"><h3>Mehanska energija in trenje</h3><p class="formula">E<sub>meh</sub> = Eₖ + Eₚ + E<sub>vzmeti</sub></p><p>Brez izgub in brez prenosa energije čez mejo sistema se v naših idealnih primerih mehanska energija ohranja. Pri drsenju se del mehanske energije pretvori v notranjo energijo zaboja in podlage.</p></div>
+<div class="note"><h3>Prožnostna energija vzmeti</h3><p class="formula">E<sub>vzmeti</sub> = ½kx²</p><p>Pri idealni vzmeti je velikost sile k|x|. Med stiskanjem od 0 do x sila narašča, zato delo predstavlja ploščino trikotnika, ne pravokotnika. Dvakrat večji stisk pomeni štirikrat več energije.</p></div>
+<div class="note lav"><h3>Moč in izkoristek</h3><p class="formula">P<sub>povp</sub> = W/Δt · P = F⃗ · v⃗ · η = E<sub>koristna</sub>/E<sub>vložena</sub></p><p>Moč meri hitrost opravljanja dela, ne količine energije. Enota je W = J/s. Izkoristek je delež vložene energije, ki se pretvori v želeno obliko; za odstotek ga pomnožiš s 100.</p></div></div>
+<details><summary>Rešen primer: delo pod kotom</summary><p>Vrv vleče zaboj s silo 50 N pod kotom 60° glede na vodoravni premik 4 m. Vzdolžna komponenta je 50 · cos 60° = 25 N. Vrv opravi 25 · 4 = 100 J dela. Če premik traja 2 s, je povprečna moč te sile 50 W.</p></details>
+<details><summary>Rešen primer: drsenje s trenjem</summary><p>Zaboj izgubi 100 J potencialne energije. Če se notranja energija zaradi trenja poveča za 30 J in začne iz mirovanja, dobi 70 J kinetične energije. Za zaboj posebej opravi teža +100 J dela, trenje −30 J, normala pa 0 J.</p></details></div></section>
+</main><footer class="wrap fine">Sidebit · Delo in energija</footer><div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id),g=9.81,rad=d=>d*Math.PI/180;
+const nf=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:3});
+const fmt=x=>nf.format(Math.abs(x)<.0005?0:x);
+const line=(x,y,X,Y,c,w=2,extra="")=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${c}" stroke-width="${w}" ${extra}/>`;
+const txt=(x,y,s,anchor="start")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" font-size="14" font-weight="650" fill="#364058">${s}</text>`;
+const box=(x,y,w,h,fill)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="${fill}" stroke="#22253a" stroke-width="2"/>`;
+function arrow(x,y,u,v,c){const n=Math.hypot(u,v);if(n<1e-8)return "";const a=u/n,b=v/n,X=x+u,Y=y+v;return line(x,y,X,Y,c,3)+`<path d="M${X-8*a+4*b} ${Y-8*b-4*a} L${X} ${Y} L${X-8*a-4*b} ${Y-8*b+4*a}" fill="none" stroke="${c}" stroke-width="3"/>`;}
+const settings={work:{F:50,s:4,a:60,d:2},ramp:{m:3,len:5,a:30,mu:.15},spring:{m:2,k:200,x:.2}};
+const defs={
+work:[["F","Velikost sile","N",0,100,1],["s","Dolžina premika","m",0,10,.5],["a","Kot med silo in premikom","°",0,180,1],["d","Trajanje premika","s",1,20,1]],
+ramp:[["m","Masa zaboja","kg",1,10,.5],["len","Dolžina klanca","m",2,10,.5],["a","Naklon klanca","°",20,55,1],["mu","Koeficient drsnega trenja","",0,.3,.01]],
+spring:[["m","Masa vozička","kg",1,8,.5],["k","Koeficient vzmeti","N/m",50,500,10],["x","Začetni stisk","m",.05,.5,.05]]
+};
+function work(p){const c=p.a===90?0:Math.cos(rad(p.a)),Fx=p.F*c,W=Fx*p.s;return {Fx,W,P:W/p.d};}
+function ramp(p,t){
+  const s=Math.sin(rad(p.a)),c=Math.cos(rad(p.a)),a=g*(s-p.mu*c),end=Math.sqrt(2*p.len/a),u=Math.min(end,t);
+  const x=Math.min(p.len,a*u*u/2),v=a*u,initial=p.m*g*p.len*s,heat=p.mu*p.m*g*c*x,Ep=p.m*g*(p.len-x)*s,Ek=p.m*v*v/2;
+  return {a,end,x,v,initial,heat,Ep,Ek};
+}
+function spring(p,t){
+  const w=Math.sqrt(p.k/p.m),release=Math.PI/(2*w),contact=t<release;
+  const x=contact?p.x*Math.cos(w*t):0,v=p.x*w*(contact?Math.sin(w*t):1),initial=p.k*p.x*p.x/2;
+  return {release,end:release*2,x,v,initial,Es:p.k*x*x/2,Ek:p.m*v*v/2,contact};
+}
+function metrics(id,items){$(id).innerHTML=items.map(([a,b])=>`<div class="metric">${a}<strong>${b}</strong></div>`).join("");}
+function fields(id){
+  const root=$(id+"-controls"),p=settings[id];root.replaceChildren();
+  for(const [key,name,unit,min,max,step] of defs[id]){
+    const label=document.createElement("label"),input=document.createElement("input"),out=document.createElement("output");
+    input.type="range";input.id=id+"-"+key;input.min=min;input.max=max;input.step=step;input.value=p[key];
+    label.htmlFor=input.id;label.append(name+": ",out);
+    function show(){out.textContent=fmt(p[key])+(unit?" "+unit:"");}
+    show();input.oninput=()=>{p[key]=Number(input.value);show();if(id==="work")renderWork();else seek(id,0);};
+    root.append(label,input);
+  }
+}
+function renderWork(){
+  const p=settings.work,s=work(p),x=286,y=122,length=p.F*1.1,dx=length*Math.cos(rad(p.a)),dy=-length*Math.sin(rad(p.a));
+  $("work-scene").innerHTML=line(48,151,632,151,"#8794a8")+box(x-23,113,46,38,"#ffe38b")+
+    arrow(x,y,dx,dy,"#5634aa")+line(x+dx,y+dy,x+dx,y,"#8794a8",1,'stroke-dasharray="4 4"')+arrow(x,y+46,dx,0,"#087b70")+
+    (p.s>0?arrow(x,215,p.s*20,0,"#bd601c"):"")+txt(25,30,"Vijolično: sila F")+txt(25,54,"Turkizno: vzdolžna komponenta Fₓ")+txt(25,220,"Premik s = "+fmt(p.s)+" m");
+  metrics("work-values",[["Vzdolžna komponenta",fmt(s.Fx)+" N"],["Delo sile",fmt(s.W)+" J"],["Povprečna moč sile",fmt(s.P)+" W"]]);
+  $("work-note").textContent=`W = ${fmt(s.Fx)} N · ${fmt(p.s)} m = ${fmt(s.W)} J. `+(s.W>0?"Prispevek te sile k skupnemu delu je pozitiven.":s.W<0?"Prispevek te sile k skupnemu delu je negativen.":"Ta sila pri izbranem premiku ne opravi dela.");
+}
+function bars(items,total,top=38){
+  return items.map(([name,value,color],i)=>{
+    const y=top+i*62,w=Math.max(0,Math.min(1,value/total))*185;
+    return txt(461,y,name+" · "+fmt(value)+" J")+box(461,y+8,185,17,"#edf0f6")+(w>.01?box(461,y+8,w,17,color):"");
+  }).join("");
+}
+const time={ramp:0,spring:0};let run=null,last=null,frame=0;
+function duration(id){return (id==="ramp"?ramp:spring)(settings[id],0).end;}
+function clock(id){$(id+"-clock").textContent=fmt(time[id])+" / "+fmt(duration(id))+" s";$(id+"-time").value=time[id]/duration(id)*1000;}
+function render(id){
+  if(id==="ramp"){
+    const p=settings.ramp,s=ramp(p,time.ramp),drop=65+1.35*p.a,f=s.x/p.len,x=62+340*f,y=64+drop*f;
+    $("ramp-scene").innerHTML=`<path d="M62 82L402 ${82+drop}H62Z" fill="#d8ecff" stroke="#22253a" stroke-width="2"/>`+
+      `<g transform="rotate(${Math.atan2(drop,340)*180/Math.PI} ${x} ${y})">${box(x-18,y-12,36,29,"#ffe38b")}</g>`+
+      txt(70,241,"Dno klanca: Eₚ = 0 · skica ni v merilu")+bars([["Eₚ",s.Ep,"#e8ddff"],["Eₖ",s.Ek,"#c5f0e2"],["ΔE notranja",s.heat,"#ffe38b"]],s.initial);
+    metrics("ramp-values",[["Pot",fmt(s.x)+" m"],["Hitrost",fmt(s.v)+" m/s"],["Začetna energija",fmt(s.initial)+" J"],["Delo teže",fmt(s.initial-s.Ep)+" J"],["Delo trenja",fmt(-s.heat)+" J"],["Delo normale","0 J"]]);
+    $("ramp-note").textContent=`Eₚ + Eₖ + ΔE notranja = ${fmt(s.initial)} J. `+(p.mu?"Mehanska energija se zmanjšuje za toliko, kolikor se povečuje notranja energija.":"Brez trenja se vsota potencialne in kinetične energije ohranja.");
+  }else{
+    const p=settings.spring,s=spring(p,time.spring),x=s.contact?242-155*s.x:242+155*s.v*(time.spring-s.release),end=Math.min(242,x);
+    const coil=Array.from({length:17},(_,i)=>[48+(end-48)*i/16,127+(i===0||i===16?0:i%2?13:-13)]).map(pair=>pair.join(",")).join(" ");
+    $("spring-scene").innerHTML=line(48,87,48,155,"#22253a",5)+line(48,155,425,155,"#8794a8")+line(242,78,242,170,"#8794a8",1,'stroke-dasharray="5 5"')+
+      `<polyline points="${coil}" fill="none" stroke="#5634aa" stroke-width="3"/>`+box(x,112,49,43,"#ffe38b")+txt(242,193,"Naravna dolžina vzmeti","middle")+bars([["E vzmeti",s.Es,"#e8ddff"],["Eₖ",s.Ek,"#c5f0e2"]],s.initial);
+    metrics("spring-values",[["Preostali stisk",fmt(s.x)+" m"],["Hitrost",fmt(s.v)+" m/s"],["Sila vzmeti",fmt(p.k*s.x)+" N"]]);
+    $("spring-note").textContent=`E vzmeti + Eₖ = ${fmt(s.initial)} J. `+(s.contact?"Sila vzmeti med raztezanjem proti naravni dolžini upada.":"Voziček je zapustil vzmet. Brez trenja nadaljuje z enako hitrostjo.");
+  }
+  clock(id);
+}
+function pause(){run=null;last=null;cancelAnimationFrame(frame);for(const id of Object.keys(time))$(id+"-play").textContent="Predvajaj";}
+function seek(id,t){pause();time[id]=Math.min(duration(id),Math.max(0,t));render(id);}
+function animate(ts){if(!run)return;const id=run,T=duration(id);if(last!==null)time[id]=Math.min(T,time[id]+Math.min(.05,(ts-last)/1000)*T/6);last=ts;render(id);if(time[id]>=T)pause();else frame=requestAnimationFrame(animate);}
+function player(id){
+  $(id+"-player").innerHTML=`<label for="${id}-time">Čas: <output id="${id}-clock"></output></label><input type="range" id="${id}-time" min="0" max="1000" value="0"><div class="row"><button id="${id}-play" class="primary">Predvajaj</button><button id="${id}-reset">Na začetek</button><button id="${id}-end">Na konec</button></div>`;
+  $(id+"-play").onclick=()=>{const was=run===id;pause();if(was)return;if(time[id]>=duration(id))time[id]=0;run=id;$(id+"-play").textContent="Premor";frame=requestAnimationFrame(animate);};
+  $(id+"-reset").onclick=()=>seek(id,0);$(id+"-end").onclick=()=>seek(id,duration(id));$(id+"-time").oninput=()=>seek(id,Number($(id+"-time").value)*duration(id)/1000);
+}
+function tab(id){pause();for(const s of document.querySelectorAll("main > section"))s.hidden=s.id!==id;for(const b of document.querySelectorAll("[data-tab]"))b.setAttribute("aria-pressed",String(b.dataset.tab===id));}
+for(const b of document.querySelectorAll("[data-tab]"))b.onclick=()=>tab(b.dataset.tab);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();});
+</script>
+<script>
+const missions=[
+ {id:"work",p:{F:50,s:4,a:90,d:2},q:"Zaboj se premakne desno, sila pa kaže navpično navzgor. Koliko dela opravi ta sila?",options:["Nič.","Pozitivno delo.","Negativno delo."],correct:0,why:"Sila je pravokotna na premik. Ker je cos 90° = 0, je njeno delo nič."},
+ {id:"work",p:{F:50,s:4,a:180,d:2},q:"Sila 50 N kaže nasprotno od premika 4 m. Koliko dela opravi?",options:["+200 J","−200 J","0 J"],correct:1,why:"Kot je 180°, zato je vzdolžna komponenta −50 N. Delo te sile je −50 · 4 = −200 J."},
+ {id:"ramp",p:{m:3,len:5,a:30,mu:.25},q:"Če pri enakem klancu povečamo drsno trenje, kaj se zgodi s končno kinetično energijo?",options:["Poveča se.","Ostane enaka.","Zmanjša se."],correct:2,why:"Več energije se pretvori v notranjo energijo zaboja in podlage. Zato je na dnu manj kinetične energije."},
+ {id:"spring",p:{m:2,k:200,x:.4},q:"Kaj se zgodi s shranjeno energijo, če isto vzmet stisnemo z 0,20 m na 0,40 m?",options:["Podvoji se.","Početveri se.","Ostane enaka."],correct:1,why:"Energija je sorazmerna s kvadratom stiska. Pri teh nastavitvah se poveča s 4 J na 16 J."}
+];
+function currentMission(){return missions[Number($("mission").value)];}
+function renderMission(){
+  const m=currentMission(),body=$("mission-body"),p=document.createElement("p"),choices=document.createElement("div");
+  p.className="question";p.textContent=m.q;choices.className="row";body.replaceChildren(p,choices);$("mission-feedback").textContent="";
+  m.options.forEach((op,i)=>{const b=document.createElement("button");b.textContent=op;b.setAttribute("aria-pressed","false");
+    b.onclick=()=>{for(const other of choices.children)other.setAttribute("aria-pressed",String(other===b));$("mission-feedback").textContent=(i===m.correct?"Pravilno. ":"Ni čisto tako. ")+m.why;};choices.append(b);});
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{const m=currentMission();tab(m.id);Object.assign(settings[m.id],m.p);fields(m.id);if(m.id==="work")renderWork();else seek(m.id,m.id==="ramp"?duration(m.id):0);};
+const topics={work:"Delo in predznak",power:"Povprečna moč",kinetic:"Kinetična energija",potential:"Gravitacijska potencialna energija",net:"Izrek o delu in energiji",conserve:"Ohranitev mehanske energije",friction:"Delo trenja",spring:"Prožnostna energija"};
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function makeTask(key,level){
+  const hard=level===2,m=integer(2,14),F=integer(15,80),s=integer(2,14),t=integer(2,10),v=integer(2,12),h=integer(2,18),k=10*integer(5,40),x=integer(1,8)/20;
+  let prompt,answer,unit,hint,steps;
+  if(key==="work"){
+    const a=hard?[45,60,90,120,180][integer(0,4)]:0;
+    answer=work({F,s,a,d:t}).W;unit="J";
+    prompt=`Stalna sila ${F} N tvori kot ${a}° s premikom dolžine ${s} m. Izračunaj predznačeno delo sile.`;
+    hint="Najprej poišči vzdolžno komponento F cos φ.";
+    steps=`W = F s cos φ = ${F} · ${s} · cos ${a}° ≈ ${fmt(answer)} J.`;
+  }else if(key==="power"){
+    const a=hard?60:0,W=work({F,s,a,d:t}).W;
+    answer=W/t;unit="W";
+    prompt=`Sila ${F} N pod kotom ${a}° glede na premik deluje med premikom ${s} m, ki traja ${t} s. Kolikšna je povprečna moč te sile?`;
+    hint="Najprej izračunaj delo, nato ga deli s časom.";
+    steps=`W = ${F} · ${s} · cos ${a}° ≈ ${fmt(W)} J. P = W/${t} ≈ ${fmt(answer)} W.`;
+  }else if(key==="kinetic"){
+    const E=m*v*v/2;answer=hard?v:E;unit=hard?"m/s":"J";
+    prompt=hard?`Telo z maso ${m} kg ima kinetično energijo ${fmt(E)} J. Kolikšna je velikost njegove hitrosti?`:`Telo z maso ${m} kg ima hitrost velikosti ${v} m/s. Kolikšna je njegova kinetična energija?`;
+    hint="Uporabi Eₖ = ½mv².";steps=hard?`v = √(2Eₖ/m) = √(2 · ${fmt(E)}/${m}) = ${v} m/s.`:`Eₖ = ½ · ${m} · ${v}² = ${fmt(E)} J.`;
+  }else if(key==="potential"){
+    const sign=hard?-1:1;answer=sign*m*g*h;unit="J";
+    prompt=`Telo z maso ${m} kg se ${hard?"spusti":"dvigne"} za ${h} m. Kolikšna je predznačena sprememba gravitacijske potencialne energije? Uporabi g = 9,81 m/s².`;
+    hint="Uporabi ΔEₚ = mgΔh. Če se telo spusti, je Δh negativen.";
+    steps=`ΔEₚ = ${m} · 9,81 · (${sign*h}) = ${fmt(answer)} J.`;
+  }else if(key==="net"){
+    const v2=v+2,loss=m*(v*v-(v-1)**2)/2;
+    answer=hard?v-1:m*(v2*v2-v*v)/2;unit=hard?"m/s":"J";
+    prompt=hard?`Telo z maso ${m} kg ima začetno hitrost ${v} m/s. Skupno delo vseh sil je −${fmt(loss)} J. Kolikšna je končna velikost hitrosti?`:`Telo z maso ${m} kg poveča velikost hitrosti z ${v} na ${v2} m/s. Kolikšno je skupno delo vseh sil?`;
+    hint="Skupno delo je enako spremembi kinetične energije.";
+    steps=hard?`Eₖ,₂ = ½ · ${m} · ${v}² − ${fmt(loss)} = ${fmt(m*answer*answer/2)} J. v₂ = √(2Eₖ,₂/m) = ${answer} m/s.`:`W = ½ · ${m} · (${v2}² − ${v}²) = ${fmt(answer)} J.`;
+  }else if(key==="conserve"){
+    const start=hard?v:0;answer=Math.sqrt(start*start+2*g*h);unit="m/s";
+    prompt=`Telo se ${hard?`začne spuščati s hitrostjo ${v} m/s`:"spusti iz mirovanja"} z višine ${h} m nad dnom. Zanemari trenje in zračni upor. Kolikšna je velikost hitrosti na dnu? Uporabi g = 9,81 m/s².`;
+    hint="Začetna kinetična in potencialna energija skupaj postaneta kinetična energija na dnu.";
+    steps=`v₂ = √(v₁² + 2gh) = √(${start}² + 2 · 9,81 · ${h}) ≈ ${fmt(answer)} m/s.`;
+  }else if(key==="friction"){
+    const friction=integer(1,3),W=-friction*s;
+    answer=hard?m*v*v/2+W:W;unit="J";
+    prompt=`Zaboj z maso ${m} kg drsi po vodoravni podlagi s hitrostjo ${v} m/s na začetku. Trenje velikosti ${friction} N deluje nasprotno premiku ${s} m. ${hard?"Drugih sil, ki opravljajo delo, ni. Kolikšna je končna kinetična energija?":"Izračunaj delo trenja."}`;
+    // Pri zahtevnejši nalogi mora začetna energija zadoščati za podani premik.
+    if(hard&&answer<=0)return makeTask(key,level);
+    hint="Trenje opravi negativno delo."+(hard?" Prištej ga začetni kinetični energiji.":"");
+    steps=`Wₜ = −${friction} · ${s} = ${W} J.`+(hard?` Eₖ,₂ = ½ · ${m} · ${v}² + (${W}) = ${fmt(answer)} J.`:"");
+  }else{
+    const E=k*x*x/2;answer=hard?x*Math.sqrt(k/m):E;unit=hard?"m/s":"J";
+    prompt=`Idealno vzmet s koeficientom ${k} N/m stisnemo za ${fmt(x)} m. ${hard?`Vzmet požene mirujoč voziček z maso ${m} kg na vodoravni podlagi brez trenja. Kolikšna je hitrost, ko vzmet doseže naravno dolžino?`:"Kolikšna energija je shranjena v vzmeti?"}`;
+    hint="Uporabi E vzmeti = ½kx²."+(hard?" Pri naravni dolžini je ta energija prešla v kinetično energijo.":"");
+    steps=`E vzmeti = ½ · ${k} · ${fmt(x)}² ≈ ${fmt(E)} J.`+(hard?` v = x√(k/m) ≈ ${fmt(answer)} m/s.`:"");
+  }
+  return {key,prompt,answer,unit,hint,steps};
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Delo in energija · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+for(const id of Object.keys(settings))fields(id);for(const id of Object.keys(time))player(id);renderWork();render("ramp");render("spring");renderMission();generate();
+</script>
+</body></html>
