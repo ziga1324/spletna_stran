@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Raziskuj atome, sestavljaj molekule, primerjaj agregatna stanja in preizkusi elastičnost kristalne mreže.">
+<title>Zgradba snovi – Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.zg{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.zg *{box-sizing:border-box}.zg [hidden]{display:none!important}
+.zg .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.zg header.wrap{padding:25px 0 22px}.zg a{color:var(--accent);font-weight:750}
+.zg .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.zg .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.zg h1,.zg h2,.zg h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.zg h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.zg h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.zg h3{font-size:1.15rem;margin:0 0 9px}.zg p{margin:0 0 13px}.zg .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.zg .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.zg svg{display:block;width:100%;height:auto;overflow:visible}
+.zg nav,.zg .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.zg nav{margin:12px 0 24px}
+.zg button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.zg button:hover{background:var(--purple)}.zg button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.zg button[aria-pressed=true],.zg .primary{background:var(--yellow)}
+.zg button:disabled{opacity:.55;cursor:default}.zg :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.zg .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.zg .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.zg .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.zg .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.zg label{display:block;font-weight:700;margin:12px 0 4px}.zg label:first-child{margin-top:0}
+.zg input:not([type=checkbox]),.zg select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.zg input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.zg input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.zg output{color:var(--accent);font-weight:800}
+.zg .fine{font-size:.88rem;color:#4d5871}.zg .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.zg .lab-visual,.zg .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.zg .graph{cursor:crosshair}.zg .graph-label{font-weight:800;margin:7px 0 0}
+.zg .graph-group{min-width:0}.zg .graph-group p{margin:7px 0 0}
+.zg .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.zg .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.zg .metric:nth-child(2n){background:var(--mint)}.zg .metric strong{display:block;font-size:1.06rem}
+.zg .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.zg .lav{background:var(--purple)}.zg .accent-card{background:var(--yellow)}.zg .question{font-weight:700;font-size:1.06rem}
+.zg .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.zg details{margin:10px 0}.zg summary{cursor:pointer;font-weight:750}
+.zg .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.zg .question-card .row{margin-top:9px}.zg .question-card label{margin-top:9px}
+.zg .lesson{scroll-margin:15px}.zg .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.zg footer{padding:8px 0 28px}.zg .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.zg .grid,.zg .hero{grid-template-columns:1fr}.zg .hero-art{display:none}.zg .three{grid-template-columns:1fr}.zg .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.zg .wrap{width:calc(100% - 24px)}.zg .two{grid-template-columns:1fr}.zg nav button{flex:1 1 40%}.zg .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.zg{background:#fff;color:#000}body.zg.print-sheet > :not(#paper){display:none!important}body.zg.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.zg .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.zg .graph{cursor:default}
+.zg .subnote{margin-top:12px}
+.zg .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.zg .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.zg .graph-row{grid-template-columns:1fr}.zg .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.zg h1{font-size:clamp(44px,7vw,78px)}
+.zg .lab-visual{margin:8px 0 12px}
+.zg .controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.zg .controls label{margin-top:8px}
+.zg .phase-key{display:flex;gap:8px 18px;flex-wrap:wrap;margin-top:10px}
+.zg .phase-key span{font-weight:750}
+.zg .big-formula{font-size:1.45rem}
+.zg .workbench{margin-top:13px}
+@media(max-width:460px){.zg .controls{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="zg">
+<header class="wrap">
+    <a href="../index.html">← Vsa orodja</a>
+    <div class="hero">
+        <div><span class="badge">SIDEBIT · FIZIKA</span><h1>Zgradba snovi</h1>
+        <p class="lead">Spremeni število elektronov v atomu, sestavi molekulo, segrej vodo in raztegni kristal. Kaj lahko iz obnašanja delcev sklepaš o snovi, ki jo vidiš?</p></div>
+        <svg class="hero-art" viewBox="0 0 330 150" role="img" aria-label="Molekula vode in del kristalne mreže">
+            <path d="M53 103L95 58l42 45M205 42h78m-78 36h78m-78 36h78M205 42v72m39-72v72m39-72v72" fill="none" stroke="#5634aa" stroke-width="4"/>
+            <circle cx="95" cy="58" r="23" fill="#ffcbd8" stroke="#22253a" stroke-width="3"/>
+            <circle cx="53" cy="103" r="15" fill="#fff" stroke="#22253a" stroke-width="3"/>
+            <circle cx="137" cy="103" r="15" fill="#fff" stroke="#22253a" stroke-width="3"/>
+            <g fill="#c5f0e2" stroke="#22253a" stroke-width="2"><circle cx="205" cy="42" r="8"/><circle cx="244" cy="42" r="8"/><circle cx="283" cy="42" r="8"/><circle cx="205" cy="78" r="8"/><circle cx="244" cy="78" r="8"/><circle cx="283" cy="78" r="8"/><circle cx="205" cy="114" r="8"/><circle cx="244" cy="114" r="8"/><circle cx="283" cy="114" r="8"/></g>
+        </svg>
+    </div>
+    <nav aria-label="Poglavja">
+        <button type="button" data-tab="lab" aria-pressed="true">Laboratorij</button>
+        <button type="button" data-tab="challenge" aria-pressed="false">Učni izzivi</button>
+        <button type="button" data-tab="practice" aria-pressed="false">Generator nalog</button>
+        <button type="button" data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+    </nav>
+</header>
+<main class="wrap">
+<section id="lab">
+    <div class="card">
+        <span class="chip">01 · Delavnica atomov</span>
+        <h2>Od atoma do iona</h2>
+        <div class="two">
+            <div>
+                <label for="element">Element</label>
+                <select id="element"><option value="H">Vodik (H)</option><option value="C">Ogljik (C)</option><option value="O" selected>Kisik (O)</option><option value="Na">Natrij (Na)</option><option value="Cl">Klor (Cl)</option></select>
+                <label for="isotope">Izotop (masno število A)</label><select id="isotope"></select>
+                <label for="electrons">Število elektronov: <output id="electron-out"></output></label><input id="electrons" type="range" min="0" max="18" step="1" value="8">
+                <button type="button" id="neutral">Nevtraliziraj atom</button>
+                <p id="atom-result" class="focus-box small-gap" role="status"></p>
+            </div>
+            <div><svg id="atom" class="lab-visual" viewBox="0 0 420 246" role="img" aria-label="Shematski prikaz atoma"></svg>
+            <p class="fine">Krogi so shema elektronskih lupin. Elektroni v resnici ne krožijo po narisanih tirnicah. Model šteje delce, zato dovoljuje tudi naboje, ki pri tem elementu niso običajni.</p></div>
+        </div>
+    </div>
+    <div class="card">
+        <span class="chip">02 · Sestavi molekulo</span>
+        <h2>Kaj pove kemijska formula?</h2>
+        <div class="two">
+            <div>
+                <label for="molecule">Izberi molekulo</label>
+                <select id="molecule"><option value="water">Voda · H₂O</option><option value="carbon">Ogljikov dioksid · CO₂</option><option value="oxygen">Kisik · O₂</option><option value="methane">Metan · CH₄</option></select>
+                <div id="recipe" class="controls workbench"></div>
+                <div class="row workbench"><button type="button" id="build" class="primary">Preveri in sestavi</button><button type="button" id="clear-recipe">Počisti</button></div>
+                <p id="molecule-result" class="focus-box small-gap" role="status"></p>
+            </div>
+            <div><svg id="model" class="lab-visual" viewBox="0 0 420 246" role="img" aria-label="Model molekule"></svg>
+            <p class="fine">Krogle predstavljajo atome, črte pa vezi. To je model sestave in oblike izbranih molekul; iz samega števila atomov pri vseh snoveh ne moremo določiti njihove razporeditve.</p></div>
+        </div>
+    </div>
+    <div class="card">
+        <span class="chip">03 · Trdno, tekoče ali plinasto</span>
+        <h2>Voda pri običajnem zračnem tlaku</h2>
+        <div class="two">
+            <div>
+                <label for="temperature">Temperatura: <output id="temperature-out"></output></label>
+                <input id="temperature" type="range" min="-30" max="140" step="1" value="20">
+                <div class="row workbench"><button type="button" data-temp="-15">Led</button><button type="button" data-temp="20">Tekoča voda</button><button type="button" data-temp="120">Vodna para</button></div>
+                <p id="phase-result" class="focus-box small-gap" role="status"></p>
+                <p class="fine">Pri približno 0 °C oziroma 100 °C sta pri normalnem tlaku lahko prisotni dve fazi. Pri drugi vrednosti tlaka se meji spremenita. Pri vrenju ali taljenju se dovajana toplota lahko porablja za fazni prehod ob nespremenjeni temperaturi.</p>
+            </div>
+            <div><svg id="particles" class="lab-visual" viewBox="0 0 420 255" role="img" aria-label="Shematsko gibanje molekul vode"></svg>
+            <div class="row"><button id="motion" type="button">Predvajaj gibanje</button></div>
+            <p class="fine">Vsaka pika je molekula H₂O. Skica ne prikazuje merila, dejanske mreže ledu ali gostote. Pri 0 °C in 100 °C kaže po en primer soobstoja; deleža nista določena samo s temperaturo.</p></div>
+        </div>
+    </div>
+    <div class="card">
+        <span class="chip">04 · Raztegni kristal</span>
+        <h2>Elastičnost kristalne mreže</h2>
+        <div class="two">
+            <div>
+                <label for="modulus">Youngov modul E: <output id="modulus-out"></output></label>
+                <input id="modulus" type="range" min="10" max="220" step="10" value="100">
+                <label for="strain">Vzdolžna deformacija ε: <output id="strain-out"></output></label>
+                <input id="strain" type="range" min="-.2" max=".2" step=".01" value=".1">
+                <label for="poisson">Poissonovo razmerje ν: <output id="poisson-out"></output></label>
+                <input id="poisson" type="range" min="0" max=".45" step=".05" value=".3">
+                <div class="row workbench"><button type="button" id="release">Razbremeni kristal</button></div>
+                <p class="fine chapter-note">Model velja v linearnem elastičnem območju in za izbrano smer obremenitve. V enačbi σ = Eε uporabi ε kot delež, ne kot število odstotkov.</p>
+            </div>
+            <div><svg id="lattice" class="lab-visual" viewBox="0 0 420 255" role="img" aria-label="Kristalna mreža pred deformacijo in po njej"></svg>
+            <div id="crystal-values" class="readouts"></div>
+            <p id="crystal-note" class="focus-box"></p>
+            <p class="fine">Črtkano je prvotno stanje. Premiki na skici so povečani. Črte ponazarjajo vezi; pri ponazoritvi z vzmetmi so to približki sil okoli ravnovesne razdalje.</p></div>
+        </div>
+    </div>
+</section>
+<section id="challenge" hidden>
+    <div class="card lav"><span class="chip">Najprej napovej</span><h2>Učni izzivi</h2>
+    <label for="mission">Izberi izziv</label><select id="mission">
+        <option value="0">Manj elektronov</option><option value="1">Sestava ogljikovega dioksida</option>
+        <option value="2">Led in voda pri 0 °C</option><option value="3">Togost kristala</option>
+    </select><div id="mission-body" class="small-gap"></div><p id="mission-feedback" class="feedback" role="status"></p>
+    <button type="button" id="mission-open">Odpri poskus</button></div>
+</section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option><option value="atom">Zgradba atoma</option><option value="ion">Ioni in izotopi</option><option value="molecule">Molekule in formule</option><option value="moles">Količina snovi</option><option value="phase">Fazni prehodi</option><option value="elastic">Elastičnost kristalov</option><option value="poisson">Prečna deformacija</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden>
+    <div class="card">
+        <h2>Od delcev do lastnosti snovi</h2>
+        <div class="two">
+            <article class="note"><h3>Atom in jedro</h3><p class="formula">Z = Nₚ &nbsp; · &nbsp; A = Nₚ + Nₙ</p><p>Protoni in nevtroni so v jedru. Vrstno število Z (število protonov) določa element. Izotopi istega elementa imajo enako število protonov in različno število nevtronov. Masno število A šteje protone in nevtrone; ni isto kot povprečna relativna atomska masa v periodnem sistemu.</p></article>
+            <article class="note lav"><h3>Ioni</h3><p class="formula">q/e = Nₚ − Nₑ</p><p>Nevtralen atom ima enako število protonov in elektronov. Če izgubi elektron, dobi pozitiven naboj. Če sprejme elektron, dobi negativen naboj. Element ostane isti, ker se število protonov ni spremenilo.</p></article>
+            <article class="note lav"><h3>Molekule, vezi in formule</h3><p>Indeks v formuli pove število atomov elementa v eni molekuli: H₂O ima dva atoma vodika in enega kisika. O₂ je molekula elementa, H₂O pa molekula spojine. Trdni NaCl tvori ionsko mrežo; NaCl je zapis razmerja ionov 1 : 1, ne opis ločenih molekul v kristalu.</p></article>
+            <article class="note"><h3>Količina snovi</h3><p class="formula">n = m/M &nbsp; · &nbsp; N = nN<sub>A</sub></p><p>En mol vsebuje 6,02214076 × 10²³ delcev. Vedno povej, katere delce šteješ: atome, molekule ali ione. V 1 molu vode je 1 mol molekul H₂O, v njih pa skupaj 3 moli atomov.</p></article>
+            <article class="note"><h3>Tri agregatna stanja</h3><p>V kristalni trdnini delci nihajo okoli urejenih ravnovesnih leg. V tekočini so si še vedno blizu, a se lahko prerazporejajo in tečejo. V plinu se delci gibljejo po razpoložljivem prostoru in trkajo med seboj ter ob stene.</p></article>
+            <article class="note lav"><h3>Taljenje, vrenje in izhlapevanje</h3><p class="formula">Q = mL</p><p>Pri faznem prehodu čiste snovi ob stalnem tlaku je lahko temperatura stalna, čeprav snov sprejema ali oddaja toploto. Izhlapevanje poteka na površini tekočine tudi pod vreliščem. Pri vrenju nastajajo mehurčki pare v notranjosti tekočine.</p></article>
+            <article class="note lav"><h3>Kristal in amorfna snov</h3><p>V kristalu se razporeditev gradnikov periodično ponavlja. Amorfne trdnine, na primer steklo, nimajo takega reda na velikih razdaljah. V mreži so lahko atomi, ioni ali molekule; vrsta gradnikov in vezi vpliva na lastnosti kristala.</p></article>
+            <article class="note"><h3>Zakaj se kristal po razbremenitvi vrne?</h3><p class="formula">ε = ΔL/L₀ &nbsp; · &nbsp; σ = Eε &nbsp; · &nbsp; ε<sub>prečno</sub> = −νε</p><p>Pri majhnem raztegu se razdalje med gradniki nekoliko povečajo. Sile med njimi jih vlečejo nazaj proti ravnovesju. Večji Youngov modul E pomeni, da je za enak razteg potrebna večja napetost. Pri nekaterih kristalih je E odvisen od smeri obremenitve (anizotropija). Če prekoračimo elastično območje, lahko ostane trajna deformacija ali nastane zlom.</p></article>
+        </div>
+        <details><summary>Rešen primer: ion klora</summary><p>Izotop ³⁷Cl ima Z = 17 in A = 37. V jedru je 17 protonov in 20 nevtronov. Ion Cl⁻ ima 18 elektronov, torej en elektron več od nevtralnega atoma klora.</p></details>
+        <details><summary>Rešen primer: elastični razteg kristala</summary><p>Kristal z E = 100 GPa raztegnemo za 0,10 %. Uporabimo ε = 0,001. Napetost je 100 GPa × 0,001 = 0,10 GPa oziroma 100 MPa. Če je ν = 0,30, je prečna deformacija −0,03 %.</p></details>
+    </div>
+</section>
+</main>
+<footer class="wrap"><p>Sidebit · Fizika · Zgradba snovi</p></footer>
+<div id="paper"></div>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const formatter = new Intl.NumberFormat("sl-SI",{maximumFractionDigits:4,useGrouping:false});
+const fmt = n => formatter.format(Math.abs(n)<1e-9 ? 0 : n);
+const read = id => Number($(id).value);
+const integer = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const line = (x,y,X,Y,color,width=2,extra="") => `<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${color}" stroke-width="${width}" ${extra}/>`;
+const circle = (x,y,r,fill,stroke="#22253a") => `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`;
+const text = (x,y,label) => `<text x="${x}" y="${y}" text-anchor="middle" fill="#22253a" font-size="14" font-weight="700">${label}</text>`;
+const rect = (x,y,w,h,fill) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${fill}" stroke="#9da8bc" stroke-width="2"/>`;
+const TAU = 2*Math.PI;
+
+const elements = {
+    H:{z:1,isotopes:[1,2,3]}, C:{z:6,isotopes:[12,13,14]}, O:{z:8,isotopes:[16,17,18]},
+    Na:{z:11,isotopes:[23]}, Cl:{z:17,isotopes:[35,37]}
+};
+function atomData(symbol,mass,electrons){
+    const protons = elements[symbol].z;
+    return {protons,neutrons:mass-protons,charge:protons-electrons};
+}
+function renderAtom(){
+    const symbol = $("element").value, mass=read("isotope"), electrons=read("electrons");
+    const {protons,neutrons,charge}=atomData(symbol,mass,electrons);
+    const chargeText = charge > 0 ? "+"+charge : charge < 0 ? "−"+Math.abs(charge) : "0";
+    $("electron-out").textContent = electrons;
+    $("atom-result").textContent = protons+" protonov · "+neutrons+" nevtronov · "+electrons+" elektronov. Naboj: "+chargeText+" e ("+(charge>0?"kation":charge<0?"anion":"nevtralen atom")+").";
+    let remaining=electrons, svg="";
+    for(const [j,capacity] of [2,8,8].entries()){
+        const r=47+j*25, count=Math.min(capacity,remaining);
+        svg+=circle(210,122,r,"none","#a5aec3");
+        for(let i=0;i<count;i++){
+            const theta=TAU*i/count-Math.PI/2+j*.25;
+            svg+=circle(210+r*Math.cos(theta),122+r*Math.sin(theta),6,"#a99be8");
+        }
+        remaining-=count;
+    }
+    $("atom").innerHTML=svg+circle(210,122,28,"#ffe38b")+text(210,127,symbol);
+}
+function selectElement(mass){
+    const el=elements[$("element").value];
+    const options=el.isotopes.map(a=>{const o=document.createElement("option");o.value=a;o.textContent=a;return o;});
+    $("isotope").replaceChildren(...options);
+    $("isotope").value = mass ?? el.isotopes[0];
+    $("electrons").value=el.z;
+    renderAtom();
+}
+$("element").onchange=()=>selectElement();
+$("isotope").onchange=renderAtom;
+$("electrons").oninput=renderAtom;
+$("neutral").onclick=()=>{$("electrons").value=elements[$("element").value].z;renderAtom();};
+
+const molecules={
+    water:{formula:"H₂O",counts:{H:2,O:1},shape:"Kotni model: vezni kot je približno 104,5°.",atoms:[["O",210,96],["H",144,147],["H",276,147]],bonds:[[0,1,1],[0,2,1]]},
+    carbon:{formula:"CO₂",counts:{C:1,O:2},shape:"Linearna molekula: O=C=O.",atoms:[["C",210,118],["O",110,118],["O",310,118]],bonds:[[0,1,2],[0,2,2]]},
+    oxygen:{formula:"O₂",counts:{O:2},shape:"Molekula dveh atomov istega elementa.",atoms:[["O",161,118],["O",259,118]],bonds:[[0,1,2]]},
+    methane:{formula:"CH₄",counts:{C:1,H:4},shape:"Metan je tetraedričen. Polni klin kaže vez proti tebi, črtkana vez stran od tebe.",atoms:[["C",210,115],["H",210,48],["H",134,130],["H",276,157],["H",240,193]],bonds:[[0,1,1],[0,2,1],[0,3,"wedge"],[0,4,"dash"]]}
+};
+const atomColors={H:"#fff",C:"#a99be8",O:"#ffcbd8"};
+const atomNames={H:"Vodik (H)",C:"Ogljik (C)",O:"Kisik (O)"};
+function matchesMolecule(m,counts){
+    return Object.keys(atomNames).every(k=>(m.counts[k]||0)===counts[k]);
+}
+function clearMolecule(){
+    for(const key of Object.keys(atomNames)) $("recipe-"+key).value=0;
+    $("model").innerHTML=text(210,123,"Sestavi molekulo za prikaz.");
+    $("molecule-result").textContent="Vnesi število atomov vsakega elementa v eni molekuli.";
+}
+for(const [key,name] of Object.entries(atomNames)){
+    const box=document.createElement("div");
+    box.innerHTML=`<label for="recipe-${key}">${name}</label><input id="recipe-${key}" type="number" min="0" max="12" step="1" value="0">`;
+    $("recipe").append(box);
+    box.querySelector("input").oninput=()=>{
+        $("model").innerHTML=text(210,123,"Preveri novo sestavo za prikaz.");
+        $("molecule-result").textContent="";
+    };
+}
+function buildMolecule(){
+    const m=molecules[$("molecule").value];
+    const counts=Object.fromEntries(Object.keys(atomNames).map(k=>[k,$("recipe-"+k).valueAsNumber]));
+    if(!matchesMolecule(m,counts)){
+        $("model").innerHTML=text(210,123,"Sestava se še ne ujema.");
+        $("molecule-result").textContent="Poglej indekse pri "+m.formula+". Če indeksa ni, je prisoten en atom, odsoten element pa nič.";
+        return;
+    }
+    let svg="";
+    for(const [i,j,style] of m.bonds){
+        const [,x,y]=m.atoms[i], [,X,Y]=m.atoms[j];
+        if(style===2){
+            const len=Math.hypot(X-x,Y-y), dx=4*(Y-y)/len, dy=-4*(X-x)/len;
+            svg+=line(x+dx,y+dy,X+dx,Y+dy,"#5634aa",4)+line(x-dx,y-dy,X-dx,Y-dy,"#5634aa",4);
+        }else if(style==="wedge"){
+            svg+=`<path d="M${x} ${y} L${X-4} ${Y+7} L${X+4} ${Y-7} Z" fill="#5634aa"/>`;
+        }else svg+=line(x,y,X,Y,"#5634aa",4,style==="dash"?'stroke-dasharray="5 5"':"");
+    }
+    for(const [key,x,y] of m.atoms) svg+=circle(x,y,key==="H"?18:27,atomColors[key])+text(x,y+5,key);
+    $("model").innerHTML=svg;
+    $("molecule-result").textContent="Pravilno: "+m.formula+". "+m.shape;
+}
+$("molecule").onchange=clearMolecule;
+$("build").onclick=buildMolecule;
+$("clear-recipe").onclick=clearMolecule;
+
+function phaseAt(temperature){
+    return temperature < 0 ? ["solid"] : temperature === 0 ? ["solid","liquid"]
+        : temperature < 100 ? ["liquid"] : temperature === 100 ? ["liquid","gas"] : ["gas"];
+}
+const phaseNames={solid:"Led",liquid:"Tekoča voda",gas:"Vodna para"};
+let frame=0, elapsed=0, lastFrame=null;
+const bounce=(x,span)=>span-Math.abs(((x%(2*span))+2*span)%(2*span)-span);
+function renderParticles(){
+    const temperature=read("temperature"), phases=phaseAt(temperature), width=phases.length===1?390:190;
+    const speed=Math.sqrt((temperature+273.15)/293.15), t=elapsed*speed;
+    let svg="";
+    phases.forEach((phase,group)=>{
+        const left=15+group*200, color=phase==="solid"?"#d8ecff":phase==="liquid"?"#c5f0e2":"#f3eaff";
+        svg+=rect(left,22,width,215,color)+text(left+width/2,47,phaseNames[phase]);
+        const count=phases.length===1?30:15, cols=phases.length===1?6:5;
+        const rows=Math.ceil(count/cols), mid=left+width/2;
+        for(let i=0;i<count;i++){
+            const col=i%cols,row=Math.floor(i/cols), angle=i*2.399963, dx=col-(cols-1)/2;
+            let x,y;
+            if(phase==="solid"){
+                x=mid+dx*23+1.8*Math.sin(t*7+angle);
+                y=160+(row-(rows-1)/2)*23+1.8*Math.cos(t*8+angle);
+            }else if(phase==="liquid"){
+                const wrap=(v,p)=>((v%p)+p)%p, span=width-34;
+                x=left+17+wrap(col*span/cols+row*13+t*(row%2?-16:14),span);
+                y=208-row*21+3.5*Math.sin(t*3+angle);
+            }else{
+                x=left+13+bounce(i*53.7+t*(35+i%5*7)*Math.cos(angle),width-26);
+                y=63+bounce(i*79.1+t*(39+i%7*5)*Math.sin(angle),160);
+            }
+            svg+=circle(x,y,phase==="gas"?4.8:5.8,phase==="solid"?"#8cbdf2":phase==="liquid"?"#58c6ab":"#b8a4ed");
+        }
+    });
+    $("particles").innerHTML=svg;
+}
+function updatePhase(){
+    const t=read("temperature"), phases=phaseAt(t);
+    $("temperature-out").textContent=fmt(t)+" °C";
+    $("phase-result").textContent = phases.length===2
+        ? (t===0?"Led in tekoča voda lahko soobstajata pri temperaturi taljenja.":"Tekoča voda in vodna para lahko soobstajata pri temperaturi vrenja.")
+        : ({solid:"Delci v ledu nihajo okoli ravnovesnih leg.",liquid:"Molekule v tekoči vodi se premikajo druga mimo druge.",gas:"Molekule v vodni pari se gibljejo po prostoru in so v povprečju bolj narazen."})[phases[0]];
+    renderParticles();
+}
+function pause(){
+    cancelAnimationFrame(frame);frame=0;lastFrame=null;
+    $("motion").textContent="Predvajaj gibanje";
+}
+function animate(now){
+    if(lastFrame!==null)elapsed+=Math.min(.04,(now-lastFrame)/1000);
+    lastFrame=now;
+    renderParticles();
+    frame=requestAnimationFrame(animate);
+}
+$("motion").onclick=()=>{
+    if(frame){pause();return;}
+    $("motion").textContent="Ustavi gibanje";
+    frame=requestAnimationFrame(animate);
+};
+$("temperature").oninput=updatePhase;
+for(const button of document.querySelectorAll("[data-temp]")) button.onclick=()=>{$("temperature").value=button.dataset.temp;updatePhase();};
+document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();});
+
+function crystal(E,percent,nu){
+    return {stress:10*E*percent,transverse:-nu*percent,energy:.5*E*1e9*(percent/100)**2};
+}
+function renderCrystal(){
+    const E=read("modulus"), pct=read("strain"), nu=read("poisson"), r=crystal(E,pct,nu);
+    $("modulus-out").textContent=E+" GPa";
+    $("strain-out").textContent=fmt(pct)+" %";
+    $("poisson-out").textContent=fmt(nu);
+    const P=(c,j,deformed)=>{
+        const ax=deformed ? 1+pct*1.65 : 1, ay=deformed ? 1+r.transverse*1.65 : 1;
+        return [210+(c-2.5)*41*ax,117+(j-1.5)*38*ay];
+    };
+    let svg=rect(15,18,390,216,"#fbfcff");
+    for(let j=0;j<4;j++)for(let c=0;c<6;c++){
+        const [x,y]=P(c,j,false);
+        svg+=`<circle cx="${x}" cy="${y}" r="8" fill="none" stroke="#9da8bc" stroke-dasharray="3 2"/>`;
+    }
+    for(let j=0;j<4;j++)for(let c=0;c<6;c++){
+        const point=P(c,j,true);
+        if(c<5)svg+=line(...point,...P(c+1,j,true),"#775abf",3);
+        if(j<3)svg+=line(...point,...P(c,j+1,true),"#775abf",3);
+    }
+    for(let j=0;j<4;j++)for(let c=0;c<6;c++)svg+=circle(...P(c,j,true),6,"#ffe38b");
+    $("lattice").innerHTML=svg+text(210,219,pct>0?"Vzdolžni razteg":pct<0?"Vzdolžni stisk":"Ravnovesna mreža");
+    $("crystal-values").innerHTML=[["Napetost σ",fmt(r.stress)+" MPa"],["Prečna deformacija",fmt(r.transverse)+" %"],["Prožnostna energija na m³",fmt(r.energy)+" J/m³"]]
+        .map(([k,v])=>`<div class="metric">${k}<strong>${v}</strong></div>`).join("");
+    $("crystal-note").textContent=pct===0?"Po razbremenitvi se mreža v tem modelu vrne v ravnovesje."
+        : "Pri isti deformaciji večji modul E pomeni večjo velikost napetosti. Poskusi spremeniti samo E.";
+}
+for(const id of ["modulus","strain","poisson"]) $(id).oninput=renderCrystal;
+$("release").onclick=()=>{$("strain").value=0;renderCrystal();};
+
+function tab(id){
+    if(id!=="lab")pause();
+    for(const section of document.querySelectorAll("main > section"))section.hidden=section.id!==id;
+    for(const button of document.querySelectorAll("[data-tab]"))button.setAttribute("aria-pressed",String(button.dataset.tab===id));
+}
+for(const button of document.querySelectorAll("[data-tab]"))button.onclick=()=>tab(button.dataset.tab);
+
+const missions=[
+    {target:"element",question:"Natrij ima 11 protonov. Kaj nastane, ko nevtralen natrij izgubi en elektron?",answers:["Pozitivni ion Na⁺","Negativni ion Na⁻","Drug element"],correct:0,why:"Ostane 11 protonov in 10 elektronov, torej je naboj +1 e.",setup(){ $("element").value="Na";selectElement();$("electrons").value=10;renderAtom();}},
+    {target:"molecule",question:"Koliko atomov sestavlja ena molekula CO₂?",answers:["Dva atoma ogljika in en kisik","En atom ogljika in dva kisika","En atom ogljika in en kisik"],correct:1,why:"Indeks 2 se nanaša le na kisik. Pri ogljiku je brez indeksa število 1.",setup(){ $("molecule").value="carbon";clearMolecule();}},
+    {target:"temperature",question:"V posodi sta pri normalnem tlaku led in voda pri 0 °C. Kaj lahko ob dodajanju toplote sprva ostane nespremenjeno?",answers:["Količina ledu","Temperatura, dokler je prisoten led","Količina prejete toplote"],correct:1,why:"Med taljenjem pri stalnem tlaku dovedena toplota omogoča fazni prehod. Temperatura mešanice pri tem ostaja približno 0 °C.",setup(){ $("temperature").value=0;updatePhase();}},
+    {target:"modulus",question:"Youngov modul podvojimo. Za koliko se spremeni napetost, če relativni razteg ostane enak?",answers:["Prepolovi se","Ostane enaka","Podvoji se"],correct:2,why:"V linearnem elastičnem območju velja σ = Eε. Poskusi spremeniti E s 100 na 200 GPa.",setup(){ $("modulus").value=100;$("strain").value=.1;renderCrystal();}}
+];
+const currentMission=()=>missions[read("mission")];
+function renderMission(){
+    const m=currentMission(), prompt=document.createElement("p"), choices=document.createElement("div");
+    prompt.className="question";prompt.textContent=m.question;choices.className="row";
+    $("mission-body").replaceChildren(prompt,choices);$("mission-feedback").textContent="";
+    m.answers.forEach((answer,i)=>{
+        const button=document.createElement("button");button.type="button";button.textContent=answer;
+        button.setAttribute("aria-pressed","false");
+        button.onclick=()=>{
+            for(const other of choices.children)other.setAttribute("aria-pressed",String(other===button));
+            $("mission-feedback").textContent=i===m.correct?"Pravilno. "+m.why:"Poskusi še enkrat ali preveri napoved v poskusu.";
+        };
+        choices.append(button);
+    });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{const m=currentMission();tab("lab");m.setup();$(m.target).focus();};
+
+const topics={atom:"Zgradba atoma",ion:"Ioni in izotopi",molecule:"Molekule in formule",moles:"Količina snovi",phase:"Fazni prehodi",elastic:"Elastičnost kristalov",poisson:"Prečna deformacija"};
+function makeTask(key,level){
+    const hard=level===2;
+    const isotopes=Object.entries(elements).flatMap(([symbol,{z,isotopes}])=>isotopes.map(A=>({symbol,z,A})));
+    const {symbol,z,A}=isotopes[integer(0,isotopes.length-1)];
+    const copies=integer(2,45), e=integer(10,22)*10, percent=integer(2,18)/100, nu=integer(2,9)/20;
+    const sign=integer(0,1) ? 1 : -1, count=integer(2,28), mass=integer(3,40)/10;
+    const q=(prompt,answer,unit,hint,steps)=>({key,prompt,answer,unit,hint,steps:steps+" = "+fmt(answer)+" "+unit+"."});
+    switch(key){
+        case "atom":
+            return hard
+                ? q("Vzorčni sistem vsebuje "+copies+" jeder izotopa "+symbol+" z A = "+A+" in Z = "+z+". Koliko nevtronov je skupaj v teh jedrih?",copies*(A-z),"nevtronov","Najprej izračunaj število nevtronov v enem jedru.","Nₙ = "+copies+" · ("+A+" − "+z+")")
+                : q("Atom ima "+z+" protonov in "+(A-z)+" nevtronov. Kolikšno je masno število, če jedru dodamo še "+copies+" nevtronov? Obravnavaj samo štetje delcev, ne stabilnosti jedra.",A+copies,"brez enote","Seštej protone in vse nevtrone.","A = "+z+" + "+(A-z)+" + "+copies);
+        case "ion":{
+            const charge = sign*integer(1,Math.min(3,z));
+            return hard
+                ? q("Idealizirani ion ima Z = "+z+" in naboj "+(charge>0?"+":"")+charge+" e. Koliko elektronov ima en ion?",z-charge,"elektronov","Iz enačbe q/e = Z − Nₑ izrazi Nₑ.","Nₑ = "+z+" − ("+charge+")")
+                : q("Idealizirani ion z A = "+A+" in Z = "+z+" ima "+(z-charge)+" elektronov. Kolikšen je njegov naboj v enotah e? Upoštevaj predznak.",charge,"e","Primerjaj število protonov s številom elektronov.","q/e = "+z+" − "+(z-charge));
+        }
+        case "molecule":{
+            const m=Object.values(molecules)[integer(0,3)], keys=Object.keys(m.counts), chosen=keys[integer(0,keys.length-1)];
+            const per=Object.values(m.counts).reduce((a,b)=>a+b,0);
+            return hard
+                ? q("V posodi je "+copies+" molekul "+m.formula+" in "+count+" molekul H₂O. Koliko atomov je v obeh skupinah skupaj?",copies*per+count*3,"atomov","Seštej atome ene molekule vsake vrste, pomnoži s številom molekul in seštej.","N = "+copies+" · "+per+" + "+count+" · 3")
+                : q("V posodi je "+copies+" molekul "+m.formula+". Koliko atomov elementa "+chosen+" je v teh molekulah?",copies*m.counts[chosen],"atomov","Indeks v formuli uporabi za eno molekulo.","N = "+copies+" · "+m.counts[chosen]);
+        }
+        case "moles":
+            return hard
+                ? q("Koliko molov atomov je skupaj v "+fmt(mass)+" g vode? Uporabi M(H₂O) = 18 g/mol.",3*mass/18,"mol","V enem molu molekul H₂O so trije moli atomov.","n(atomov) = 3 · "+fmt(mass)+"/18")
+                : q("Koliko molov molekul vsebuje "+(copies*6)+" g vode? Uporabi M(H₂O) = 18 g/mol.",copies/3,"mol","Maso v gramih deli z molsko maso v g/mol.","n = "+(copies*6)+"/18");
+        case "phase":
+            return hard
+                ? q("Za uparjanje čiste vode pri vrelišču je na voljo "+(copies*70)+" kJ toplote. Koliko vode lahko uparimo, če zanemarimo izgube in vzamemo L = 2260 kJ/kg?",copies*70/2260,"kg","Pri stalni temperaturi faznega prehoda uporabi m = Q/L.","m = "+(copies*70)+"/2260")
+                : q("Koliko toplote potrebujemo za taljenje "+fmt(mass)+" kg ledu pri 0 °C? Uporabi L = 334 kJ/kg in zanemari izgube.",mass*334,"kJ","Pomnoži maso in specifično talilno toploto.","Q = "+fmt(mass)+" · 334");
+        case "elastic":{
+            const sigma=integer(2,36)*5;
+            return hard
+                ? q("Kristal z Youngovim modulom "+e+" GPa je v elastičnem območju pod natezno napetostjo "+sigma+" MPa. Izrazi vzdolžno deformacijo v odstotkih.",sigma/(10*e),"%","Pretvori E v MPa in uporabi ε = σ/E. Rezultat pomnoži s 100.","ε v % = 100 · "+sigma+"/("+e+" · 1000)")
+                : q("Kristal z Youngovim modulom "+e+" GPa raztegnemo za "+fmt(percent)+" %. Kolikšna je napetost v MPa po Hookovem zakonu?",crystal(e,percent,nu).stress,"MPa","Pretvori odstotek v delež in GPa v MPa.","σ = "+e+" · 1000 · "+fmt(percent)+"/100");
+        }
+        case "poisson":{
+            const length=integer(4,24)*25, pct=integer(8,20)/100;
+            return hard
+                ? q("Prvotna širina kristala je "+length+" mm. V elastičnem območju ga vzdolžno raztegnemo za "+fmt(pct)+" %. Poissonovo razmerje je "+fmt(nu)+". Za koliko mikrometrov se zoži (1 mm = 1000 µm)?",nu*pct*length*10,"µm","Najprej izračunaj velikost prečne deformacije ν ε. Pomnoži s širino, nato pretvori mm v µm.","|Δd| = "+length+" · "+fmt(nu)+" · "+fmt(pct)+"/100 · 1000")
+                : q("Kristal se v elastičnem območju vzdolžno raztegne za "+fmt(pct)+" %. Poissonovo razmerje je "+fmt(nu)+". Izrazi prečno deformacijo v odstotkih s predznakom.",-nu*pct,"%","Prečna deformacija ima pri pozitivnem ν nasproten predznak.","ε prečno v % = −"+fmt(nu)+" · "+fmt(pct));
+        }
+        default: throw new Error("Neznana tema.");
+    }
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Zgradba snovi · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+selectElement();
+clearMolecule();
+updatePhase();
+renderCrystal();
+renderMission();
+generate();
+</script>
+</body>
+</html>
