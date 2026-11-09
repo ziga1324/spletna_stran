@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivni laboratorij dinamike: Newtonovi zakoni, sile, trenje, klanec in generator nalog z rešitvami.">
+<title>Newtonovi zakoni in osnove dinamike | Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.dyn{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.dyn *{box-sizing:border-box}.dyn [hidden]{display:none!important}
+.dyn .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.dyn header.wrap{padding:25px 0 22px}.dyn a{color:var(--accent);font-weight:750}
+.dyn .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.dyn .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.dyn h1,.dyn h2,.dyn h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.dyn h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.dyn h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.dyn h3{font-size:1.15rem;margin:0 0 9px}.dyn p{margin:0 0 13px}.dyn .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.dyn .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.dyn svg{display:block;width:100%;height:auto;overflow:visible}
+.dyn nav,.dyn .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.dyn nav{margin:12px 0 24px}
+.dyn button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.dyn button:hover{background:var(--purple)}.dyn button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.dyn button[aria-pressed=true],.dyn .primary{background:var(--yellow)}
+.dyn button:disabled{opacity:.55;cursor:default}.dyn :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.dyn .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.dyn .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.dyn .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.dyn .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.dyn label{display:block;font-weight:700;margin:12px 0 4px}.dyn label:first-child{margin-top:0}
+.dyn input:not([type=checkbox]),.dyn select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.dyn input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.dyn input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.dyn output{color:var(--accent);font-weight:800}
+.dyn .fine{font-size:.88rem;color:#4d5871}.dyn .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.dyn .lab-visual,.dyn .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.dyn .graph{cursor:crosshair}.dyn .graph-label{font-weight:800;margin:7px 0 0}
+.dyn .graph-group{min-width:0}.dyn .graph-group p{margin:7px 0 0}
+.dyn .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.dyn .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.dyn .metric:nth-child(2n){background:var(--mint)}.dyn .metric strong{display:block;font-size:1.06rem}
+.dyn .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.dyn .lav{background:var(--purple)}.dyn .accent-card{background:var(--yellow)}.dyn .question{font-weight:700;font-size:1.06rem}
+.dyn .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.dyn details{margin:10px 0}.dyn summary{cursor:pointer;font-weight:750}
+.dyn .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.dyn .question-card .row{margin-top:9px}.dyn .question-card label{margin-top:9px}
+.dyn .lesson{scroll-margin:15px}.dyn .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.dyn footer{padding:8px 0 28px}.dyn .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.dyn .grid,.dyn .hero{grid-template-columns:1fr}.dyn .hero-art{display:none}.dyn .three{grid-template-columns:1fr}.dyn .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.dyn .wrap{width:calc(100% - 24px)}.dyn .two{grid-template-columns:1fr}.dyn nav button{flex:1 1 40%}.dyn .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.dyn{background:#fff;color:#000}body.dyn.print-sheet > :not(#paper){display:none!important}body.dyn.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.dyn .force-key{display:flex;flex-wrap:wrap;gap:6px 15px;font-size:.85rem}.dyn .force-key b::before{content:"";display:inline-block;width:10px;height:10px;margin-right:6px;background:var(--c);border-radius:50%}
+.dyn .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}.dyn .focus-box strong{display:block}.dyn .input-grid label{margin-top:10px}.dyn .formula-block{font-size:1.2rem}
+.dyn .graph{cursor:default}.dyn button+button{margin-left:0}
+</style>
+</head>
+<body class="dyn">
+<header class="wrap">
+<a href="../index.html">← Vsa orodja</a>
+<div class="hero"><div><span class="badge">SIDEBIT · FIZIKA</span><h1>Newtonovi zakoni</h1><p class="lead"><strong>Osnove dinamike.</strong> V Kinematiki si opisoval gibanje. Tukaj odkriješ, katere sile ga spremenijo, zakaj trenje včasih prepreči premik in kam izgine pospešek, ko se sile uravnotežijo.</p></div>
+<svg class="hero-art" viewBox="0 0 310 140" role="img" aria-label="Skica sil na škatli"><path d="M20 110h270" stroke="#22253a" stroke-width="3"/><rect x="117" y="63" width="76" height="47" rx="7" fill="#ffe38b" stroke="#22253a" stroke-width="3"/><path d="M154 68V21m-8 10 8-10 8 10" fill="none" stroke="#087b70" stroke-width="4"/><path d="M193 86h66m-12-8 12 8-12 8" fill="none" stroke="#5634aa" stroke-width="4"/><path d="M117 86H68m12-8-12 8 12 8" fill="none" stroke="#a0446c" stroke-width="4"/><text x="167" y="29" font-size="14">N</text><text x="230" y="72" font-size="14">F</text><text x="69" y="72" font-size="14">Fₜ</text></svg></div>
+<nav aria-label="Poglavja dinamike">
+<button data-tab="lab" aria-pressed="true">Laboratorij sil</button>
+<button data-tab="pair" aria-pressed="false">Tretji zakon</button>
+<button data-tab="challenges" aria-pressed="false">Učni izzivi</button>
+<button data-tab="practice" aria-pressed="false">Generator nalog</button>
+<button data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+</nav></header>
+<main class="wrap">
+<section id="lab" aria-labelledby="lab-title">
+<div class="grid"><div class="card"><span class="chip">01 · Nastavi poskus</span><h2 id="lab-title">Laboratorij sil</h2>
+<label for="preset">Pripravljeni poskusi</label><select id="preset"><option value="static">Potisk pod pragom trenja</option><option value="slide">Presezi prag trenja</option><option value="inertia">Vztrajnost brez trenja</option><option value="brake">Zaviranje do ustavitve</option><option value="ramp">Drsenje po klancu</option><option value="custom" disabled>Po meri</option></select>
+<div id="sliders" class="input-grid"></div><p class="fine small-gap">Pozitivna smer je desno oziroma navzgor po klancu. Potisk deluje vzdolž podlage. Model zanemari zračni upor; g = 9,81 m/s².</p>
+</div>
+<div class="card"><span class="chip">02 · Opazuj posledice</span><h2>Sile na telesu</h2>
+<svg id="scene" class="lab-visual" viewBox="0 0 680 265" role="img" aria-label="Telo na podlagi in štirje vektorji sil"></svg>
+<div class="force-key"><b style="--c:#5634aa">Potisk F</b><b style="--c:#a0446c">Trenje Fₜ</b><b style="--c:#bd601c">Teža Fg</b><b style="--c:#087b70">Normala N</b></div>
+<p class="fine small-gap">Puščice uporabljajo skupno merilo, ki se prilagodi silam. Pri ničelni sili puščice ni. Podlaga je idealizirana in nima konca.</p>
+<label for="time">Čas poskusa: <output id="clock"></output></label><input id="time" type="range" min="0" max="1000" value="0">
+<div class="row"><button id="play" class="primary">Predvajaj</button><button id="reset">Na začetek</button><button id="end">Na konec</button><button id="stop-point" hidden>Na ustavitev</button></div>
+<div id="metrics" class="readouts"></div><p id="balance" class="focus-box"></p><p id="explain" class="fine"></p></div></div>
+<div class="card"><h2>Iz rezultante do gibanja</h2><p>Premakni časovni drsnik: isti trenutek je označen na obeh grafih. Če se drseče telo ustavi, se lahko trenje in pospešek v tem trenutku skokovito spremenita.</p>
+<div class="two"><div><h3>Hitrost v(t) · m/s</h3><svg id="vg" class="graph" viewBox="0 0 340 165" role="img" aria-label="Graf predznačene hitrosti"></svg></div><div><h3>Pospešek a(t) · m/s²</h3><svg id="ag" class="graph" viewBox="0 0 340 165" role="img" aria-label="Graf predznačenega pospeška"></svg></div></div></div>
+</section>
+<section id="pair" hidden><div class="grid"><div class="card lav"><span class="chip">Akcija in reakcija</span><h2>Tretji Newtonov zakon</h2><p>Dva drsalca se odrivata na podlagi brez trenja. Izberi njuni masi in velikost sile.</p><div id="pair-controls"></div><p class="fine small-gap">Idealizacija: enaki nasprotni sili delujeta 0,8 s, nato drsalca brez trenja drsita naprej. Drsalca začneta v mirovanju.</p></div>
+<div class="card"><h2>Enaki sili, različna pospeška</h2><svg id="pair-scene" class="lab-visual" viewBox="0 0 680 215" role="img" aria-label="Dva drsalca z nasprotnima silama"></svg><label for="pair-time">Čas: <output id="pair-clock"></output></label><input id="pair-time" type="range" min="0" max="200" value="0"><div class="row"><button id="pair-play" class="primary">Predvajaj odriv</button><button id="pair-reset">Na začetek</button></div><div id="pair-values" class="readouts"></div><p class="note">A deluje na B, B pa na A. Sili sta enako veliki in nasprotni, vendar delujeta na <strong>različni telesi</strong>. Pri računanju rezultante enega drsalca ju zato ne seštevaš.</p></div></div></section>
+<section id="challenges" hidden><div class="card lav"><span class="chip">Napovej in preizkusi</span><h2>Učni izzivi</h2><label for="mission">Izberi izziv</label><select id="mission"><option value="0">Ali se zaboj premakne?</option><option value="1">Ali je za gibanje potrebna rezultanta?</option><option value="2">Zakaj se lažji drsalec hitreje odrine?</option><option value="3">Kaj se zgodi po zaviranju?</option></select><div id="mission-body" class="small-gap"></div><p id="mission-feedback" class="feedback" role="status"></p><button id="mission-open">Preizkusi v laboratoriju</button></div></section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Ustvari sklop nalog, preveri odgovore ali pripravi delovni list.</p>
+<div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option><option value="force">Rezultanta in pospešek</option><option value="mass">Masa in teža</option><option value="inertia">Prvi Newtonov zakon</option><option value="static">Statično trenje</option><option value="kinetic">Drsno trenje</option><option value="ramp">Sile na klancu</option><option value="pair">Akcija in reakcija</option><option value="brake">Zaviranje</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div>
+<div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden><div class="card"><h2>Od skice sil do enačbe</h2><p>Izberi telo, nariši samo sile, ki delujejo nanj, izberi pozitivno smer, nato po vsaki osi zapiši rezultanto. Pospešek ima smer rezultante.</p>
+<div class="two">
+<div class="note"><h3>1. zakon · Vztrajnost</h3><p class="formula">ΣF = 0 → a = 0</p><p>V inercialnem sistemu telo miruje ali se giblje enakomerno po premici. Ničelna rezultanta ne pomeni nujno ničelne hitrosti.</p></div>
+<div class="note lav"><h3>2. zakon · Rezultanta</h3><p class="formula">ΣF = ma</p><p>Če dve sili delujeta v nasprotnih smereh, ju seštej s predznakoma. Primer: +18 N − 6 N = +12 N. Pri masi 3 kg je a = +4 m/s².</p></div>
+<div class="note lav"><h3>3. zakon · Sili med telesoma</h3><p class="formula">F(A na B) = −F(B na A)</p><p>Teža in normala na zaboju nista par po tretjem zakonu: obe delujeta na zaboj. Sila, ki tvori par s težo, je gravitacijska sila zaboja na Zemljo.</p></div>
+<div class="note"><h3>Masa, teža in normala</h3><p class="formula">Fg = mg · na klancu N = mg cos α</p><p>Maso meriš v kg, silo v N. Normala je pravokotna na podlago. N = mg cos α v tem modelu velja, ker ni drugih pravokotnih sil in telo ne pospešuje pravokotno na klanec.</p></div>
+<div class="note"><h3>Statično in drsno trenje</h3><p class="formula">|Fₜ| ≤ μₛN pri mirovanju · |Fₜ| = μₖN pri drsenju</p><p>Statično trenje se prilagaja do meje. Drsno trenje kaže nasprotno smeri drsenja glede na podlago, ki ni nujno nasprotna potisku.</p></div>
+<div class="note lav"><h3>Sile vzdolž klanca</h3><p class="formula">ΣF∥ = F − mg sin α + Fₜ</p><p>Tu je pozitivna smer navzgor po klancu. Projekcija teže je negativna. Trenje v enačbo vstavi s predznakom, ki ustreza njegovi smeri.</p></div></div>
+<details><summary>Kako ločiš hitrost in pospešek?</summary><p>Hitrost opisuje smer trenutnega gibanja. Pospešek opisuje spremembo hitrosti. Če telo drsi desno, rezultanta pa kaže levo, telo sprva zavira. Po ustavitvi ponovno preveri sile in mejo statičnega trenja.</p></details></div></section>
+</main><footer class="wrap fine">Sidebit · Newtonovi zakoni in osnove dinamike</footer><div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const nf=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:3});
+const fmt=x=>nf.format(Math.abs(x)<.0005?0:x);
+const g=9.81,T=6,eps=1e-9;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const presetValues={
+  static:[5,12,0,0,.4,.25],slide:[5,30,0,0,.4,.25],
+  inertia:[5,0,0,3,0,0],brake:[5,0,0,4,.4,.25],ramp:[5,0,25,0,.35,.2]
+};
+const labFields=[
+  ["m","Masa","kg",1,15,.5],["F","Potisk vzdolž podlage","N",-100,100,1],
+  ["angle","Naklon","°",0,45,1],["v0","Začetna hitrost","m/s",-6,6,.5],
+  ["ms","Koeficient statičnega trenja","",0,1,.01],["mk","Koeficient drsnega trenja","",0,1,.01]
+];
+const pairFields=[["ma","Masa A","kg",30,120,1],["mb","Masa B","kg",30,120,1],["force","Velikost sile","N",10,180,1]];
+let params={},pair={ma:45,mb:90,force:90};
+function fields(root,defs,values,changed){
+  $(root).replaceChildren();
+  for(const [key,name,unit,min,max,step] of defs){
+    const label=document.createElement("label"),input=document.createElement("input"),out=document.createElement("output");
+    input.type="range";input.id="s-"+key;input.min=min;input.max=max;input.step=step;input.value=values[key];
+    label.htmlFor=input.id;label.append(name+": ",out);
+    const update=()=>out.textContent=fmt(values[key])+(unit?" "+unit:"");
+    update();input.oninput=()=>{values[key]=Number(input.value);changed(key);update();};
+    input.sync=()=>{input.value=values[key];update();};
+    $(root).append(label,input);
+  }
+}
+function dynamics(p){
+  const rad=p.angle*Math.PI/180,N=p.m*g*Math.cos(rad),gravity=-p.m*g*Math.sin(rad);
+  const drive=p.F+gravity,S=p.ms*N,K=p.mk*N;
+  const staticState=()=>({v:0,a:0,f:-drive,rest:true});
+  const moving=sign=>({a:(drive-sign*K)/p.m,f:-sign*K,rest:false});
+  const fromRest=Math.abs(drive)<=S+eps?staticState():moving(Math.sign(drive));
+  const start=Math.abs(p.v0)>eps?moving(Math.sign(p.v0)):fromRest;
+  const stop=p.v0*start.a<0?-p.v0/start.a:Infinity;
+  const stopX=Number.isFinite(stop)?p.v0*stop+start.a*stop*stop/2:0;
+  function state(t){
+    if(t>=stop){
+      const dt=t-stop;
+      return {...fromRest,x:stopX+fromRest.a*dt*dt/2,v:fromRest.a*dt};
+    }
+    return {...start,x:p.v0*t+start.a*t*t/2,v:p.v0+start.a*t};
+  }
+  return {N,gravity,drive,S,K,stop,state};
+}
+let lab,labTime=0,pairTime=0,run=null,last=null,raf=0;
+function pause(){run=null;last=null;cancelAnimationFrame(raf);$("play").textContent="Predvajaj";$("pair-play").textContent="Predvajaj odriv";}
+function setPreset(id){
+  pause();$("preset").value=id;
+  params=Object.fromEntries(labFields.map(([key],i)=>[key,presetValues[id][i]]));
+  fields("sliders",labFields,params,key=>{
+    if(params.mk>params.ms){
+      if(key==="ms"){params.mk=params.ms;$("s-mk").sync();}
+      else{params.ms=params.mk;$("s-ms").sync();}
+    }
+    $("preset").value="custom";rebuild();
+  });
+  rebuild();
+}
+function rebuild(){pause();lab=dynamics(params);labTime=0;$("stop-point").hidden=!(lab.stop<=T);renderLab();}
+const line=(x,y,x2,y2,color,w=2)=>`<line x1="${x}" y1="${y}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${w}"/>`;
+const txt=(x,y,s,anchor="start")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" font-size="13" font-weight="650" fill="#364058">${s}</text>`;
+function arrow(x,y,vx,vy,color,tag){
+  const n=Math.hypot(vx,vy);if(n<eps)return "";
+  const a=vx/n,b=vy/n,ex=x+vx,ey=y+vy;
+  return line(x,y,ex,ey,color,3)+`<path d="M${ex-8*a+4*b} ${ey-8*b-4*a} L${ex} ${ey} L${ex-8*a-4*b} ${ey-8*b+4*a}" fill="none" stroke="${color}" stroke-width="3"/>`+txt(ex+7,ey-7,tag);
+}
+function renderScene(s){
+  const angle=params.angle*Math.PI/180,c=Math.cos(angle),d=Math.sin(angle);
+  const positions=Array.from({length:61},(_,i)=>lab.state(i*T/60).x);
+  if(lab.stop<T)positions.push(lab.state(lab.stop).x);
+  const min=Math.min(0,...positions),max=Math.max(0,...positions);
+  const f=(s.x-min)/Math.max(max-min,1e-6);
+  const bx=340+(max-min<1e-6?0:(f-.5)*(params.angle>0?150:410));
+  const by=152-(bx-340)*Math.tan(angle);
+  const half=params.angle>0?Math.min(240,105/Math.tan(angle)):280;
+  const x=bx-18*d,y=by-18*c;
+  const forceScale=60/Math.max(1,Math.abs(params.F),Math.abs(s.f),params.m*g,lab.N);
+  const vector=(fx,fy,color,tag)=>arrow(x,y,fx*forceScale,fy*forceScale,color,tag);
+  $("scene").innerHTML=line(340-half,152+half*Math.tan(angle),340+half,152-half*Math.tan(angle),"#8794a8",4)+
+    `<rect x="${x-20}" y="${y-18}" width="40" height="36" rx="5" fill="#ffe38b" stroke="#22253a" stroke-width="3" transform="rotate(${-params.angle} ${x} ${y})"/>`+
+    vector(params.F*c,-params.F*d,"#5634aa","F")+vector(s.f*c,-s.f*d,"#a0446c","Fₜ")+
+    vector(0,params.m*g,"#bd601c","Fg")+vector(-lab.N*d,-lab.N*c,"#087b70","N")+
+    txt(20,243,"+ smer: desno / navzgor po klancu");
+}
+function plot(id,key,t){
+  const bounds=[0,...(lab.stop<T?[lab.stop]:[]),T];
+  const segs=[];
+  for(let i=1;i<bounds.length;i++){
+    const l=bounds[i-1],r=bounds[i],a=lab.state(l)[key];
+    const b=key==="a"?a:lab.state(r)[key];segs.push([l,r,a,b]);
+  }
+  const v=lab.state(t)[key],all=[0,v,...segs.flatMap(s=>s.slice(2))];
+  let lo=Math.min(...all),hi=Math.max(...all);
+  if(hi-lo<eps){lo=-1;hi=1;}
+  const pad=.13*(hi-lo),X=x=>52+x/T*270,Y=y=>131-(y-lo+pad)/(hi-lo+2*pad)*108;
+  let svg=line(52,18,52,132,"#a1adbf")+line(52,Y(0),322,Y(0),"#a1adbf")+txt(44,Y(0)+4,"0","end");
+  for(const n of [lo,hi])if(Math.abs(n)>eps)svg+=txt(44,Y(n)+4,fmt(n),"end");
+  for(let j=0;j<=T;j+=2)svg+=line(X(j),21,X(j),131,"#dce2ee",1)+txt(X(j),153,j+" s","middle");
+  for(const [l,r,a,b] of segs)svg+=line(X(l),Y(a),X(r),Y(b),"#5634aa",3);
+  svg+=line(X(t),18,X(t),132,"#b47019",2)+`<circle cx="${X(t)}" cy="${Y(v)}" r="5" fill="#ffe38b" stroke="#22253a" stroke-width="2"/>`;
+  $(id).innerHTML=svg;
+}
+function metrics(id,items){$(id).innerHTML=items.map(([n,v])=>`<div class="metric">${n}<strong>${v}</strong></div>`).join("");}
+function renderLab(){
+  const s=lab.state(labTime);$("clock").textContent=fmt(labTime)+" / 6 s";$("time").value=labTime/T*1000;
+  renderScene(s);plot("vg","v",labTime);plot("ag","a",labTime);
+  metrics("metrics",[["Rezultanta",fmt(params.m*s.a)+" N"],["Pospešek",fmt(s.a)+" m/s²"],["Hitrost",fmt(s.v)+" m/s"],["Premik",fmt(s.x)+" m"],["Normala",fmt(lab.N)+" N"],["Trenje",fmt(s.f)+" N"]]);
+  $("balance").textContent=`Vzdolž podlage: ΣF = (${fmt(params.F)}) + (${fmt(lab.gravity)}) + (${fmt(s.f)}) = ${fmt(params.m*s.a)} N.`;
+  $("explain").textContent=s.rest?`Telo miruje. Statično trenje uravnoteži preostale sile; njegova največja velikost je ${fmt(lab.S)} N.`:
+    Math.abs(s.a)<eps?"Rezultanta je nič. Hitrost ostaja stalna: prvi Newtonov zakon.":"Drsno trenje ima velikost "+fmt(lab.K)+" N in nasprotuje drsenju. Ko telo začne drseti iz mirovanja, uporabimo smer začetka gibanja.";
+}
+function pairState(m,F,t){
+  const active=Math.min(t,.8),a=F/m;
+  return {a:t<.8?a:0,v:a*active,x:a*active*active/2+a*active*Math.max(0,t-.8)};
+}
+function renderPair(){
+  const A=pairState(pair.ma,-pair.force,pairTime),B=pairState(pair.mb,pair.force,pairTime);
+  const max=1.52*pair.force/Math.min(pair.ma,pair.mb),scale=Math.min(130,205/max);
+  const x=301+A.x*scale,y=379+B.x*scale;
+  $("pair-scene").innerHTML=line(30,150,650,150,"#a1adbf",3)+
+   `<rect x="${x-25}" y="89" width="50" height="61" rx="10" fill="#c5f0e2" stroke="#22253a" stroke-width="3"/><rect x="${y-25}" y="89" width="50" height="61" rx="10" fill="#e8ddff" stroke="#22253a" stroke-width="3"/>`+
+   txt(x,125,"A","middle")+txt(y,125,"B","middle")+
+   (pairTime<.8?arrow(x,75,-55,0,"#5634aa","F(B na A)")+arrow(y,75,55,0,"#5634aa","F(A na B)"):"")+
+   txt(340,190,pairTime<.8?"Odriv · sili delujeta":"Drsenje · odriv je končan","middle");
+  $("pair-clock").textContent=fmt(pairTime)+" / 2 s";$("pair-time").value=pairTime*100;
+  metrics("pair-values",[["Sila na A",fmt(pairTime<.8?-pair.force:0)+" N"],["Sila na B",fmt(pairTime<.8?pair.force:0)+" N"],["Pospešek A",fmt(A.a)+" m/s²"],["Pospešek B",fmt(B.a)+" m/s²"],["Hitrost A",fmt(A.v)+" m/s"],["Hitrost B",fmt(B.v)+" m/s"]]);
+}
+function animation(ts){
+  if(!run)return;
+  const dt=last===null?0:Math.min(.06,(ts-last)/1000);last=ts;
+  if(run==="lab"){labTime=Math.min(T,labTime+dt);renderLab();if(labTime>=T){pause();return;}}
+  else{pairTime=Math.min(2,pairTime+dt*.5);renderPair();if(pairTime>=2){pause();return;}}
+  raf=requestAnimationFrame(animation);
+}
+function play(which){
+  const same=run===which;pause();if(same)return;
+  run=which;
+  if(which==="lab"){if(labTime>=T)labTime=0;$("play").textContent="Premor";}
+  else{if(pairTime>=2)pairTime=0;$("pair-play").textContent="Premor";}
+  raf=requestAnimationFrame(animation);
+}
+function seek(t){pause();labTime=clamp(t,0,T);renderLab();}
+$("play").onclick=()=>play("lab");$("reset").onclick=()=>seek(0);$("end").onclick=()=>seek(T);$("stop-point").onclick=()=>seek(lab.stop);
+$("time").oninput=()=>seek(Number($("time").value)*T/1000);
+$("preset").onchange=()=>setPreset($("preset").value);
+$("pair-play").onclick=()=>play("pair");
+$("pair-reset").onclick=()=>{pause();pairTime=0;renderPair();};
+$("pair-time").oninput=()=>{pause();pairTime=Number($("pair-time").value)/100;renderPair();};
+document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();});
+function tab(id){
+  pause();for(const s of document.querySelectorAll("main > section"))s.hidden=s.id!==id;
+  for(const b of document.querySelectorAll("[data-tab]"))b.setAttribute("aria-pressed",String(b.dataset.tab===id));
+}
+for(const b of document.querySelectorAll("[data-tab]"))b.onclick=()=>tab(b.dataset.tab);
+</script>
+<script>
+const missions=[
+ {preset:"static",q:"Zaboj miruje. Potiskaš ga z 12 N, največje statično trenje pa je 19,62 N. Kolikšna je sila trenja?",options:["0 N, ker zaboj miruje.","12 N v nasprotno smer potiska.","19,62 N v nasprotno smer potiska."],correct:1,why:"Statično trenje se prilagodi na 12 N. Vrednost 19,62 N je zgornja meja, ne trenutna sila."},
+ {preset:"inertia",q:"Zaboj že drsi s 3 m/s po podlagi brez trenja. Potisk je nič, teža in normala se izničita. Kaj se zgodi?",options:["Takoj se ustavi.","Hitrost ostane 3 m/s.","Hitrost narašča."],correct:1,why:"Rezultanta je nič. Zato je pospešek nič, obstoječa hitrost pa ostane enaka."},
+ {preset:"pair",q:"Drsalca z masama 45 in 90 kg delujeta drug na drugega z enako veliko silo. Kolikšen je pospešek lažjega v primerjavi s težjim?",options:["Dvakrat večji po velikosti.","Enako velik, ker sta sili enaki.","Pol manjši po velikosti."],correct:0,why:"Pri isti velikosti sile je |a| = F/m. Polovična masa pomeni dvakrat večji pospešek. Smeri pospeškov sta nasprotni."},
+ {preset:"brake",q:"Zaboj drsi po vodoravni podlagi brez potiska in zaradi trenja obstane. Ali nato začne drseti nazaj?",options:["Da, trenje ves čas kaže nazaj.","Ne. V tem primeru po ustavitvi vzdolž podlage ni sil.","Da, ker ima še vedno težo."],correct:1,why:"Drsno trenje deluje med drsenjem. Ko se telo ustavi, ni potiska ali komponente teže vzdolž podlage, zato je tudi statično trenje nič."}
+];
+function currentMission(){return missions[Number($("mission").value)];}
+function renderMission(){
+  const m=currentMission(),body=$("mission-body"),p=document.createElement("p"),choices=document.createElement("div");
+  p.className="question";p.textContent=m.q;choices.className="row";body.replaceChildren(p,choices);$("mission-feedback").textContent="";
+  m.options.forEach((op,i)=>{
+    const b=document.createElement("button");b.textContent=op;b.setAttribute("aria-pressed","false");
+    b.onclick=()=>{for(const other of choices.children)other.setAttribute("aria-pressed",String(other===b));$("mission-feedback").textContent=(i===m.correct?"Pravilno. ":"Ni čisto tako. ")+m.why;};
+    choices.append(b);
+  });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{
+  const m=currentMission();
+  if(m.preset==="pair"){
+    tab("pair");Object.assign(pair,{ma:45,mb:90,force:90});setupPair();
+  }else{tab("lab");setPreset(m.preset);if(m.preset==="brake")seek(lab.stop);}
+};
+function setupPair(){pairTime=0;fields("pair-controls",pairFields,pair,()=>{pause();pairTime=0;renderPair();});renderPair();}
+const topics={force:"Rezultanta in pospešek",mass:"Masa in teža",inertia:"Prvi Newtonov zakon",static:"Statično trenje",kinetic:"Drsno trenje",ramp:"Sile na klancu",pair:"Akcija in reakcija",brake:"Zaviranje"};
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function makeTask(key,level){
+  const hard=level===2,m=integer(2,15),F=integer(12,64),b=integer(3,24),v=integer(4,20),n=integer(2,8);
+  const mu=n/10,angle=[15,20,25,30,35,40,45][integer(0,6)],rad=angle*Math.PI/180;
+  let prompt,answer,unit,hint,steps;
+  if(key==="force"){
+    prompt=`Na telo z maso ${m} kg deluje sila ${F} N desno${hard?` in sila ${b} N levo`:""}. Drugih sil v vodoravni smeri ni. Izračunaj predznačen pospešek (desno je +).`;
+    answer=(F-(hard?b:0))/m;unit="m/s²";hint="Seštej sili s predznakoma in rezultanto deli z maso.";
+    steps=`ΣF = ${F}${hard?" − "+b:""} = ${F-(hard?b:0)} N. a = ΣF/m ≈ ${fmt(answer)} m/s².`;
+  }else if(key==="mass"){
+    const mass=hard?m+b/10:m;
+    prompt=hard?`Na telo deluje gravitacijska sila ${fmt(mass*g)} N. Kolikšna je masa telesa? Uporabi g = 9,81 m/s².`:`Kolikšna je gravitacijska sila na telo z maso ${m} kg pri g = 9,81 m/s²?`;
+    answer=hard?Number((mass*g).toFixed(3))/g:m*g;unit=hard?"kg":"N";hint="Povezava med težo in maso je Fg = mg.";
+    steps=hard?`m = Fg/g = ${fmt(mass*g)} / 9,81 ≈ ${fmt(answer)} kg.`:`Fg = ${m} · 9,81 = ${fmt(answer)} N.`;
+  }else if(key==="inertia"){
+    prompt=`Telo drsi s hitrostjo ${v} m/s. Rezultanta vseh sil je nič. ${hard?`Kolikšno pot opravi v ${n} s?`:`Kolikšna je velikost hitrosti po ${n} s?`}`;
+    answer=hard?v*n:v;unit=hard?"m":"m/s";hint="Prvi zakon: če je rezultanta nič, se hitrost ne spreminja.";
+    steps=`a = 0, zato v ostane ${v} m/s.`+(hard?` Pot s = vt = ${v} · ${n} = ${answer} m.`:"");
+  }else if(key==="static"){
+    const push=integer(1,Math.floor(mu*m*g)),limit=mu*m*g;
+    prompt=`Zaboj mase ${m} kg miruje na vodoravni podlagi. μₛ = ${fmt(mu)}, g = 9,81 m/s². ${hard?`Potiskamo ga s ${push} N, vendar se ne premakne. Kolikšna je trenutna velikost trenja?`:"Kolikšna je največja velikost statičnega trenja?"}`;
+    answer=hard?push:limit;unit="N";hint=hard?"Ker zaboj miruje, je rezultanta nič. Statično trenje ni nujno na zgornji meji.":"Na vodoravni podlagi je N = mg; mejo dobiš iz μₛN.";
+    steps=hard?`Trenje izravna potisk: |Fₜ| = ${push} N. To je pod mejo μₛmg ≈ ${fmt(limit)} N.`:`Največje trenje je μₛmg = ${fmt(mu)} · ${m} · 9,81 = ${fmt(limit)} N.`;
+  }else if(key==="kinetic"){
+    const friction=mu*m*g;
+    prompt=`Telo mase ${m} kg drsi desno po vodoravni podlagi. μₖ = ${fmt(mu)}, g = 9,81 m/s². ${hard?`Hkrati ga potiskamo desno s ${F} N. Izračunaj predznačen pospešek v tem trenutku (desno je +).`:"Kolikšna je velikost drsnega trenja?"}`;
+    answer=hard?(F-friction)/m:friction;unit=hard?"m/s²":"N";hint="Drsno trenje ima velikost μₖmg in kaže levo.";
+    steps=`|Fₜ| = μₖmg ≈ ${fmt(friction)} N.`+(hard?` a = (F − |Fₜ|)/m ≈ ${fmt(answer)} m/s².`:"");
+  }else if(key==="ramp"){
+    prompt=`Telo mase ${m} kg je na klancu z naklonom ${angle}°. Ni trenja ali potiska, g = 9,81 m/s². ${hard?"Kolikšna je velikost pospeška vzdolž klanca?":"Kolikšna je velikost normalne sile?"}`;
+    answer=hard?g*Math.sin(rad):m*g*Math.cos(rad);unit=hard?"m/s²":"N";hint=hard?"Vzdolžna komponenta teže ima velikost mg sin α.":"Pravokotna komponenta teže ima velikost mg cos α.";
+    steps=hard?`a = mg sin α/m = 9,81 sin ${angle}° ≈ ${fmt(answer)} m/s².`:`N = mg cos α = ${m} · 9,81 · cos ${angle}° ≈ ${fmt(answer)} N.`;
+  }else if(key==="pair"){
+    const A=m+35,B=A+2*n;
+    prompt=`Drsalec A z maso ${A} kg potiska drsalca B z maso ${B} kg s silo ${F} N. Zanemari trenje. ${hard?"Kolikšna je velikost pospeška A med odrivom?":"Kolikšna je velikost sile, s katero B deluje na A?"}`;
+    answer=hard?F/A:F;unit=hard?"m/s²":"N";hint="Sili med drsalcema sta enako veliki in nasprotni. Za pospešek A uporabi maso A.";
+    steps=`B deluje na A z enako veliko nasprotno silo ${F} N.`+(hard?` |aₐ| = ${F}/${A} ≈ ${fmt(answer)} m/s².`:"");
+  }else{
+    const a=integer(1,6),time=v/a;
+    prompt=`Vozilo mase ${m} kg se giblje s hitrostjo ${v} m/s. Nanj vzdolž gibanja deluje le zavorna sila ${m*a} N v nasprotni smeri. ${hard?"Kolikšna je pot do ustavitve?":"Koliko časa zavira do ustavitve?"}`;
+    answer=hard?v*time/2:time;unit=hard?"m":"s";hint="Iz sile in mase dobiš velikost pospeška. Na koncu je v = 0.";
+    steps=`|a| = ${m*a}/${m} = ${a} m/s². t = ${v}/${a} ≈ ${fmt(time)} s.`+(hard?` s = v₀t/2 ≈ ${fmt(answer)} m.`:"");
+  }
+  return {key,prompt,answer,unit,hint,steps};
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Dinamika · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+setPreset("static");setupPair();renderMission();generate();
+</script>
+</body>
+</html>
