@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivna kemija: molska masa, pretvorbe, stehiometrija, omejujoči reaktant in izkoristek reakcije.">
+<title>Kemijski računi – Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.kc{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.kc *{box-sizing:border-box}.kc [hidden]{display:none!important}
+.kc .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.kc header.wrap{padding:25px 0 22px}.kc a{color:var(--accent);font-weight:750}
+.kc .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.kc .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.kc h1,.kc h2,.kc h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.kc h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.kc h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.kc h3{font-size:1.15rem;margin:0 0 9px}.kc p{margin:0 0 13px}.kc .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.kc .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.kc svg{display:block;width:100%;height:auto;overflow:visible}
+.kc nav,.kc .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.kc nav{margin:12px 0 24px}
+.kc button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.kc button:hover{background:var(--purple)}.kc button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.kc button[aria-pressed=true],.kc .primary{background:var(--yellow)}
+.kc button:disabled{opacity:.55;cursor:default}.kc :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.kc .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.kc .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.kc .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.kc .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.kc label{display:block;font-weight:700;margin:12px 0 4px}.kc label:first-child{margin-top:0}
+.kc input:not([type=checkbox]),.kc select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.kc input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.kc input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.kc output{color:var(--accent);font-weight:800}
+.kc .fine{font-size:.88rem;color:#4d5871}.kc .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.kc .lab-visual,.kc .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.kc .graph{cursor:crosshair}.kc .graph-label{font-weight:800;margin:7px 0 0}
+.kc .graph-group{min-width:0}.kc .graph-group p{margin:7px 0 0}
+.kc .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.kc .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.kc .metric:nth-child(2n){background:var(--mint)}.kc .metric strong{display:block;font-size:1.06rem}
+.kc .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.kc .lav{background:var(--purple)}.kc .accent-card{background:var(--yellow)}.kc .question{font-weight:700;font-size:1.06rem}
+.kc .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.kc details{margin:10px 0}.kc summary{cursor:pointer;font-weight:750}
+.kc .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.kc .question-card .row{margin-top:9px}.kc .question-card label{margin-top:9px}
+.kc .lesson{scroll-margin:15px}.kc .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.kc footer{padding:8px 0 28px}.kc .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.kc .grid,.kc .hero{grid-template-columns:1fr}.kc .hero-art{display:none}.kc .three{grid-template-columns:1fr}.kc .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.kc .wrap{width:calc(100% - 24px)}.kc .two{grid-template-columns:1fr}.kc nav button{flex:1 1 40%}.kc .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.kc{background:#fff;color:#000}body.kc.print-sheet > :not(#paper){display:none!important}body.kc.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.kc .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.kc .graph{cursor:default}
+.kc .subnote{margin-top:12px}
+.kc .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.kc .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.kc .graph-row{grid-template-columns:1fr}.kc .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kc h1{font-size:clamp(44px,7vw,78px)}
+.kc .lab-visual{margin:10px 0 14px}
+.kc .lab-grid{align-items:start}
+.kc .plot-note{margin-top:10px}
+.kc .topic-buttons{margin:12px 0 24px}
+.kc .theory-grid .note{margin:0}
+.kc .theory-grid{margin:14px 0}
+.kc .mono{font-variant-numeric:tabular-nums}
+.kc .unit-table{border-collapse:collapse;width:100%;margin:12px 0}
+.kc .unit-table th,.kc .unit-table td{text-align:left;border-bottom:1px solid #bbc7ce;padding:6px}
+.kc .focus-box{margin-top:12px}
+.kc .hero h1{font-size:clamp(39px,6.4vw,76px);text-wrap:balance}
+</style>
+</head>
+<body class="kc">
+<header class="wrap">
+    <a href="../index.html">← Vsa orodja</a>
+    <div class="hero">
+        <div><span class="badge">SIDEBIT · KEMIJA</span><h1>Kemijski računi</h1>
+        <p class="lead">Od gramov do molov in od enačbe do mase produkta. Na grafih preveri, katerega reaktanta zmanjka in zakaj dejanski izkoristek ni vedno 100 %.</p></div>
+        <svg class="hero-art" viewBox="0 0 330 145" role="img" aria-label="Pretvorba med maso, moli in številom delcev">
+            <g stroke="#22253a" stroke-width="2"><rect x="14" y="48" width="82" height="51" rx="12" fill="#ffe38b"/><rect x="123" y="48" width="82" height="51" rx="12" fill="#c5f0e2"/><rect x="232" y="48" width="82" height="51" rx="12" fill="#e8ddff"/></g>
+            <g fill="#22253a" font-size="19" font-weight="700" text-anchor="middle"><text x="55" y="80">g</text><text x="164" y="80">mol</text><text x="273" y="80">delci</text></g>
+            <path d="M98 74h22m-7-6 7 6-7 6m94-6h22m-7-6 7 6-7 6" fill="none" stroke="#5634aa" stroke-width="3"/>
+        </svg>
+    </div>
+    <nav aria-label="Poglavja">
+        <button type="button" data-tab="lab" aria-pressed="true">Laboratorij</button>
+        <button type="button" data-tab="challenge" aria-pressed="false">Učni izzivi</button>
+        <button type="button" data-tab="practice" aria-pressed="false">Generator nalog</button>
+        <button type="button" data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+    </nav>
+</header>
+<main class="wrap">
+<section id="lab">
+    <div class="card lav">
+        <span class="chip">Pet interaktivnih poskusov</span><h2>Izberi poskus</h2>
+        <div id="lab-buttons" class="row topic-buttons"></div>
+    </div>
+    <div class="grid lab-grid">
+        <div class="card">
+            <span class="chip">01 · Nastavi</span><h2 id="lab-title"></h2>
+            <p id="lab-intro"></p><div id="controls"></div>
+            <div class="row small-gap"><button type="button" id="restore">Ponastavi poskus</button></div>
+        </div>
+        <div class="card">
+            <span class="chip">02 · Opazuj</span><h2 id="plot-title"></h2>
+            <svg id="plot" class="lab-visual" viewBox="0 0 550 285" role="img" aria-label="Vizualni prikaz poskusa"></svg>
+            <p id="plot-note" class="fine plot-note"></p>
+            <div id="values" class="readouts mono"></div><p id="conclusion" class="focus-box"></p>
+        </div>
+    </div>
+</section>
+<section id="challenge" hidden>
+    <div class="card lav">
+        <span class="chip">Najprej napovej</span><h2>Učni izzivi</h2>
+        <label for="mission">Izberi izziv</label><select id="mission"></select>
+        <div id="mission-body" class="small-gap"></div>
+        <p id="mission-feedback" class="feedback" role="status"></p>
+        <button type="button" id="mission-open">Odpri poskus</button>
+    </div>
+</section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden>
+ <div class="card">
+  <h2>Od formule do rezultata</h2>
+  <p>Pri kemijskem računu si pomagaj s potjo <strong>masa → množina snovi → molsko razmerje → iskana količina</strong>. Za ponovitev koeficientov odpri <a href="kemijske_reakcije.html">Kemijske reakcije</a>.</p>
+  <div class="two theory-grid">
+   <article class="note"><h3>1 · Mol in Avogadrova konstanta</h3>
+    <p class="formula">N = nN<sub>A</sub> &nbsp; · &nbsp; N<sub>A</sub> = 6,02214076 × 10²³ mol⁻¹</p>
+    <p>En mol vsebuje točno določeno število osnovnih entitet. Povej, kaj šteješ: atome, molekule, ione ali formulske enote. En mol O₂ vsebuje en mol molekul, a dva mola kisikovih atomov. Pri ionski spojini, kot je NaCl, štejemo formulske enote.</p>
+   </article>
+   <article class="note lav"><h3>2 · Molska masa in masni delež</h3>
+    <p class="formula">M = Σ aᵢMᵢ &nbsp; · &nbsp; wᵢ = aᵢMᵢ/M</p>
+    <p>aᵢ je število atomov izbranega elementa v eni molekuli ali formulski enoti. V Ca(OH)₂ sta dva O in dva H. Za M uporabljamo g/mol, masni delež pa je brez enote. Za masni odstotek ga pomnoži s 100. Pri računanju uporabi enake atomske mase skozi celoten postopek.</p>
+   </article>
+   <article class="note lav"><h3>3 · Masa, moli in delci</h3>
+    <p class="formula">n = m/M &nbsp; · &nbsp; m = nM &nbsp; · &nbsp; n = N/N<sub>A</sub></p>
+    <p>Pri m v gramih in M v g/mol dobiš n v molih. Če je podana masa v kilogramih, jo najprej pretvori v grame. Ne zamenjaj oznak n za množino in N za število delcev.</p>
+   </article>
+   <article class="note"><h3>4 · Stehiometrija</h3>
+    <p class="formula">n(produkta) = n(reaktanta) · ν(produkta)/ν(reaktanta)</p>
+    <p>Najprej uredi reakcijsko enačbo. Koeficienti povedo razmerje množin snovi, ne mas. Pri znani masi reaktanta jo najprej pretvori v mole, nato uporabi razmerje in po potrebi pretvori nazaj v grame. Če je podana samo količina enega reaktanta, mora naloga pojasniti, ali so drugi v presežku.</p>
+   </article>
+   <article class="note"><h3>5 · Omejujoči reaktant</h3>
+    <p class="formula">ξ<sub>max</sub> = min(n₁/ν₁, n₂/ν₂, …)</p>
+    <p>Za vsak reaktant deli razpoložljivo množino z njegovim koeficientom. Najmanjši količnik določi največji možni obseg reakcije ξ. Produkt nastane v množini ν<sub>p</sub>ξ, preostanek reaktanta pa je nᵢ − νᵢξ. Enaka količnika pomenita, da noben od dveh reaktantov ni v presežku. Molov pri tem ne zaokrožuj na cela števila.</p>
+   </article>
+   <article class="note lav"><h3>6 · Teoretični in dejanski izkoristek</h3>
+    <p class="formula">Izkoristek (%) = 100 · m<sub>dejanska</sub>/m<sub>teoretična</sub></p>
+    <p>Teoretična masa izhaja iz omejujočega reaktanta. Dejanski izplen je lahko manjši zaradi izgub pri ločevanju, stranskih reakcij ali nepopolne pretvorbe. Izračun nad 100 % pri čistem, pravilno stehtanem produktu ni smiseln; preveri vlago, nečistoče ali račun. Če je teoretična masa nič, odstotek ni definiran.</p>
+   </article>
+  </div>
+  <details><summary>Rešen primer: iz gramov v mole in molekule</summary><p>V 36,03 g vode je pri M = 18,015 g/mol 2,00 mol H₂O oziroma približno 1,2044 × 10²⁴ molekul.</p></details>
+  <details><summary>Rešen primer: omejujoči reaktant in izkoristek</summary><p>Pri N₂ + 3 H₂ → 2 NH₃ imamo 2 mol N₂ in 3 mol H₂. Primerjamo 2/1 = 2 in 3/3 = 1, zato H₂ omejuje reakcijo. Nastaneta teoretično 2 mol NH₃ oziroma približno 34,06 g. Če izoliramo 27,25 g, je izkoristek približno 80 %.</p></details>
+ </div>
+</section>
+</main>
+<footer class="wrap"><p>Sidebit · Kemija · Kemijski računi</p></footer>
+<div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id),NA=6.02214076;
+const format=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:4,useGrouping:false});
+const fmt=x=>format.format(x);
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const C="#5634aa", B="#00806a", Y="#ffe38b", INK="#22253a";
+const line=(x,y,X,Y,color=INK,width=2,dash="")=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${color}" stroke-width="${width}" ${dash?'stroke-dasharray="'+dash+'"':""}/>`;
+const text=(x,y,s,anchor="middle")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="#364058" font-size="14" font-weight="650">${s}</text>`;
+const disk=(x,y,r=5,fill=Y)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${INK}" stroke-width="2"/>`;
+const rect=(x,y,w,h,fill,stroke=INK)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+function bars(data,unit,offset=0){
+    const max=Math.max(1,...data.map(([,v])=>v));
+    return data.map(([label,value,color],i)=>{
+        const y=41+i*73+offset;
+        return text(45,y,label+" · "+fmt(value)+" "+unit,"start")+rect(45,y+12,460,18,"#e9edf4","#dce3ef")+
+            (value>0 ? rect(45,y+12,460*value/max,18,color) : "");
+    }).join("");
+}
+const metric=(name,v,unit)=>[name,fmt(v)+(unit?" "+unit:"")];
+const slider=(id,label,min,max,step,value,unit="")=>({id,label,min,max,step,value,unit});
+const select=(id,label,value,options)=>({id,label,value,options});
+
+
+
+
+
+
+
+const sub=s=>String(s).replace(/\d/g,d=>"₀₁₂₃₄₅₆₇₈₉"[Number(d)]);
+function formulaCounts(formula){
+    const tokens=formula.match(/[A-Z][a-z]?|\d+|\(|\)/g), stack=[{}];
+    for(let i=0;i<tokens.length;i++){
+        const t=tokens[i];
+        if(t==="("){stack.push({});continue;}
+        const current=t===")"?stack.pop():{[t]:1}, target=stack.at(-1);
+        const mult=/^\d+$/.test(tokens[i+1]||"")?Number(tokens[++i]):1;
+        for(const [key,n] of Object.entries(current))target[key]=(target[key]||0)+n*mult;
+    }
+    return stack[0];
+}
+function display(lines){
+    return lines.map(([str,y,col])=>`<text x="275" y="${y}" text-anchor="middle" fill="${col||INK}" font-size="19" font-weight="700">${str}</text>`).join("");
+}
+
+const masses={H:1.008,C:12.011,N:14.007,O:15.999,Na:22.990,Mg:24.305,Al:26.982,S:32.06,Cl:35.45,Ca:40.078,Fe:55.845};
+const compoundList=["H2O","CO2","NaCl","Ca(OH)2","Al2(SO4)3","NH3","CH4","O2","N2","H2","MgO","CaCO3"];
+const M=f=>Object.entries(formulaCounts(f)).reduce((v,[a,k])=>v+masses[a]*k,0);
+const choices=compoundList.map(f=>[f,sub(f)]);
+const rx={
+ water:{label:"Nastanek vode",a:"H2",b:"O2",p:"H2O",c:[2,1,2]},
+ ammonia:{label:"Nastanek amonijaka",a:"N2",b:"H2",p:"NH3",c:[1,3,2]},
+ magnesium:{label:"Nastanek magnezijevega oksida",a:"Mg",b:"O2",p:"MgO",c:[2,1,2]},
+ iron:{label:"Nastanek železovega(III) oksida",a:"Fe",b:"O2",p:"Fe2O3",c:[4,3,2]}
+};
+const eq=r=>[r.a,r.b,r.p].map((f,i)=>(r.c[i]===1?"":r.c[i]+" ")+sub(f)).join("|").replace("|"," + ").replace("|"," → ");
+const rxField=()=>select("r","Reakcija","ammonia",Object.entries(rx).map(([id,r])=>[id,r.label]));
+const pair=(name,v,unit="")=>metric(name,v,unit);
+const isFormulaUnit=f=>["NaCl","Ca(OH)2","Al2(SO4)3","MgO","CaCO3"].includes(f);
+const limit=(r,n1,n2)=>{
+    const q1=n1/r.c[0],q2=n2/r.c[1],extent=Math.min(q1,q2);
+    return {extent,q1,q2,product:r.c[2]*extent,left1:Math.max(0,n1-r.c[0]*extent),left2:Math.max(0,n2-r.c[1]*extent),key:Math.abs(q1-q2)<1e-10?"both":q1<q2?"a":"b"};
+};
+const yieldPct=(a,b)=>b>0?100*a/b:null;
+const lab={
+ molar:{
+    name:"Molska masa",intro:"Izberi formulo. Vsaka vrstica pokaže, koliko posamezni element prispeva k molski masi spojine.",
+    fields:[select("f","Snov","Al2(SO4)3",choices)],title:"Preštej atome in seštej prispevke",
+    show({f}){
+        const rows=Object.entries(formulaCounts(f)),total=M(f);
+        const svg=display([[sub(f),35,C]])+text(100,78,"Element")+text(226,78,"Atomi")+text(370,78,"Prispevek (g/mol)")+rows.map(([a,n],i)=>{
+            const y=96+i*41;return rect(52,y,446,32,i%2?"#e9e0ff":"#d9f3e8","#c4cddb")+text(100,y+21,a)+text(226,y+21,n)+text(370,y+21,fmt(n*masses[a]));
+        }).join("");
+        return {svg,note:"Zunanji indeks za oklepajem pomnoži vse atome v oklepaju. Uporabljene so zaokrožene atomske mase.",values:[pair("Molska masa",total,"g/mol"),...rows.map(([a,n])=>pair("Masni delež "+a,100*n*masses[a]/total,"%"))],
+            conclusion:"Molska masa je vsota prispevkov. Največ atomov določenega elementa še ne pomeni največjega masnega deleža."};
+    }
+ },
+ convert:{
+    name:"Grami, moli in delci",intro:"Izberi snov in podatek, s katerim začneš. Poskus pretvori še v preostali količini.",
+    fields:[select("f","Snov","H2O",choices),select("mode","Podani podatek","mass",[["mass","Masa v gramih"],["mol","Množina v molih"],["count","Število entitet v enotah 10²³"]]),
+        {...slider("m","Masa",0,200,.01,36.03,"g"),hide:s=>s.mode!=="mass"},{...slider("n","Množina",0,10,.01,2,"mol"),hide:s=>s.mode!=="mol"},{...slider("p","Število entitet / 10²³",0,60,.01,12.04),hide:s=>s.mode!=="count"}],title:"Tri količine, isti vzorec",
+    show({f,mode,m,n,p}){
+        const molar=M(f),amount=mode==="mass"?m/molar:mode==="mol"?n:p/NA;
+        const countLabel=isFormulaUnit(f)?"formulskih enot":"molekul";
+        return {svg:display([[sub(f)+" · M = "+fmt(molar)+" g/mol",46,C],[fmt(amount*molar)+" g  ↔  "+fmt(amount)+" mol",120,INK],[fmt(amount*NA)+" × 10²³ "+countLabel,184,B]]),
+            note:"N = nNₐ. Avogadrova konstanta je 6,02214076 × 10²³ mol⁻¹.",values:[pair("Masa",amount*molar,"g"),pair("Množina",amount,"mol"),["Število "+countLabel,fmt(amount*NA)+" × 10²³"]],conclusion:"Pri ionski spojini govorimo o formulskih enotah. Če štejemo atome ali ione, upoštevamo še indekse."};
+    }
+ },
+ stoich:{
+    name:"Stehiometrija: masa → masa",intro:"Določi maso prvega reaktanta. Drugi je v presežku; spremljaj pot od gramov do gramov produkta.",
+    fields:[rxField(),slider("m","Masa prvega reaktanta",0,150,.001,28,"g")],title:"Pretvorba prek molskega razmerja",
+    show({r,m}){
+        const v=rx[r],a=m/M(v.a),b=a*v.c[2]/v.c[0],p=b*M(v.p);
+        return {svg:display([[eq(v),45,C],[fmt(m)+" g "+sub(v.a)+"  →  "+fmt(a)+" mol "+sub(v.a),102],[fmt(a)+" mol "+sub(v.a)+"  →  "+fmt(b)+" mol "+sub(v.p),158],[fmt(b)+" mol "+sub(v.p)+"  →  "+fmt(p)+" g "+sub(v.p),214,B]]),
+            note:"Podana masa je čisti reaktant. Model predpostavlja popolno porabo prvega reaktanta.",values:[pair("M prvega reaktanta",M(v.a),"g/mol"),pair("M produkta",M(v.p),"g/mol"),["Molsko razmerje produkt : reaktant",v.c[2]+" : "+v.c[0]],pair("Teoretična masa produkta",p,"g")],conclusion:"Koeficiente uporabi pri molih. Za maso produkta nato pomnoži z njegovo molsko maso."};
+    }
+ },
+ limit:{
+    name:"Omejujoči reaktant",intro:"Spreminjaj količini reaktantov, dokler ne preklopiš med omejujočim reaktantom in natančnim razmerjem.",
+    fields:[rxField(),slider("a","Množina prvega reaktanta",0,10,.1,2,"mol"),slider("b","Množina drugega reaktanta",0,10,.1,3,"mol")],title:"Primerjaj razpoložljivo množino na koeficient",
+    show({r,a,b}){
+        const v=rx[r],u=limit(v,a,b),label=u.key==="both"?"Noben ni v presežku":sub(v[u.key]);
+        return {svg:display([[eq(v),39,C]])+bars([[sub(v.a)+" · n/ν",u.q1,Y],[sub(v.b)+" · n/ν",u.q2,"#c5f0e2"]],"mol",40),
+            note:"Krajši stolpec določi največji obseg reakcije. Pri ničelnem obsegu produkt ne nastane.",values:[["Omejujoči reaktant",u.extent===0?"Reakcija ni mogoča":label],pair("Preostanek "+sub(v.a),u.left1,"mol"),pair("Preostanek "+sub(v.b),u.left2,"mol"),pair("Nastalo "+sub(v.p),u.product,"mol"),pair("Teoretična masa produkta",u.product*M(v.p),"g")],
+            conclusion:u.extent===0?"Vsaj en reaktant manjka, zato reakcija ne more dati produkta.":u.key==="both"?"Količnika sta enaka; oba reaktanta se porabita v istem obsegu reakcije.":"Reakcijo omejuje "+label+". Količnik n/ν je manjši od količnika za drugi reaktant."};
+    }
+ },
+ yield:{
+    name:"Izkoristek reakcije",intro:"Primerjaj dejansko in teoretično maso produkta. Preveri tudi, kaj pomeni rezultat nad 100 %.",
+    fields:[slider("t","Teoretična masa produkta",0,100,.1,34.1,"g"),slider("a","Dejanska masa produkta",0,120,.1,27.3,"g")],title:"Kolikšen del teoretičnega produkta smo dobili?",
+    show({t,a}){
+        const y=yieldPct(a,t);
+        return {svg:bars([["Teoretična masa",t,Y],["Dejanska masa",a,"#c5f0e2"]],"g",40),
+            note:"Primerjaj maso istega produkta. Odstotek nad 100 % je znak, da je treba preveriti vhodne podatke ali čistost vzorca.",
+            values:[["Izkoristek",y===null?"Ni definiran":fmt(y)+" %"],pair("Dejanska minus teoretična masa",a-t,"g")],
+            conclusion:y===null?"Pri teoretični masi nič ne moreš izračunati odstotka.":y>100?"Navidezni izkoristek presega 100 %. Preveri vlago, nečistoče ali izračun.":"Izkoristek je razmerje med dejansko in teoretično maso, pomnoženo s 100."};
+    }
+ }
+};
+const settings=Object.fromEntries(Object.entries(lab).map(([key,s])=>[key,Object.fromEntries(s.fields.map(f=>[f.id,f.value]))]));
+const labButtons={};
+let active="temperature";
+function renderLab(){
+    const l=lab[active], s=settings[active], r=l.show(s);
+    for(const f of l.fields){
+        if(f.hide)$("field-"+f.id).hidden=f.hide(s);
+        if(!f.options)$("out-"+f.id).textContent=fmt(s[f.id])+(f.unit?" "+f.unit:"");
+    }
+    $("plot-title").textContent=l.title;
+    $("plot").setAttribute("aria-label",l.title);
+    $("plot").innerHTML=r.svg;
+    $("plot-note").textContent=r.note;
+    $("conclusion").textContent=r.conclusion;
+    $("values").innerHTML=r.values.map(([name,value])=>`<div class="metric">${name}<strong>${value}</strong></div>`).join("");
+}
+function fillSelect(el,options){
+    el.replaceChildren(...options.map(([id,name])=>{const o=document.createElement("option");o.value=id;o.textContent=name;return o;}));
+}
+function selectLab(key,focus=false){
+    active=key;
+    for(const [id,button] of Object.entries(labButtons))button.setAttribute("aria-pressed",String(id===key));
+    const l=lab[key],s=settings[key],controls=$("controls");
+    $("lab-title").textContent=l.name;
+    $("lab-intro").textContent=l.intro;
+    controls.replaceChildren();
+    for(const f of l.fields){
+        const row=document.createElement("div"), label=document.createElement("label");
+        const input=document.createElement(f.options?"select":"input");
+        row.id="field-"+f.id;input.id="control-"+f.id;label.htmlFor=input.id;label.textContent=f.label;
+        if(f.options)fillSelect(input,f.options);
+        else{
+            input.type="range";input.min=f.min;input.max=f.max;input.step=f.step;
+            const out=document.createElement("output");out.id="out-"+f.id;label.append(": ",out);
+        }
+        input.value=s[f.id];
+        input.oninput=()=>{s[f.id]=f.options?input.value:Number(input.value);renderLab();};
+        row.append(label,input);controls.append(row);
+    }
+    renderLab();
+    if(focus)$("control-"+l.fields[0].id).focus();
+}
+for(const [key,item] of Object.entries(lab)){
+    const button=document.createElement("button");button.type="button";button.textContent=item.name;
+    button.onclick=()=>selectLab(key,true);
+    $("lab-buttons").append(button);labButtons[key]=button;
+}
+$("restore").onclick=()=>{
+    Object.assign(settings[active],Object.fromEntries(lab[active].fields.map(f=>[f.id,f.value])));
+    selectLab(active,true);
+};
+function tab(id){
+    for(const section of document.querySelectorAll("main > section"))section.hidden=section.id!==id;
+    for(const button of document.querySelectorAll("[data-tab]"))button.setAttribute("aria-pressed",String(button.dataset.tab===id));
+}
+for(const button of document.querySelectorAll("[data-tab]"))button.onclick=()=>tab(button.dataset.tab);
+const missions=[
+ {name:"Zunanji indeks",key:"molar",start:{f:"Ca(OH)2"},q:"Koliko atomov H vsebuje ena formulska enota Ca(OH)₂?",a:["Enega","Dva","Štiri"],i:1,why:"Zunanja dvojka pomnoži celotno skupino OH."},
+ {name:"Mol molekul ali atomov?",key:"convert",start:{f:"O2",mode:"mol",n:1},q:"Koliko molov atomov O je v 1 molu molekul O₂?",a:["1 mol","2 mol","0,5 mol"],i:1,why:"V vsaki molekuli O₂ sta dva atoma kisika."},
+ {name:"Koeficienti pri vodi",key:"stoich",start:{r:"water",m:2.016},q:"V reakciji 2 H₂ + O₂ → 2 H₂O je kisik v presežku. Koliko molov vode nastane iz 1 mola H₂?",a:["0,5 mol","1 mol","2 mol"],i:1,why:"Koeficienta H₂ in H₂O sta oba 2, zato je razmerje 1 : 1."},
+ {name:"Katerega zmanjka?",key:"limit",start:{r:"ammonia",a:2,b:3},q:"Pri N₂ + 3 H₂ → 2 NH₃ imamo 2 mol N₂ in 3 mol H₂. Kaj omejuje reakcijo?",a:["N₂","H₂","Noben"],i:1,why:"Količnik za N₂ je 2/1 = 2, za H₂ pa 3/3 = 1. Manjši količnik omejuje obseg reakcije."},
+ {name:"Nad 100 %",key:"yield",start:{t:20,a:21},q:"Teoretično pričakujemo 20 g, tehtanje pa pokaže 21 g. Kaj najprej preverimo?",a:["Čistost in suhost vzorca ter račun","Ali smo presegli zakon o ohranitvi mase","Ali je 21/20 manjše od 1"],i:0,why:"Navidezni rezultat je 105 %. Vzorec je lahko moker ali onesnažen, mogoč pa je tudi napačen račun."}
+];
+fillSelect($("mission"),missions.map((m,i)=>[i,m.name]));
+function currentMission(){return missions[Number($("mission").value||0)];}
+function renderMission(){
+    const m=currentMission(), p=document.createElement("p"), group=document.createElement("div");
+    p.className="question";p.textContent=m.q;group.className="row";
+    $("mission-body").replaceChildren(p,group);$("mission-feedback").textContent="";
+    m.a.forEach((answer,i)=>{
+        const button=document.createElement("button");button.type="button";button.textContent=answer;button.setAttribute("aria-pressed","false");
+        button.onclick=()=>{
+            for(const other of group.children)other.setAttribute("aria-pressed",String(other===button));
+            $("mission-feedback").textContent=i===m.i?"Pravilno. "+m.why:"Poskusi še enkrat ali preveri v poskusu.";
+        };
+        group.append(button);
+    });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{
+    const m=currentMission();Object.assign(settings[m.key],Object.fromEntries(lab[m.key].fields.map(f=>[f.id,f.value])),m.start);tab("lab");selectLab(m.key,true);
+};
+
+
+
+
+
+
+const topics={molar:"Molska masa in masni delež",convert:"Pretvarjanje količin",stoich:"Stehiometrija",limit:"Omejujoči reaktant",yield:"Izkoristek reakcije"};
+fillSelect($("topic"),[["all","Mešano"],...Object.entries(topics)]);
+const pick=a=>a[integer(0,a.length-1)];
+function makeTask(key,level){
+ const hard=level===2,k=integer(2,80),r=pick(Object.values(rx)),f=pick(compoundList),amount=integer(3,25)/10;
+ const q=(prompt,answer,unit,hint,steps)=>({key,prompt,answer,unit,hint,steps:steps+" ≈ "+fmt(answer)+" "+unit+"."});
+ if(key==="molar"){
+    const data=formulaCounts(f),parts=Object.entries(data),a=pick(Object.keys(data)),terms=parts.map(([e,n])=>n+" · "+fmt(masses[e])).join(" + ");
+    const given=parts.map(([e])=>e+": "+fmt(masses[e])).join("; ");
+    return hard
+        ?q("Izračunaj masni odstotek elementa "+a+" v "+sub(f)+". Uporabi atomske molske mase v g/mol ("+given+").",100*data[a]*masses[a]/M(f),"%","Prispevek elementa deli s skupno molsko maso in pomnoži s 100.","M = "+fmt(M(f))+" g/mol; w = 100 · "+data[a]+" · "+fmt(masses[a])+"/"+fmt(M(f)))
+        :q("Kolikšna je molska masa "+sub(f)+"? Uporabi atomske molske mase v g/mol ("+given+").",M(f),"g/mol","Število atomov vsakega elementa pomnoži z njegovo molsko maso.","M = "+terms);
+ }
+ if(key==="convert"){
+    const target=isFormulaUnit(f)?"formulskih enot":"molekul";
+    return hard
+        ?q("Koliko gramov ima "+fmt(amount)+" × 10²³ "+target+" "+sub(f)+"? Uporabi Nₐ = 6,02214076 × 10²³ mol⁻¹ in M = "+fmt(M(f))+" g/mol.",amount*M(f)/NA,"g","Število entitet deli z Nₐ, nato pomnoži z molsko maso.","m = ("+fmt(amount)+"/6,02214076) · "+fmt(M(f)))
+        :q("Koliko molov "+sub(f)+" vsebuje "+k+" g vzorca pri M = "+fmt(M(f))+" g/mol?",k/M(f),"mol","Maso v gramih deli z molsko maso v g/mol.","n = "+k+"/"+fmt(M(f)));
+ }
+ if(key==="stoich"){
+    const factor=r.c[2]/r.c[0], m=k*factor*M(r.p)/M(r.a);
+    return hard
+        ?q("Pri "+eq(r)+" je "+sub(r.b)+" v presežku. Koliko gramov "+sub(r.p)+" teoretično nastane iz "+k+" g "+sub(r.a)+"? M reaktanta = "+fmt(M(r.a))+" in M produkta = "+fmt(M(r.p))+" g/mol.",m,"g","Grame pretvori v mole, uporabi koeficiente in pretvori nazaj.","m = ("+k+"/"+fmt(M(r.a))+") · ("+r.c[2]+"/"+r.c[0]+") · "+fmt(M(r.p)))
+        :q("Pri "+eq(r)+" je "+sub(r.b)+" v presežku. Koliko molov "+sub(r.p)+" nastane iz "+fmt(amount)+" mol "+sub(r.a)+"?",amount*factor,"mol","Množino pomnoži z razmerjem koeficientov produkt : reaktant.","n = "+fmt(amount)+" · "+r.c[2]+"/"+r.c[0]);
+ }
+ if(key==="limit"){
+    const b=integer(1,40)/10,x=limit(r,amount,b);
+    const base="Za "+eq(r)+" imamo "+fmt(amount)+" mol "+sub(r.a)+" in "+fmt(b)+" mol "+sub(r.b)+". ";
+    return hard
+        ?q(base+"Koliko molov prvega reaktanta ostane po največjem možnem obsegu reakcije?",x.left1,"mol","Primerjaj n/ν. Manjši količnik določi obseg; z njim izračunaj porabljeno množino.","n ostanka = "+fmt(amount)+" − "+r.c[0]+" · min("+fmt(amount)+"/"+r.c[0]+", "+fmt(b)+"/"+r.c[1]+")")
+        :q(base+"Koliko molov produkta lahko teoretično nastane?",x.product,"mol","Manjši količnik n/ν pomnoži s koeficientom produkta.","n produkta = "+r.c[2]+" · min("+fmt(amount)+"/"+r.c[0]+", "+fmt(b)+"/"+r.c[1]+")");
+ }
+ if(key==="yield"){
+    const p=integer(40,98),actual=k*p/100;
+    return hard
+        ?q("Dejansko pridobimo "+fmt(actual)+" g produkta. Izkoristek je "+p+" %. Kolikšna je teoretična masa?",k,"g","Dejansko maso deli z izkoristkom kot decimalnim številom.","m teor. = "+fmt(actual)+"/("+p+"/100)")
+        :q("Teoretično pričakujemo "+k+" g, dejansko pa pridobimo "+fmt(actual)+" g. Izračunaj izkoristek.",yieldPct(actual,k),"%","Dejansko maso deli s teoretično in pomnoži s 100.","izkoristek = 100 · "+fmt(actual)+"/"+k);
+ }
+ throw new Error("Neznana tema.");
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti. Dovoljeno je manjše odstopanje zaradi zaokroževanja konstant.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001 + Math.abs(task.answer)*0.00006){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Kemijski računi · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+selectLab("molar");
+renderMission();
+generate();
+</script>
+</body>
+</html>
