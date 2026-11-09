@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Nihanje vzmeti, matematično nihalo, dušenje in resonanca. Interaktivni poskusi, razlage in generator nalog.">
+<title>Nihanje – Sidebit | Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.ni{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.ni *{box-sizing:border-box}.ni [hidden]{display:none!important}
+.ni .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.ni header.wrap{padding:25px 0 22px}.ni a{color:var(--accent);font-weight:750}
+.ni .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.ni .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.ni h1,.ni h2,.ni h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.ni h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.ni h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.ni h3{font-size:1.15rem;margin:0 0 9px}.ni p{margin:0 0 13px}.ni .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.ni .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.ni svg{display:block;width:100%;height:auto;overflow:visible}
+.ni nav,.ni .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.ni nav{margin:12px 0 24px}
+.ni button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.ni button:hover{background:var(--purple)}.ni button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.ni button[aria-pressed=true],.ni .primary{background:var(--yellow)}
+.ni button:disabled{opacity:.55;cursor:default}.ni :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.ni .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.ni .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.ni .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.ni .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.ni label{display:block;font-weight:700;margin:12px 0 4px}.ni label:first-child{margin-top:0}
+.ni input:not([type=checkbox]),.ni select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.ni input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.ni input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.ni output{color:var(--accent);font-weight:800}
+.ni .fine{font-size:.88rem;color:#4d5871}.ni .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.ni .lab-visual,.ni .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.ni .graph{cursor:crosshair}.ni .graph-label{font-weight:800;margin:7px 0 0}
+.ni .graph-group{min-width:0}.ni .graph-group p{margin:7px 0 0}
+.ni .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.ni .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.ni .metric:nth-child(2n){background:var(--mint)}.ni .metric strong{display:block;font-size:1.06rem}
+.ni .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.ni .lav{background:var(--purple)}.ni .accent-card{background:var(--yellow)}.ni .question{font-weight:700;font-size:1.06rem}
+.ni .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.ni details{margin:10px 0}.ni summary{cursor:pointer;font-weight:750}
+.ni .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.ni .question-card .row{margin-top:9px}.ni .question-card label{margin-top:9px}
+.ni .lesson{scroll-margin:15px}.ni .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.ni footer{padding:8px 0 28px}.ni .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.ni .grid,.ni .hero{grid-template-columns:1fr}.ni .hero-art{display:none}.ni .three{grid-template-columns:1fr}.ni .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.ni .wrap{width:calc(100% - 24px)}.ni .two{grid-template-columns:1fr}.ni nav button{flex:1 1 40%}.ni .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.ni{background:#fff;color:#000}body.ni.print-sheet > :not(#paper){display:none!important}body.ni.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.ni .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.ni .graph{cursor:default}
+.ni .subnote{margin-top:12px}
+.ni .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ni .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.ni .graph-row{grid-template-columns:1fr}.ni .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style></head>
+<body class="ni">
+<header class="wrap"><a href="../index.html">← Vsa orodja</a>
+<div class="hero"><div><span class="badge">SIDEBIT · FIZIKA</span><h1>Nihanje</h1><p class="lead">Zakaj se nihalo vrača v ravnovesje? Kdaj nihanje zamre in zakaj pravilen ritem potiskanja poveča amplitudo? Nastavi poskus in poišči odgovor na grafu.</p></div>
+<svg class="hero-art" viewBox="0 0 310 140" role="img" aria-label="Nihalo in sinusni graf"><path d="M36 26h120m-60 0v93" stroke="#8794a8" stroke-width="2" stroke-dasharray="4 4"/><path d="M96 26l41 74" stroke="#22253a" stroke-width="3"/><circle cx="137" cy="100" r="15" fill="#ffe38b" stroke="#22253a" stroke-width="3"/><path d="M163 81h128m-117-46v90" stroke="#8794a8" stroke-width="2"/><path d="M174 81q14-55 29 0t29 0t29 0t29 0" fill="none" stroke="#5634aa" stroke-width="3"/></svg></div>
+<nav aria-label="Poglavja nihanja"><button data-tab="lab" aria-pressed="true">Laboratorij</button><button data-tab="challenge" aria-pressed="false">Učni izzivi</button><button data-tab="practice" aria-pressed="false">Generator nalog</button><button data-tab="theory" aria-pressed="false">Razlaga in formule</button></nav></header>
+<main class="wrap">
+<section id="lab"><div class="grid"><div class="card"><span class="chip">01 · Izberi poskus</span><h2>Laboratorij nihanja</h2>
+<label for="mode">Vrsta nihanja</label><select id="mode"><option value="spring">Utež na vzmeti</option><option value="pendulum">Matematično nihalo</option><option value="damped">Dušeno nihanje</option><option value="driven">Vsiljeno nihanje in resonanca</option></select>
+<div id="controls"></div><p id="assumptions" class="fine subnote"></p></div>
+<div class="card"><span class="chip">02 · Spremljaj gibanje</span><h2 id="scene-title">Odmik od ravnovesja</h2><svg id="scene" class="lab-visual" viewBox="0 0 680 235" role="img" aria-label="Animacija nihala in energijski stolpci"></svg>
+<label for="time">Čas poskusa: <output id="clock"></output></label><input id="time" type="range" min="0" max="1000" value="0">
+<div class="row"><button id="play" class="primary">Predvajaj</button><button id="start">Na začetek</button><button id="end">Na konec</button></div>
+<div id="values" class="readouts"></div><p id="explain" class="focus-box"></p></div></div>
+<div class="card"><h2 id="graph-title">Kako se odmik spreminja s časom?</h2><div class="graph-row"><svg id="graph" class="graph" viewBox="0 0 390 190" role="img" aria-label="Graf odmika v odvisnosti od časa"></svg><svg id="extra" class="graph" viewBox="0 0 390 190" role="img" aria-label="Graf hitrosti ali resonančnega odziva"></svg></div><p class="fine subnote" id="graph-note"></p></div>
+</section>
+<section id="challenge" hidden><div class="card lav"><span class="chip">Najprej napovej</span><h2>Učni izzivi</h2><label for="mission">Izberi izziv</label><select id="mission"><option value="0">Težja utež</option><option value="1">Daljše nihalo</option><option value="2">Kam gre energija?</option><option value="3">Ujemi ritem</option></select><div id="mission-body" class="small-gap"></div><p id="mission-feedback" class="feedback" role="status"></p><button id="mission-open">Odpri poskus</button></div></section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option><option value="frequency">Nihajni čas in frekvenca</option><option value="spring">Vzmetno nihalo</option><option value="pendulum">Matematično nihalo</option><option value="phase">Faza in odmik</option><option value="speed">Hitrost in pospešek</option><option value="energy">Energija nihanja</option><option value="damping">Dušenje</option><option value="resonance">Vsiljeno nihanje</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden><div class="card"><h2>Od ravnovesja do resonance</h2><div class="two">
+<div class="note"><h3>Nihajni čas in frekvenca</h3><p class="formula">f = 1/T · ω = 2πf</p><p>Nihajni čas T je čas enega celega nihaja. Frekvenca f pove število nihajev na sekundo. Amplituda A je največji odmik od ravnovesja pri nedušenem nihanju.</p></div>
+<div class="note lav"><h3>Harmonično nihanje</h3><p class="formula">x = A cos(ωt + φ₀) · a = −ω²x</p><p>V skrajni legi je hitrost nič, velikost pospeška pa največja. Ob prehodu skozi ravnovesje je obratno. Faza določi, v katerem delu nihaja je telo.</p></div>
+<div class="note lav"><h3>Vzmet in matematično nihalo</h3><p class="formula">T<sub>vzmet</sub> = 2π√(m/k) · T<sub>nihalo</sub> ≈ 2π√(ℓ/g)</p><p>Težja utež na isti vzmeti niha počasneje. Matematično nihalo je točkasta utež na lahki, neraztegljivi niti. Pri majhnih odklonih je njegov nihajni čas odvisen od dolžine niti in težnega pospeška, masa pa se v računu pokrajša.</p></div>
+<div class="note"><h3>Energija vzmetnega nihala</h3><p class="formula">Eₖ = ½mv² · E<sub>vzmeti</sub> = ½kx²</p><p>Brez trenja se vsota ohranja. V skrajni legi je vsa mehanska energija v vzmeti, v ravnovesju pa v gibanju uteži.</p></div>
+<div class="note"><h3>Dušenje</h3><p class="formula">F<sub>dušenja</sub> = −bv · γ = b/(2m)</p><p>Pri šibkem linearnem dušenju imata ovojnici obliko ±Ce<sup>−γt</sup>. Mehanska energija pada, saj se del pretvarja v notranjo energijo. V poskusu je začetna hitrost nič, zato C ni nujno enak začetnemu odmiku.</p></div>
+<div class="note lav"><h3>Vsiljeno nihanje in resonanca</h3><p class="formula">F(t) = F₀ cos(ω<sub>p</sub>t)</p><p>Pogon dodaja energijo. Po zamrtju prehodnega gibanja sistem niha s frekvenco pogona. Šibko dušen sistem se najbolj odzove blizu lastne frekvence; vrh amplitudnega odziva je pri neničelnem dušenju nekoliko nižje, če vrh obstaja.</p></div>
+</div><details><summary>Rešen primer: masa na vzmeti</summary><p>Pri m = 1 kg in k = 100 N/m je ω = √(100/1) = 10 rad/s. T = 2π/10 ≈ 0,628 s, f ≈ 1,592 Hz. Če maso početveriš, se T podvoji.</p></details>
+<details><summary>Rešen primer: od skrajne lege do ravnovesja</summary><p>Če nihalo spustiš iz desne skrajne lege, je po T/4 prvič v ravnovesju, po T/2 v levi skrajni legi in po T spet desno.</p></details></div></section>
+</main><footer class="wrap fine">Sidebit · Nihanje</footer><div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id),g=9.81,tau=2*Math.PI;
+const nf=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:3,useGrouping:false});
+const fmt=x=>nf.format(Math.abs(x)<.0005?0:x);
+const line=(x,y,X,Y,c,w=2,extra="")=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${c}" stroke-width="${w}" ${extra}/>`;
+const txt=(x,y,s,a="start")=>`<text x="${x}" y="${y}" text-anchor="${a}" font-size="13" font-weight="650" fill="#364058">${s}</text>`;
+const disk=(x,y,r,c)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" stroke="#22253a" stroke-width="2"/>`;
+const box=(x,y,w,h,c)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" fill="${c}" stroke="#22253a" stroke-width="2"/>`;
+const defaults={spring:{m:1,k:100,A:.15},pendulum:{l:1,A:10},damped:{m:1,k:60,A:.18,z:.08},driven:{m:1,k:60,z:.12,r:1}};
+const config=Object.fromEntries(Object.entries(defaults).map(([k,v])=>[k,{...v}]));
+const mField=["m","Masa uteži","kg",.5,4,.1],kField=["k","Togost vzmeti","N/m",20,160,5],aField=["A","Začetni odmik","m",.03,.25,.01];
+const defs={spring:[mField,kField,aField],pendulum:[["l","Dolžina niti","m",.25,4,.05],["A","Začetni kot","°",2,12,1]],damped:[mField,kField,aField,["z","Razmerje dušenja ζ","",.02,.5,.01]],driven:[mField,kField,["z","Razmerje dušenja ζ","",.03,.5,.01],["r","Razmerje frekvenc fₚ/f₀","",.2,2.5,.01]]};
+const modeNotes={spring:"Idealna vodoravna vzmet brez trenja. Utež spustimo iz skrajne lege brez začetne hitrosti.",pendulum:"Model majhnih kotov (do 12°). Kotni odmik je harmoničen približek; zanemarimo zračni upor.",damped:"Vodoravna vzmet z linearnim dušenjem. Prikazano je podkritično nihanje (ζ < 1), utež se začne gibati iz mirovanja.",driven:"Idealna vodoravna vzmet z dušenjem in sinusno silo amplitude 1 N. Prikazujemo ustaljeni odziv, ko je prehodno nihanje že zamrlo."};
+function response(p,r){return 1/(p.k*Math.hypot(1-r*r,2*p.z*r));}
+function model(mode,p,t){
+ const pend=mode==="pendulum",w=pend?Math.sqrt(g/p.l):Math.sqrt(p.k/p.m),T0=tau/w;
+ if(mode==="driven"){
+  const W=p.r*w,A=response(p,p.r),phase=Math.atan2(2*p.z*p.r,1-p.r*p.r),x=A*Math.cos(W*t-phase),v=-W*A*Math.sin(W*t-phase);
+  return {x,v,a:-W*W*x,A,T:tau/W,T0,phase,Ek:p.m*v*v/2,Ep:p.k*x*x/2};
+ }
+ const A=pend?p.A*Math.PI/180:p.A,z=mode==="damped"?p.z:0,D=w*Math.sqrt(1-z*z),gamma=z*w,C=gamma/D;
+ const decay=Math.exp(-gamma*t),x=A*decay*(Math.cos(D*t)+C*Math.sin(D*t)),v=-A*decay*w*w/D*Math.sin(D*t);
+ const a=-2*gamma*v-w*w*x,E0=pend?0:p.k*A*A/2,Ek=pend?0:p.m*v*v/2,Ep=pend?0:p.k*x*x/2;
+ return {x,v,a,A,T:tau/D,T0,Ek,Ep,E0,lost:Math.max(0,E0-Ek-Ep),env:A*Math.hypot(1,C)*decay};
+}
+let mode="spring",t=0,running=false,last=null,frame=0;
+const duration=()=>model(mode,config[mode],0).T*4;
+function metrics(items){$("values").innerHTML=items.map(([a,b])=>`<div class="metric">${a}<strong>${b}</strong></div>`).join("");}
+function fields(){
+ const p=config[mode],root=$("controls");root.replaceChildren();
+ for(const [k,name,unit,min,max,step] of defs[mode]){
+  const label=document.createElement("label"),input=document.createElement("input"),out=document.createElement("output");
+  input.type="range";input.id="par-"+k;input.min=min;input.max=max;input.step=step;input.value=p[k];label.htmlFor=input.id;
+  label.append(name+": ",out);const show=()=>out.textContent=fmt(p[k])+(unit?" "+unit:"");
+  show();input.oninput=()=>{p[k]=Number(input.value);show();seek(0);};root.append(label,input);
+ }
+ $("assumptions").textContent=modeNotes[mode];
+}
+function bars(data,total){
+ return data.map(([n,value,color],i)=>{
+  const y=36+i*58,w=184*Math.max(0,Math.min(1,value/total));
+  return txt(455,y,n+" · "+fmt(value)+" J")+box(455,y+8,184,15,"#edf0f6")+(w>.01?box(455,y+8,w,15,color):"");
+ }).join("");
+}
+function chart(id,curve,maxX,minY,maxY,yLabel,xLabel,cursor,secondary=[]){
+ const X=u=>52+u/maxX*316,Y=v=>147-(v-minY)/(maxY-minY)*106;
+ const path=(fn,c,dash)=>`<path d="${Array.from({length:151},(_,i)=>{const u=maxX*i/150;return (i?"L":"M")+X(u)+" "+Y(fn(u));}).join(" ")}" fill="none" stroke="${c}" stroke-width="2.5" ${dash?'stroke-dasharray="5 4"':""}/>`;
+ let svg=txt(52,24,yLabel)+line(52,40,52,148,"#8794a8")+line(52,Y(0),368,Y(0),"#8794a8")+txt(45,Y(0)+4,"0","end")+txt(45,45,fmt(maxY),"end");
+ if(minY<0)svg+=txt(45,150,fmt(minY),"end");
+ for(let j=0;j<=4;j++){const u=j*maxX/4;svg+=line(X(u),41,X(u),147,"#dce2ee",1)+txt(X(u),166,fmt(u),"middle");}
+ for(const fn of secondary)svg+=path(fn,"#a0446c",true);
+ svg+=path(curve,"#5634aa",false)+line(X(cursor),41,X(cursor),147,"#b47019",1.5)+disk(X(cursor),Y(curve(cursor)),4,"#ffe38b")+txt(368,185,xLabel,"end");
+ $(id).innerHTML=svg;
+}
+function render(){
+ const p=config[mode],s=model(mode,p,t),D=duration(),pend=mode==="pendulum",drive=mode==="driven",damp=mode==="damped";
+ const deg=180/Math.PI;
+ let svg="";
+ if(pend){
+  const L=75+90*Math.sqrt(p.l/4),x=340+L*Math.sin(s.x),y=37+L*Math.cos(s.x);
+  svg=line(295,37,385,37,"#22253a",4)+line(340,37,340,37+L,"#8794a8",1.5,'stroke-dasharray="5 4"')+line(340,37,x,y,"#5634aa",3)+disk(x,y,15,"#ffe38b")+txt(25,218,"Črtkana črta: ravnovesna lega");
+ }else{
+  const x=221+108*s.x/(drive?Math.max(.01,response(p,Math.sqrt(1-2*p.z*p.z))):.28),y=126;
+  const spring=Array.from({length:19},(_,i)=>[44+(x-20-44)*i/18,y+(i===0||i===18?0:i%2?12:-12)]).map(pt=>pt.join(",")).join(" ");
+  svg=line(44,75,44,151,"#22253a",4)+line(44,150,414,150,"#8794a8")+line(221,70,221,178,"#8794a8",1.5,'stroke-dasharray="5 4"')+
+   `<polyline points="${spring}" fill="none" stroke="#5634aa" stroke-width="3"/>`+box(x-20,y-19,40,43,"#ffe38b")+txt(221,195,"ravnovesje","middle");
+  const list=[["E vzmeti",s.Ep,"#e8ddff"],["Eₖ",s.Ek,"#c5f0e2"]];if(damp)list.push(["Izgubljena meh. E",s.lost,"#ffe38b"]);
+  svg+=bars(list,drive?Math.max(p.k*s.A*s.A/2,p.m*(p.r*tau/s.T0*s.A)**2/2):s.E0);
+ }
+ $("scene").innerHTML=svg;
+ $("scene").setAttribute("aria-label",pend?"Matematično nihalo z označeno ravnovesno lego":"Vzmetno nihalo in energijski stolpci");
+ $("clock").textContent=fmt(t)+" / "+fmt(D)+" s";$("time").value=t/D*1000;
+ metrics([[pend?"Kotni odmik":"Odmik",fmt(s.x*(pend?deg:1))+(pend?" °":" m")],["Nihajni čas",fmt(s.T)+" s"],["Frekvenca",fmt(1/s.T)+" Hz"],[pend?"Kotna hitrost":"Hitrost",fmt(s.v*(pend?deg:1))+(pend?" °/s":" m/s")],[drive?"Lastna frekvenca":pend?"Kotni pospešek":"Pospešek",drive?fmt(1/s.T0)+" Hz":fmt(s.a*(pend?deg:1))+(pend?" °/s²":" m/s²")],[drive?"Fazni zamik za silo":pend?"Začetni kot":"Mehanska energija",drive?fmt(s.phase*deg)+" °":pend?fmt(p.A)+" °":fmt(s.Ep+s.Ek)+" J"]]);
+ $("explain").textContent=drive?"Pri tem pogonu je ustaljena amplituda "+fmt(s.A)+" m. Na desnem grafu poišči vrh odziva.":damp?"Ovojnica odmika se manjša, mehanska energija pa upada. Črtkani črti na grafu sta ovojnici odmika.":pend?"Daljša nit pomeni daljši nihajni čas. Pri majhnih kotih je vpliv amplitude v tem modelu zanemarjen.":"Ko odmik doseže skrajno lego, je hitrost nič. Največjo hitrost ima utež v ravnovesju.";
+ const scale=pend?deg:1,limit=1.15*(damp?model(mode,p,0).env:s.A)*scale;
+ chart("graph",u=>model(mode,p,u).x*scale,D,-limit,limit,pend?"Kotni odmik (°)":"Odmik x (m)","čas (s)",t,damp?[u=>model(mode,p,u).env,u=>-model(mode,p,u).env]:[]);
+ if(drive){
+  const peak=response(p,Math.sqrt(1-2*p.z*p.z));
+  chart("extra",r=>response(p,r),2.5,0,peak*1.12,"Amplituda odziva (m)","fₚ/f₀",p.r);
+ }else{
+  const max=s.A*tau/s.T0*scale*1.15;
+  chart("extra",u=>model(mode,p,u).v*scale,D,-max,max,pend?"Kotna hitrost (°/s)":"Hitrost v (m/s)","čas (s)",t);
+ }
+ $("graph-note").textContent=drive?"Levo: odmik pri izbrani frekvenci pogona. Desno: amplituda ustaljenega odziva pri različnih frekvencah pogona. Rumena pika označuje trenutno nastavitev.":"Rumeni piki označujeta isti trenutek. Primerjaj lego in hitrost pri skrajni legi ter v ravnovesju.";
+}
+function pause(){running=false;last=null;cancelAnimationFrame(frame);$("play").textContent="Predvajaj";}
+function seek(x){pause();t=Math.max(0,Math.min(duration(),x));render();}
+function tick(ts){if(!running)return;const D=duration();if(last!==null)t=Math.min(D,t+Math.min(.05,(ts-last)/1000)*D/9);last=ts;render();if(t>=D)pause();else frame=requestAnimationFrame(tick);}
+$("play").onclick=()=>{const was=running;pause();if(was)return;if(t>=duration())t=0;running=true;$("play").textContent="Premor";frame=requestAnimationFrame(tick);};
+$("time").oninput=()=>seek(Number($("time").value)*duration()/1000);
+$("start").onclick=()=>seek(0);$("end").onclick=()=>seek(duration());
+function choose(key){mode=key;$("mode").value=key;fields();seek(0);}
+$("mode").onchange=()=>choose($("mode").value);
+function tab(id){pause();for(const s of document.querySelectorAll("main > section"))s.hidden=s.id!==id;for(const b of document.querySelectorAll("[data-tab]"))b.setAttribute("aria-pressed",String(b.dataset.tab===id));}
+for(const b of document.querySelectorAll("[data-tab]"))b.onclick=()=>tab(b.dataset.tab);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();});
+</script>
+<script>
+const missions=[
+ {mode:"spring",p:{m:4,k:100,A:.15},q:"Maso na isti vzmeti povečamo z 1 kg na 4 kg. Kaj se zgodi z nihajnim časom?",options:["Prepolovi se","Podvoji se","Poveča se štirikrat"],correct:1,why:"Velja T = 2π√(m/k). Koreni štirikrat večje mase: √4 = 2. V poskusu primerjaj nastavitvi 1 kg in 4 kg."},
+ {mode:"pendulum",p:{l:4,A:10},q:"Nit nihala podaljšamo z 1 m na 4 m. Kolikokrat dlje traja en nihaj pri majhnem kotu?",options:["Enako dolgo","Dvakrat dlje","Štirikrat dlje"],correct:1,why:"Velja T = 2π√(l/g). Dolžina je pod korenom, zato se čas podvoji."},
+ {mode:"damped",p:{m:1,k:60,A:.18,z:.16},q:"Vzmetno nihalo niha brez pogona, deluje pa dušenje. Kaj se zgodi z njegovo mehansko energijo?",options:["Upada","Ostaja stalna","Narašča"],correct:0,why:"Dušilna sila opravlja negativno delo. Del mehanske energije preide v druge oblike, na primer notranjo energijo okolice."},
+ {mode:"driven",p:{m:1,k:60,z:.12,r:1},q:"Pri šibko dušenem vzmetnem nihalu počasi spreminjamo frekvenco pogona. Kje pričakuješ največjo amplitudo ustaljenega odziva?",options:["Blizu ničle","Blizu lastne frekvence","Daleč nad lastno frekvenco"],correct:1,why:"Vrh resonance je pri šibkem dušenju blizu lastne frekvence. Odpri poskus in spreminjaj razmerje frekvenc."}
+];
+function currentMission(){return missions[Number($("mission").value)];}
+function renderMission(){
+ const m=currentMission(),question=document.createElement("p"),choices=document.createElement("div");
+ question.className="question";question.textContent=m.q;choices.className="row";
+ $("mission-body").replaceChildren(question,choices);$("mission-feedback").textContent="";
+ m.options.forEach((option,i)=>{
+  const button=document.createElement("button");button.type="button";button.textContent=option;button.setAttribute("aria-pressed","false");
+  button.onclick=()=>{
+   for(const other of choices.children)other.setAttribute("aria-pressed",String(other===button));
+   $("mission-feedback").textContent=(i===m.correct?"Pravilno. ":"Poskusi še enkrat. ")+(i===m.correct?m.why:"Spomni se, kaj pove formula ali graf v poskusu.");
+  };
+  choices.append(button);
+ });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{const m=currentMission();tab("lab");Object.assign(config[m.mode],defaults[m.mode],m.p);choose(m.mode);$("mode").focus();};
+
+const topics={frequency:"Frekvenca in nihajni čas",spring:"Vzmetno nihalo",pendulum:"Matematično nihalo",phase:"Faza in čas",speed:"Hitrost in pospešek",energy:"Energija nihanja",damping:"Dušenje",resonance:"Vsiljeno nihanje in resonanca"};
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function makeTask(key,level){
+ const hard=level===2,decayTime=integer(2,10);
+ const n=integer(3,22),u=integer(2,18),m=integer(3,24)/4,k=integer(8,44)*5,A=integer(4,23)/20;
+ const l=integer(3,39)/10,T=integer(4,42)/5,f=integer(3,35)/5,ratio=integer(2,18)/10,z=integer(6,35)/100;
+ const task=(prompt,answer,unit,hint,steps)=>({key,prompt,answer,unit,hint,steps:steps+" = "+fmt(answer)+" "+unit+"."});
+ switch(key){
+  case "frequency": return hard
+   ? task("Frekvenca nihala je "+fmt(f)+" Hz. Koliko sekund traja "+n+" celih nihajev?",n/f,"s","Najprej izračunaj čas enega nihaja.","t = N/f = "+n+"/"+fmt(f))
+   : task("Nihalo v "+u+" s opravi "+n+" celih nihajev. Kolikšna je njegova frekvenca?",n/u,"Hz","Frekvenca je število nihajev v eni sekundi.","f = N/t = "+n+"/"+u);
+  case "spring": return hard
+   ? task("Vzmetno nihalo z maso "+fmt(m)+" kg ima nihajni čas "+fmt(T)+" s. Izračunaj konstanto vzmeti.",m*(tau/T)**2,"N/m","Iz T = 2π√(m/k) izrazi k.","k = m(2π/T)² = "+fmt(m)+" · (2π/"+fmt(T)+")²")
+   : task("Na idealni vzmeti s konstanto "+k+" N/m niha masa "+fmt(m)+" kg. Izračunaj nihajni čas.",tau*Math.sqrt(m/k),"s","Uporabi T = 2π√(m/k).","T = 2π√("+fmt(m)+"/"+k+")");
+  case "pendulum": return hard
+   ? task("Matematično nihalo pri majhnem kotu niha z nihajnim časom "+fmt(T)+" s. Kolikšna je dolžina niti? Uporabi g = 9,81 m/s².",g*(T/tau)**2,"m","Iz T = 2π√(l/g) izrazi l.","l = g(T/2π)² = 9,81 · ("+fmt(T)+"/2π)²")
+   : task("Dolžina matematičnega nihala je "+fmt(l)+" m. Izračunaj nihajni čas pri majhnem kotu. Uporabi g = 9,81 m/s².",tau*Math.sqrt(l/g),"s","Uporabi T = 2π√(l/g).","T = 2π√("+fmt(l)+"/9,81)");
+  case "phase": return hard
+   ? task("Utež začne nihati iz pozitivne skrajne lege. Nihajni čas je "+fmt(T)+" s. Kdaj prvič doseže negativno skrajno lego?",T/2,"s","Nariši kosinus od začetka do prvega minimuma.","t = T/2 = "+fmt(T)+"/2")
+   : task("Nihajni čas je "+fmt(T)+" s. Utež se iz skrajne lege začne pomikati proti ravnovesju. Kdaj ga prvič doseže?",T/4,"s","Prvi prehod skozi ravnovesje se zgodi po četrtini nihaja.","t = T/4 = "+fmt(T)+"/4");
+  case "speed": return hard
+   ? task("Amplituda harmoničnega nihanja je "+fmt(A)+" m in frekvenca "+fmt(f)+" Hz. Izračunaj največjo velikost pospeška.",A*(tau*f)**2,"m/s²","Največji pospešek je v skrajni legi: |a| = ω²A.","aₘₐₓ = A(2πf)² = "+fmt(A)+" · (2π · "+fmt(f)+")²")
+   : task("Harmonično nihanje ima amplitudo "+fmt(A)+" m in nihajni čas "+fmt(T)+" s. Izračunaj največjo hitrost.",A*tau/T,"m/s","V ravnovesju je hitrost največja: vₘₐₓ = ωA.","vₘₐₓ = 2πA/T = 2π · "+fmt(A)+"/"+fmt(T));
+  case "energy": return hard
+   ? task("Idealna vzmet ima k = "+k+" N/m, amplituda uteži je "+fmt(A)+" m. Izračunaj kinetično energijo pri odmiku, ki je enak polovici amplitude.",3*k*A*A/8,"J","Od celotne energije odštej prožnostno energijo pri x = A/2.","Eₖ = k(A² − (A/2)²)/2 = 3 · "+k+" · "+fmt(A)+"²/8")
+   : task("Vzmetna utež niha brez trenja. Konstanta vzmeti je "+k+" N/m, amplituda pa "+fmt(A)+" m. Izračunaj celotno mehansko energijo.",k*A*A/2,"J","V skrajni legi je vsa mehanska energija shranjena v vzmeti.","E = kA²/2 = "+k+" · "+fmt(A)+"²/2");
+  case "damping": return hard
+   ? task("Ovojnica dušenega nihanja je A(t) = C · exp(−γt), kjer je C = "+fmt(A)+" m in γ = "+fmt(z)+" s⁻¹. Po koliko sekundah se ovojnica prvič prepolovi?",Math.log(2)/z,"s","Za A(t) = C/2 vzemi naravni logaritem obeh strani.","t = ln(2)/γ = ln(2)/"+fmt(z))
+   : task("Ovojnica dušenega nihanja je A(t) = C · exp(−γt), kjer je C = "+fmt(A)+" m in γ = "+fmt(z)+" s⁻¹. Kolikšna je ovojnica po "+decayTime+" s?",A*Math.exp(-z*decayTime),"m","V izraz za ovojnico vstavi čas. Ovojnica ni trenutni odmik.","A("+decayTime+") = "+fmt(A)+" · exp(−"+fmt(z)+" · "+decayTime+")");
+  case "resonance": return hard
+   ? task("Lastna frekvenca šibko dušenega vzmetnega nihala je "+fmt(f)+" Hz, razmerje dušenja pa ζ = "+fmt(z)+". Pri kateri frekvenci pogona je vrh ustaljenega amplitudnega odziva? Uporabi fᵥ = f₀√(1 − 2ζ²).",f*Math.sqrt(1-2*z*z),"Hz","V izraz vstavi lastno frekvenco in razmerje dušenja.","fᵥ = "+fmt(f)+" · √(1 − 2 · "+fmt(z)+"²)")
+   : task("Lastna frekvenca nihala je "+fmt(f)+" Hz. Frekvenca pogona je "+fmt(ratio)+"-kratnik lastne frekvence. S katero frekvenco niha sistem, ko prehodni odziv zamre?",f*ratio,"Hz","Ustaljeno vsiljeno nihanje ima frekvenco pogona.","fₚ = "+fmt(ratio)+" · "+fmt(f));
+  default: throw new Error("Neznana tema.");
+ }
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Nihanje · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+choose("spring");renderMission();generate();
+</script>
+</body></html>
