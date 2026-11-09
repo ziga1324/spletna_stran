@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivna fizika: površinska napetost, absorpcija, mejni kot, kapilarne sile, Kelvinova enačba ter prenasičena in podhlajena para.">
+<title>Površinski pojavi – Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.pp{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.pp *{box-sizing:border-box}.pp [hidden]{display:none!important}
+.pp .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.pp header.wrap{padding:25px 0 22px}.pp a{color:var(--accent);font-weight:750}
+.pp .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.pp .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.pp h1,.pp h2,.pp h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.pp h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.pp h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.pp h3{font-size:1.15rem;margin:0 0 9px}.pp p{margin:0 0 13px}.pp .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.pp .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.pp svg{display:block;width:100%;height:auto;overflow:visible}
+.pp nav,.pp .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pp nav{margin:12px 0 24px}
+.pp button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.pp button:hover{background:var(--purple)}.pp button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.pp button[aria-pressed=true],.pp .primary{background:var(--yellow)}
+.pp button:disabled{opacity:.55;cursor:default}.pp :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.pp .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.pp .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.pp .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.pp .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.pp label{display:block;font-weight:700;margin:12px 0 4px}.pp label:first-child{margin-top:0}
+.pp input:not([type=checkbox]),.pp select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.pp input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.pp input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.pp output{color:var(--accent);font-weight:800}
+.pp .fine{font-size:.88rem;color:#4d5871}.pp .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.pp .lab-visual,.pp .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.pp .graph{cursor:crosshair}.pp .graph-label{font-weight:800;margin:7px 0 0}
+.pp .graph-group{min-width:0}.pp .graph-group p{margin:7px 0 0}
+.pp .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.pp .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.pp .metric:nth-child(2n){background:var(--mint)}.pp .metric strong{display:block;font-size:1.06rem}
+.pp .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.pp .lav{background:var(--purple)}.pp .accent-card{background:var(--yellow)}.pp .question{font-weight:700;font-size:1.06rem}
+.pp .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.pp details{margin:10px 0}.pp summary{cursor:pointer;font-weight:750}
+.pp .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.pp .question-card .row{margin-top:9px}.pp .question-card label{margin-top:9px}
+.pp .lesson{scroll-margin:15px}.pp .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.pp footer{padding:8px 0 28px}.pp .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.pp .grid,.pp .hero{grid-template-columns:1fr}.pp .hero-art{display:none}.pp .three{grid-template-columns:1fr}.pp .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.pp .wrap{width:calc(100% - 24px)}.pp .two{grid-template-columns:1fr}.pp nav button{flex:1 1 40%}.pp .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.pp{background:#fff;color:#000}body.pp.print-sheet > :not(#paper){display:none!important}body.pp.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.pp .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.pp .graph{cursor:default}
+.pp .subnote{margin-top:12px}
+.pp .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pp .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.pp .graph-row{grid-template-columns:1fr}.pp .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pp h1{font-size:clamp(44px,7vw,78px)}
+.pp .lab-visual{margin:10px 0 14px}
+.pp .lab-grid{align-items:start}
+.pp .plot-note{margin-top:10px}
+.pp .topic-buttons{margin:12px 0 24px}
+.pp .theory-grid .note{margin:0}
+.pp .theory-grid{margin:14px 0}
+.pp .mono{font-variant-numeric:tabular-nums}
+.pp .unit-table{border-collapse:collapse;width:100%;margin:12px 0}
+.pp .unit-table th,.pp .unit-table td{text-align:left;border-bottom:1px solid #bbc7ce;padding:6px}
+.pp .focus-box{margin-top:12px}
+.pp .hero h1{font-size:clamp(39px,6.4vw,76px);text-wrap:balance}
+</style>
+</head>
+<body class="pp">
+<header class="wrap">
+    <a href="../index.html">← Vsa orodja</a>
+    <div class="hero">
+        <div><span class="badge">SIDEBIT · FIZIKA</span><h1>Površinski pojavi</h1>
+        <p class="lead">Raztegni milnico, spremeni mejni kot kapljice in opazuj dvig vode v kapilari. Nato preveri, zakaj lahko v prenasičeni pari velika kapljica raste, majhna pa izhlapi.</p></div>
+        <svg class="hero-art" viewBox="0 0 330 145" role="img" aria-label="Kapljica na podlagi in dvig kapljevine v kapilari">
+            <path d="M28 114h145" stroke="#22253a" stroke-width="4"/>
+            <path d="M51 113a48 48 0 0 1 96 0Z" fill="#ffe38b" stroke="#22253a" stroke-width="3"/>
+            <path d="M195 88h118v34H195Z" fill="#c5f0e2"/>
+            <path d="M242 47q15 12 30 0v74h-30Z" fill="#c5f0e2"/>
+            <path d="M195 88h47m30 0h41M242 16v106m30-106v106M242 47q15 12 30 0" fill="none" stroke="#22253a" stroke-width="3"/>
+            <path d="M284 87V48m-5 6 5-6 5 6" fill="none" stroke="#5634aa" stroke-width="3"/>
+        </svg>
+    </div>
+    <nav aria-label="Poglavja">
+        <button type="button" data-tab="lab" aria-pressed="true">Laboratorij</button>
+        <button type="button" data-tab="challenge" aria-pressed="false">Učni izzivi</button>
+        <button type="button" data-tab="practice" aria-pressed="false">Generator nalog</button>
+        <button type="button" data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+    </nav>
+</header>
+<main class="wrap">
+<section id="lab">
+    <div class="card lav">
+        <span class="chip">Šest interaktivnih poskusov</span><h2>Izberi poskus</h2>
+        <div id="lab-buttons" class="row topic-buttons"></div>
+    </div>
+    <div class="grid lab-grid">
+        <div class="card">
+            <span class="chip">01 · Nastavi</span><h2 id="lab-title"></h2>
+            <p id="lab-intro"></p><div id="controls"></div>
+            <div class="row small-gap"><button type="button" id="restore">Ponastavi poskus</button></div>
+        </div>
+        <div class="card">
+            <span class="chip">02 · Opazuj</span><h2 id="plot-title"></h2>
+            <svg id="plot" class="lab-visual" viewBox="0 0 550 285" role="img" aria-label="Vizualni prikaz poskusa"></svg>
+            <p id="plot-note" class="fine plot-note"></p>
+            <div id="values" class="readouts mono"></div><p id="conclusion" class="focus-box"></p>
+        </div>
+    </div>
+</section>
+<section id="challenge" hidden>
+    <div class="card lav">
+        <span class="chip">Najprej napovej</span><h2>Učni izzivi</h2>
+        <label for="mission">Izberi izziv</label><select id="mission"></select>
+        <div id="mission-body" class="small-gap"></div>
+        <p id="mission-feedback" class="feedback" role="status"></p>
+        <button type="button" id="mission-open">Odpri poskus</button>
+    </div>
+</section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden>
+ <div class="card">
+  <h2>Fizika na meji med snovmi</h2>
+  <p>Meja med kapljevino, plinom in trdnino ima svoje lastnosti. Pri vsakem poskusu preveri, ali spremljaš silo na robu, tlak na eni strani gladine ali prenos snovi v prostornino.</p>
+  <div class="two theory-grid">
+   <article class="note"><h3>1 · Površinska napetost in ukrivljenost</h3>
+    <p class="formula">dW = γ dA &nbsp; · &nbsp; F = γL na eni meji &nbsp; · &nbsp; Δp = γ(1/R₁ + 1/R₂)</p>
+    <p>Površinska napetost γ je sila na enoto dolžine, pri reverzibilnem povečevanju ravne meje pri stalni temperaturi in sestavi pa tudi delo na enoto nove površine. Zato velja 1 N/m = 1 J/m². Površina se upira povečanju: brez drugih vplivov krogla pri dani prostornini zavzame najmanjšo površino. Gravitacija velike kapljice splošči.</p>
+    <p>Pri eni meji γL deluje vzdolž gladine in pravokotno na rob dolžine L. Milnična opna ima dve meji med kapljevino in zrakom, zato je sila na premičnem robu 2γL. Po Young–Laplaceovi enačbi je pri sferični kapljici notranji tlak za 2γ/r večji od zunanjega; pri tankem milničnem mehurčku z dvema mejama približno za 4γ/r. Pri splošni gladini sta R₁ in R₂ predznačena glavna polmera ukrivljenosti.</p>
+    <p>Površinska napetost je odvisna od temperature in sestave. Površinsko aktivne snovi se lahko kopičijo na meji in jo znižajo. Razlike γ po gladini lahko povzročijo površinski tok, imenovan Marangonijev tok.</p>
+   </article>
+   <article class="note lav"><h3>2 · Absorpcija, adsorpcija in difuzija</h3>
+    <p><strong>Absorpcija</strong> pomeni vstop snovi v prostornino druge snovi, na primer raztapljanje plina v vodi. Pri <strong>adsorpciji</strong> se snov kopiči na površini. To lahko opišemo s površinskim presežkom v mol/m². Vpijanje vode v papir je pogosto predvsem kapilarno polnjenje por; to je drug mehanizem od molekulske difuzije v kapljevino.</p>
+    <p class="formula">cₛ = kₕp &nbsp; · &nbsp; J = −D ∂c/∂x</p>
+    <p>V laboratoriju je p parcialni tlak plina, cₛ njegova ravnovesna koncentracija tik pod gladino, kₕ pa Henryjev koeficient v zapisu koncentracija/pritisk. V drugih tabelah je lahko definiran obratno. Fickov zakon pove, da je difuzijski tok J usmerjen proti manjši koncentraciji.</p>
+    <p class="formula">c(x,t)/cₛ = erfc[x/(2√(Dt))] &nbsp; · &nbsp; n/A = 2cₛ√(Dt/π)</p>
+    <p>Model velja za sprva čisto, mirujočo in dovolj globoko kapljevino s stalnima D in cₛ. Na začetku je gradient ob gladini velik; z razvojem profila se zmanjšuje. Značilna globina narašča kot √t. Mešanje, končna globina in upornost na plinski strani lahko prenos bistveno spremenijo.</p>
+   </article>
+   <article class="note lav"><h3>3 · Mejni ali kontaktni kot</h3>
+    <p class="formula">γ<sub>SG</sub> − γ<sub>SL</sub> = γ<sub>LG</sub> cos θ</p>
+    <p>Kot θ merimo <strong>skozi kapljevino</strong> med trdno podlago in tangento na gladino v točki stika. Youngova enačba velja za ravnovesno kapljico na gladki, togi in homogeni podlagi. Oznake S, L in G pomenijo trdnino, kapljevino in plin. Majhen θ pomeni boljše omočenje; pri θ nad 90° je omočenje slabše. Če je težnja k širjenju dovolj velika, nastane film in ni ravnovesne kapljice s končnim kontaktnim kotom.</p>
+    <p>Na resnični hrapavi ali neenakomerni podlagi se stična črta lahko zatakne. Kot pri napredovanju kapljice je tedaj praviloma večji od kota pri umikanju. Razliko imenujemo histereza kontaktnega kota.</p>
+   </article>
+   <article class="note"><h3>4 · Kapilarne sile in dvig</h3>
+    <p class="formula">Fᵥ = 2πrγ cos θ &nbsp; · &nbsp; h = 2γ cos θ/(Δρgr)</p>
+    <p>Navpične komponente sil vzdolž oboda okrogle cevke se seštejejo. V ravnovesju jih uravnovesi hidrostatski prispevek Δρgπr²h; Δρ je razlika gostot kapljevine in plina. Pri θ &lt; 90° je meniskus konkaven in gladina v cevki višja kot zunaj. Pri θ &gt; 90° je meniskus konveksen in gladina v cevki nižja.</p>
+    <p>Ožja cevka pomeni večji ravnovesni dvig pri istem γ in θ, čeprav je skupna sila na obodu manjša. Jurinova enačba je ravnovesni model ozke cevke in zanemari majhen prostorninski popravek zaradi oblike meniskusa. Ne pove hitrosti vpijanja: na gibanje vplivajo tudi viskoznost, vztrajnost in geometrija por.</p>
+   </article>
+   <article class="note"><h3>5 · Parni tlak nad ukrivljeno gladino</h3>
+    <p class="formula">ln(pᵣ/p∞) = (γVₘ/RT)(1/R₁ + 1/R₂)</p>
+    <p>Kelvinova enačba pove, kako se ukrivljenost odrazi v <strong>ravnovesnem tlaku pare</strong>. Vₘ je molska prostornina kapljevine, p∞ nasičeni tlak nad ravno gladino pri isti temperaturi. Predpostavimo skoraj nestisljivo čisto kapljevino in približno idealno paro. Pri sferični kapljici sta oba polmera +r; pri konkavnem sferičnem meniskusu sta −r.</p>
+    <p>Manjša konveksna kapljica ima višji ravnovesni parni tlak; nad konkavnim meniskusom je nižji. Zato lahko v ozki omočljivi pori pride do kapilarne kondenzacije pri parnem tlaku pod nasičenjem nad ravno gladino. Kelvinov parni tlak ni isto kot Laplaceov skok mehanskega tlaka med kapljevino in plinom.</p>
+   </article>
+   <article class="note lav"><h3>6 · Prenasičena oziroma podhlajena para</h3>
+    <p class="formula">S = p/p∞(T) &nbsp; · &nbsp; ΔG(r) = 4πr²γ − (4πr³/3)(RT/Vₘ) ln S</p>
+    <p>Pri S &gt; 1 je para prenasičena glede na ravno gladino. Pri danem parcialnem tlaku to pomeni, da je temperatura pod rosiščem. Takšna para je lahko metastabilna: kondenzacija je ugodna v velikem merilu, a za novo kapljico moramo najprej ustvariti površino. Podhlajena <em>para</em> v tem pomenu ni isto kot podhlajena <em>kapljevina</em> pod temperaturo zmrzovanja.</p>
+    <p class="formula">r* = 2γVₘ/(RT ln S) &nbsp; · &nbsp; ΔG* = 4πγ(r*)²/3</p>
+    <p>Majhni zametki imajo zaradi ukrivljenosti visok ravnovesni parni tlak in se navadno skrčijo. Nad kritičnim polmerom r* je nadaljnja rast v tem modelu ugodna. Večje prenasičenje zmanjša r* in energijsko oviro. Brez tujih površin govorimo o homogeni nukleaciji, na delcih ali stenah pa o heterogeni. Idealna ravna podlaga z mejnim kotom θ zmanjša energijsko oviro na delež (2 + cos θ)(1 − cos θ)²/4 homogene ovire. To velja v modelu sferične kape brez energije stične črte. Omočljiva podlaga torej lahko zniža oviro; pri oblakih so pomembna kondenzacijska jedra, vključno s higroskopnimi delci. Klasični model je približek, zlasti za zametke velikosti le nekaj molekul.</p>
+   </article>
+  </div>
+  <details><summary>Rešen primer: sila na premičnem robu milnice</summary><p>Če ima rob dolžino 5 cm in je γ = 0,030 N/m, je sila zaradi dveh mej F = 2 · 0,030 · 0,050 = 0,003 N oziroma 3 mN.</p></details>
+  <details><summary>Rešen primer: dvig v stekleni kapilari</summary><p>Za r = 0,50 mm, γ = 0,072 N/m, θ = 0°, Δρ ≈ 1000 kg/m³ in g = 9,81 m/s² je h = 2 · 0,072/(1000 · 9,81 · 0,00050) ≈ 0,0294 m oziroma 2,94 cm.</p></details>
+  <details><summary>Rešen primer: kapljica z radijem 10 nm</summary><p>Za vodo pri 293 K z γ = 0,072 N/m in Vₘ ≈ 18 · 10⁻⁶ m³/mol je Kelvinov eksponent približno 0,106. Zato je ravnovesni parni tlak približno 1,11-krat večji kot nad ravno gladino.</p></details>
+  <p class="fine small-gap">Za nadaljnje branje: <a href="https://openstax.org/books/college-physics-ap-courses/pages/11-8-cohesion-and-adhesion-in-liquids-surface-tension-and-capillary-action">OpenStax: površinska napetost in kapilarnost</a>, <a href="https://physicstoday.aip.org/quick-study/your-wetting-day">Physics Today: omočenje</a>, <a href="https://courses.ems.psu.edu/meteo300/book/export/html/525">Penn State: ukrivljenost in oblačne kapljice</a> <a href="https://www.phase-trans.msm.cam.ac.uk/2026/boltzmann.html">Cambridge: difuzijski profil</a> in <a href="https://iapws.org/technical-guidance/release/Supp-sat">IAPWS: nasičeni tlak vode</a>.</p>
+ </div>
+</section>
+</main>
+<footer class="wrap"><p>Sidebit · Fizika · Površinski pojavi</p></footer>
+<div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id),R=8.314462618,KB=1.380649e-23,G=9.81,VM=18e-6;
+const format=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:4,useGrouping:false});
+const fmt=x=>format.format(Math.abs(x)<1e-10?0:x);
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const C="#5634aa", B="#00806a", Y="#ffe38b", INK="#22253a";
+const line=(x,y,X,Y,color=INK,width=2,dash="")=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${color}" stroke-width="${width}" ${dash?'stroke-dasharray="'+dash+'"':""}/>`;
+const text=(x,y,s,anchor="middle")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="#364058" font-size="14" font-weight="650">${s}</text>`;
+const disk=(x,y,r=5,fill=Y)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${INK}" stroke-width="2"/>`;
+const rect=(x,y,w,h,fill,stroke=INK)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const series=(a,b,fn)=>Array.from({length:121},(_,i)=>{const x=a+(b-a)*i/120;return [x,fn(x)];});
+const axisFormat=new Intl.NumberFormat("sl-SI",{maximumSignificantDigits:4,useGrouping:false});
+const number=x=>axisFormat.format(x);
+function chart({xmin=0,xmax,ymin=0,ymax,xLabel,yLabel,curves,dots=[],shade=null,markers=[]}){
+    const left=72,right=521,top=35,bottom=222;
+    const X=x=>left+(right-left)*(x-xmin)/(xmax-xmin), Z=y=>bottom-(bottom-top)*(y-ymin)/(ymax-ymin);
+    const path=points=>points.map(([x,y],i)=>(i?"L":"M")+X(x)+" "+Z(y)).join(" ");
+    let svg='<defs><clipPath id="surface-plot-clip"><rect x="72" y="35" width="449" height="187"/></clipPath></defs>'+text(left,22,yLabel,"start")+text(right,275,xLabel,"end");
+    for(let i=0;i<=4;i++){
+        const x=xmin+(xmax-xmin)*i/4,y=ymin+(ymax-ymin)*i/4;
+        svg+=line(X(x),top,X(x),bottom,"#dce3ef",1)+line(left,Z(y),right,Z(y),"#dce3ef",1);
+        svg+=text(X(x),246,number(x))+text(left-9,Z(y)+5,number(y),"end");
+    }
+    svg+='<g clip-path="url(#surface-plot-clip)">';
+    if(shade?.length){
+        const [start]=shade,[end]=shade.slice(-1);
+        svg+=`<path d="${path(shade)} L${X(end[0])} ${Z(0)} L${X(start[0])} ${Z(0)} Z" fill="#ffe38b" opacity=".65"/>`;
+    }
+    svg+=line(left,top,left,bottom)+line(left,bottom,right,bottom);
+    for(const x of markers)svg+=line(X(x),top,X(x),bottom,"#a76b0d",1.5,"5 4");
+    for(const {points,color=C,dash=false} of curves)svg+=`<path d="${path(points)}" stroke="${color}" stroke-width="3.5" fill="none" ${dash?'stroke-dasharray="8 5"':""}/>`;
+    for(const [x,y] of dots)svg+=disk(X(x),Z(y));
+    return svg+"</g>";
+}
+function bars(data,unit){
+    const max=Math.max(1,...data.map(([,v])=>v));
+    return data.map(([label,value,color],i)=>{
+        const y=41+i*73;
+        return text(45,y,label+" · "+fmt(value)+" "+unit,"start")+rect(45,y+12,460,18,"#e9edf4","#dce3ef")+
+            (value>0 ? rect(45,y+12,460*value/max,18,color) : "");
+    }).join("");
+}
+const metric=(name,v,unit)=>[name,fmt(v)+(unit?" "+unit:"")];
+const slider=(id,label,min,max,step,value,unit="")=>({id,label,min,max,step,value,unit});
+const select=(id,label,value,options)=>({id,label,value,options});
+
+
+
+const pair=(a,b,unit="")=>metric(a,b,unit);
+const deg=x=>x*Math.PI/180;
+const ctheta=x=>Math.abs(x-90)<1e-10?0:Math.cos(deg(x));
+const capillary=(gamma,r,rho,theta)=>({h:2*gamma*ctheta(theta)/(rho*G*r),F:2*Math.PI*r*gamma*ctheta(theta)});
+const kelvin=(T,gamma,r,sign=1)=>Math.exp(sign*2*gamma*VM/(R*T*r));
+const critical=(T,gamma,S)=>{
+    if(S<=1)return null;
+    const r=2*gamma*VM/(R*T*Math.log(S));
+    return {r,barrier:4*Math.PI*gamma*r*r/3};
+};
+function erfc(x){
+    if(x===0)return 1;
+    const t=1/(1+.3275911*x);
+    return Math.exp(-x*x)*t*(.254829592+t*(-.284496736+t*(1.421413741+t*(-1.453152027+t*1.061405429))));
+}
+function diffusion(D,t,Cs,x){
+    const length=Math.sqrt(D*t);
+    return {c:Cs*erfc(x/(2*length)),length,uptake:2*Cs*length/Math.sqrt(Math.PI)};
+}
+const Tc=647.096,pc=22064;
+function saturation(T){
+    const x=1-T/Tc;
+    return pc*Math.exp(Tc/T*(-7.85951783*x+1.84408259*x**1.5-11.7866497*x**3+22.6807411*x**3.5-15.9618719*x**4+1.80122502*x**7.5));
+}
+function dewPoint(p){
+    let a=263.15,b=410;
+    for(let i=0;i<65;i++){const m=(a+b)/2;if(saturation(m)<p)a=m;else b=m;}
+    return (a+b)/2;
+}
+const gammaField=(value=72)=>slider("gamma","Površinska napetost γ",20,90,1,value,"mN/m");
+const angleField=(value=30)=>slider("theta","Kontaktni kot θ",0,180,1,value,"°");
+const temperature=()=>slider("t","Temperatura",8,55,1,20,"°C");
+function arrow(x,y,X,Y,col=C){
+    const a=Math.atan2(Y-y,X-x),h=9;
+    return line(x,y,X,Y,col,3)+line(X,Y,X-h*Math.cos(a-.48),Y-h*Math.sin(a-.48),col,3)+line(X,Y,X-h*Math.cos(a+.48),Y-h*Math.sin(a+.48),col,3);
+}
+const lab={
+ tension:{
+    name:"Površinska napetost",intro:"Primerjaj silo na robu milnične opne z nadtlakom v kapljici ali mehurčku. Izberi, kateri količini želiš spreminjati.",
+    fields:[select("mode","Poskus","film",[["film","Milnična opna s premičnim robom"],["drop","Sferična kapljica"],["bubble","Tanek milnični mehurček"]]),gammaField(30),
+      {...slider("L","Dolžina roba",1,12,.5,5,"cm"),hide:s=>s.mode!=="film"},
+      {...slider("d","Premik roba",0,10,.5,3,"cm"),hide:s=>s.mode!=="film"},
+      {...slider("r","Polmer",.2,5,.1,1,"mm"),hide:s=>s.mode==="film"}],title:"Sila na robu ali skok tlaka",
+    show({mode,gamma,L,d,r}){
+        if(mode==="film"){
+            const x=278+d*15,h=45+L*10,y=140-h/2,F=2*gamma*L/100;
+            const svg=rect(80,y,x-80,h,"#c5f0e2")+line(80,y,490,y)+line(80,y+h,490,y+h)+line(80,y,80,y+h)+line(x,y-5,x,y+h+5,INK,6)
+                +arrow(x-4,140,x-65,140)+text(x-35,123,"2γL")+text(275,246,"Na premični rob delujeta obe površini opne.");
+            return {svg,note:"Puščica kaže silo opne, ki vleče rob nazaj. Zunanja sila za počasen premik deluje v nasprotno smer.",values:[pair("Sila opne",F,"mN"),pair("Prirastek obeh površin",2*L*d,"cm²"),pair("Delo zunanje sile",F*d/100,"mJ")],conclusion:"Dvojka v 2γL upošteva sprednjo in zadnjo mejo milnične opne."};
+        }
+        const dp=(mode==="bubble"?4:2)*gamma/r,rad=45+9*r;
+        let svg=disk(270,135,rad,"#c5f0e2");
+        if(mode==="bubble")svg+=disk(270,135,rad-7,"#f9f6ff");
+        svg+=arrow(270,135,270+rad,135)+text(270+rad/2,117,"r")+text(270,251,mode==="bubble"?"Dve meji: plin–opna in opna–plin":"Ena meja: kapljevina–plin");
+        return {svg,note:"Polmer je shematsko povečan. Pri tankem mehurčku uporabimo skoraj enaka notranji in zunanji polmer.",values:[pair("Notranji nadtlak",dp,"Pa"),pair("Polmer",r,"mm")],conclusion:"Pri istem γ ima manjši polmer večji Laplaceov nadtlak."};
+    }
+ },
+ absorption:{
+    name:"Absorpcija in difuzija",intro:"V mirujočo, sprva čisto kapljevino vstopa plin. Spreminjaj čas, parcialni tlak in difuzijski koeficient ter primerjaj koncentracijo na površini in v notranjosti.",
+    fields:[slider("time","Čas",10,1800,10,300,"s"),slider("p","Parcialni tlak plina",1,80,1,20,"kPa"),slider("H","Henryjev kₕ = cₛ/p",.01,.5,.01,.1,"mol/(m³·kPa)"),slider("D","Difuzijski koeficient",.2,3,.1,1.5,"· 10⁻⁹ m²/s"),slider("x","Globina meritve",0,8,.1,1,"mm")],
+    title:"Koncentracijski profil pod gladino",
+    show({time,p,H,D,x}){
+        const Cs=p*H, a=diffusion(D*1e-9,time,Cs,x/1000), f=u=>diffusion(D*1e-9,time,Cs,u/1000).c;
+        return {svg:chart({xmax:8,ymax:Cs*1.12,xLabel:"Globina (mm)",yLabel:"Koncentracija (mol/m³)",curves:[{points:series(0,8,f)}],dots:[[x,a.c]],shade:series(0,8,f)}),
+            note:"Osenčeni profil prikazuje količino na ploščino do globine 8 mm. Izpisana količina vključuje celoten modelni profil.",values:[pair("Koncentracija na meji",Cs,"mol/m³"),pair("Koncentracija na globini",a.c,"mol/m³"),pair("Značilna dolžina √(Dt)",a.length*1000,"mm"),pair("Absorbirano na ploščino",a.uptake*1000,"mmol/m²")],
+            conclusion:"Večji čas ali D razširi profil; pri stalnem kₕ višji parcialni tlak poveča koncentracijo na meji."};
+    }
+ },
+ angle:{
+    name:"Mejni kot in omočenje",intro:"Spremeni razlike medfaznih napetosti. Youngova enačba določi kot kapljice, če je mogoče delno omočenje.",
+    fields:[gammaField(),slider("diff","Razlika γSG − γSL",-100,100,1,45,"mN/m")],title:"Kot merimo skozi kapljevino",
+    show({gamma,diff}){
+        const ratio=diff/gamma,theta=Math.acos(Math.max(-1,Math.min(1,ratio)))*180/Math.PI;
+        let svg=line(38,192,512,192,INK,4)+text(275,238,"Trdna podlaga"),state;
+        if(ratio>=1){svg+=rect(132,182,286,9,"#c5f0e2");state="Meja popolnega omočenja ali širjenje v film.";}
+        else if(ratio<=-1){svg+=disk(275,121,70,"#c5f0e2");state="Meja neomočenja, θ → 180°. Skica ne upošteva teže kapljice.";}
+        else{
+            const a=deg(theta),r=76,left=275-r*Math.sin(a),right=275+r*Math.sin(a),large=theta>90?1:0;
+            svg+=`<path d="M${left} 192 A${r} ${r} 0 ${large} 1 ${right} 192 Z" fill="#c5f0e2" stroke="#22253a" stroke-width="2"/>`;
+            svg+=line(left,192,left+60,192,"#a67422",2,"4 3")+arrow(left,192,left+56*Math.cos(a),192-56*Math.sin(a),"#a67422");
+            svg+=`<path d="M${left+27} 192 A27 27 0 0 0 ${left+27*Math.cos(a)} ${192-27*Math.sin(a)}" fill="none" stroke="#5634aa" stroke-width="2"/>`+disk(left,192,3);
+            state=theta<90?"Kapljica dobro omoči podlago.":theta>90?"Kapljica slabše omoči podlago.":"Pri 90° je tangenta na stiku pravokotna na podlago.";
+        }
+        return {svg,note:"Zlata puščica je tangenta, vijolični lok označuje θ. Velikost kapljice je shematska in se pri risanju ne ohranja.",values:[pair("Kontaktni kot",theta,"°"),pair("Razmerje medfaznih napetosti",ratio)],conclusion:state};
+    }
+ },
+ capillary:{
+    name:"Kapilarne sile",intro:"Primerjaj ravnovesno gladino v cevki z gladino zunaj nje. Spreminjaj notranji polmer, gostoto ali kontaktni kot.",
+    fields:[gammaField(),angleField(),slider("r","Polmer cevke",.1,3,.05,.5,"mm"),slider("rho","Razlika gostot kapljevine in plina",650,1400,10,1000,"kg/m³")],title:"Dvig ali znižanje gladine v cevki",
+    show({gamma,theta,r,rho}){
+        const a=capillary(gamma/1000,r/1000,rho,theta),dx=20+5*r,x=268,base=140,
+          y=base-76*Math.tanh(a.h/.065),bend=20*ctheta(theta),left=x-dx,right=x+dx;
+        const svg=`<path d="M42 ${base}H${left}V242H42ZM${right} ${base}H${right+168}V242H${right}Z" fill="#d8ecff"/>`+
+            `<path d="M${left} ${y} Q${x} ${y+bend} ${right} ${y} V242H${left}Z" fill="#d8ecff"/>`+
+            line(42,base,490,base,"#697e8b",1.5,"6 4")+line(left,41,left,231)+line(right,41,right,231)+
+            `<path d="M${left} ${y} Q${x} ${y+bend} ${right} ${y}" fill="none" stroke="#5634aa" stroke-width="3"/>`+
+            (Math.abs(y-base)>4?arrow(right+29,base,right+29,y):"")+text(275,272,"Črtkano: gladina v širokem rezervoarju");
+        return {svg,note:"Prikaz višine in širine je shematski. Pozitivna sila je usmerjena navzgor.",values:[pair("Ravnovesni dvig h",100*a.h,"cm"),pair("Navpična kapilarna sila",1000*a.F,"mN"),pair("Polmer cevke",r,"mm")],
+            conclusion:a.h>0?"Konkavni meniskus: kapljevina se v cevki dvigne.":a.h<0?"Konveksni meniskus: kapljevina je v cevki nižje.":"Pri 90° ni navpičnega kapilarnega prispevka."};
+    }
+ },
+ kelvin:{
+    name:"Parni tlak nad ukrivljeno gladino",intro:"Primerjaj konveksno kapljico in konkavni meniskus. Polmer je na logaritemski lestvici, da lahko raziskuješ območje od nanometrov do mikrometra.",
+    fields:[temperature(),gammaField(),slider("logr","Logaritem polmera log₁₀(r/nm)",.3,3,.01,1),
+        select("shape","Izbrana gladina","convex",[["convex","Konveksna kapljica"],["concave","Konkavni meniskus"],["flat","Ravna gladina"]])],
+    title:"Kelvinova enačba: ravnovesni tlak pare",
+    show({t,gamma,logr,shape}){
+        const T=t+273.15,g=gamma/1000,p=saturation(T),sign=shape==="convex"?1:shape==="concave"?-1:0,r=10**logr;
+        const f=(u,s)=>kelvin(T,g,10**u*1e-9,s),value=f(logr,sign);
+        const ymin=f(.3,-1)*.93,ymax=f(.3,1)*1.05;
+        return {svg:chart({xmin:.3,xmax:3,ymin,ymax,xLabel:"log₁₀(r/nm)",yLabel:"Razmerje pᵣ/p∞",curves:[{points:series(.3,3,u=>f(u,1))},{points:series(.3,3,u=>f(u,-1)),color:B,dash:true},{points:[[.3,1],[3,1]],color:"#738395",dash:true}],dots:[[logr,value]]}),
+            note:"Vijolično: konveksna kapljica. Zeleno črtkano: konkavni meniskus. Vodoravna: ravna gladina. Pri izbrani ravni gladini polmer ni fizikalni parameter.",
+            values:[["Polmer ukrivljenosti",sign?fmt(r)+" nm":"∞"],pair("Tlak nad ravno gladino",p,"kPa"),pair("Ravnovesni tlak izbrane gladine",p*value,"kPa"),pair("Relativna sprememba",100*(value-1),"%")],
+            conclusion:sign>0?"Konveksna kapljica potrebuje višji parni tlak za ravnovesje.":sign<0?"Konkavni meniskus je lahko v ravnovesju že pod nasičenjem nad ravno gladino.":"Pri ravni gladini je ukrivljenost nič in Kelvinovega popravka ni."};
+    }
+ },
+ nucleation:{
+    name:"Prenasičena in podhlajena para",intro:"Nastavi dejanski parcialni tlak prek nasičitvenega razmerja S. Primerjaj temperaturo z rosiščem ter razišči usodo zametka.",
+    fields:[temperature(),gammaField(),slider("S","Nasičitveno razmerje S",.8,3,.01,1.2),
+      slider("x","Položaj zametka na vodoravni osi",.1,2.25,.05,1.4),
+      {...select("mode","Primerjava","homogeneous",[["homogeneous","Homogena nukleacija"],["heterogeneous","Primerjaj z omočenjem podlage"]]),hide:s=>s.S<=1},
+      {...angleField(60),hide:s=>s.S<=1||s.mode!=="heterogeneous"}],title:"Energijska ovira za nastanek kapljice",
+    show({t,gamma,S,x,mode,theta}){
+        const T=t+273.15,g=gamma/1000,p=saturation(T)*S,dew=dewPoint(p),r=critical(T,g,S);
+        const common=[pair("Parcialni tlak vodne pare",p,"kPa"),pair("Rosišče",dew-273.15,"°C"),pair("Rosišče minus temperatura",dew-T,"K")];
+        if(!r){
+            const f=u=>u*u-10e-9*R*T*Math.log(S)/(3*g*VM)*u**3;
+            return {svg:chart({xmax:2.25,ymax:1.12*f(2.25),xLabel:"r/(10 nm)",yLabel:"ΔG/(4πγ · (10 nm)²)",curves:[{points:series(0,2.25,f)}],dots:[[x,f(x)]]}),
+                note:"Brez prenasičenja ni končnega kritičnega polmera. Vodoravna os ima v tem prikazu referenco 10 nm.",
+                values:[...common,["Kritični polmer","Ni končne vrednosti"]],conclusion:S===1?"Nasičena para je lahko v ravnovesju z ravno gladino. Konveksne kapljice niso v tem ravnovesju.":"Nenasičena para: prosta energija z velikostjo zametka v modelu samo raste."};
+        }
+        const f=u=>3*u*u-2*u**3, h=mode==="heterogeneous",c=ctheta(theta),factor=(2+c)*(1-c)**2/4;
+        const curves=[{points:series(0,2.25,f)}];
+        if(h)curves.push({points:series(0,2.25,u=>f(u)*factor),color:B,dash:true});
+        return {svg:chart({xmax:2.25,ymin:-8,ymax:1.3,xLabel:"r/r*",yLabel:"ΔG/ΔG* homogene nukleacije",curves,dots:[[1,1],[x,f(x)]],markers:[1]}),
+            note:"Pri S > 1 je merilo vodoravne osi r*. "+(h?"Zeleno: idealizirana sferična kapa na ravni podlagi. Ukrivljenost pri vrhu ovire ostane ista, energijska ovira pa se spremeni.":"Vrh je ovira za homogeno nukleacijo. Rumena pika zunaj vrha prikazuje izbrani polmer."),
+            values:[...common,pair("Kritični polmer",r.r*1e9,"nm"),pair("Polmer izbranega zametka",x*r.r*1e9,"nm"),pair("Homogena ovira ΔG*/kᴮT",r.barrier/(KB*T)),...(h?[pair("Ovire na podlagi glede na homogeno",100*factor,"%")]:[])],
+            conclusion:x<1?"Izbrani zametek je pod kritičnim polmerom; zmanjšanje njegove velikosti zniža prosto energijo.":x>1?"Izbrani zametek je nad kritičnim polmerom; njegova nadaljnja rast zniža prosto energijo.":"Pri r* smo na vrhu energijske ovire. To je nestabilno ravnovesje."};
+    }
+ }
+};
+const settings=Object.fromEntries(Object.entries(lab).map(([key,s])=>[key,Object.fromEntries(s.fields.map(f=>[f.id,f.value]))]));
+const labButtons={};
+let active="temperature";
+function renderLab(){
+    const l=lab[active], s=settings[active], r=l.show(s);
+    for(const f of l.fields){
+        if(f.hide)$("field-"+f.id).hidden=f.hide(s);
+        if(!f.options)$("out-"+f.id).textContent=fmt(s[f.id])+(f.unit?" "+f.unit:"");
+    }
+    $("plot-title").textContent=l.title;
+    $("plot").setAttribute("aria-label",l.title);
+    $("plot").innerHTML=r.svg;
+    $("plot-note").textContent=r.note;
+    $("conclusion").textContent=r.conclusion;
+    $("values").innerHTML=r.values.map(([name,value])=>`<div class="metric">${name}<strong>${value}</strong></div>`).join("");
+}
+function fillSelect(el,options){
+    el.replaceChildren(...options.map(([id,name])=>{const o=document.createElement("option");o.value=id;o.textContent=name;return o;}));
+}
+function selectLab(key,focus=false){
+    active=key;
+    for(const [id,button] of Object.entries(labButtons))button.setAttribute("aria-pressed",String(id===key));
+    const l=lab[key],s=settings[key],controls=$("controls");
+    $("lab-title").textContent=l.name;
+    $("lab-intro").textContent=l.intro;
+    controls.replaceChildren();
+    for(const f of l.fields){
+        const row=document.createElement("div"), label=document.createElement("label");
+        const input=document.createElement(f.options?"select":"input");
+        row.id="field-"+f.id;input.id="control-"+f.id;label.htmlFor=input.id;label.textContent=f.label;
+        if(f.options)fillSelect(input,f.options);
+        else{
+            input.type="range";input.min=f.min;input.max=f.max;input.step=f.step;
+            const out=document.createElement("output");out.id="out-"+f.id;label.append(": ",out);
+        }
+        input.value=s[f.id];
+        input.oninput=()=>{s[f.id]=f.options?input.value:Number(input.value);renderLab();};
+        row.append(label,input);controls.append(row);
+    }
+    renderLab();
+    if(focus)$("control-"+l.fields[0].id).focus();
+}
+for(const [key,item] of Object.entries(lab)){
+    const button=document.createElement("button");button.type="button";button.textContent=item.name;
+    button.onclick=()=>selectLab(key,true);
+    $("lab-buttons").append(button);labButtons[key]=button;
+}
+$("restore").onclick=()=>{
+    Object.assign(settings[active],Object.fromEntries(lab[active].fields.map(f=>[f.id,f.value])));
+    selectLab(active,true);
+};
+function tab(id){
+    for(const section of document.querySelectorAll("main > section"))section.hidden=section.id!==id;
+    for(const button of document.querySelectorAll("[data-tab]"))button.setAttribute("aria-pressed",String(button.dataset.tab===id));
+}
+for(const button of document.querySelectorAll("[data-tab]"))button.onclick=()=>tab(button.dataset.tab);
+const missions=[
+ {name:"Koliko mej ima opna?",key:"tension",start:{mode:"film",L:5,gamma:30},q:"Zakaj pri premičnem robu milnične opne velja F = 2γL?",a:["Opna ima dve meji med kapljevino in zrakom","Sila vedno deluje na dva robova","γ se med raztegom podvoji"],i:0,why:"Na isti premični rob prispevata sprednja in zadnja površina."},
+ {name:"Štirikrat daljši čas",key:"absorption",start:{time:600},q:"Pri stalnem D in koncentraciji na gladini čas povečamo štirikrat. Kolikokrat večja je značilna difuzijska dolžina?",a:["Dvakrat","Štirikrat","Šestnajstkrat"],i:0,why:"Dolžina je sorazmerna s √t. V poskusu primerjaj 150 in 600 s."},
+ {name:"Mejni kot nad 90°",key:"angle",start:{gamma:72,diff:-36},q:"Razlika γSG − γSL je negativna. Kakšen je kontaktni kot v primeru delnega omočenja?",a:["Manjši od 90°","Enak 90°","Večji od 90°"],i:2,why:"Kosinus je negativen. Kot, merjen skozi kapljevino, je top."},
+ {name:"Ožja cevka",key:"capillary",start:{r:.5,theta:30},q:"Pri θ < 90° polmer kapilare prepolovimo. Kaj se zgodi z ravnovesnim dvigom?",a:["Prepolovi se","Podvoji se","Ostane enak"],i:1,why:"Pri stalnih γ, Δρ in θ velja h ∝ 1/r."},
+ {name:"Majhna konveksna kapljica",key:"kelvin",start:{logr:.7,shape:"convex"},q:"Kako se ravnovesni tlak pare ob zmanjšanju polmera konveksne kapljice spremeni?",a:["Naraste","Pade","Ostane enak"],i:0,why:"Pozitivna ukrivljenost 2/r naraste, zato po Kelvinovi enačbi naraste tudi tlak."},
+ {name:"Rast ali izhlapevanje?",key:"nucleation",start:{S:1.2,x:.7,mode:"homogeneous"},q:"V prenasičeni pari nastane zametek z r < r*. Kako se v klasičnem modelu nagiba spreminjati?",a:["Raste","Zmanjšuje se","Vedno ostane enak"],i:1,why:"Pod kritičnim polmerom je ravnovesni parni tlak nad zametkom večji od tlaka v okolici."}
+];
+fillSelect($("mission"),missions.map((m,i)=>[i,m.name]));
+function currentMission(){return missions[Number($("mission").value||0)];}
+function renderMission(){
+    const m=currentMission(), p=document.createElement("p"), group=document.createElement("div");
+    p.className="question";p.textContent=m.q;group.className="row";
+    $("mission-body").replaceChildren(p,group);$("mission-feedback").textContent="";
+    m.a.forEach((answer,i)=>{
+        const button=document.createElement("button");button.type="button";button.textContent=answer;button.setAttribute("aria-pressed","false");
+        button.onclick=()=>{
+            for(const other of group.children)other.setAttribute("aria-pressed",String(other===button));
+            $("mission-feedback").textContent=i===m.i?"Pravilno. "+m.why:"Poskusi še enkrat ali preveri v poskusu.";
+        };
+        group.append(button);
+    });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{
+    const m=currentMission();Object.assign(settings[m.key],Object.fromEntries(lab[m.key].fields.map(f=>[f.id,f.value])),m.start);tab("lab");selectLab(m.key,true);
+};
+
+
+
+
+const topics={tension:"Površinska napetost in Laplaceov tlak",absorption:"Absorpcija in difuzija",angle:"Mejni kot",capillary:"Kapilarne sile",kelvin:"Kelvinov parni tlak",nucleation:"Prenasičenje in nukleacija"};
+fillSelect($("topic"),[["all","Mešano"],...Object.entries(topics)]);
+function makeTask(key,level){
+ const hard=level===2,gamma=integer(25,80),L=integer(2,16),r=integer(3,35)/10;
+ const theta=integer(2,16)*10, T=integer(28,33)*10, S=1+integer(6,45)/100;
+ const q=(prompt,answer,unit,hint,steps)=>({key,prompt,answer,unit,hint,steps:steps+" ≈ "+fmt(answer)+" "+unit+"."});
+ switch(key){
+  case "tension":{
+   const factor=integer(0,1)?2:4, what=factor===4?"tankega milničnega mehurčka":"sferične kapljice";
+   return hard
+    ? q("Polmer "+what+" je "+fmt(r)+" mm, površinska napetost pa "+gamma+" mN/m. Kolikšen je notranji nadtlak v Pa?",factor*gamma/r,"Pa","Pri kapljici je ena meja, pri milničnem mehurčku dve.","Δp = "+factor+" · "+gamma+"/"+fmt(r))
+    : q("Milnična opna ima površinsko napetost "+gamma+" mN/m in premični rob dolžine "+L+" cm. Izračunaj silo opne v mN.",2*gamma*L/100,"mN","Opna ima dve površini. Dolžino pretvori v metre.","F = 2 · "+gamma+" · "+L+"/100");
+  }
+  case "absorption":{
+   const p=integer(5,55),H=integer(5,40)/100,D=integer(3,28)/10,time=integer(2,40)*30,Cs=p*H;
+   return hard
+    ? q("V mirujoči kapljevini je stalna koncentracija na površini "+fmt(Cs)+" mol/m³. Sprva je bila notranjost čista. Pri D = "+fmt(D)+" · 10⁻⁹ m²/s izračunaj absorbirano količino po "+time+" s v mmol/m². Kapljevina je dovolj globoka.",diffusion(D*1e-9,time,Cs,0).uptake*1000,"mmol/m²","Uporabi n/A = 2cₛ√(Dt/π), rezultat pomnoži s 1000.","1000 · 2 · "+fmt(Cs)+" · √("+fmt(D)+" · 10⁻⁹ · "+time+"/π)")
+    : q("Parcialni tlak je "+p+" kPa, Henryjev koeficient v zapisu cₛ = kₕp pa "+fmt(H)+" mol/(m³·kPa). Izračunaj koncentracijo tik pod gladino.",Cs,"mol/m³","Pomnoži parcialni tlak s koeficientom v dani konvenciji.","cₛ = "+fmt(H)+" · "+p);
+  }
+  case "angle":{
+   const diff=Math.round(gamma*.8)*(integer(0,1)?1:-1),ratio=diff/gamma;
+   return hard
+    ? q("Površinska napetost je "+gamma+" mN/m, mejni kot pa "+theta+"°. Kolikšna je razlika γSG − γSL s predznakom?",gamma*ctheta(theta),"mN/m","Youngova enačba: pomnoži γLG s kosinusom kota.","γSG − γSL = "+gamma+" · cos("+theta+"°)")
+    : q("V modelu delnega omočenja je γLG = "+gamma+" mN/m in γSG − γSL = "+diff+" mN/m. Kolikšen je kontaktni kot skozi kapljevino?",Math.acos(ratio)*180/Math.PI,"°","Izračunaj cos θ iz Youngove enačbe in uporabi arccos v stopinjah.","θ = arccos("+diff+"/"+gamma+")");
+  }
+  case "capillary":{
+   const rho=integer(8,12)*100, h=capillary(gamma/1000,r/1000,rho,theta).h;
+   return hard
+    ? q("V cevki notranjega polmera "+fmt(r)+" mm ima kapljevina γ = "+gamma+" mN/m in θ = "+theta+"°. Razlika gostot je "+rho+" kg/m³. Izračunaj kapilarno višino v cm s predznakom. Uporabi g = 9,81 m/s².",100*h,"cm","Uporabi Jurinovo enačbo. γ v N/m, r v m; negativni h je znižanje.","h = 100 · 2 · ("+gamma+"/1000) cos("+theta+"°)/("+rho+" · 9,81 · "+fmt(r)+"/1000)")
+    : q("Notranji polmer cevke je "+fmt(r)+" mm, γ = "+gamma+" mN/m in θ = "+theta+"°. Izračunaj navpično komponento kapilarne sile v mN s predznakom.",1000*capillary(gamma/1000,r/1000,rho,theta).F,"mN","Silo vzdolž oboda pomnoži s cos θ.","Fᵥ = 2π · ("+fmt(r)+"/1000) · "+gamma+" · cos("+theta+"°)");
+  }
+  case "kelvin":{
+   const nm=integer(3,30),sign=integer(0,1)?1:-1,p0=integer(10,40)/10,ratio=kelvin(T,gamma/1000,nm*1e-9,sign);
+   return hard
+    ? q("Pri "+T+" K je nasičeni tlak nad ravno gladino "+fmt(p0)+" kPa. Sferična gladina je "+(sign>0?"konveksna":"konkavna")+" s polmerom "+nm+" nm. Uporabi γ = "+gamma+" mN/m, Vₘ = 18 · 10⁻⁶ m³/mol in R ≈ 8,314. Izračunaj ravnovesni tlak.",p0*ratio,"kPa","Kelvinov eksponent je pozitiven za konveksno in negativen za konkavno gladino.","pᵣ = "+fmt(p0)+" · exp("+sign+" · 2γVₘ/(RT · "+nm+" · 10⁻⁹))")
+    : q("Ravnovesni tlak je zaradi ukrivljenosti "+fmt(ratio)+"-kratnik tlaka nad ravno gladino. Za koliko odstotkov se spremeni s predznakom?",100*(Number(ratio.toFixed(4))-1),"%","Od razmerja odštej 1 in pomnoži s 100.","Δ v % = 100 · ("+fmt(ratio)+" − 1)");
+  }
+  case "nucleation":{
+   const p0=integer(15,40)/10,p=p0*S;
+   return hard
+    ? q("Para pri "+T+" K ima S = "+fmt(S)+". Pri γ = "+gamma+" mN/m in Vₘ = 18 · 10⁻⁶ m³/mol izračunaj kritični polmer v nm. Uporabi R ≈ 8,314.",1e9*critical(T,gamma/1000,S).r,"nm","Vstavi v r* = 2γVₘ/(RT ln S) ter pretvori metre v nanometre.","r* = 10⁹ · 2γVₘ/(R · "+T+" · ln("+fmt(S)+"))")
+    : q("Dejanski parcialni tlak pare je "+fmt(p)+" kPa, nasičeni tlak nad ravno gladino pa "+fmt(p0)+" kPa. Izračunaj nasičitveno razmerje S.",S,"brez enote","Uporabi S = p/p∞. Če je S > 1, je para prenasičena.","S = "+fmt(p)+"/"+fmt(p0));
+  }
+  default:throw new Error("Neznana tema.");
+ }
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti. Dovoljeno je manjše odstopanje zaradi zaokroževanja konstant.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001 + Math.abs(task.answer)*0.00006){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Površinski pojavi · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+selectLab("tension");
+renderMission();
+generate();
+</script>
+</body>
+</html>
