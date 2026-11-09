@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivna kemija: atomi, izotopi, ioni, periodni sistem, kemijske vezi, Lewisove strukture in polarnost molekul.">
+<title>Zgradba snovi pri kemiji – Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.zk{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.zk *{box-sizing:border-box}.zk [hidden]{display:none!important}
+.zk .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.zk header.wrap{padding:25px 0 22px}.zk a{color:var(--accent);font-weight:750}
+.zk .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.zk .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.zk h1,.zk h2,.zk h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.zk h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.zk h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.zk h3{font-size:1.15rem;margin:0 0 9px}.zk p{margin:0 0 13px}.zk .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.zk .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.zk svg{display:block;width:100%;height:auto;overflow:visible}
+.zk nav,.zk .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.zk nav{margin:12px 0 24px}
+.zk button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.zk button:hover{background:var(--purple)}.zk button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.zk button[aria-pressed=true],.zk .primary{background:var(--yellow)}
+.zk button:disabled{opacity:.55;cursor:default}.zk :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.zk .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.zk .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.zk .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.zk .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.zk label{display:block;font-weight:700;margin:12px 0 4px}.zk label:first-child{margin-top:0}
+.zk input:not([type=checkbox]),.zk select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.zk input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.zk input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.zk output{color:var(--accent);font-weight:800}
+.zk .fine{font-size:.88rem;color:#4d5871}.zk .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.zk .lab-visual,.zk .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.zk .graph{cursor:crosshair}.zk .graph-label{font-weight:800;margin:7px 0 0}
+.zk .graph-group{min-width:0}.zk .graph-group p{margin:7px 0 0}
+.zk .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.zk .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.zk .metric:nth-child(2n){background:var(--mint)}.zk .metric strong{display:block;font-size:1.06rem}
+.zk .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.zk .lav{background:var(--purple)}.zk .accent-card{background:var(--yellow)}.zk .question{font-weight:700;font-size:1.06rem}
+.zk .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.zk details{margin:10px 0}.zk summary{cursor:pointer;font-weight:750}
+.zk .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.zk .question-card .row{margin-top:9px}.zk .question-card label{margin-top:9px}
+.zk .lesson{scroll-margin:15px}.zk .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.zk footer{padding:8px 0 28px}.zk .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.zk .grid,.zk .hero{grid-template-columns:1fr}.zk .hero-art{display:none}.zk .three{grid-template-columns:1fr}.zk .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.zk .wrap{width:calc(100% - 24px)}.zk .two{grid-template-columns:1fr}.zk nav button{flex:1 1 40%}.zk .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.zk{background:#fff;color:#000}body.zk.print-sheet > :not(#paper){display:none!important}body.zk.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.zk .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.zk .graph{cursor:default}
+.zk .subnote{margin-top:12px}
+.zk .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.zk .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.zk .graph-row{grid-template-columns:1fr}.zk .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.zk h1{font-size:clamp(44px,7vw,78px)}
+.zk .lab-visual{margin:10px 0 14px}
+.zk .lab-grid{align-items:start}
+.zk .plot-note{margin-top:10px}
+.zk .topic-buttons{margin:12px 0 24px}
+.zk .theory-grid .note{margin:0}
+.zk .theory-grid{margin:14px 0}
+.zk .mono{font-variant-numeric:tabular-nums}
+.zk .unit-table{border-collapse:collapse;width:100%;margin:12px 0}
+.zk .unit-table th,.zk .unit-table td{text-align:left;border-bottom:1px solid #bbc7ce;padding:6px}
+.zk .focus-box{margin-top:12px}
+.zk .hero h1{font-size:clamp(39px,6.4vw,76px);text-wrap:balance}
+</style>
+</head>
+<body class="zk">
+<header class="wrap">
+    <a href="../index.html">← Vsa orodja</a>
+    <div class="hero">
+        <div><span class="badge">SIDEBIT · KEMIJA</span><h1>Zgradba snovi</h1>
+        <p class="lead">Sestavi atom ali ion, razišči prvih 20 elementov in primerjaj vezi. Na modelih CO₂ in H₂O preveri, zakaj polarne vezi še ne pomenijo polarne molekule.</p></div>
+        <svg class="hero-art" viewBox="0 0 330 145" role="img" aria-label="Shematska prikaza atoma in molekule vode">
+            <g fill="none" stroke="#5634aa" stroke-width="2.5"><ellipse cx="82" cy="74" rx="51" ry="30"/><ellipse cx="82" cy="74" rx="51" ry="30" transform="rotate(60 82 74)"/><ellipse cx="82" cy="74" rx="51" ry="30" transform="rotate(-60 82 74)"/></g>
+            <circle cx="82" cy="74" r="12" fill="#ffe38b" stroke="#22253a" stroke-width="3"/>
+            <path d="M190 108l42-36 43 36" fill="none" stroke="#5634aa" stroke-width="5"/>
+            <circle cx="232" cy="72" r="24" fill="#ffe38b" stroke="#22253a" stroke-width="3"/>
+            <circle cx="190" cy="108" r="14" fill="#c5f0e2" stroke="#22253a" stroke-width="2"/>
+            <circle cx="275" cy="108" r="14" fill="#c5f0e2" stroke="#22253a" stroke-width="2"/>
+        </svg>
+    </div>
+    <nav aria-label="Poglavja">
+        <button type="button" data-tab="lab" aria-pressed="true">Laboratorij</button>
+        <button type="button" data-tab="challenge" aria-pressed="false">Učni izzivi</button>
+        <button type="button" data-tab="practice" aria-pressed="false">Generator nalog</button>
+        <button type="button" data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+    </nav>
+</header>
+<main class="wrap">
+<section id="lab">
+    <div class="card lav">
+        <span class="chip">Štirje interaktivni poskusi</span><h2>Izberi poskus</h2>
+        <div id="lab-buttons" class="row topic-buttons"></div>
+    </div>
+    <div class="grid lab-grid">
+        <div class="card">
+            <span class="chip">01 · Nastavi</span><h2 id="lab-title"></h2>
+            <p id="lab-intro"></p><div id="controls"></div>
+            <div class="row small-gap"><button type="button" id="restore">Ponastavi poskus</button></div>
+        </div>
+        <div class="card">
+            <span class="chip">02 · Opazuj</span><h2 id="plot-title"></h2>
+            <svg id="plot" class="lab-visual" viewBox="0 0 550 285" role="img" aria-label="Vizualni prikaz poskusa"></svg>
+            <p id="plot-note" class="fine plot-note"></p>
+            <div id="values" class="readouts mono"></div><p id="conclusion" class="focus-box"></p>
+        </div>
+    </div>
+</section>
+<section id="challenge" hidden>
+    <div class="card lav">
+        <span class="chip">Najprej napovej</span><h2>Učni izzivi</h2>
+        <label for="mission">Izberi izziv</label><select id="mission"></select>
+        <div id="mission-body" class="small-gap"></div>
+        <p id="mission-feedback" class="feedback" role="status"></p>
+        <button type="button" id="mission-open">Odpri poskus</button>
+    </div>
+</section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden>
+ <div class="card">
+  <h2>Od delcev v atomu do lastnosti snovi</h2>
+  <p>Kemijski pogled se začne z vprašanjem, kako so razporejeni elektroni in kako se delci povežejo. Za agregatna stanja in elastičnost kristalov odpri še <a href="zgradba_snovi.html">fizikalno poglavje Zgradba snovi</a>.</p>
+  <div class="two theory-grid">
+   <article class="note"><h3>1 · Atomi, izotopi in ioni</h3>
+    <p class="formula">Z = Nₚ &nbsp; · &nbsp; A = Nₚ + Nₙ &nbsp; · &nbsp; q/e = Nₚ − Nₑ</p>
+    <p>Vrstno število Z določa element. Masno število A velja za določen izotop: šteje protone in nevtrone, zato je celo. Izotopi istega elementa imajo enako Z, a različno število nevtronov. Relativna atomska masa v periodnem sistemu je običajno uteženo povprečje mas naravnih izotopov; ni isto kot A.</p>
+    <p>Nevtralni atom ima toliko elektronov kot protonov. Izguba elektronov da pozitivni ion (kation), pridobitev pa negativni ion (anion). Jedro se pri tem ne spremeni. Zapis ²³Na⁺ označuje natrijev ion z masnim številom 23 in nabojem +1.</p>
+   </article>
+   <article class="note lav"><h3>2 · Elektronska zgradba in periodni sistem</h3>
+    <p>Elementi so urejeni po naraščajočem Z. Vodoravne vrstice so periode, navpični stolpci skupine. Pri prvih 20 elementih lahko zasedenost nevtralnih atomov priročno povzamemo s številom elektronov po lupinah; natančnejši opis uporablja orbitale. Npr. natrij: 1s² 2s² 2p⁶ 3s¹, po lupinah 2–8–1. Kalij začne zapolnjevati 4s pred 3d.</p>
+    <p>Pri elementih glavnih skupin število valenčnih elektronov pomaga napovedati tipične vezi. Skupini 1 in 2 imata enega oziroma dva, skupine 13–18 pa tri do osem; helij ima dva. Vodik je v skupini 1, vendar ni alkalijska kovina.</p>
+    <p>Po periodi se atomski polmer običajno manjša, prva ionizacijska energija in elektronegativnost pa praviloma naraščata. Po skupini navzdol ima atom več zasedenih lupin in je navadno večji. Gre za trende z izjemami. Prva ionizacijska energija meri energijo za odstranitev elektrona iz plinastega nevtralnega atoma; elektronegativnost opisuje privlak veznih elektronov.</p>
+   </article>
+   <article class="note lav"><h3>3 · Ionska, kovalentna in kovinska vez</h3>
+    <p><strong>Ionska vez</strong> je elektrostatski privlak med nasprotno nabitimi ioni. NaCl v trdnini tvori ionsko mrežo; zapis NaCl pove razmerje 1 : 1, ne opisa ločenih molekul. Pri MgCl₂ en Mg²⁺ uravnotežita dva Cl⁻. Ionske trdnine navadno slabo prevajajo elektriko, njihove taline pa prevajajo, ker se ioni lahko premikajo.</p>
+    <p><strong>Kovalentna vez</strong> vključuje skupne elektronske pare. H₂ ima en vezni par, O₂ dva, N₂ tri. Kovalentne vezi so tudi v razsežnih mrežah, na primer v diamantu, kjer ni posameznih majhnih molekul. <strong>Kovinska vez</strong> vključuje delokalizirane valenčne elektrone, ki prispevajo k električni prevodnosti kovin.</p>
+    <p>Velika razlika elektronegativnosti pogosto kaže večji ionski značaj. Sama po sebi ni univerzalna meja, ki bi vedno ločila ionsko od kovalentne vezi.</p>
+   </article>
+   <article class="note"><h3>4 · Lewisov zapis</h3>
+    <ol><li>Seštej valenčne elektrone. Pri anionu dodaj elektrone, pri kationu jih odštej.</li><li>Postavi ogrodje in nariši enojne vezi. Vodik je vedno na robu preprostih molekul.</li><li>Razporedi nevezne pare. Pri izbranih preprostih primerih vodik zapolni duet, atomi druge periode pa praviloma oktet.</li><li>Po potrebi naredi dvojno ali trojno vez. Preveri skupno število elektronov in smiselnost formalnih nabojev.</li></ol>
+    <p class="formula">Formalni naboj = valenčni e⁻ − nevezni e⁻ − ½ veznih e⁻</p>
+    <p>Oktet je uporaben približek, ne splošni zakon. Primeri z nepopolnim oktetom, lihim številom elektronov ali resonanco zahtevajo dodatno razlago.</p>
+   </article>
+   <article class="note"><h3>5 · Oblika molekule (VSEPR)</h3>
+    <p>Elektronska območja okoli centralnega atoma se razporedijo čim bolj narazen. Enojna, dvojna ali trojna vez šteje kot eno vezno območje; nevezni par šteje kot eno nevezno območje. Dve območji sta linearno razporejeni (180°), tri trigonalno planarno (120°), štiri tetraedrično (približno 109,5°).</p>
+    <p>Oblika <em>molekule</em> opisuje lege atomov, zato pri poimenovanju ne štejemo neveznih parov kot atomov. V vodi sta dve vezi in dva nevezna para: elektronska razporeditev je tetraedrična, oblika molekule pa kotna (približno 104,5°). V NH₃ so tri vezi in en nevezni par; molekula je trigonalno piramidalna.</p>
+   </article>
+   <article class="note lav"><h3>6 · Polarnost vezi in molekul</h3>
+    <p>Če en atom v vezi močneje privlači vezni par, dobi delni negativni naboj δ−, drugi pa δ+. Za polarnost celotne molekule upoštevamo velikosti in smeri prispevkov; simetrija lahko povzroči izničenje. V linearnem CO₂ sta vezi C=O polarni, njuna prispevka se izničita. V kotni H₂O se ne izničita, zato je molekula polarna.</p>
+    <p>Medmolekulske sile, kot so disperzijske sile, dipolne interakcije in vodikove vezi, vplivajo na topnost in vrelišče. Loči jih od vezi <em>znotraj</em> molekule: pri običajnem vrenju vode se molekule razmaknejo, vezi O–H pa ostanejo.</p>
+   </article>
+  </div>
+  <details><summary>Rešen primer: koliko delcev ima ³⁷Cl⁻?</summary><p>Klor ima Z = 17, zato ima 17 protonov. A = 37 pomeni 20 nevtronov, naboj −1 pa pomeni 18 elektronov.</p></details>
+  <details><summary>Rešen primer: Lewisov zapis CO₂</summary><p>Ogljik prispeva 4, dva kisikova atoma pa skupaj 12 valenčnih elektronov. V zapisu O=C=O je osem elektronov v dvojnih vezeh, vsak kisik ima še dva nevezna para. Dve vezni območji okoli C dasta linearno obliko.</p></details>
+  <p class="fine small-gap">Viri: <a href="https://openstax.org/books/chemistry-2e/pages/2-5-the-periodic-table">OpenStax: periodni sistem</a>, <a href="https://openstax.org/books/chemistry/pages/6-5-periodic-variations-in-element-properties">periodični trendi</a> in <a href="https://openstax.org/books/chemistry-2e/pages/7-6-molecular-structure-and-polarity">oblika in polarnost molekul</a>.</p>
+ </div>
+</section>
+</main>
+<footer class="wrap"><p>Sidebit · Kemija · Zgradba snovi</p></footer>
+<div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const format=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:4,useGrouping:false});
+const fmt=x=>format.format(Math.abs(x)<1e-10?0:x);
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const C="#5634aa", B="#00806a", Y="#ffe38b", INK="#22253a";
+const line=(x,y,X,Y,color=INK,width=2,dash="")=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${color}" stroke-width="${width}" ${dash?'stroke-dasharray="'+dash+'"':""}/>`;
+const text=(x,y,s,anchor="middle")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="#364058" font-size="14" font-weight="650">${s}</text>`;
+const disk=(x,y,r=5,fill=Y)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${INK}" stroke-width="2"/>`;
+const rect=(x,y,w,h,fill,stroke=INK)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const series=(a,b,fn)=>Array.from({length:121},(_,i)=>{const x=a+(b-a)*i/120;return [x,fn(x)];});
+const axisFormat=new Intl.NumberFormat("sl-SI",{maximumSignificantDigits:4,useGrouping:false});
+const number=x=>axisFormat.format(x);
+function chart({xmin=0,xmax,ymin=0,ymax,xLabel,yLabel,curves,dots=[],shade=null,markers=[]}){
+    const left=72,right=521,top=35,bottom=222;
+    const X=x=>left+(right-left)*(x-xmin)/(xmax-xmin), Z=y=>bottom-(bottom-top)*(y-ymin)/(ymax-ymin);
+    const path=points=>points.map(([x,y],i)=>(i?"L":"M")+X(x)+" "+Z(y)).join(" ");
+    let svg='<defs><clipPath id="chem-plot-clip"><rect x="72" y="35" width="449" height="187"/></clipPath></defs>'+text(left,22,yLabel,"start")+text(right,275,xLabel,"end");
+    for(let i=0;i<=4;i++){
+        const x=xmin+(xmax-xmin)*i/4,y=ymin+(ymax-ymin)*i/4;
+        svg+=line(X(x),top,X(x),bottom,"#dce3ef",1)+line(left,Z(y),right,Z(y),"#dce3ef",1);
+        svg+=text(X(x),246,number(x))+text(left-9,Z(y)+5,number(y),"end");
+    }
+    svg+='<g clip-path="url(#chem-plot-clip)">';
+    if(shade?.length){
+        const [start]=shade,[end]=shade.slice(-1);
+        svg+=`<path d="${path(shade)} L${X(end[0])} ${Z(0)} L${X(start[0])} ${Z(0)} Z" fill="#ffe38b" opacity=".65"/>`;
+    }
+    svg+=line(left,top,left,bottom)+line(left,bottom,right,bottom);
+    for(const x of markers)svg+=line(X(x),top,X(x),bottom,"#a76b0d",1.5,"5 4");
+    for(const {points,color=C,dash=false} of curves)svg+=`<path d="${path(points)}" stroke="${color}" stroke-width="3.5" fill="none" ${dash?'stroke-dasharray="8 5"':""}/>`;
+    for(const [x,y] of dots)svg+=disk(X(x),Z(y));
+    return svg+"</g>";
+}
+function bars(data,unit){
+    const max=Math.max(1,...data.map(([,v])=>v));
+    return data.map(([label,value,color],i)=>{
+        const y=41+i*73;
+        return text(45,y,label+" · "+fmt(value)+" "+unit,"start")+rect(45,y+12,460,18,"#e9edf4","#dce3ef")+
+            (value>0 ? rect(45,y+12,460*value/max,18,color) : "");
+    }).join("");
+}
+const metric=(name,v,unit)=>[name,fmt(v)+(unit?" "+unit:"")];
+const slider=(id,label,min,max,step,value,unit="")=>({id,label,min,max,step,value,unit});
+const select=(id,label,value,options)=>({id,label,value,options});
+
+
+
+
+
+
+const pair=(name,v,unit="")=>metric(name,v,unit);
+const elements=[
+ ["H","Vodik",1,1,1,2.20,"nekovina"],["He","Helij",1,18,4,null,"žlahtni plin"],
+ ["Li","Litij",2,1,7,.98,"kovina"],["Be","Berilij",2,2,9,1.57,"kovina"],
+ ["B","Bor",2,13,11,2.04,"polkovina"],["C","Ogljik",2,14,12,2.55,"nekovina"],
+ ["N","Dušik",2,15,14,3.04,"nekovina"],["O","Kisik",2,16,16,3.44,"nekovina"],
+ ["F","Fluor",2,17,19,3.98,"nekovina"],["Ne","Neon",2,18,20,null,"žlahtni plin"],
+ ["Na","Natrij",3,1,23,.93,"kovina"],["Mg","Magnezij",3,2,24,1.31,"kovina"],
+ ["Al","Aluminij",3,13,27,1.61,"kovina"],["Si","Silicij",3,14,28,1.90,"polkovina"],
+ ["P","Fosfor",3,15,31,2.19,"nekovina"],["S","Žveplo",3,16,32,2.58,"nekovina"],
+ ["Cl","Klor",3,17,35,3.16,"nekovina"],["Ar","Argon",3,18,40,null,"žlahtni plin"],
+ ["K","Kalij",4,1,39,.82,"kovina"],["Ca","Kalcij",4,2,40,1.00,"kovina"]
+].map(([symbol,name,period,group,A,en,type],i)=>({symbol,name,period,group,A,en,type,Z:i+1,val:symbol==="He"?2:group>2?group-10:group}));
+const el=Object.fromEntries(elements.map(e=>[e.symbol,e]));
+const elementField=(id,label,value)=>select(id,label,value,elements.map(e=>[e.symbol,e.name+" ("+e.symbol+")"]));
+function shells(n){
+    const sizes=[2,8,8,3];
+    return sizes.map(v=>{const x=Math.min(v,n);n-=x;return x;}).filter(Boolean);
+}
+function particles(symbol,delta,charge){
+    const {Z,A}=el[symbol];return {Z,A:A+delta,N:A+delta-Z,e:Z-charge};
+}
+const chargeText=q=>q===0?"0":q>0?"+"+q:"−"+(-q);
+const superDigits="⁰¹²³⁴⁵⁶⁷⁸⁹";
+const isoText=(A,s,q)=>String(A).split("").map(x=>superDigits[Number(x)]).join("")+s+(q===1?"⁺":q===-1?"⁻":q===0?"":superDigits[Math.abs(q)]+(q>0?"⁺":"⁻"));
+const colors={H:"#fff",C:"#d8ecff",N:"#c5f0e2",O:"#ffd3da",Cl:"#c5f0e2",Na:"#ffe38b","Na⁺":"#ffe38b","Cl⁻":"#c5f0e2",Cu:"#ffd3ad"};
+const capType={"kovina":"#ffe38b","polkovina":"#e8ddff","nekovina":"#c5f0e2","žlahtni plin":"#d8ecff"};
+const bonds={
+ h2:{formula:"H₂",a:"H",b:"H",n:1,l:[0,0],name:"Nepolarna kovalentna vez"},
+ cl2:{formula:"Cl₂",a:"Cl",b:"Cl",n:1,l:[3,3],name:"Nepolarna kovalentna vez"},
+ hcl:{formula:"HCl",a:"H",b:"Cl",n:1,l:[0,3],name:"Polarna kovalentna vez"},
+ o2:{formula:"O₂",a:"O",b:"O",n:2,l:[2,2],name:"Nepolarna kovalentna vez"},
+ n2:{formula:"N₂",a:"N",b:"N",n:3,l:[1,1],name:"Nepolarna kovalentna vez"},
+ nacl:{formula:"NaCl",name:"Ionska vez"},
+ cu:{formula:"Cu",name:"Kovinska vez"}
+};
+const TETRA=[[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]].map(p=>p.map(x=>x/Math.sqrt(3)));
+const PAIRS=[[1,0,0],[-1,0,0]];
+const waterAng=104.5*Math.PI/360;
+const shapes={
+ co2:{formula:"CO₂",center:"C",outer:"O",v:PAIRS,pairs:0,electron:"Linearna",shape:"Linearna",angle:"180°",polar:false,bond:2,total:16,note:"Enaki prispevki vezi C=O kažeta v nasprotni smeri in se izničita."},
+ h2o:{formula:"H₂O",center:"O",outer:"H",v:[[-Math.sin(waterAng),Math.cos(waterAng),0],[Math.sin(waterAng),Math.cos(waterAng),0]],pairs:2,electron:"Tetraedrična",shape:"Kotna",angle:"≈ 104,5°",polar:true,bond:1,total:8,note:"Prispevka obeh vezi kažeta proti kisiku; njuna vsota ni nič."},
+ bf3:{formula:"BF₃",center:"B",outer:"F",v:[0,1,2].map(i=>[Math.sin(i*2*Math.PI/3),-Math.cos(i*2*Math.PI/3),0]),pairs:0,electron:"Trigonalno planarna",shape:"Trigonalno planarna",angle:"120°",polar:false,bond:1,total:24,note:"Tri enake polarne vezi so simetrično razporejene. Bor je v tem Lewisovem zapisu primer nepopolnega okteta."},
+ ch4:{formula:"CH₄",center:"C",outer:"H",v:TETRA,pairs:0,electron:"Tetraedrična",shape:"Tetraedrična",angle:"≈ 109,5°",polar:false,bond:1,total:8,note:"Tetraedrična simetrija izniči prispevke vseh štirih enakih vezi."},
+ nh3:{formula:"NH₃",center:"N",outer:"H",v:[0,1,2].map(i=>[Math.sin(i*2*Math.PI/3)*.928,.372,Math.cos(i*2*Math.PI/3)*.928]),pairs:1,electron:"Tetraedrična",shape:"Trigonalno piramidalna",angle:"≈ 107°",polar:true,bond:1,total:8,note:"Nevezni par in razporeditev atomov povzročita nesimetrično piramidalno obliko. Prispevki se ne izničijo."}
+};
+function arrow(x,y,X,Y,col=B){
+    const a=Math.atan2(Y-y,X-x),h=8;
+    return line(x,y,X,Y,col,2.4)+line(X,Y,X-h*Math.cos(a-.47),Y-h*Math.sin(a-.47),col,2.4)+line(X,Y,X-h*Math.cos(a+.47),Y-h*Math.sin(a+.47),col,2.4);
+}
+function loneDots(cx,cy,count,side){
+    let svg="";
+    for(const [dx,dy] of [[side*35,0],[0,-36],[0,36]].slice(0,count)){
+        for(const d of [-4,4])svg+=`<circle cx="${cx+dx+(dx===0?d:0)}" cy="${cy+dy+(dy===0?d:0)}" r="2.7" fill="#5634aa"/>`;
+    }
+    return svg;
+}
+function atomPicture(x,y,s,r=24){
+    return disk(x,y,r,colors[s]||"#e8ddff")+text(x,y+5,s);
+}
+function geometry(m,rotation,showArrows){
+    const a=rotation*Math.PI/180,center=[275,132],space=m.formula==="CH₄"||m.formula==="NH₃";
+    const tilt=space ? .28 : 0;
+    const project=([x,y,z])=>{
+        const X=x*Math.cos(a)+z*Math.sin(a),Z=z*Math.cos(a)-x*Math.sin(a);
+        return [center[0]+87*X,center[1]+87*(y*Math.cos(tilt)-Z*Math.sin(tilt)),Z];
+    };
+    const points=m.v.map(project).sort((a,b)=>a[2]-b[2]);
+    let svg="";
+    for(const [X,Y,z] of points){
+        const dx=X-center[0],dy=Y-center[1],r=Math.hypot(dx,dy);
+        const ox=r>1?-4*dy/r:0,oy=r>1?4*dx/r:0;
+        for(const j of (m.bond===2?[-1,1]:[0]))svg+=line(center[0]+j*ox,center[1]+j*oy,X+j*ox,Y+j*oy,C,4,z<-.35?"6 4":"");
+    }
+    for(const [X,Y] of points)svg+=atomPicture(X,Y,m.outer,17);
+    svg+=atomPicture(...center,m.center,23);
+    if(showArrows)for(const [X,Y] of points){
+        const dx=X-center[0],dy=Y-center[1],r=Math.hypot(dx,dy);if(r<45)continue;
+        const towardOuter=el[m.outer].en>el[m.center].en;
+        const start=towardOuter ? .34 : .76,end=towardOuter ? .76 : .34, ox=-8*dy/r,oy=8*dx/r;
+        svg+=arrow(center[0]+dx*start+ox,center[1]+dy*start+oy,center[0]+dx*end+ox,center[1]+dy*end+oy);
+    }
+    return svg+text(275,252,showArrows?"Zelene puščice kažejo proti delnemu negativnemu naboju.":"Projekcija modela; črtkana vez kaže za ravnino pogleda.");
+}
+const lab={
+ atom:{
+    name:"Sestavi atom ali ion",intro:"Izberi element, spremeni število nevtronov in nastavi naboj. Spremljaj, kateri delci se spremenijo.",
+    fields:[elementField("el","Element","Cl"),slider("delta","Sprememba števila nevtronov od izbranega A",0,3,1,2),slider("q","Naboj v osnovnih nabojih",-1,1,1,-1)],title:"Jedro in elektronske lupine",
+    show({el:s,delta,q}){
+        const p=particles(s,delta,q),l=shells(p.e),x=275,y=130;let svg="";
+        l.forEach((n,i)=>{
+            const r=34+i*25;svg+=`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#adbad3" stroke-width="1.5"/>`;
+            for(let j=0;j<n;j++){const a=2*Math.PI*j/n+i*.7;svg+=disk(x+r*Math.cos(a),y+r*Math.sin(a),4,C);}
+        });
+        svg+=atomPicture(x,y,s,23)+text(88,130,isoText(p.A,s,q));
+        return {svg,note:"Lupine so shematski prikaz zasedenosti; elektroni niso na klasičnih tirnicah. Drsniki štejejo delce, zato kombinacija ni nujno stabilen izotop ali običajen ion.",values:[["Zapis",isoText(p.A,s,q)],pair("Protoni",p.Z),pair("Nevtroni",p.N),pair("Elektroni",p.e),["Lupine",l.join("–")||"Brez elektronov"],["Naboj",chargeText(q)+" e"]],conclusion:"Nevtroni spremenijo masno število, elektroni pa naboj. Element določa število protonov."};
+    }
+ },
+ periodic:{
+    name:"Periodni sistem",intro:"Primerjaj dva izmed prvih 20 elementov. Na skici poišči njuni skupini in periodi.",
+    fields:[elementField("a","Prvi element","Na"),elementField("b","Drugi element","Cl")],title:"Prvih 20 elementov in periodični trendi",
+    show({a,b}){
+        const groups=[1,2,13,14,15,16,17,18],X=g=>42+groups.indexOf(g)*60,Y=p=>45+(p-1)*51;
+        let svg=groups.map(g=>text(X(g)+25,30,String(g))).join("");
+        for(const e of elements){
+            const x=X(e.group),y=Y(e.period),fill=capType[e.type],stroke=e.symbol===a?C:e.symbol===b?B:"#b2bacc";
+            svg+=rect(x,y,50,40,fill,stroke)+text(x+25,y+25,e.symbol);
+            if(e.symbol===a||e.symbol===b)svg+=`<rect x="${x+1}" y="${y+1}" width="48" height="38" rx="6" fill="none" stroke="${stroke}" stroke-width="3"/>`;
+        }
+        const m=el[a],n=el[b],unknown=x=>x.en===null?"ni podana":fmt(x.en);
+        const delta=m.en!==null&&n.en!==null?fmt(Math.abs(m.en-n.en)):"—";
+        return {svg,note:"Prikaz vsebuje le prvih 20 elementov. Stolpci 3–12 niso prikazani. Barve ločijo vrste elementov; vijolični in zeleni okvir označujeta izbor.",values:[[m.symbol+" · skupina / perioda",m.group+" / "+m.period],[n.symbol+" · skupina / perioda",n.group+" / "+n.period],[m.symbol+" / "+n.symbol+" · valenčni e⁻",m.val+" / "+n.val],[m.symbol+" / "+n.symbol+" · elektronegativnost",unknown(m)+" / "+unknown(n)],["Razlika elektronegativnosti",delta]],conclusion:"Primerjaj Na in Cl v isti periodi, nato Li in Na v isti skupini. Pri žlahtnih plinih v tem prikazu elektronegativnost ni podana."};
+    }
+ },
+ bonding:{
+    name:"Vezi in Lewisovi zapisi",intro:"Primerjaj skupne elektronske pare, ionsko mrežo in model kovinske vezi.",
+    fields:[select("b","Primer","hcl",Object.entries(bonds).map(([id,v])=>[id,v.formula+" · "+v.name]))],title:"Kako se delci povežejo?",
+    show({b}){
+        const d=bonds[b];let svg="";
+        if(b==="nacl"||b==="cu"){
+            for(let i=0;i<24;i++){
+                const x=112+i%6*63,y=49+Math.floor(i/6)*48,odd=(i+Math.floor(i/6))%2;
+                svg+=atomPicture(x,y,b==="cu"?"Cu":odd?"Cl⁻":"Na⁺",19);
+                if(b==="cu"&&i%6<5)svg+=disk(x+30,y+13,3,C);
+            }
+            return {svg,note:b==="cu"?"Shematski model kovine: elektroni niso vezani na posamezno jedro. Pike ne predstavljajo dejanskega števila elektronov.":"Model mreže je le shematski dvodimenzionalni prerez; NaCl označuje razmerje ionov.",values:[["Primer",d.formula],["Vrsta vezi",d.name],["Gradniki",b==="cu"?"Ionska jedra in delokalizirani elektroni":"Na⁺ in Cl⁻ v razmerju 1 : 1"]],conclusion:b==="cu"?"Gibljivi elektroni prispevajo k električni prevodnosti kovine.":"Nasprotno nabiti ioni se privlačijo; v ionskem kristalu se mreža ponavlja."};
+        }
+        const cy=123;
+        for(let i=0;i<d.n;i++)svg+=line(199,cy+(i-(d.n-1)/2)*10,351,cy+(i-(d.n-1)/2)*10,C,3);
+        svg+=atomPicture(180,cy,d.a)+atomPicture(370,cy,d.b)+loneDots(180,cy,d.l[0],-1)+loneDots(370,cy,d.l[1],1);
+        return {svg,note:"Vsaka črta predstavlja en vezni elektronski par, dve piki pa en nevezni par.",values:[["Primer",d.formula],["Vrsta vezi",d.name],pair("Vezni pari",d.n),pair("Nevezni pari skupaj",d.l[0]+d.l[1]),pair("Valenčni elektroni skupaj",el[d.a].val+el[d.b].val)],conclusion:b==="hcl"?"Klor močneje privlači vezni par: Cl je δ−, H pa δ+.":"Enaka atoma v tej vezi enako privlačita vezne elektrone."};
+    }
+ },
+ shape:{
+    name:"Oblika in polarnost",intro:"Primerjaj molekule po modelu VSEPR. Pri prostorskih primerih zavrti model. Vklopi puščice za prispevke polarnih vezi.",
+    fields:[select("mol","Molekula","h2o",Object.entries(shapes).map(([id,v])=>[id,v.formula])),
+        {...slider("rot","Zasuk okoli navpične osi",0,360,5,20,"°"),hide:s=>!["ch4","nh3"].includes(s.mol)},
+        select("arrows","Prikaz","on",[["on","Pokaži smeri polarnih vezi"],["off","Samo oblika"]])],title:"Simetrija odloča o izničenju prispevkov",
+    show({mol,rot,arrows}){
+        const m=shapes[mol],spin=["ch4","nh3"].includes(mol)?rot:0;
+        return {svg:geometry(m,spin,arrows==="on"),note:"Črtkana vez kaže proti ozadju projekcije. Nevezni pari niso narisani kot atomi; njihove podatke preberi spodaj. Puščice kažejo smeri, ne velikosti dipolov.",
+            values:[["Elektronska razporeditev",m.electron],["Oblika molekule",m.shape],pair("Nevezni pari na sredini",m.pairs),["Značilni kot",m.angle],["Molekula",m.polar?"Polarna":"Nepolarna"],pair("Vsa valenčna e⁻",m.total)],conclusion:m.note};
+    }
+ }
+};
+const settings=Object.fromEntries(Object.entries(lab).map(([key,s])=>[key,Object.fromEntries(s.fields.map(f=>[f.id,f.value]))]));
+const labButtons={};
+let active="temperature";
+function renderLab(){
+    const l=lab[active], s=settings[active], r=l.show(s);
+    for(const f of l.fields){
+        if(f.hide)$("field-"+f.id).hidden=f.hide(s);
+        if(!f.options)$("out-"+f.id).textContent=fmt(s[f.id])+(f.unit?" "+f.unit:"");
+    }
+    $("plot-title").textContent=l.title;
+    $("plot").setAttribute("aria-label",l.title);
+    $("plot").innerHTML=r.svg;
+    $("plot-note").textContent=r.note;
+    $("conclusion").textContent=r.conclusion;
+    $("values").innerHTML=r.values.map(([name,value])=>`<div class="metric">${name}<strong>${value}</strong></div>`).join("");
+}
+function fillSelect(el,options){
+    el.replaceChildren(...options.map(([id,name])=>{const o=document.createElement("option");o.value=id;o.textContent=name;return o;}));
+}
+function selectLab(key,focus=false){
+    active=key;
+    for(const [id,button] of Object.entries(labButtons))button.setAttribute("aria-pressed",String(id===key));
+    const l=lab[key],s=settings[key],controls=$("controls");
+    $("lab-title").textContent=l.name;
+    $("lab-intro").textContent=l.intro;
+    controls.replaceChildren();
+    for(const f of l.fields){
+        const row=document.createElement("div"), label=document.createElement("label");
+        const input=document.createElement(f.options?"select":"input");
+        row.id="field-"+f.id;input.id="control-"+f.id;label.htmlFor=input.id;label.textContent=f.label;
+        if(f.options)fillSelect(input,f.options);
+        else{
+            input.type="range";input.min=f.min;input.max=f.max;input.step=f.step;
+            const out=document.createElement("output");out.id="out-"+f.id;label.append(": ",out);
+        }
+        input.value=s[f.id];
+        input.oninput=()=>{s[f.id]=f.options?input.value:Number(input.value);renderLab();};
+        row.append(label,input);controls.append(row);
+    }
+    renderLab();
+    if(focus)$("control-"+l.fields[0].id).focus();
+}
+for(const [key,item] of Object.entries(lab)){
+    const button=document.createElement("button");button.type="button";button.textContent=item.name;
+    button.onclick=()=>selectLab(key,true);
+    $("lab-buttons").append(button);labButtons[key]=button;
+}
+$("restore").onclick=()=>{
+    Object.assign(settings[active],Object.fromEntries(lab[active].fields.map(f=>[f.id,f.value])));
+    selectLab(active,true);
+};
+function tab(id){
+    for(const section of document.querySelectorAll("main > section"))section.hidden=section.id!==id;
+    for(const button of document.querySelectorAll("[data-tab]"))button.setAttribute("aria-pressed",String(button.dataset.tab===id));
+}
+for(const button of document.querySelectorAll("[data-tab]"))button.onclick=()=>tab(button.dataset.tab);
+const missions=[
+ {name:"Izotop klora in naboj",key:"atom",start:{el:"Cl",delta:2,q:-1},q:"Koliko elektronov ima ion ³⁷Cl⁻? Klor ima Z = 17.",a:["16","17","18"],i:2,why:"Negativni naboj −1 pomeni en elektron več kot pri nevtralnem atomu."},
+ {name:"Natrij in litij",key:"periodic",start:{a:"Li",b:"Na"},q:"Zakaj sta litij in natrij v isti skupini?",a:["Imata enako število lupin","Oba imata en valenčni elektron","Imata enako število protonov"],i:1,why:"Nevtralna Li in Na imata razporeditvi 2–1 in 2–8–1."},
+ {name:"Dvojna vez",key:"bonding",start:{b:"o2"},q:"Koliko elektronov je v dvojni vezi O=O?",a:["2","4","6"],i:1,why:"Dvojna vez vsebuje dva skupna elektronska para."},
+ {name:"Polarne vezi, nepolarna molekula",key:"shape",start:{mol:"co2",arrows:"on"},q:"Zakaj je CO₂ kot celota nepolaren, čeprav sta vezi C=O polarni?",a:["Ker je linearen in se prispevka izničita","Ker elektroni nimajo naboja","Ker je kot med vezema 90°"],i:0,why:"V linearni molekuli sta enaka prispevka usmerjena nasprotno."}
+];
+fillSelect($("mission"),missions.map((m,i)=>[i,m.name]));
+function currentMission(){return missions[Number($("mission").value||0)];}
+function renderMission(){
+    const m=currentMission(), p=document.createElement("p"), group=document.createElement("div");
+    p.className="question";p.textContent=m.q;group.className="row";
+    $("mission-body").replaceChildren(p,group);$("mission-feedback").textContent="";
+    m.a.forEach((answer,i)=>{
+        const button=document.createElement("button");button.type="button";button.textContent=answer;button.setAttribute("aria-pressed","false");
+        button.onclick=()=>{
+            for(const other of group.children)other.setAttribute("aria-pressed",String(other===button));
+            $("mission-feedback").textContent=i===m.i?"Pravilno. "+m.why:"Poskusi še enkrat ali preveri v poskusu.";
+        };
+        group.append(button);
+    });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{
+    const m=currentMission();Object.assign(settings[m.key],Object.fromEntries(lab[m.key].fields.map(f=>[f.id,f.value])),m.start);tab("lab");selectLab(m.key,true);
+};
+
+
+
+
+
+
+const topics={atom:"Atomi, izotopi in ioni",periodic:"Periodni sistem",bonding:"Vezi in Lewisovi zapisi",shape:"Oblika molekul in polarnost"};
+fillSelect($("topic"),[["all","Mešano"],...Object.entries(topics)]);
+function makeTask(key,level){
+    const e=elements[integer(0,19)], d=integer(0,4), charge=integer(-1,1), count=integer(2,10);
+    const hard=level===2;
+    const q=(prompt,answer,unit,hint,steps)=>({key,prompt,answer,unit,hint,steps:steps+" = "+fmt(answer)+" "+unit+"."});
+    if(key==="atom"){
+        const p=particles(e.symbol,d,charge);
+        return hard
+         ?q("Jedro ima Z = "+p.Z+", A = "+p.A+", delec pa ima "+p.e+" elektronov. Določi njegov naboj v enotah osnovnega naboja.",charge,"e","Od števila protonov odštej število elektronov.","q/e = "+p.Z+" − "+p.e)
+         :q("Izotop ima vrstno število "+p.Z+" in masno število "+p.A+". Koliko nevtronov je v njegovem jedru?",p.N,"nevtronov","Uporabi N = A − Z.","N = "+p.A+" − "+p.Z);
+    }
+    if(key==="periodic"){
+        const other=elements[integer(0,19)];
+        return hard
+         ?q("Preštej valenčne elektrone enega nevtralnega atoma "+e.symbol+" in enega nevtralnega atoma "+other.symbol+" (prvih 20 elementov, glavne skupine). Koliko jih je skupaj?",e.val+other.val,"elektronov","Pri glavnih skupinah pomagata položaja elementov; pri He sta 2.","N = "+e.val+" + "+other.val)
+         :q("Nevtralni atom "+e.symbol+" ima Z = "+e.Z+". Koliko elektronov je v njegovi zunanji zasedeni lupini v osnovnem stanju?",e.val,"elektronov","Izpiši zasedenost lupin za nevtralni atom.","Lupine: "+shells(e.Z).join("–")+"; zunanja lupina");
+    }
+    if(key==="bonding"){
+        const set=Object.values(bonds).filter(v=>v.n),b=set[integer(0,set.length-1)];
+        return hard
+         ?q("V vzorcu je "+count+" molekul "+b.formula+". Koliko neveznih elektronskih parov vsebujejo skupaj v osnovnem Lewisovem zapisu?",count*(b.l[0]+b.l[1]),"parov","Najprej določi nevezne pare v eni molekuli. Pare v vezeh izloči.","N = "+count+" · ("+b.l[0]+" + "+b.l[1]+")")
+         :q("V vzorcu je "+count+" molekul "+b.formula+". Koliko elektronov je skupaj v vseh njihovih veznih parih?",count*b.n*2,"elektronov","Vsaka enojna črta pomeni dva elektrona; dvojna ali trojna vez ima več parov.","N = "+count+" · "+b.n+" · 2");
+    }
+    if(key==="shape"){
+        const all=Object.values(shapes),m=all[integer(0,all.length-1)];
+        return hard
+         ?q("V vzorcu je "+count+" molekul "+m.formula+". Koliko valenčnih elektronov imajo skupaj vsi atomi v teh molekulah?",count*m.total,"elektronov","Seštej valenčne elektrone po formuli ene molekule in pomnoži s številom molekul.","N = "+count+" · "+m.total)
+         :q("V vzorcu je "+count+" molekul "+m.formula+". Koliko elektronskih območij je skupaj okoli vseh njihovih centralnih atomov? Štej vezna in nevezna območja.",count*(m.v.length+m.pairs),"območij","Vsaka vez, tudi dvojna, predstavlja eno območje. Dodaj nevezne pare na centralnem atomu.","N = "+count+" · ("+m.v.length+" + "+m.pairs+")");
+    }
+    throw new Error("Neznana tema.");
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti. Dovoljeno je manjše odstopanje zaradi zaokroževanja konstant.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001 + Math.abs(task.answer)*0.00006){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Kemija: Zgradba snovi · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+selectLab("atom");
+renderMission();
+generate();
+</script>
+</body>
+</html>
