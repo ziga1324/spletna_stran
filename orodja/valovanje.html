@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivna fizika: lastni načini, stoječe in potujoče valovanje, zvok, interferenca, odboj, lom in valovanje v trdninah.">
+<title>Valovanje – Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.vl{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.vl *{box-sizing:border-box}.vl [hidden]{display:none!important}
+.vl .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.vl header.wrap{padding:25px 0 22px}.vl a{color:var(--accent);font-weight:750}
+.vl .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.vl .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.vl h1,.vl h2,.vl h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.vl h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.vl h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.vl h3{font-size:1.15rem;margin:0 0 9px}.vl p{margin:0 0 13px}.vl .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.vl .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.vl svg{display:block;width:100%;height:auto;overflow:visible}
+.vl nav,.vl .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.vl nav{margin:12px 0 24px}
+.vl button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.vl button:hover{background:var(--purple)}.vl button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.vl button[aria-pressed=true],.vl .primary{background:var(--yellow)}
+.vl button:disabled{opacity:.55;cursor:default}.vl :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.vl .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.vl .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.vl .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.vl .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.vl label{display:block;font-weight:700;margin:12px 0 4px}.vl label:first-child{margin-top:0}
+.vl input:not([type=checkbox]),.vl select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.vl input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.vl input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.vl output{color:var(--accent);font-weight:800}
+.vl .fine{font-size:.88rem;color:#4d5871}.vl .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.vl .lab-visual,.vl .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.vl .graph{cursor:crosshair}.vl .graph-label{font-weight:800;margin:7px 0 0}
+.vl .graph-group{min-width:0}.vl .graph-group p{margin:7px 0 0}
+.vl .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.vl .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.vl .metric:nth-child(2n){background:var(--mint)}.vl .metric strong{display:block;font-size:1.06rem}
+.vl .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.vl .lav{background:var(--purple)}.vl .accent-card{background:var(--yellow)}.vl .question{font-weight:700;font-size:1.06rem}
+.vl .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.vl details{margin:10px 0}.vl summary{cursor:pointer;font-weight:750}
+.vl .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.vl .question-card .row{margin-top:9px}.vl .question-card label{margin-top:9px}
+.vl .lesson{scroll-margin:15px}.vl .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.vl footer{padding:8px 0 28px}.vl .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.vl .grid,.vl .hero{grid-template-columns:1fr}.vl .hero-art{display:none}.vl .three{grid-template-columns:1fr}.vl .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.vl .wrap{width:calc(100% - 24px)}.vl .two{grid-template-columns:1fr}.vl nav button{flex:1 1 40%}.vl .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.vl{background:#fff;color:#000}body.vl.print-sheet > :not(#paper){display:none!important}body.vl.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.vl .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.vl .graph{cursor:default}
+.vl .subnote{margin-top:12px}
+.vl .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.vl .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.vl .graph-row{grid-template-columns:1fr}.vl .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.vl h1{font-size:clamp(44px,7vw,78px)}
+.vl .lab-visual{margin:10px 0 14px}
+.vl .lab-grid{align-items:start}
+.vl .plot-note{margin-top:10px}
+.vl .topic-buttons{margin:12px 0 24px}
+.vl .theory-grid .note{margin:0}
+.vl .theory-grid{margin:14px 0}
+.vl .mono{font-variant-numeric:tabular-nums}
+.vl .unit-table{border-collapse:collapse;width:100%;margin:12px 0}
+.vl .unit-table th,.vl .unit-table td{text-align:left;border-bottom:1px solid #bbc7ce;padding:6px}
+.vl .focus-box{margin-top:12px}
+.vl .hero h1{font-size:clamp(39px,6.4vw,76px);text-wrap:balance}
+</style>
+</head>
+<body class="vl">
+<header class="wrap">
+    <a href="../index.html">← Vsa orodja</a>
+    <div class="hero">
+        <div><span class="badge">SIDEBIT · FIZIKA</span><h1>Valovanje</h1>
+        <p class="lead">Sestavi lastne načine, odbij sunek na vrvi in poišči tlačne vozle v zaprti cevi. Nato spremljaj zvok v vodi, vetru in trdninah.</p></div>
+        <svg class="hero-art" viewBox="0 0 330 145" role="img" aria-label="Dva lastna načina nihanja strune">
+            <path d="M30 77h270" fill="none" stroke="#718096" stroke-width="2" stroke-dasharray="5 5"/>
+            <path d="M30 77c60-78 210-78 270 0M30 77q68 85 135 0t135 0" fill="none" stroke="#5634aa" stroke-width="4"/>
+            <g fill="#ffe38b" stroke="#22253a" stroke-width="2"><circle cx="30" cy="77" r="7"/><circle cx="165" cy="77" r="7"/><circle cx="300" cy="77" r="7"/></g>
+        </svg>
+    </div>
+    <nav aria-label="Poglavja">
+        <button type="button" data-tab="lab" aria-pressed="true">Laboratorij</button>
+        <button type="button" data-tab="challenge" aria-pressed="false">Učni izzivi</button>
+        <button type="button" data-tab="practice" aria-pressed="false">Generator nalog</button>
+        <button type="button" data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+    </nav>
+</header>
+<main class="wrap">
+<section id="lab">
+    <div class="card lav">
+        <span class="chip">Trinajst interaktivnih poskusov</span><h2>Izberi poskus</h2>
+        <div id="lab-buttons" class="row topic-buttons"></div>
+    </div>
+    <div class="grid lab-grid">
+        <div class="card">
+            <span class="chip">01 · Nastavi</span><h2 id="lab-title"></h2>
+            <p id="lab-intro"></p><div id="controls"></div>
+            <div class="row small-gap"><button type="button" id="animate" hidden>Predvajaj</button><button type="button" id="restore">Ponastavi poskus</button></div>
+        </div>
+        <div class="card">
+            <span class="chip">02 · Opazuj</span><h2 id="plot-title"></h2>
+            <svg id="plot" class="lab-visual" viewBox="0 0 550 285" role="img" aria-label="Vizualni prikaz poskusa"></svg>
+            <p id="plot-note" class="fine plot-note"></p>
+            <div id="values" class="readouts mono"></div><p id="conclusion" class="focus-box"></p>
+        </div>
+    </div>
+</section>
+<section id="challenge" hidden>
+    <div class="card lav">
+        <span class="chip">Najprej napovej</span><h2>Učni izzivi</h2>
+        <label for="mission">Izberi izziv</label><select id="mission"></select>
+        <div id="mission-body" class="small-gap"></div>
+        <p id="mission-feedback" class="feedback" role="status"></p>
+        <button type="button" id="mission-open">Odpri poskus</button>
+    </div>
+</section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden>
+ <div class="card">
+  <h2>Od lastnih nihanj do zvočnega valovanja</h2>
+  <p>Pri mehanskem valovanju se po snovi širi motnja. Delci snovi nihajo okoli ravnovesne lege; njihova hitrost ni enaka hitrosti širjenja vala. V linearnih modelih se odmiki seštevajo. Uporabljamo f = ω/(2π), k = 2π/λ in fazno hitrost c = ω/k. Simulacije, ki jih lahko predvajaš, prikazujejo upočasnjen čas.</p>
+  <div class="two theory-grid">
+   <article class="note"><h3>1 · Lastna nihanja sestavljenih nihal</h3>
+    <p>Dve enaki masi m sta vsaka pripeti na steno z vzmetjo k, med seboj pa z vezno vzmetjo k<sub>v</sub>. Pri majhnih odmikih sta to dve sklopljeni harmonični nihali. Lastni način je gibanje z eno frekvenco, pri katerem ostane razmerje med odmikoma enako.</p>
+    <p class="formula">ω₊² = k/m &nbsp; · &nbsp; ω₋² = (k + 2kᵥ)/m</p>
+    <p>Pri sofaznem načinu sta odmika enaka in vezna vzmet ne spreminja dolžine. Pri protifaznem sta nasprotna: vzmet ima spremembo dolžine 2x in poveča povratno silo. Splošno gibanje je vsota obeh načinov. Če na začetku odmaknemo le prvo maso in obe spustimo iz mirovanja, sta začetni amplitudi obeh načinov enaki. Pri šibki sklopitvi vidimo utripanje oziroma periodično izmenjavo energije.</p>
+   </article>
+   <article class="note lav"><h3>2 · Stoječe valovanje na napeti struni</h3>
+    <p class="formula">c = √(F/μ) &nbsp; · &nbsp; λₙ = 2L/n &nbsp; · &nbsp; fₙ = nc/(2L)</p>
+    <p>F je sila napenjanja, μ masa na enoto dolžine. Na obeh pritrjenih koncih je odmik nič. N-ti način ima n polvalov, n + 1 vozlov, če štejemo konca, in n hrbtov odmika. Pri vozlu je odmik vedno nič; hrbet dosega največjo amplitudo. Sosednja dela med vozli nihata protifazno. To velja za idealno gibko struno, majhne odmike, enakomerno μ in stalno napetost.</p>
+    <p class="formula">y(x,t) = Σ Aₙ sin(nπx/L) cos(ωₙt + φₙ)</p>
+    <p>To je splošna oblika rešitve za idealno struno z dvema pritrjenima koncema. Začetna oblika in začetna hitrost določita amplitude in faze. Vsak člen zase je stoječi val, vsota različnih načinov pa praviloma nima stalnih notranjih vozlov posameznega načina. Robna vozla ostaneta.</p>
+   </article>
+   <article class="note lav"><h3>3 · Stoječe valovanje v vijačni vzmeti</h3>
+    <p>Pri vzdolžnem nihanju ovoji nihajo vzdolž osi. Razmik med njimi kaže lokalni raztezek ali stisk. Prikazan je diskretni približek z N enakimi masami m in vzmetmi k med sosedi ter z obema pritrjenima koncema.</p>
+    <p class="formula">uⱼ ∝ sin[nπj/(N+1)] &nbsp; · &nbsp; ωₙ = 2√(k/m) sin[nπ/(2(N+1))]</p>
+    <p>Pri nizkih načinih je sinus približno enak argumentu, zato so frekvence skoraj harmonične. Višji načini od tega odstopajo: diskretna veriga je disperzivna. Model ne vključuje upogiba ali torzije dejanske vzmeti.</p>
+   </article>
+   <article class="note"><h3>4 · Potujoče valovanje in energija na vrvi</h3>
+    <p class="formula">y = A cos(kx − ωt + φ) &nbsp; · &nbsp; P̄ = ½ μcω²A²</p>
+    <p>Predznak −ωt pri k &gt; 0 pomeni širjenje proti +x, +ωt pa proti −x. Valovna dolžina je razdalja med zaporednima točkama z enako fazo. Hitrost delca je ∂y/∂t. Pri sinusnem potujočem valu je povprečna skupna energija na dolžino ½ μω²A²; pomnožena s c da moč. Del energije je kinetičen, del pa prožnosten. Idealni stoječi val ima energijo, a je povprečni neto prenos vzdolž strune nič.</p>
+   </article>
+   <article class="note"><h3>5 · Interferenca in odboj na vrvi</h3>
+    <p>Ko se motnji srečata, je trenutni odmik njuna algebraična vsota. Pri pritrjenem koncu se odbiti prečni odmik obrne, da je skupni odmik na koncu vedno nič. Na idealnem prostem koncu se odmik ne obrne; tam je naklon vrvi nič. Delni odboj in prehod lahko nastaneta tudi na stiku dveh vrvi z različno mehansko impedanco. Izginotje odmika pri destruktivni interferenci ne pomeni izgube vse energije.</p>
+   </article>
+   <article class="note lav"><h3>6 · Valovi na površini kapljevine</h3>
+    <p class="formula">ω² = (gk + γk³/ρ) tanh(kh)</p>
+    <p>Pri majhnih površinskih valovih v mirujoči kapljevini delujeta teža in površinska napetost γ; h je globina. Teža prevladuje pri dolgih valovih, površinska napetost pri kratkih. Delci se praviloma gibljejo po približno krožnih ali eliptičnih tirnicah. V plitvi vodi, ko kh ≪ 1 in prevladuje težnost, je c približno √(gh). Splošno je fazna hitrost odvisna od λ, hitrost skupine oziroma ovojnice pa je dω/dk. Površinski val ni isto kot vzdolžni zvok v notranjosti kapljevine.</p>
+   </article>
+   <article class="note lav"><h3>7 · Stoječe valovanje v cevi, zaprti na obeh koncih</h3>
+    <p class="formula">u ∝ sin(nπx/L) &nbsp; · &nbsp; p′ ∝ cos(nπx/L) &nbsp; · &nbsp; fₙ = nc/(2L)</p>
+    <p>Na togih zaprtih koncih je vzdolžna hitrost delcev (in njihov nihajni odmik) nič. Tlačna motnja ima tam hrbta. Notranji tlačni vozli so tam, kjer ima hitrost hrbte, in obratno. Za idealno cev sta dovoljena osnovni in vsi višji celoštevilski načini. Pri eni odprti in eni zaprti strani so robni pogoji drugačni. V stoječem valu sta tlak in hitrost delcev tudi časovno zamaknjena za četrt periode.</p>
+   </article>
+   <article class="note"><h3>8 · Ravni potujoči zvok v homogeni tekočini</h3>
+    <p class="formula">c = √(Kₛ/ρ) &nbsp; · &nbsp; Z = ρc &nbsp; · &nbsp; p′ = Zu za val proti +x</p>
+    <p>Majhne tlačne motnje v homogenem fluidu so vzdolžne: delci nihajo v smeri širjenja. Kₛ je adiabatni prostorninski modul. Pri ravnem valu so ploskve enake faze ravnine, pravokotne na smer širjenja. p′ je odmik tlaka od ravnovesja, u pa lokalna hitrost delca. Za čisti val proti −x velja p′ = −Zu, če je u predznačen v smeri +x. Zveza p′ = Zu ne velja za splošno vsoto napredujočega in odbitega vala.</p>
+   </article>
+   <article class="note"><h3>9 · Energija in jakost zvoka</h3>
+    <p class="formula">e = ½ρu² + p′²/(2Kₛ) &nbsp; · &nbsp; I = ⟨p′u⟩ = pᵣₘₛ²/Z = p₀²/(2Z)</p>
+    <p>Gostota energije e je vsota kinetičnega in kompresijskega dela. Za ravni sinusni potujoči val proti +x sta povprečna dela enaka in I = c⟨e⟩. Jakost I v W/m² je časovno povprečena moč na ploskev pravokotno na smer vala. Pri idealnem sferičnem širjenju brez izgub je I = P/(4πr²). Za raven jakosti v zraku pogosto vzamemo β = 10 log₁₀(I/I₀), I₀ = 10⁻¹² W/m². Zvočni tlak ima svoje referenčne vrednosti; ravni v vodi in zraku zato ne primerjamo brez navedbe reference.</p>
+   </article>
+   <article class="note lav"><h3>10 · Odboj in lom zvoka</h3>
+    <p class="formula">sin θ₁/c₁ = sin θ₂/c₂ &nbsp; · &nbsp; rₚ = (Z₂−Z₁)/(Z₂+Z₁) pri pravokotnem vpadu</p>
+    <p>Kote merimo od normale. Frekvenca se ob prehodu ne spremeni, valovna dolžina se lahko. Pri pravokotnem vpadu je delež odbite moči R = rₚ². Negativni rₚ pomeni obrat faze tlačne motnje. Pri poševnem vpadu upoštevamo normalno komponento hitrosti delcev: Yᵢ = cos θᵢ/Zᵢ, rₚ = (Y₁−Y₂)/(Y₁+Y₂). V tem modelu brez izgub velja R + T = 1 za deleža normalne moči. Pri c₂ &gt; c₁ je nad kritičnim kotom popolni odboj; na drugi strani lahko obstaja pojemajoče polje brez potujočega lomljenega žarka.</p>
+   </article>
+   <article class="note lav"><h3>11 · Interferenca v tekočinah</h3>
+    <p class="formula">Δφ = 2πΔs/λ + Δφ₀ &nbsp; · &nbsp; p₀,skupaj = 2p₀ |cos(Δφ/2)|</p>
+    <p>Stabilna interferenčna slika zahteva koherentna vira s stalno fazno razliko. Za dva tlačna signala enakih lokalnih amplitud dobimo maksimum pri Δφ = 2mπ in ničlo pri Δφ = (2m+1)π. Ista superpozicija pojasni ojačitve in oslabitve pri površinskih vodnih valovih. Če se valova širita v različnih smereh, iz samega tlaka ne moremo sklepati na vektorsko jakost; za energijski tok potrebujemo tudi hitrost delcev.</p>
+   </article>
+   <article class="note"><h3>12 · Absorpcija zvoka</h3>
+    <p class="formula">p₀(x) = p₀(0)e⁻ᵅˣ &nbsp; · &nbsp; I(x) = I(0)e⁻²ᵅˣ</p>
+    <p>α je absorpcijski koeficient amplitude v Np/m. Viskoznost, toplotna prevodnost in relaksacija pretvarjajo del mehanske energije v notranjo. Absorpcija se pogosto spreminja s frekvenco in lastnostmi snovi. Enačba opisuje ravni val brez geometrijskega razhajanja; pri sferičnem valu bi se I zmanjševala že zaradi širjenja. Pri materialnih mejah ločimo absorpcijo od odboja in prehoda.</p>
+   </article>
+   <article class="note"><h3>13 · Zvok v gibajočem se sredstvu</h3>
+    <p class="formula">c₊ = c + U &nbsp; · &nbsp; c₋ = c − U &nbsp; · &nbsp; fᵣ = fₛ(c+U−vᵣ)/(c+U−vₛ)</p>
+    <p>c je hitrost glede na fluid, U hitrost fluida glede na tla v smeri +x. Pri podzvočnem toku sta c₊ in c₋ velikosti hitrosti širjenja po in proti toku glede na tla. Enačba za Dopplerjev pojav velja za širjenje v +x in predznačeni hitrosti oddajnika vₛ ter sprejemnika vᵣ glede na tla. Če oba mirujeta glede na tla in je tok enakomeren, veter spremeni valovno dolžino in čas prihoda, ne sprejete frekvence.</p>
+   </article>
+   <article class="note lav"><h3>14 · Valovanje v trdni snovi</h3>
+    <p class="formula">cₚ = √[(K+4G/3)/ρ] &nbsp; · &nbsp; cₛ = √(G/ρ) &nbsp; · &nbsp; c<sub>palice</sub> ≈ √(E/ρ)</p>
+    <p>Homogena izotropna trdnina ima prostorninski modul K in strižni modul G. Podpira vzdolžne (P) in prečne oziroma strižne (S) volumenske valove. V mirujočem idealnem fluidu ni statične strižne togosti, zato ta model ne dopušča volumenskih strižnih valov. V tanki prosti palici pri dolgih valovih velja drugačna vzdolžna hitrost √(E/ρ), ker se palica lahko prečno krči. Obstajajo še površinski in upogibni valovi; njihove hitrosti ni mogoče kar prepisati iz volumenskih formul.</p>
+   </article>
+  </div>
+  <details><summary>Rešen primer: tretji način na struni</summary><p>Struna dolžine 1,2 m ima c = 60 m/s. Za n = 3 je λ₃ = 2 · 1,2/3 = 0,80 m, zato je f₃ = 60/0,80 = 75 Hz. Poleg obeh koncev ima dva notranja vozla.</p></details>
+  <details><summary>Rešen primer: jakost ravnega zvoka v vodi</summary><p>Če je ρ = 1000 kg/m³, c = 1500 m/s in vršna tlačna amplituda 150 Pa, dobimo I = 150²/(2 · 1000 · 1500) = 0,0075 W/m². Amplituda ni efektivna vrednost; pᵣₘₛ = 150/√2 Pa.</p></details>
+  <details><summary>Rešen primer: tok brez Dopplerjevega premika</summary><p>Pri c = 340 m/s, U = 20 m/s in f = 180 Hz je hitrost zvoka po toku 360 m/s in valovna dolžina 2 m. Mirujoči sprejemnik še vedno prejema 180 valov na sekundo.</p></details>
+  <p class="fine small-gap">Za nadaljnje branje: <a href="https://openstax.org/books/university-physics-volume-1/pages/16-6-standing-waves-and-resonance">OpenStax: stoječi valovi</a>, <a href="https://openstax.org/books/university-physics-volume-1/pages/17-summary">OpenStax: zvok</a>, <a href="https://www.ocw.mit.edu/courses/8-03sc-physics-iii-vibrations-and-waves-fall-2016/pages/part-i-mechanical-vibrations-and-waves/lecture-4/">MIT: sklopljena nihala</a> in <a href="https://uhslc.soest.hawaii.edu/ocn620/lectures/surface-gravity-waves-1.html">University of Hawaiʻi: površinski valovi</a>, <a href="https://farside.ph.utexas.edu/teaching/336L/Fluidhtml/node157.html">University of Texas: kapilarno-težnostni valovi</a> in <a href="https://www.epa.gov/environmental-geophysics/seismic-velocities">EPA: hitrosti P- in S-valov</a>.</p>
+ </div>
+</section>
+</main>
+<footer class="wrap"><p>Sidebit · Fizika · Valovanje</p></footer>
+<div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id), TAU=2*Math.PI, G=9.81;
+const format=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:4,useGrouping:false});
+const fmt=x=>format.format(Math.abs(x)<1e-10?0:x);
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const C="#5634aa", B="#00806a", Y="#ffe38b", INK="#22253a";
+const line=(x,y,X,Y,color=INK,width=2,dash="")=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${color}" stroke-width="${width}" ${dash?'stroke-dasharray="'+dash+'"':""}/>`;
+const text=(x,y,s,anchor="middle")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="#364058" font-size="14" font-weight="650">${s}</text>`;
+const disk=(x,y,r=5,fill=Y)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${INK}" stroke-width="2"/>`;
+const rect=(x,y,w,h,fill,stroke=INK)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const series=(a,b,fn)=>Array.from({length:121},(_,i)=>{const x=a+(b-a)*i/120;return [x,fn(x)];});
+const axisFormat=new Intl.NumberFormat("sl-SI",{maximumSignificantDigits:4,useGrouping:false});
+const number=x=>axisFormat.format(x);
+function chart({xmin=0,xmax,ymin=0,ymax,xLabel,yLabel,curves,dots=[],shade=null,markers=[]}){
+    const left=72,right=521,top=35,bottom=222;
+    const X=x=>left+(right-left)*(x-xmin)/(xmax-xmin), Z=y=>bottom-(bottom-top)*(y-ymin)/(ymax-ymin);
+    const path=points=>points.map(([x,y],i)=>(i?"L":"M")+X(x)+" "+Z(y)).join(" ");
+    let svg='<defs><clipPath id="wave-plot-clip"><rect x="72" y="35" width="449" height="187"/></clipPath></defs>'+text(left,22,yLabel,"start")+text(right,275,xLabel,"end");
+    for(let i=0;i<=4;i++){
+        const x=xmin+(xmax-xmin)*i/4,y=ymin+(ymax-ymin)*i/4;
+        svg+=line(X(x),top,X(x),bottom,"#dce3ef",1)+line(left,Z(y),right,Z(y),"#dce3ef",1);
+        svg+=text(X(x),246,number(x))+text(left-9,Z(y)+5,number(y),"end");
+    }
+    svg+='<g clip-path="url(#wave-plot-clip)">';
+    if(shade?.length){
+        const [start]=shade,[end]=shade.slice(-1);
+        svg+=`<path d="${path(shade)} L${X(end[0])} ${Z(0)} L${X(start[0])} ${Z(0)} Z" fill="#ffe38b" opacity=".65"/>`;
+    }
+    svg+=line(left,top,left,bottom)+line(left,bottom,right,bottom);
+    for(const x of markers)svg+=line(X(x),top,X(x),bottom,"#a76b0d",1.5,"5 4");
+    for(const {points,color=C,dash=false} of curves)svg+=`<path d="${path(points)}" stroke="${color}" stroke-width="3.5" fill="none" ${dash?'stroke-dasharray="8 5"':""}/>`;
+    for(const [x,y] of dots)svg+=disk(X(x),Z(y));
+    return svg+"</g>";
+}
+function bars(data,unit){
+    const max=Math.max(1,...data.map(([,v])=>v));
+    return data.map(([label,value,color],i)=>{
+        const y=41+i*73;
+        return text(45,y,label+" · "+fmt(value)+" "+unit,"start")+rect(45,y+12,460,18,"#e9edf4","#dce3ef")+
+            (value>0 ? rect(45,y+12,460*value/max,18,color) : "");
+    }).join("");
+}
+const metric=(name,v,unit)=>[name,fmt(v)+(unit?" "+unit:"")];
+const slider=(id,label,min,max,step,value,unit="")=>({id,label,min,max,step,value,unit});
+const select=(id,label,value,options)=>({id,label,value,options});
+
+
+
+
+
+const pair=(name,v,unit="")=>metric(name,v,unit);
+const phase=()=>slider("t","Čas (v periodah referenčnega vala)",0,4,.01,0);
+const nField=(n=2,max=8)=>slider("n","Številka načina n",1,max,1,n);
+const length=(value=2)=>slider("L","Dolžina L",.5,5,.1,value,"m");
+const media={water:{name:"Voda",c:1480,rho:1000},air:{name:"Zrak",c:343,rho:1.2},oil:{name:"Olje (učni približek)",c:1300,rho:900}};
+const medium=(id,label,value)=>select(id,label,value,Object.entries(media).map(([k,v])=>[k,v.name]));
+const freq=(value=1000)=>slider("f","Frekvenca",100,3000,10,value,"Hz");
+const sine=(n,x)=>Math.sin(Math.PI*n*x);
+const modeF=(n,c,L)=>n*c/(2*L);
+const coupled=(m,k,kc)=>[Math.sqrt(k/m),Math.sqrt((k+2*kc)/m)];
+const chain=(N,n,m,k)=>2*Math.sqrt(k/m)*Math.sin(n*Math.PI/(2*(N+1)));
+const power=(mu,c,f,A)=>.5*mu*c*(TAU*f*A)**2;
+const surfaceOmega=(k,h,rho=1000,gamma=.072)=>Math.sqrt((G*k+gamma*k**3/rho)*Math.tanh(k*h));
+const intensity=(p,Z)=>p*p/(2*Z);
+const decibels=I=>I>0?10*Math.log10(I/1e-12):-Infinity;
+const atten=(a,x)=>Math.exp(-a*x);
+const doppler=(f,c,U,vs,vr)=>f*(c+U-vr)/(c+U-vs);
+function acousticInterface(a,b,theta){
+    const i=theta*Math.PI/180,z=Math.sin(i)*b.c/a.c;
+    if(z>=1-1e-12)return {angle:null,R:1,T:0,r:null};
+    const j=Math.asin(z),y1=Math.cos(i)/(a.rho*a.c),y2=Math.cos(j)/(b.rho*b.c),r=(y1-y2)/(y1+y2);
+    return {angle:j*180/Math.PI,R:r*r,T:1-r*r,r};
+}
+function elastic(K,Gs,rho){
+    const E=9*K*Gs/(3*K+Gs);
+    return {P:Math.sqrt((K+4*Gs/3)/rho),S:Math.sqrt(Gs/rho),rod:Math.sqrt(E/rho)};
+}
+function scaleValue(x){return x!==0&&(Math.abs(x)<.0001||Math.abs(x)>=1e6)?x.toExponential(3).replace(".",","):fmt(x);}
+function arrow(x,y,X,Y,col=C){
+    const a=Math.atan2(Y-y,X-x);
+    return line(x,y,X,Y,col,3)+line(X,Y,X-9*Math.cos(a-.5),Y-9*Math.sin(a-.5),col,3)+line(X,Y,X-9*Math.cos(a+.5),Y-9*Math.sin(a+.5),col,3);
+}
+function wavePlot(xmax,curves,opt={}){
+    const {xLabel="Lega x (m)",yLabel="Relativna vrednost",max=1.12,markers=[],dots=[]}=opt;
+    return chart({xmax,ymin:-max,ymax:max,xLabel,yLabel,curves:curves.map(([f,color,dash])=>({points:series(0,xmax,f),color,dash})),markers,dots});
+}
+function spring(x,X,y,turns=11,amp=9){
+    const points=Array.from({length:turns+1},(_,i)=>[x+(X-x)*i/turns,i===0||i===turns?y:y+(i%2?amp:-amp)]);
+    return `<polyline points="${points.map(p=>p.join(",")).join(" ")}" fill="none" stroke="#5634aa" stroke-width="2.5"/>`;
+}
+const lab={
+ coupled:{
+    name:"Sklopljeni nihali",intro:"Dve enaki masi povezuje vzmet. Izberi lastni način ali sprosti samo prvo maso.",anim:"t",
+    fields:[select("mode","Začetni odmik","mix",[["plus","Sofazni način"],["minus","Protifazni način"],["mix","Odmaknjena le prva masa"]]),slider("m","Masa",.2,2,.1,1,"kg"),slider("k","Togost zunanjih vzmeti",10,80,1,30,"N/m"),slider("kc","Togost vezne vzmeti",0,30,1,6,"N/m"),{...phase(),max:20}],title:"Dva lastna načina",
+    show({mode,m,k,kc,t}){
+        const [a,b]=coupled(m,k,kc), u=Math.cos(TAU*t),v=Math.cos(TAU*t*b/a);
+        const d1=mode==="plus"?u:mode==="minus"?v:(u+v)/2,d2=mode==="plus"?u:mode==="minus"?-v:(u-v)/2;
+        const x=188+39*d1,X=362+39*d2,y=139;
+        const svg=line(45,105,45,173)+line(505,105,505,173)+line(50,y+32,500,y+32,"#9aa8b6",1.5,"5 5")+
+            spring(45,x-24,y)+spring(x+24,X-24,y)+spring(X+24,505,y)+rect(x-24,y-23,48,46,Y)+rect(X-24,y-23,48,46,"#c5f0e2")+text(x,y+5,"m₁")+text(X,y+5,"m₂")+text(275,222,"Referenca časa: perioda sofaznega načina.");
+        return {svg,note:"Prikaz je shematski. Pri mešanici obe masi na začetku mirujeta.",values:[pair("Sofazna frekvenca",a/TAU,"Hz"),pair("Protifazna frekvenca",b/TAU,"Hz"),pair("Odmik prve / začetna amplituda",d1),pair("Odmik druge / začetna amplituda",d2)],conclusion:mode==="plus"?"Vezna vzmet v sofaznem načinu ne spreminja dolžine.":mode==="minus"?"Vezna vzmet v protifaznem načinu prispeva k povratni sili.":"Vsaka masa se giblje kot vsota dveh različnih nihanj, če je sklopitev neničelna."};
+    }
+ },
+ string:{
+    name:"Stoječi val na struni",intro:"Izberi en lastni način ali seštej dva. Preveri, kateri vozli ostanejo pri različnih časih.",anim:"t",
+    fields:[length(),nField(),slider("m","Drugi način m",1,8,1,3),slider("a","Relativna amplituda drugega načina",0,1,.05,.45),slider("phi","Faza drugega načina",0,360,5,40,"°"),slider("F","Napetost strune",5,160,5,40,"N"),slider("mu","Linearna gostota",1,25,1,10,"g/m"),phase()],title:"Vsota lastnih načinov",
+    show({L,n,m,a,phi,F,mu,t}){
+        const c=Math.sqrt(F/(mu/1000)),f=x=>sine(n,x/L)*Math.cos(TAU*n*t),g=x=>a*sine(m,x/L)*Math.cos(TAU*(m*t+phi/360));
+        return {svg:wavePlot(L,[[f,"#a86a22",true],[g,B,true],[x=>f(x)+g(x),C]],{max:1.12*(1+a),markers:a===0?Array.from({length:n+1},(_,i)=>i*L/n):[]}),
+            note:"Vijolično: vsota. Črtkano: prispevka. Čas je izražen v periodah osnovnega načina.",values:[pair("Hitrost vala",c,"m/s"),pair("Frekvenca prvega izbranega načina",modeF(n,c,L),"Hz"),pair("Frekvenca drugega načina",modeF(m,c,L),"Hz"),pair("Valovna dolžina prvega",2*L/n,"m")],conclusion:"Konca sta vedno vozla. Za prikaz vozlov enega načina postavi drugo amplitudo na 0."};
+    }
+ },
+ spring:{
+    name:"Stoječi val v vijačni vzmeti",intro:"Modeliraj vzdolžno nihanje ovojev z verigo diskretnih mas. Primerjaj osnovni in višje načine.",anim:"t",
+    fields:[slider("N","Število premičnih mas",8,18,1,12),nField(3,8),slider("m","Masa posameznega elementa",.1,1,.1,.2,"kg"),slider("k","Togost vezi",10,100,5,50,"N/m"),phase()],title:"Zgoščanje in redčenje ovojev",
+    show({N,n,m,k,t}){
+        const xs=Array.from({length:N+2},(_,j)=>45+460*j/(N+1)+11*sine(n,j/(N+1))*Math.cos(TAU*t));
+        let svg=line(45,101,45,167)+line(505,101,505,167);
+        for(let j=0;j<N+1;j++)svg+=spring(xs[j],xs[j+1],135,5,12);
+        for(let j=1;j<=N;j++)svg+=disk(xs[j],135,4,Y);
+        svg+=text(275,212,"Ovoji se premikajo vzdolž osi.");
+        const f=chain(N,n,m,k)/TAU,f1=chain(N,1,m,k)/TAU;
+        return {svg,note:"Čas je v periodah izbranega načina. Diskretna veriga je idealizacija vijačne vzmeti.",values:[pair("Frekvenca izbranega načina",f,"Hz"),pair("Razmerje fₙ/f₁",f/f1),pair("Razmerje v harmonični limiti",n)],conclusion:"Višje frekvence niso povsem celi večkratniki osnovne; veriga je disperzivna."};
+    }
+ },
+ traveling:{
+    name:"Potujoči val in energija",intro:"Spreminjaj amplitudo in frekvenco vala. Primerjaj hitrost širjenja z največjo hitrostjo delca.",anim:"t",
+    fields:[slider("c","Hitrost širjenja",10,70,1,30,"m/s"),slider("f","Frekvenca",5,50,1,15,"Hz"),slider("A","Amplituda",1,25,1,8,"mm"),slider("mu","Linearna gostota",1,30,1,10,"g/m"),select("dir","Smer","right",[["right","Proti +x"],["left","Proti −x"]]),phase()],title:"Odmik vrvi in smer širjenja",
+    show({c,f,A,mu,dir,t}){
+        const L=c/f,sgn=dir==="right"?1:-1,w=power(mu/1000,c,f,A/1000),u=x=>A*Math.cos(TAU*(x/L-sgn*t));
+        return {svg:wavePlot(2*L,[[u,C]],{max:A*1.15,yLabel:"Odmik y (mm)",dots:[[L,u(L)]]}),note:"Prikaz pokriva dve valovni dolžini. Rumena pika sledi odmiku istega delca pri x = λ.",values:[pair("Valovna dolžina",L,"m"),pair("Največja hitrost delca",TAU*f*A/1000,"m/s"),pair("Predznačena povprečna moč",sgn*w,"W"),pair("Povprečna energija na dolžino",w/c,"J/m")],conclusion:"Če amplitudo podvojiš, povprečna moč naraste štirikrat."};
+    }
+ },
+ reflection:{
+    name:"Odboj in interferenca na vrvi",intro:"Pošlji sunek proti koncu na desni. Preklopi med pritrjenim in prostim koncem.",anim:"t",
+    fields:[length(),select("end","Desni konec","fixed",[["fixed","Pritrjen"],["free","Prost"]]),slider("t","Lega središča vpadnega sunka / L",0,1.8,.01,.7)],title:"Vpadni, odbiti in skupni odmik",
+    show({L,end,t}){
+        const F=u=>Math.exp(-((u/.13)**2)),a=x=>F(x/L-t),b=x=>(end==="fixed"?-1:1)*F(2-x/L-t),s=x=>a(x)+b(x);
+        return {svg:wavePlot(L,[[a,"#a86a22",true],[b,B,true],[s,C]],{max:2.12,xLabel:"Lega na vrvi (m)",dots:[[L,s(L)]]}),
+            note:"Črtkano: vpadni in odbiti sunek; vijolično: vsota. Sledenje se konča, preden modeliramo morebitni odboj na levi.",
+            values:[pair("Odmik na desnem koncu / amplituda",s(L)),["Obrat predznaka",end==="fixed"?"Da":"Ne"]],conclusion:end==="fixed"?"Odbiti sunek obrne predznak. Na koncu se odmika izničita.":"Odbiti sunek ima isti predznak. Na koncu se naklona izničita."};
+    }
+ },
+ surface:{
+    name:"Valovanje na površini vode",intro:"Spreminjaj valovno dolžino in globino. Iz krivulje razberi, ali prevladuje težnost ali površinska napetost.",
+    fields:[slider("L","Valovna dolžina",.5,100,.5,20,"cm"),slider("h","Globina",1,70,1,8,"cm")],title:"Fazna hitrost je odvisna od valovne dolžine",
+    show({L,h}){
+        const k=TAU/(L/100),D=h/100,w=surfaceOmega(k,D),f=x=>{const q=TAU/(x/100);return surfaceOmega(q,D)/q;};
+        const group=(surfaceOmega(k*1.0001,D)-surfaceOmega(k*.9999,D))/(.0002*k), ratio=.072*k*k/(1000*G);
+        return {svg:chart({xmin:.5,xmax:100,ymax:Math.max(f(.5),f(100))*1.2,xLabel:"Valovna dolžina (cm)",yLabel:"Fazna hitrost (m/s)",curves:[{points:series(.5,100,f)}],dots:[[L,w/k]]}),note:"Majhni valovi na mirujoči vodi. Površinska napetost je 0,072 N/m, gostota pa 1000 kg/m³.",values:[pair("Fazna hitrost",w/k,"m/s"),pair("Hitrost skupine",group,"m/s"),pair("Frekvenca",w/TAU,"Hz"),pair("Razmerje kapilarni/težnostni člen",ratio)],conclusion:ratio>1?"Pri tej dolžini prevlada površinska napetost.":"Pri tej dolžini prevlada težnost."};
+    }
+ },
+ pipe:{
+    name:"Stoječi zvok v zaprti cevi",intro:"Oba konca sta toga in zaprta. Menjaj načine in primerjaj vozle tlaka in hitrosti delcev.",anim:"t",
+    fields:[length(),medium("med","Fluid v cevi","air"),nField(2),phase()],title:"Tlačna motnja in vzdolžna hitrost",
+    show({L,med,n,t}){
+        const p=x=>Math.cos(Math.PI*n*x/L)*Math.cos(TAU*t),u=x=>sine(n,x/L)*Math.sin(TAU*t);
+        return {svg:wavePlot(L,[[x=>Math.cos(Math.PI*n*x/L),"#aeb6c5",true],[p,C],[u,B]],{markers:Array.from({length:n},(_,i)=>(i+.5)*L/n)}),
+            note:"Vijolično: tlak. Zeleno: hitrost delcev. Obe krivulji sta deljeni z lastno največjo amplitudo; črtkana krivulja kaže tlačno obliko pri največjem odklonu. Navpičnice označujejo tlačne vozle.",
+            values:[pair("Frekvenca",modeF(n,media[med].c,L),"Hz"),pair("Valovna dolžina",2*L/n,"m"),pair("Število tlačnih vozlov",n)],conclusion:"Na obeh koncih je hitrost delcev nič, tlak pa dosega hrbet. Čas je v periodah izbranega načina."};
+    }
+ },
+ plane:{
+    name:"Ravni potujoči zvok, energija in jakost",intro:"Spreminjaj fluid, frekvenco in vršno tlačno amplitudo. Poveži tlak z vzdolžno hitrostjo delcev.",anim:"t",
+    fields:[medium("med","Homogeni fluid","water"),freq(),slider("p","Vršna tlačna amplituda",1,400,1,150,"Pa"),phase()],title:"Potujoči tlak in hitrost delcev sta v fazi",
+    show({med,f,p,t}){
+        const a=media[med],Z=a.rho*a.c,L=a.c/f,I=intensity(p,Z),F=x=>Math.cos(TAU*(x/L-t));
+        return {svg:wavePlot(2*L,[[F,C]],{yLabel:"p′/p₀ in u/u₀",dots:[[L,F(L)]]}),note:"Normirani krivulji tlaka in hitrosti delcev se prekrivata. To velja za ravni val, ki potuje proti +x.",
+            values:[pair("Impedanca Z",Z,"Pa·s/m"),pair("Valovna dolžina",L,"m"),["Vršna hitrost delca",scaleValue(p/Z)+" m/s"],["Povprečna gostota energije",scaleValue(I/a.c)+" J/m³"],["Jakost I",scaleValue(I)+" W/m²"],pair("Raven glede na 10⁻¹² W/m²",decibels(I),"dB")],
+            conclusion:"Za jakost uporabi efektivni tlak p₀/√2. Jakost je sorazmerna s kvadratom tlačne amplitude."};
+    }
+ },
+ refraction:{
+    name:"Odboj in lom zvoka",intro:"Pošlji ravni zvočni val na mejo dveh idealnih fluidov. Kote meri glede na normalo.", 
+    fields:[medium("a","Prvi fluid","oil"),medium("b","Drugi fluid","water"),slider("i","Vpadni kot",0,85,1,35,"°"),freq()],title:"Vpadni, odbiti in lomljeni žarek",
+    show({a,b,i,f}){
+        const m=media[a],n=media[b],r=acousticInterface(m,n,i),rad=x=>x*Math.PI/180,x=275,y=137,L=100;
+        let svg=rect(27,32,496,105,"#f0ebfd","#dce3ef")+rect(27,137,496,105,"#ddf5ef","#dce3ef")+
+            line(27,y,523,y,INK,2)+line(x,43,x,231,"#78859a",1.5,"5 4")+text(120,60,m.name)+text(120,225,n.name)+
+            arrow(x-L*Math.sin(rad(i)),y-L*Math.cos(rad(i)),x,y,C);
+        if(r.R>1e-8)svg+=arrow(x,y,x+L*Math.sin(rad(i)),y-L*Math.cos(rad(i)),"#a76115");
+        if(r.angle!==null&&r.T>1e-8)svg+=arrow(x,y,x+L*Math.sin(rad(r.angle)),y+L*Math.cos(rad(r.angle)),B);
+        return {svg,note:"Vijolično: vpadni žarek. Oranžno: odbiti. Zeleno: lomljeni. Debelina puščic ne predstavlja moči.",
+            values:[["Lomni kot",r.angle===null?"Ni potujočega loma":fmt(r.angle)+" °"],pair("Odboj moči",100*r.R,"%"),pair("Prehod moči",100*r.T,"%"),pair("Frekvenca v obeh fluidih",f,"Hz"),pair("Valovna dolžina v prvem",m.c/f,"m"),pair("Valovna dolžina v drugem",n.c/f,"m")],
+            conclusion:r.angle===null?"Pri kritičnem kotu ali nad njim ni prenosa moči pravokotno v drugi fluid.":"Pri lomu se spremeni valovna dolžina, frekvenca pa se ohrani."};
+    }
+ },
+ interference:{
+    name:"Interferenca v tekočinah",intro:"Na mestu sprejema seštej dva koherentna signala enakih lokalnih amplitud. Spreminjaj razliko poti in začetno fazo.",anim:"t",
+    fields:[select("kind","Vrsta signala","sound",[["sound","Zvok v vodi · tlačna motnja"],["surface","Površinski val · višinski odmik"]]),slider("path","Razlika poti / λ",0,3,.01,.5),slider("phi","Začetna fazna razlika",0,360,5,0,"°"),phase()],title:"Ojačitve in oslabitve na mestu opazovanja",
+    show({kind,path,phi,t}){
+        const d=TAU*(path+phi/360),F=x=>Math.cos(TAU*(x+t)),H=x=>Math.cos(TAU*(x+t)+d),S=x=>F(x)+H(x),A=2*Math.abs(Math.cos(d/2));
+        return {svg:wavePlot(2,[[F,"#a86a22",true],[H,B,true],[S,C]],{max:2.12,xLabel:"Čas / perioda",yLabel:kind==="sound"?"Normirana tlačna motnja":"Normirani višinski odmik"}),
+            note:"Črtkano sta signala, vijolično je njuna vsota. Graf prikazuje čas na istem mestu. Časovni drsnik premakne prikazano okno.",
+            values:[pair("Fazna razlika po modulu 360°",(360*path+phi)%360,"°"),pair("Skupna amplituda / posamezna",A)],
+            conclusion:A<.00001?"Popolna izničitev v tej točki.":A>1.9999?"Popolno ojačanje v tej točki.":"Spremeni razliko poti za polovico λ in primerjaj amplitudo."};
+    }
+ },
+ absorption:{
+    name:"Absorpcija zvoka",intro:"Izberi koeficient absorpcije amplitude. Primerjaj pojemanje tlaka in jakosti brez geometrijskega širjenja.",
+    fields:[slider("a","Absorpcijski koeficient amplitude",0,.2,.005,.04,"Np/m"),slider("x","Razdalja",0,80,1,25,"m")],title:"Jakost pojema s kvadratom amplitude",
+    show({a,x}){
+        const p=u=>atten(a,u),j=u=>p(u)**2;
+        return {svg:chart({xmax:80,ymax:1.1,xLabel:"Razdalja (m)",yLabel:"Delež začetne vrednosti",curves:[{points:series(0,80,p)},{points:series(0,80,j),color:B,dash:true}],dots:[[x,p(x)],[x,j(x)]]}),
+            note:"Vijolično: tlačna amplituda. Zeleno črtkano: jakost. α je koeficient amplitude, zato je v eksponentu jakosti faktor 2.",
+            values:[pair("Preostala amplituda",100*p(x),"%"),pair("Preostala jakost",100*j(x),"%"),pair("Sprememba ravni",10*Math.log10(j(x)),"dB")],conclusion:"Model nima geometrijskega razhajanja. Zmanjšanje jakosti tu pomeni absorpcijo energije v sredstvu."};
+    }
+ },
+ moving:{
+    name:"Zvok v gibajočem se sredstvu",intro:"Nastavi enakomeren veter in premikanje oddajnika ter sprejemnika. Pozitivna smer je od oddajnika proti sprejemniku.",
+    fields:[slider("c","Hitrost zvoka glede na fluid",300,500,1,343,"m/s"),slider("U","Hitrost fluida U",-60,60,1,25,"m/s"),slider("vs","Hitrost oddajnika glede na tla",-75,75,1,0,"m/s"),slider("vr","Hitrost sprejemnika glede na tla",-75,75,1,0,"m/s"),freq(500),slider("D","Merilna razdalja med fiksnima točkama",10,500,5,100,"m")],
+    title:"Hitrosti in frekvence glede na tla",
+    show({c,U,vs,vr,f,D}){
+        const a=c+U,b=c-U,r=doppler(f,c,U,vs,vr),L=(a-vs)/f;
+        const svg=text(275,54,"V smeri +x · "+fmt(a)+" m/s")+arrow(77,87,473,87,C)+
+            text(275,151,"V smeri −x · "+fmt(b)+" m/s")+arrow(473,183,77,183,B)+text(275,241,"Emisija: "+fmt(f)+" Hz · sprejem: "+fmt(r)+" Hz");
+        return {svg,note:"U je predznačena hitrost fluida. Čas po +x je izračunan med dvema fiksnima točkama, ne do premikajočega se sprejemnika.",
+            values:[pair("Sprejeta frekvenca",r,"Hz"),pair("Valovna dolžina pred oddajnikom",L,"m"),pair("Čas poti po +x",D/a,"s"),pair("Čas poti po −x",D/b,"s")],
+            conclusion:vs===0&&vr===0?"Veter pri mirujočem oddajniku in sprejemniku spremeni hitrost glede na tla in λ, frekvence pa ne.":"Premikanje oddajnika spremeni razmik med čeli, premikanje sprejemnika pa hitrost srečevanja čel."};
+    }
+ },
+ solid:{
+    name:"Valovanje v trdni snovi",intro:"Spreminjaj prostorninski in strižni modul ter gostoto. Primerjaj P-val, S-val in približek za tanko palico.",
+    fields:[slider("K","Prostorninski modul K",5,170,1,50,"GPa"),slider("G","Strižni modul G",2,90,1,30,"GPa"),slider("rho","Gostota",1000,9000,100,2700,"kg/m³"),slider("D","Razdalja",100,6000,100,2000,"m")],title:"Vzdolžni in strižni val nista enako hitra",
+    show({K,G,rho,D}){
+        const w=elastic(K*1e9,G*1e9,rho);
+        return {svg:bars([["Vzdolžni val P",w.P,Y],["Strižni val S",w.S,"#c5f0e2"],["Vzdolžni val v tanki palici",w.rod,"#e8ddff"]],"m/s"),note:"Prostorninski hitrosti veljata za homogeno izotropno trdnino. Približek za palico velja, če je valovna dolžina velika v primerjavi s prečnimi merami.",
+            values:[pair("Prihod P-vala",D/w.P,"s"),pair("Prihod S-vala",D/w.S,"s"),pair("Zamik prihodov",D/w.S-D/w.P,"s")],conclusion:"P-val je v tem modelu hitrejši. S-val potrebuje strižno togost."};
+    }
+ }
+};
+const settings=Object.fromEntries(Object.entries(lab).map(([key,s])=>[key,Object.fromEntries(s.fields.map(f=>[f.id,f.value]))]));
+const labButtons={};
+let active="temperature";
+function renderLab(){
+    const l=lab[active], s=settings[active], r=l.show(s);
+    for(const f of l.fields){
+        if(f.hide)$("field-"+f.id).hidden=f.hide(s);
+        if(!f.options)$("out-"+f.id).textContent=fmt(s[f.id])+(f.unit?" "+f.unit:"");
+    }
+    $("plot-title").textContent=l.title;
+    $("plot").setAttribute("aria-label",l.title);
+    $("plot").innerHTML=r.svg;
+    $("plot-note").textContent=r.note;
+    $("conclusion").textContent=r.conclusion;
+    $("values").innerHTML=r.values.map(([name,value])=>`<div class="metric">${name}<strong>${value}</strong></div>`).join("");
+}
+function fillSelect(el,options){
+    el.replaceChildren(...options.map(([id,name])=>{const o=document.createElement("option");o.value=id;o.textContent=name;return o;}));
+}
+function selectLab(key,focus=false){
+    stopWave();
+    active=key;
+    $("animate").hidden=!lab[key].anim;
+    for(const [id,button] of Object.entries(labButtons))button.setAttribute("aria-pressed",String(id===key));
+    const l=lab[key],s=settings[key],controls=$("controls");
+    $("lab-title").textContent=l.name;
+    $("lab-intro").textContent=l.intro;
+    controls.replaceChildren();
+    for(const f of l.fields){
+        const row=document.createElement("div"), label=document.createElement("label");
+        const input=document.createElement(f.options?"select":"input");
+        row.id="field-"+f.id;input.id="control-"+f.id;label.htmlFor=input.id;label.textContent=f.label;
+        if(f.options)fillSelect(input,f.options);
+        else{
+            input.type="range";input.min=f.min;input.max=f.max;input.step=f.step;
+            const out=document.createElement("output");out.id="out-"+f.id;label.append(": ",out);
+        }
+        input.value=s[f.id];
+        input.oninput=()=>{s[f.id]=f.options?input.value:Number(input.value);renderLab();};
+        row.append(label,input);controls.append(row);
+    }
+    renderLab();
+    if(focus)$("control-"+l.fields[0].id).focus();
+}
+for(const [key,item] of Object.entries(lab)){
+    const button=document.createElement("button");button.type="button";button.textContent=item.name;
+    button.onclick=()=>selectLab(key,true);
+    $("lab-buttons").append(button);labButtons[key]=button;
+}
+$("restore").onclick=()=>{
+    Object.assign(settings[active],Object.fromEntries(lab[active].fields.map(f=>[f.id,f.value])));
+    selectLab(active,true);
+};
+function tab(id){
+    if(id!=="lab")stopWave();
+    for(const section of document.querySelectorAll("main > section"))section.hidden=section.id!==id;
+    for(const button of document.querySelectorAll("[data-tab]"))button.setAttribute("aria-pressed",String(button.dataset.tab===id));
+}
+for(const button of document.querySelectorAll("[data-tab]"))button.onclick=()=>tab(button.dataset.tab);
+let frame=0,previous=null;
+function stopWave(){
+    if(frame)cancelAnimationFrame(frame);
+    frame=0;previous=null;
+    $("animate").textContent="Predvajaj";
+}
+function advance(now){
+    const key=lab[active].anim;
+    if(!key)return stopWave();
+    const f=lab[active].fields.find(x=>x.id===key),s=settings[active];
+    if(previous!==null){
+        s[key]+=Math.min(80,now-previous)*.00065;
+        if(s[key]>f.max)s[key]=f.min;
+        $("control-"+key).value=s[key];
+        renderLab();
+    }
+    previous=now;frame=requestAnimationFrame(advance);
+}
+$("animate").onclick=()=>{
+    if(frame)return stopWave();
+    if(!lab[active].anim)return;
+    $("animate").textContent="Premor";
+    frame=requestAnimationFrame(advance);
+};
+document.addEventListener("visibilitychange",()=>{if(document.hidden)stopWave();});
+const missions=[
+ ["Vezna vzmet","coupled",{mode:"plus"},"Kaj se pri sofaznem načinu dogaja z vezno vzmetjo?",["Dolžina se ne spreminja","Dolžina niha z dvojno frekvenco","Vedno je maksimalno raztegnjena"],0,"Masama je v vsakem trenutku skupen enak odmik."],
+ ["Tretji način","string",{n:3,a:0},"Koliko notranjih vozlov ima tretji način na struni?",["1","2","3"],1,"Trije polvalovi imajo med seboj dva notranja vozla."],
+ ["Ovoji vzmeti","spring",{n:6},"V kateri smeri se v poskusu premikajo ovoji?",["Prečno","Vzdolž osi"],1,"Vzdolžni odmiki spreminjajo razmik med sosedi."],
+ ["Amplituda in moč","traveling",{A:16},"Kaj se zgodi z močjo ob podvojeni amplitudi pri isti frekvenci?",["Se podvoji","Se početveri","Ostane ista"],1,"Moč je sorazmerna z A²."],
+ ["Pritrjen konec","reflection",{end:"fixed",t:1},"Kakšen je skupni odmik na pritrjenem koncu?",["Nič","Dvojna amplituda","Enaka amplituda"],0,"Odbiti in vpadni odmik sta tam nasprotna."],
+ ["Kratki vodni valovi","surface",{L:1},"Kateri povratni učinek prevlada pri valovni dolžini 1 cm?",["Težnost","Površinska napetost"],1,"Kapilarni člen narašča s k³, težnostni pa s k."],
+ ["Zaprta cev","pipe",{n:3,t:.25},"Kaj je na obeh togih zaprtih koncih nujno nič?",["Tlačna amplituda","Vzdolžna hitrost delcev"],1,"Delci na koncu ne morejo prehajati skozi togo steno."],
+ ["Tlačna amplituda","plane",{p:300},"Kaj naredi podvojitev vršne tlačne amplitude jakosti ravnega vala?",["Jo podvoji","Jo početveri","Jo prepolovi"],1,"Jakost je sorazmerna s p₀²."],
+ ["Meja fluidov","refraction",{a:"air",b:"water",i:20},"Pri vpadu iz zraka na vodo je lahko lomni kot brez realne rešitve. Kaj tedaj napove model?",["Popolni odboj moči","Spremembo frekvence","Brez odboja"],0,"Če po Snellovem zakonu dobimo sin θ₂ > 1, ni potujočega lomljenega žarka."],
+ ["Polovica valovne dolžine","interference",{path:.5,phi:0},"Dva koherentna signala imata enaki lokalni amplitudi. Kaj povzroči razlika poti λ/2 brez začetne fazne razlike?",["Izničitev","Dvojno amplitudo"],0,"Fazna razlika π povzroči destruktivno interferenco."],
+ ["Pojemanje jakosti","absorption",{a:.04,x:25},"Če amplituda ravnega vala pade na polovico, kolikšen delež jakosti ostane?",["1/2","1/4","1/8"],1,"Jakost je sorazmerna s kvadratom amplitude."],
+ ["Veter in frekvenca","moving",{U:35,vs:0,vr:0},"Vir in sprejemnik mirujeta glede na tla. Ali stalen veter spremeni sprejeto frekvenco?",["Da","Ne"],1,"Veter spremeni hitrost čel in njihov razmik. Skozi sprejemnik gre enako število čel na sekundo."],
+ ["Prihod P-vala","solid",{},"Kateri val prej prispe v homogeni izotropni trdnini?",["P-val","S-val","Prispeta hkrati"],0,"P-val ima v izrazu za hitrost tudi prispevek prostorninske togosti."]
+].map(([name,key,start,q,a,i,why])=>({name,key,start,q,a,i,why}));
+fillSelect($("mission"),missions.map((m,i)=>[i,m.name]));
+function currentMission(){return missions[Number($("mission").value||0)];}
+function renderMission(){
+    const m=currentMission(), p=document.createElement("p"), group=document.createElement("div");
+    p.className="question";p.textContent=m.q;group.className="row";
+    $("mission-body").replaceChildren(p,group);$("mission-feedback").textContent="";
+    m.a.forEach((answer,i)=>{
+        const button=document.createElement("button");button.type="button";button.textContent=answer;button.setAttribute("aria-pressed","false");
+        button.onclick=()=>{
+            for(const other of group.children)other.setAttribute("aria-pressed",String(other===button));
+            $("mission-feedback").textContent=i===m.i?"Pravilno. "+m.why:"Poskusi še enkrat ali preveri v poskusu.";
+        };
+        group.append(button);
+    });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{
+    const m=currentMission();Object.assign(settings[m.key],Object.fromEntries(lab[m.key].fields.map(f=>[f.id,f.value])),m.start);tab("lab");selectLab(m.key,true);
+};
+
+
+
+
+
+const topics=Object.fromEntries(Object.entries(lab).map(([id,v])=>[id,v.name]));
+fillSelect($("topic"),[["all","Mešano"],...Object.entries(topics)]);
+function makeTask(key,level){
+ const hard=level===2,L=integer(6,30)/10,n=integer(1,7),c=integer(20,70),f=integer(10,40),m=integer(4,16)/10,k=integer(20,100);
+ const q=(prompt,answer,unit,hint,steps)=>({key,prompt,answer,unit,hint,steps:steps+" ≈ "+fmt(answer)+" "+unit+"."});
+ switch(key){
+ case "coupled":{
+    const kc=integer(5,30),w=coupled(m,k,kc);
+    return hard
+      ?q("Dve masi m = "+fmt(m)+" kg sta vsaka pripeti z vzmetjo k = "+k+" N/m, med njima pa je kᵥ = "+kc+" N/m. Izračunaj protifazno frekvenco.",w[1]/TAU,"Hz","Vezna vzmet prispeva 2kᵥ.","f = √(("+k+" + 2·"+kc+")/"+fmt(m)+")/(2π)")
+      :q("Dve enaki sklopljeni masi m = "+fmt(m)+" kg sta vsaka pripeti na steno z vzmetjo k = "+k+" N/m. Izračunaj sofazno krožno frekvenco.",w[0],"rad/s","Vezna vzmet pri sofaznem načinu ne prispeva.","ω = √("+k+"/"+fmt(m)+")");
+ }
+ case "string":{
+    const mu=integer(4,20), F=integer(10,80);
+    return hard
+     ?q("Struna dolžine "+fmt(L)+" m ima μ = "+mu+" g/m in je napeta s silo "+F+" N. Izračunaj fₙ za n = "+n+".",modeF(n,Math.sqrt(F/(mu/1000)),L),"Hz","Izračunaj c = √(F/μ), nato uporabi fₙ = nc/(2L).","fₙ = "+n+"√("+F+"/("+mu+"/1000))/(2·"+fmt(L)+")")
+     :q("Struna dolžine "+fmt(L)+" m je na obeh koncih vpeta. Kolikšna je valovna dolžina za n = "+n+"?",2*L/n,"m","V dolžino L spravimo n polvalov.","λₙ = 2·"+fmt(L)+"/"+n);
+ }
+ case "spring":{
+    const N=integer(8,18);
+    return hard
+      ?q("Vijačno vzmet približamo z verigo "+N+" mas in fiksnima koncema. Izračunaj razmerje fₙ/f₁ za n = "+n+".",chain(N,n,m,k)/chain(N,1,m,k),"brez enote","Skupni faktor 2√(k/m) se pokrajša.","fₙ/f₁ = sin("+n+"π/"+(2*(N+1))+")/sin(π/"+(2*(N+1))+")")
+      :q("Veriga "+N+" mas po "+fmt(m)+" kg z vezmi k = "+k+" N/m je vpeta na koncih. Izračunaj osnovno frekvenco.",chain(N,1,m,k)/TAU,"Hz","Uporabi formulo za verigo pri n = 1, nato deli z 2π.","f₁ = 2√("+k+"/"+fmt(m)+") sin(π/"+(2*(N+1))+")/(2π)");
+ }
+ case "traveling":{
+    const A=integer(3,20),mu=integer(5,25);
+    return hard
+      ?q("Sinusni val na struni ima A = "+A+" mm, μ = "+mu+" g/m, c = "+c+" m/s in f = "+f+" Hz. Izračunaj povprečno moč.",power(mu/1000,c,f,A/1000),"W","Pretvori A in μ v SI, uporabi P̄ = μc(2πf)²A²/2.","P̄ = ("+mu+"/1000)·"+c+"·(2π·"+f+")²·("+A+"/1000)²/2")
+      :q("Val potuje s hitrostjo "+c+" m/s in ima frekvenco "+f+" Hz. Izračunaj valovno dolžino.",c/f,"m","Uporabi c = λf.","λ = "+c+"/"+f);
+ }
+ case "reflection":{
+    const a=integer(3,28),b=integer(3,28);
+    return hard
+      ?q("V isti točki sta odmika zaradi dveh sunkov "+a+" mm in −"+b+" mm. Kolikšen je skupni odmik s predznakom?",a-b,"mm","Seštej predznačena odmika.","y = "+a+" − "+b)
+      :q("Na idealnem prostem koncu imata vpadni in odbiti sunek ob istem trenutku amplitudo "+a+" mm navzgor. Kolikšen je skupni odmik konca?",2*a,"mm","Na prostem koncu se odmik odbije brez spremembe predznaka.","y = 2·"+a);
+ }
+ case "surface":{
+    const h=integer(1,14)/10, wavelength=integer(6,30);
+    return hard
+      ?q("Površinski val ima λ = "+wavelength+" m in globino "+fmt(h)+" m. Uporabi težnostni model brez površinske napetosti in g = 9,81. Izračunaj fazno hitrost.",surfaceOmega(TAU/wavelength,h,1000,0)/(TAU/wavelength),"m/s","Izračunaj k = 2π/λ in uporabi c = √(gk tanh(kh))/k.","c = √[9,81·k tanh(k·"+fmt(h)+")]/k, pri k = 2π/"+wavelength)
+      :q("Za dovolj dolg val v plitvi vodi globine "+fmt(h)+" m uporabi c ≈ √(gh) in g = 9,81. Oceni hitrost.",Math.sqrt(G*h),"m/s","Vstavi globino v metrih.","c = √(9,81·"+fmt(h)+")");
+ }
+ case "pipe":{
+    const v=integer(330,350);
+    return hard
+      ?q("Pri n = "+n+" v cevi, zaprti na obeh koncih, izmerimo fₙ = "+f*10+" Hz. Hitrost zvoka je "+v+" m/s. Izračunaj dolžino cevi.",n*v/(2*f*10),"m","Izrazi L iz fₙ = nc/(2L).","L = "+n+"·"+v+"/(2·"+f*10+")")
+      :q("Cev dolžine "+fmt(L)+" m je zaprta na obeh koncih. c = "+v+" m/s. Izračunaj frekvenco načina n = "+n+".",modeF(n,v,L),"Hz","Oba konca sta vozla odmika; fₙ = nc/(2L).","fₙ = "+n+"·"+v+"/(2·"+fmt(L)+")");
+ }
+ case "plane":{
+    const p=integer(50,400),Z=1.48e6,I=intensity(p,Z);
+    return hard
+      ?q("V vodi z ρ = 1000 kg/m³ in c = 1480 m/s ima ravni zvok vršno tlačno amplitudo "+p+" Pa. Izračunaj jakost v mW/m².",I*1000,"mW/m²","I = p₀²/(2ρc), nato pretvori W v mW.","I = 1000·"+p+"²/(2·1000·1480)")
+      :q("Ravni zvok v vodi ima Z = 1 480 000 Pa·s/m in vršno tlačno amplitudo "+p+" Pa. Izračunaj amplitudo hitrosti delcev v mm/s.",1000*p/Z,"mm/s","Uporabi u₀ = p₀/Z in pretvori v mm/s.","u₀ = 1000·"+p+"/1480000");
+ }
+ case "refraction":{
+    const a=media.water,b=media.oil,theta=integer(12,60),r=acousticInterface(a,b,theta);
+    return hard
+      ?q("Zvok prehaja iz vode (1480 m/s) v olje (1300 m/s). Vpadni kot je "+theta+"° glede na normalo. Izračunaj lomni kot.",r.angle,"°","Uporabi sin θ₂ = (c₂/c₁) sin θ₁.","θ₂ = arcsin[(1300/1480) sin "+theta+"°]")
+      :q("Pri pravokotnem vpadu je razmerje impedanc Z₂/Z₁ = "+n+". Kolikšen odstotek moči se odbije?",100*((n-1)/(n+1))**2,"%","Kvadriraj tlačni odbojni koeficient in pomnoži s 100.","R = 100·[("+n+"−1)/("+n+"+1)]²");
+ }
+ case "interference":{
+    const d=integer(1,20)/10,theta=integer(0,18)*10;
+    return hard
+      ?q("Dva koherentna signala enakih lokalnih amplitud imata fazno razliko "+theta+"°. Kolikšno je razmerje skupne amplitude proti eni amplitudi?",2*Math.abs(Math.cos(theta*Math.PI/360)),"brez enote","Uporabi 2|cos(Δφ/2)|.","A/A₀ = 2|cos("+theta+"°/2)|")
+      :q("Dva koherentna vala brez začetne fazne razlike imata razliko poti "+fmt(d)+" λ. Izrazi celotno fazno razliko v stopinjah brez krajšanja po modulu 360°.",360*d,"°","Ena λ pomeni 360°.","Δφ = 360°·"+fmt(d));
+ }
+ case "absorption":{
+    const alpha=integer(1,12)/100,x=integer(5,55);
+    return hard
+      ?q("Ravni val ima absorpcijski koeficient amplitude α = "+fmt(alpha)+" Np/m. Kolikšen odstotek začetne jakosti ostane po "+x+" m?",100*atten(alpha,x)**2,"%","Jakost je sorazmerna s kvadratom amplitude.","100 I/I₀ = 100e^(−2·"+fmt(alpha)+"·"+x+")")
+      :q("Ravni val ima absorpcijski koeficient amplitude α = "+fmt(alpha)+" Np/m. Kolikšen odstotek začetne amplitude ostane po "+x+" m?",100*atten(alpha,x),"%","Uporabi eksponentno pojemanje amplitude.","100 p/p₀ = 100e^(−"+fmt(alpha)+"·"+x+")");
+ }
+ case "moving":{
+    const U=integer(-25,35),v=integer(5,40),f0=f*10;
+    return hard
+      ?q("c = 343 m/s, tok U = "+U+" m/s. Vir oddaja "+f0+" Hz in se po +x približuje mirujočemu sprejemniku s hitrostjo "+v+" m/s glede na tla. Kolikšna je sprejeta frekvenca?",doppler(f0,343,U,v,0),"Hz","V smeri +x uporabi efektivno hitrost čel c+U in upoštevaj gibanje vira.","fᵣ = "+f0+"·(343+("+U+"))/(343+("+U+")−"+v+")")
+      :q("Mirujoči vir oddaja "+f0+" Hz. Zvok ima glede na fluid 343 m/s, fluid teče z U = "+U+" m/s. Kolikšna je valovna dolžina v smeri +x?",(343+U)/f0,"m","Uporabi hitrost glede na tla c+U.","λ = (343+("+U+"))/"+f0);
+ }
+ case "solid":{
+    const K=integer(30,90),Gs=integer(15,65),rho=integer(20,36)*100,w=elastic(K*1e9,Gs*1e9,rho);
+    return hard
+      ?q("V homogeni izotropni trdnini je K = "+K+" GPa, G = "+Gs+" GPa in ρ = "+rho+" kg/m³. Izračunaj hitrost P-vala.",w.P,"m/s","Vstavi v √[(K+4G/3)/ρ]; GPa pretvori v Pa.","cₚ = √[("+K+" + 4·"+Gs+"/3)·10⁹/"+rho+"]")
+      :q("V homogeni izotropni trdnini je G = "+Gs+" GPa in ρ = "+rho+" kg/m³. Izračunaj hitrost S-vala.",w.S,"m/s","Uporabi cₛ = √(G/ρ) in pretvori G v Pa.","cₛ = √("+Gs+"·10⁹/"+rho+")");
+ }
+ default:throw new Error("Neznana tema.");
+ }
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti. Dovoljeno je manjše odstopanje zaradi zaokroževanja konstant.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001 + Math.abs(task.answer)*0.00006){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Valovanje · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+selectLab("coupled");
+renderMission();
+generate();
+</script>
+</body>
+</html>
