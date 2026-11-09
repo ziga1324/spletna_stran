@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivna fizika: Fourierov zakon, stacionarni toplotni tok, prestop toplote in prevajanje v plinih.">
+<title>Prevajanje toplote – Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.pt{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.pt *{box-sizing:border-box}.pt [hidden]{display:none!important}
+.pt .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.pt header.wrap{padding:25px 0 22px}.pt a{color:var(--accent);font-weight:750}
+.pt .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.pt .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.pt h1,.pt h2,.pt h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.pt h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.pt h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.pt h3{font-size:1.15rem;margin:0 0 9px}.pt p{margin:0 0 13px}.pt .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.pt .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.pt svg{display:block;width:100%;height:auto;overflow:visible}
+.pt nav,.pt .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pt nav{margin:12px 0 24px}
+.pt button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.pt button:hover{background:var(--purple)}.pt button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.pt button[aria-pressed=true],.pt .primary{background:var(--yellow)}
+.pt button:disabled{opacity:.55;cursor:default}.pt :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.pt .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.pt .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.pt .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.pt .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.pt label{display:block;font-weight:700;margin:12px 0 4px}.pt label:first-child{margin-top:0}
+.pt input:not([type=checkbox]),.pt select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.pt input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.pt input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.pt output{color:var(--accent);font-weight:800}
+.pt .fine{font-size:.88rem;color:#4d5871}.pt .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.pt .lab-visual,.pt .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.pt .graph{cursor:crosshair}.pt .graph-label{font-weight:800;margin:7px 0 0}
+.pt .graph-group{min-width:0}.pt .graph-group p{margin:7px 0 0}
+.pt .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.pt .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.pt .metric:nth-child(2n){background:var(--mint)}.pt .metric strong{display:block;font-size:1.06rem}
+.pt .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.pt .lav{background:var(--purple)}.pt .accent-card{background:var(--yellow)}.pt .question{font-weight:700;font-size:1.06rem}
+.pt .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.pt details{margin:10px 0}.pt summary{cursor:pointer;font-weight:750}
+.pt .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.pt .question-card .row{margin-top:9px}.pt .question-card label{margin-top:9px}
+.pt .lesson{scroll-margin:15px}.pt .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.pt footer{padding:8px 0 28px}.pt .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.pt .grid,.pt .hero{grid-template-columns:1fr}.pt .hero-art{display:none}.pt .three{grid-template-columns:1fr}.pt .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.pt .wrap{width:calc(100% - 24px)}.pt .two{grid-template-columns:1fr}.pt nav button{flex:1 1 40%}.pt .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.pt{background:#fff;color:#000}body.pt.print-sheet > :not(#paper){display:none!important}body.pt.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.pt .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.pt .graph{cursor:default}
+.pt .subnote{margin-top:12px}
+.pt .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pt .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.pt .graph-row{grid-template-columns:1fr}.pt .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pt h1{font-size:clamp(44px,7vw,78px)}
+.pt .lab-visual{margin:10px 0 14px}
+.pt .lab-grid{align-items:start}
+.pt .plot-note{margin-top:10px}
+.pt .topic-buttons{margin:12px 0 24px}
+.pt .theory-grid .note{margin:0}
+.pt .theory-grid{margin:14px 0}
+.pt .mono{font-variant-numeric:tabular-nums}
+.pt .unit-table{border-collapse:collapse;width:100%;margin:12px 0}
+.pt .unit-table th,.pt .unit-table td{text-align:left;border-bottom:1px solid #bbc7ce;padding:6px}
+.pt .focus-box{margin-top:12px}
+.pt .hero h1{font-size:clamp(39px,6.4vw,76px);text-wrap:balance}
+</style>
+</head>
+<body class="pt">
+<header class="wrap">
+    <a href="../index.html">← Vsa orodja</a>
+    <div class="hero">
+        <div><span class="badge">SIDEBIT · FIZIKA</span><h1>Prevajanje toplote</h1>
+        <p class="lead">Sestavi večplastno steno, primerjaj mirujoči zrak s helijem in zamenjaj smer prenosa toplote med telesom in tekočino. Na grafih poišči, kje nastane največji temperaturni padec.</p></div>
+        <svg class="hero-art" viewBox="0 0 330 145" role="img" aria-label="Toplotni tok skozi tri plasti stene">
+            <rect x="81" y="23" width="59" height="104" rx="6" fill="#ffe38b" stroke="#22253a" stroke-width="3"/>
+            <rect x="140" y="23" width="67" height="104" rx="6" fill="#c5f0e2" stroke="#22253a" stroke-width="3"/>
+            <rect x="207" y="23" width="45" height="104" rx="6" fill="#d8ecff" stroke="#22253a" stroke-width="3"/>
+            <path d="M15 77h54m-10-8 10 8-10 8M264 77h53m-10-8 10 8-10 8" fill="none" stroke="#5634aa" stroke-width="4"/>
+            <path d="M84 43l56 8 67 45 43 10" fill="none" stroke="#5634aa" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+    </div>
+    <nav aria-label="Poglavja">
+        <button type="button" data-tab="lab" aria-pressed="true">Laboratorij</button>
+        <button type="button" data-tab="challenge" aria-pressed="false">Učni izzivi</button>
+        <button type="button" data-tab="practice" aria-pressed="false">Generator nalog</button>
+        <button type="button" data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+    </nav>
+</header>
+<main class="wrap">
+<section id="lab">
+    <div class="card lav">
+        <span class="chip">Pet interaktivnih poskusov</span><h2>Izberi poskus</h2>
+        <div id="lab-buttons" class="row topic-buttons"></div>
+    </div>
+    <div class="grid lab-grid">
+        <div class="card">
+            <span class="chip">01 · Nastavi</span><h2 id="lab-title"></h2>
+            <p id="lab-intro"></p><div id="controls"></div>
+            <div class="row small-gap"><button type="button" id="restore">Ponastavi poskus</button></div>
+        </div>
+        <div class="card">
+            <span class="chip">02 · Opazuj</span><h2 id="plot-title"></h2>
+            <svg id="plot" class="lab-visual" viewBox="0 0 550 285" role="img" aria-label="Vizualni prikaz poskusa"></svg>
+            <p id="plot-note" class="fine plot-note"></p>
+            <div id="values" class="readouts mono"></div><p id="conclusion" class="focus-box"></p>
+        </div>
+    </div>
+</section>
+<section id="challenge" hidden>
+    <div class="card lav">
+        <span class="chip">Najprej napovej</span><h2>Učni izzivi</h2>
+        <label for="mission">Izberi izziv</label><select id="mission"></select>
+        <div id="mission-body" class="small-gap"></div>
+        <p id="mission-feedback" class="feedback" role="status"></p>
+        <button type="button" id="mission-open">Odpri poskus</button>
+    </div>
+</section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden>
+ <div class="card">
+  <h2>Kako toplota potuje skozi snov in med telesom ter tekočino?</h2>
+  <p>Toplota je energija, ki se prenaša zaradi temperaturne razlike. V tem poglavju je P toplotni tok oziroma toplotna moč v W (J/s), q″ = P/A pa gostota toplotnega toka v W/m². Pri enakomernem stalnem toku je prenesena toplota v času Δt enaka Q = PΔt. Toplota in temperatura nista ista količina.</p>
+  <div class="two theory-grid">
+   <article class="note"><h3>1 · Prevajanje in Fourierov zakon</h3>
+    <p>Pri prevajanju se energija prenaša z mikroskopskimi interakcijami, ne da bi se snov kot celota premikala. V trdninah energijo prenašajo nihanja kristalne mreže, v kovinah pa pomembno prispevajo tudi gibljivi elektroni. V kapljevinah in plinih se energija prenaša z gibanjem in interakcijami molekul.</p>
+    <p class="formula">q″ₓ = −λ dT/dx &nbsp; · &nbsp; P = λA(T₁−T₂)/L</p>
+    <p>Prva enačba pove, kaj se dogaja lokalno. Minus pomeni, da je tok usmerjen proti nižji temperaturi. Druga enačba velja za ravno steno z debelino L, konstantnimi λ in A, v enodimenzionalnem stacionarnem stanju brez notranjih virov. Temperaturni profil je tedaj premica. Če levo in desno temperaturo zamenjamo, se predznak P obrne.</p>
+    <p>Toplotna prevodnost λ (pogosto tudi k) ima enoto W/(m·K). Toplotna prevodnost opisuje, kako dobro energija potuje; specifična toplota c pa pove, koliko energije je treba dovesti za spremembo temperature enote mase.</p>
+   </article>
+   <article class="note lav"><h3>2 · Stacionarni tok skozi več plasti</h3>
+    <p>Stacionarno pomeni, da se temperatura na danem mestu s časom ne spreminja. Med različnimi mesti se lahko razlikuje, zato lahko toplota stalno teče. Brez virov, izgub ob straneh in kopičenja energije je pri zaporednih plasteh tok P povsod enak; pri stalni ploščini je enak tudi q″.</p>
+    <p class="formula">R<sub>stene</sub> = L/(λA) &nbsp; · &nbsp; R<sub>prestopa</sub> = 1/(hA) &nbsp; · &nbsp; P = ΔT/ΣR</p>
+    <p>Upore R v K/W seštevamo po poti skozi notranji prestop, plasti in zunanji prestop. Temperaturni padec posameznega dela je PR. Pri dobrem stiku je temperatura na meji plasti zvezna, naklon pa se spremeni: slabše prevodna plast ima pri istem q″ strmejši profil. Pri slabem stiku nastane dodaten temperaturni skok; to ponazorimo s kontaktnim uporom. Če toplota teče po vzporednih poteh, na primer skozi izolacijo in kovinski nosilec, se seštevajo moči po poteh, ne zaporedni upori.</p>
+    <p>V laboratoriju uporabljamo upor na enoto površine R″ = RA v m²·K/W. Za vso steno je U = 1/ΣR″ in P = UAΔT. Pri valjasti steni cevi se ploščina z radijem spreminja; za dolžino cevi ℓ je R = ln(r₂/r₁)/(2πλℓ), zato profil ni linearen.</p>
+   </article>
+   <article class="note lav"><h3>3 · Prestop s površine na tekočino in obratno</h3>
+    <p class="formula">P<sub>s → f</sub> = hA(Tₛ−T∞)</p>
+    <p>Temperatura Tₛ je temperatura površine, T∞ pa reprezentativna temperatura okoliške tekočine zunaj neposredne toplotne mejne plasti. Če je površina toplejša, oddaja toploto; če je tekočina toplejša, je P<sub>s → f</sub> negativen in toplota vstopa v telo. Tekočina tu pomeni fluid: kapljevino ali plin.</p>
+    <p>Tik ob neprepustni površini se toplota prenaša prek temperaturnega gradienta v fluidu. Gibanje fluida nato odnaša ali dovaja energijo ter vpliva na gradient. Pri naravni konvekciji gibanje povzročajo razlike gostote in vzgon, pri prisilni pa ventilator ali črpalka. Koeficient prestopa h v W/(m²·K) je zato odvisen od toka, geometrije, orientacije in lastnosti fluida. Za razliko od λ ni samo lastnost snovi.</p>
+    <p>V inženirskem računu h pogosto dobimo iz korelacije za Nusseltovo število Nu = hL/λ<sub>f</sub>. Laboratorij jemlje h kot vhodni podatek in ne modelira sevanja ali faznih sprememb.</p>
+   </article>
+   <article class="note"><h3>4 · Segrevanje in ohlajanje v času</h3>
+    <p class="formula">T(t) = T∞ + (T₀−T∞)e<sup>−t/τ</sup> &nbsp; · &nbsp; τ = mc/(hA)</p>
+    <p>Če je notranja temperatura telesa približno enakomerna, lahko zapišemo energijsko bilanco mc·dT/dt = −hA(T−T∞). Pri stalnih pogojih dobimo eksponentno približevanje temperaturi okolice. Po času τ ostane približno 37 % začetne temperaturne razlike. Enačba deluje za obe smeri prenosa.</p>
+    <p>Približek preverimo z Biotovim številom Bi = h(V/A)/λ<sub>telesa</sub>. Če je Bi manjši od približno 0,1, je notranji upor v primerjavi s prestopnim majhen in lahko temperaturo v telesu obravnavamo kot enotno. Večji Bi opozori, da sta lahko površina in notranjost pri različnih temperaturah. Tega ni mogoče zanesljivo opisati z eno samo temperaturo.</p>
+   </article>
+   <article class="note"><h3>5 · Prevajanje toplote v plinih</h3>
+    <p>Tudi mirujoč plin prevaja toploto: hitrejše molekule iz toplejšega območja trkajo z molekulami v hladnejšem območju. Konvekcija je dodaten prenos zaradi makroskopskega gibanja. Če v zračni reži nastane kroženje, sam Fourierov model za mirujočo plast ne opiše celotnega prenosa.</p>
+    <p class="formula">λ<sub>plina</sub> ∼ ⅓ n c<sub>molekule</sub> v̄ ℓ<sub>mfp</sub> &nbsp; · &nbsp; Kn = ℓ<sub>mfp</sub>/L</p>
+    <p>n je številska gostota molekul, c<sub>molekule</sub> mera toplotne kapacitete molekule, v̄ značilna hitrost in ℓ<sub>mfp</sub> srednja prosta pot. V razredčenem plinu pri isti temperaturi je n približno sorazmeren s tlakom, prosta pot pa obratno sorazmerna. Učinka se v kontinuumskem režimu približno izničita, zato λ ni preprosto sorazmerna s tlakom.</p>
+    <p>Če je Kn majhen, je srednja prosta pot mnogo manjša od širine reže. Pri Kn okrog 0,01 se začnejo kazati odstopanja, meja pa je orientacijska. Pri dovolj nizkem tlaku ali tanki reži navadni model zveznega plina in brez temperaturnih skokov ob stenah ni več dovolj. Zato laboratorij v tem območju ne izpisuje napovedi moči. Tudi v vakuumu lahko ostaneta toplotno sevanje in prevajanje skozi nosilce.</p>
+   </article>
+   <article class="note lav"><h3>6 · Pred računanjem določi robne pogoje</h3>
+    <p><strong>Podani temperaturi površin:</strong> uporabi prevajanje skozi steno. <strong>Podani temperaturi fluida na obeh straneh:</strong> upoštevaj oba prestopna upora. <strong>Temperatura se s časom spreminja:</strong> potrebna je tudi energijska bilanca kopičenja toplote v telesu.</p>
+    <p class="formula">α = λ/(ρc)</p>
+    <p>Toplotna difuzivnost α v m²/s določa, kako hitro se temperaturna sprememba razširi skozi snov. Značilni čas prevajanja je reda L²/α. Podvojitev L približno početveri ta čas, če so drugi pogoji enaki. To ni isto kot podvojitev stacionarnega upora ravne plasti.</p>
+   </article>
+  </div>
+  <details><summary>Rešen primer: ravna stena</summary><p>Za λ = 0,80 W/(m·K), A = 2 m², L = 0,10 m in temperaturi 30 °C ter 10 °C je P = 0,80 · 2 · 20/0,10 = 320 W. V eni uri se prenese 320 · 3600 J = 1,152 MJ.</p></details>
+  <details><summary>Rešen primer: izolacija, stena in oba prestopa</summary><p>Pri λ₁ = 0,8 W/(m·K) in L₁ = 0,12 m je R″₁ = 0,15 m²·K/W. Za izolacijo λ₂ = 0,04 W/(m·K), L₂ = 0,08 m je R″₂ = 2. Pri h₁ = 8 in h₂ = 25 W/(m²·K) je skupni R″ = 0,125 + 0,15 + 2 + 0,04 = 2,315 m²·K/W. Če je razlika temperatur fluidov 25 K, je q″ ≈ 10,8 W/m², od tega je padec temperature v izolaciji približno 21,6 K.</p></details>
+  <details><summary>Rešen primer: tekočina greje hladnejšo površino</summary><p>Če je Tₛ = 20 °C, T∞ = 50 °C, A = 0,20 m² in h = 100 W/(m²·K), je P<sub>s → f</sub> = −600 W. To pomeni, da površina od tekočine prejema 600 J na sekundo.</p></details>
+  <p class="fine small-gap">Viri: <a href="https://openstax.org/books/university-physics-volume-2/pages/1-6-mechanisms-of-heat-transfer">OpenStax: mehanizmi prenosa toplote</a>, <a href="https://ahtt.mit.edu/">A Heat Transfer Textbook</a> in <a href="https://cds.cern.ch/record/808373/files/p325.pdf">CERN: prenos toplote v razredčenem plinu</a>.</p>
+ </div>
+</section>
+</main>
+<footer class="wrap"><p>Sidebit · Fizika · Prevajanje toplote</p></footer>
+<div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id),KB=1.380649e-23;
+const format=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:4,useGrouping:false});
+const fmt=x=>format.format(Math.abs(x)<1e-10?0:x);
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const C="#5634aa", B="#00806a", Y="#ffe38b", INK="#22253a";
+const line=(x,y,X,Y,color=INK,width=2,dash="")=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${color}" stroke-width="${width}" ${dash?'stroke-dasharray="'+dash+'"':""}/>`;
+const text=(x,y,s,anchor="middle")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="#364058" font-size="14" font-weight="650">${s}</text>`;
+const disk=(x,y,r=5,fill=Y)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${INK}" stroke-width="2"/>`;
+const rect=(x,y,w,h,fill,stroke=INK)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const series=(a,b,fn)=>Array.from({length:121},(_,i)=>{const x=a+(b-a)*i/120;return [x,fn(x)];});
+const axisFormat=new Intl.NumberFormat("sl-SI",{maximumSignificantDigits:4,useGrouping:false});
+const number=x=>axisFormat.format(x);
+function chart({xmin=0,xmax,ymin=0,ymax,xLabel,yLabel,curves,dots=[],shade=null,markers=[]}){
+    const left=72,right=521,top=35,bottom=222;
+    const X=x=>left+(right-left)*(x-xmin)/(xmax-xmin), Z=y=>bottom-(bottom-top)*(y-ymin)/(ymax-ymin);
+    const path=points=>points.map(([x,y],i)=>(i?"L":"M")+X(x)+" "+Z(y)).join(" ");
+    let svg='<defs><clipPath id="heat-plot-clip"><rect x="72" y="35" width="449" height="187"/></clipPath></defs>'+text(left,22,yLabel,"start")+text(right,275,xLabel,"end");
+    for(let i=0;i<=4;i++){
+        const x=xmin+(xmax-xmin)*i/4,y=ymin+(ymax-ymin)*i/4;
+        svg+=line(X(x),top,X(x),bottom,"#dce3ef",1)+line(left,Z(y),right,Z(y),"#dce3ef",1);
+        svg+=text(X(x),246,number(x))+text(left-9,Z(y)+5,number(y),"end");
+    }
+    svg+='<g clip-path="url(#heat-plot-clip)">';
+    if(shade?.length){
+        const [start]=shade,[end]=shade.slice(-1);
+        svg+=`<path d="${path(shade)} L${X(end[0])} ${Z(0)} L${X(start[0])} ${Z(0)} Z" fill="#ffe38b" opacity=".65"/>`;
+    }
+    svg+=line(left,top,left,bottom)+line(left,bottom,right,bottom);
+    for(const x of markers)svg+=line(X(x),top,X(x),bottom,"#a76b0d",1.5,"5 4");
+    for(const {points,color=C,dash=false} of curves)svg+=`<path d="${path(points)}" stroke="${color}" stroke-width="3.5" fill="none" ${dash?'stroke-dasharray="8 5"':""}/>`;
+    for(const [x,y] of dots)svg+=disk(X(x),Z(y));
+    return svg+"</g>";
+}
+function bars(data,unit){
+    const max=Math.max(1,...data.map(([,v])=>v));
+    return data.map(([label,value,color],i)=>{
+        const y=41+i*73;
+        return text(45,y,label+" · "+fmt(value)+" "+unit,"start")+rect(45,y+12,460,18,"#e9edf4","#dce3ef")+
+            (value>0 ? rect(45,y+12,460*value/max,18,color) : "");
+    }).join("");
+}
+const metric=(name,v,unit)=>[name,fmt(v)+(unit?" "+unit:"")];
+const slider=(id,label,min,max,step,value,unit="")=>({id,label,min,max,step,value,unit});
+const select=(id,label,value,options)=>({id,label,value,options});
+
+
+
+
+const pair=(label,value,unit="")=>metric(label,value,unit);
+const materials={
+    copper:{name:"Baker",k:400,rho:8960,c:385},
+    aluminium:{name:"Aluminij",k:205,rho:2700,c:900},
+    stainless:{name:"Nerjavno jeklo",k:15,rho:7900,c:500},
+    brick:{name:"Opeka",k:.72,rho:1800,c:840},
+    wood:{name:"Les (izbran približek)",k:.13,rho:500,c:1700},
+    wool:{name:"Mineralna volna",k:.04,rho:45,c:840}
+};
+const gases={
+    air:{name:"Zrak",k:.0262,d:.365},
+    helium:{name:"Helij",k:.151,d:.26},
+    argon:{name:"Argon",k:.0177,d:.34}
+};
+const choices=o=>Object.entries(o).map(([id,x])=>[id,x.name]);
+const material=(id,label,value,subset=materials)=>select(id,label,value,choices(subset));
+const tField=(id,label,value)=>slider(id,label,-30,110,1,value,"°C");
+const area=()=>slider("A","Ploščina",.1,5,.1,1,"m²");
+const tempRange=(a,b)=>{const margin=Math.max(2,Math.abs(a-b)*.15);return {ymin:Math.min(a,b)-margin,ymax:Math.max(a,b)+margin};};
+const direction=q=>q>0?"od leve proti desni":q<0?"od desne proti levi":"ni neto toka";
+const plane=(k,L,A,a,b)=>({q:k*(a-b)/L,P:k*A*(a-b)/L,R:L/(k*A),slope:(b-a)/L});
+const convection=(h,A,Ts,Tf)=>h*A*(Ts-Tf);
+function wall(k1,k2,L1,L2,h1,h2,contact,A,T1,T2){
+    const R=[1/h1,L1/k1,contact,L2/k2,1/h2],total=R.reduce((s,v)=>s+v,0),q=(T1-T2)/total;
+    const T=[T1];for(const r of R)T.push(T.at(-1)-q*r);
+    return {R,total,q,P:A*q,T,U:1/total};
+}
+function lumped(k,rho,c,r,h,T0,Tf,t){
+    const A=4*Math.PI*r*r,V=4*Math.PI*r**3/3,Cth=rho*c*V,tau=Cth/(h*A),Bi=h*(V/A)/k;
+    const f=u=>Tf+(T0-Tf)*Math.exp(-u/tau),T=f(t);
+    return {tau,Bi,T,f,P:convection(h,A,T,Tf),Q:Cth*(T-T0)};
+}
+function gasLayer(gas,T,p,L,A,T1,T2){
+    const d=gas.d*1e-9,mfp=KB*T/(Math.SQRT2*Math.PI*d*d*p),Kn=mfp/L;
+    const k=gas.k*Math.sqrt(T/300);
+    return {mfp,Kn,k,P:plane(k,L,A,T1,T2).P};
+}
+function arrow(x,y,X,Y,col=C){
+    const a=Math.atan2(Y-y,X-x),h=10;
+    return line(x,y,X,Y,col,4)+line(X,Y,X-h*Math.cos(a-.5),Y-h*Math.sin(a-.5),col,4)+line(X,Y,X-h*Math.cos(a+.5),Y-h*Math.sin(a+.5),col,4);
+}
+function exponent(x){
+    if(x===0)return "0";
+    return x<.001||x>=1e6?x.toExponential(3).replace(".",","):fmt(x);
+}
+const lab={
+ conduction:{
+    name:"Prevajanje skozi ravno steno",intro:"Izberi material in temperaturi obeh površin. Spremeni debelino ali ploščino in primerjaj njun vpliv na toplotni tok.",
+    fields:[material("mat","Material","brick"),slider("L","Debelina",1,40,1,10,"cm"),area(),tField("Tl","Leva površina",30),tField("Tr","Desna površina",10)],title:"Fourierov zakon in temperaturni profil",
+    show({mat,L,A,Tl,Tr}){
+        const k=materials[mat].k,r=plane(k,L/100,A,Tl,Tr);
+        return {svg:chart({xmax:L,...tempRange(Tl,Tr),xLabel:"Lega od leve površine (cm)",yLabel:"Temperatura (°C)",curves:[{points:[[0,Tl],[L,Tr]]}],dots:[[0,Tl],[L,Tr]]}),
+            note:"Enodimenzionalno stacionarno prevajanje brez notranjih virov; λ je približno stalna. Temperature so podane na površinah, ne v zraku.",
+            values:[pair("Toplotni tok P",r.P,"W"),pair("Gostota toka q″",r.q,"W/m²"),pair("Toplotni upor R",r.R,"K/W"),pair("Temperaturni gradient",r.slope,"K/m")],
+            conclusion:r.P===0?"Temperaturni gradient je nič, zato ni neto prenosa.":"Smer prenosa: "+direction(r.P)+". Pri istem ΔT večja ploščina poveča moč, gostota toka pa ostane ista."};
+    }
+ },
+ stationary:{
+    name:"Stacionarni tok skozi več plasti",intro:"Sestavi dve plasti stene. Spremeni izolacijo, kontaktni upor ali prestop na obeh straneh in opazuj, kje je temperaturni padec največji.",
+    fields:[material("m1","Leva plast","brick"),slider("L1","Debelina leve plasti",1,35,1,12,"cm"),material("m2","Desna plast","wool"),
+        slider("L2","Debelina desne plasti",1,30,1,8,"cm"),tField("T1","Temperatura levega fluida",23),tField("T2","Temperatura desnega fluida",-2),
+        slider("h1","Prestopni koeficient na levi",2,60,1,8,"W/(m²·K)"),slider("h2","Prestopni koeficient na desni",2,60,1,25,"W/(m²·K)"),
+        slider("Rc","Kontaktni upor na ploščino",0,.4,.01,0,"m²·K/W"),area()],title:"Profil temperature od fluida do fluida",
+    show({m1,m2,L1,L2,T1,T2,h1,h2,Rc,A}){
+        const w=wall(materials[m1].k,materials[m2].k,L1/100,L2/100,h1,h2,Rc,A,T1,T2),L=L1+L2;
+        const [a,b,c,d,e,f]=w.T;
+        const names=["levi prestop","leva plast","stik plasti","desna plast","desni prestop"];
+        const big=w.R.indexOf(Math.max(...w.R));
+        return {svg:chart({xmin:-L*.12,xmax:L*1.12,...tempRange(T1,T2),xLabel:"Lega v steni (cm)",yLabel:"Temperatura (°C)",markers:[0,L1,L],curves:[
+            {points:[[0,a],[0,b]],color:B,dash:true},{points:[[0,b],[L1,c]]},
+            {points:[[L1,c],[L1,d]],color:"#a04578",dash:true},{points:[[L1,d],[L,e]],color:"#ac5b00"},
+            {points:[[L,e],[L,f]],color:B,dash:true}],dots:[[0,a],[0,b],[L1,c],[L1,d],[L,e],[L,f]]}),
+            note:"Vijolična in oranžna: plasti. Zeleni črtkani črti označujeta prestop. Rožnati skok na stiku se pokaže pri kontaktnem uporu. Navpičnice so padci temperature, ne dejanski profili v fluidu.",
+            values:[pair("Gostota toka q″",w.q,"W/m²"),pair("Toplotni tok P",w.P,"W"),pair("Prehodnost U",w.U,"W/(m²·K)"),pair("Temperatura leve površine",b,"°C"),pair("Temperatura desne površine",e,"°C"),pair("Velikost največjega padca",Math.abs(w.q*w.R[big]),"K")],
+            conclusion:w.q===0?"Oba fluida sta enako topla; vsi padci so nič.":"Največji upor prispeva "+names[big]+". Pri istem toku je tam tudi največji temperaturni padec."};
+    }
+ },
+ transfer:{
+    name:"Prestop med površino in tekočino",intro:"Nastavi temperaturo površine in okoliške tekočine na obe strani ravnovesja. Primerjaj smer in moč prenosa.",
+    fields:[tField("Ts","Temperatura površine",60),tField("Tf","Temperatura okoliškega fluida",20),slider("h","Prestopni koeficient h",2,350,1,25,"W/(m²·K)"),area()],title:"Katera stran oddaja toploto?",
+    show({Ts,Tf,h,A}){
+        const P=convection(h,A,Ts,Tf),surface=Ts>Tf?"#ffe38b":Ts<Tf?"#d8ecff":"#e8ddff",fluid=Ts<Tf?"#ffe38b":Ts>Tf?"#d8ecff":"#e8ddff";
+        const svg=rect(35,70,190,130,surface)+rect(225,70,290,130,fluid)+line(225,61,225,210,INK,4)+
+            text(129,100,"Trdna površina")+text(372,100,"Okoliški fluid")+text(129,162,fmt(Ts)+" °C")+text(372,162,fmt(Tf)+" °C")+
+            (P>0?arrow(188,127,294,127):P<0?arrow(294,127,188,127):"")+text(275,250,P===0?"Ni neto prenosa":"Puščica kaže smer neto prenosa");
+        return {svg,note:"Predznak je definiran za tok od površine v fluid. h izberemo za konkretne pogoje; laboratorij ga ne sklepa iz hitrosti toka.",
+            values:[pair("Površina minus fluid",Ts-Tf,"K"),pair("Toplotni tok Pₛ→f",P,"W"),pair("Gostota toka",P/A,"W/m²"),pair("Prestopni upor",1/(h*A),"K/W")],
+            conclusion:P>0?"Površina oddaja toploto fluidu.":P<0?"Fluid segreva površino; tok v zapisani smeri je negativen.":"Pri enaki temperaturi je neto prestop nič."};
+    }
+ },
+ transient:{
+    name:"Segrevanje in ohlajanje krogle",intro:"Kroglo potopi v tekočino ali jo izpostavi plinu s stalno temperaturo. Spreminjaj material, velikost in koeficient prestopa ter preveri Biotovo število.",
+    fields:[material("mat","Material krogle","aluminium",{aluminium:materials.aluminium,copper:materials.copper,stainless:materials.stainless}),tField("T0","Začetna temperatura krogle",90),
+        tField("Tf","Temperatura okolice",20),slider("r","Polmer krogle",1,15,1,4,"cm"),slider("h","Prestopni koeficient",5,300,1,60,"W/(m²·K)"),
+        slider("t","Čas",0,90,.5,10,"min")],title:"Temperatura krogle v odvisnosti od časa",
+    show({mat,T0,Tf,r,h,t}){
+        const {k,rho,c}=materials[mat],w=lumped(k,rho,c,r/100,h,T0,Tf,t*60);
+        const xmax=90,valid=w.Bi<.1, T=u=>w.f(60*u);
+        const early=Array.from({length:70},(_,i)=>xmax*(i/69)**2).map(x=>[x,T(x)]);
+        return {svg:chart({xmax,...tempRange(T0,Tf),xLabel:"Čas (min)",yLabel:"Temperatura (°C)",curves:[{points:[[0,Tf],[xmax,Tf]],color:B,dash:true},{points:early,dash:!valid}],dots:[[t,w.T]]}),
+            note:valid?"Zeleno črtkano: temperatura okolice. Vijolično: model enotne notranje temperature.":"Vijolično črtkano je le izračun po modelu enotne temperature. Bi ≥ 0,1, zato rezultat ni zanesljiva napoved dejanske notranje temperature.",
+            values:[pair("Biotovo število",w.Bi),pair("Časovna konstanta τ",w.tau/60,"min"),pair(valid?"Temperatura krogle":"Modelna temperatura",w.T,"°C"),pair("Modelna moč telo → fluid",w.P,"W"),pair("Modelna toplota v telo",w.Q/1000,"kJ")],
+            conclusion:valid?"Temperatura se približuje okolici; smer prenosa ostane ista, moč pa po velikosti pada.":"Zmanjšaj polmer ali h, ali izberi bolj prevodno kroglo, da bo Bi manjši."};
+    }
+ },
+ gas:{
+    name:"Prevajanje toplote v plinih",intro:"Primerjaj mirujoči zrak, helij in argon. Znižuj tlak ali oži režo ter opazuj, kdaj srednja prosta pot ni več zanemarljiva.",
+    fields:[select("g","Plin","air",choices(gases)),slider("L","Širina reže",.1,40,.1,5,"mm"),slider("lp","Logaritem tlaka log₁₀(p/Pa)",-1,5.3,.01,5),
+        tField("T1","Leva stena",35),tField("T2","Desna stena",15),area()],title:"Kdaj plin še obravnavamo kot zvezno snov?",
+    show({g,L,lp,T1,T2,A}){
+        const T=273.15+(T1+T2)/2,p=10**lp,gas=gases[g],f=x=>gasLayer(gas,T,10**x,L/1000,A,T1,T2);
+        const w=f(lp), valid=w.Kn<.01, G=x=>Math.log10(f(x).Kn), xmin=-1,xmax=5.3;
+        return {svg:chart({xmin,xmax,ymin:Math.min(G(xmax),-2)-.35,ymax:Math.max(G(xmin),-2)+.35,
+            xLabel:"log₁₀(p/Pa)",yLabel:"log₁₀(Kn)",curves:[{points:series(xmin,xmax,G)},{points:[[xmin,-2],[xmax,-2]],color:B,dash:true}],dots:[[lp,Math.log10(w.Kn)]]}),
+            note:"Črtkana meja označuje Kn = 0,01. Prevodnost je učni približek λ ∝ √T pri srednji temperaturi sten; gibanje plina in sevanje zanemarimo.",
+            values:[pair("Absolutni tlak",p,"Pa"),["Srednja prosta pot",exponent(w.mfp*1e6)+" µm"],["Knudsenovo število",exponent(w.Kn)],pair("Referenčna λ za zvezni plin",w.k,"W/(m·K)"),valid?pair("Moč prevajanja",w.P,"W"):["Moč prevajanja","Zunaj območja modela"]],
+            conclusion:valid?"Pri istem plinu, temperaturah in reži tlak v tem območju skoraj ne vpliva na λ.": "Redčenje ali ozka reža: potrebujemo model s temperaturnimi skoki oziroma model razredčenega plina."};
+    }
+ }
+};
+const settings=Object.fromEntries(Object.entries(lab).map(([key,s])=>[key,Object.fromEntries(s.fields.map(f=>[f.id,f.value]))]));
+const labButtons={};
+let active="temperature";
+function renderLab(){
+    const l=lab[active], s=settings[active], r=l.show(s);
+    for(const f of l.fields){
+        if(f.hide)$("field-"+f.id).hidden=f.hide(s);
+        if(!f.options)$("out-"+f.id).textContent=fmt(s[f.id])+(f.unit?" "+f.unit:"");
+    }
+    $("plot-title").textContent=l.title;
+    $("plot").setAttribute("aria-label",l.title);
+    $("plot").innerHTML=r.svg;
+    $("plot-note").textContent=r.note;
+    $("conclusion").textContent=r.conclusion;
+    $("values").innerHTML=r.values.map(([name,value])=>`<div class="metric">${name}<strong>${value}</strong></div>`).join("");
+}
+function fillSelect(el,options){
+    el.replaceChildren(...options.map(([id,name])=>{const o=document.createElement("option");o.value=id;o.textContent=name;return o;}));
+}
+function selectLab(key,focus=false){
+    active=key;
+    for(const [id,button] of Object.entries(labButtons))button.setAttribute("aria-pressed",String(id===key));
+    const l=lab[key],s=settings[key],controls=$("controls");
+    $("lab-title").textContent=l.name;
+    $("lab-intro").textContent=l.intro;
+    controls.replaceChildren();
+    for(const f of l.fields){
+        const row=document.createElement("div"), label=document.createElement("label");
+        const input=document.createElement(f.options?"select":"input");
+        row.id="field-"+f.id;input.id="control-"+f.id;label.htmlFor=input.id;label.textContent=f.label;
+        if(f.options)fillSelect(input,f.options);
+        else{
+            input.type="range";input.min=f.min;input.max=f.max;input.step=f.step;
+            const out=document.createElement("output");out.id="out-"+f.id;label.append(": ",out);
+        }
+        input.value=s[f.id];
+        input.oninput=()=>{s[f.id]=f.options?input.value:Number(input.value);renderLab();};
+        row.append(label,input);controls.append(row);
+    }
+    renderLab();
+    if(focus)$("control-"+l.fields[0].id).focus();
+}
+for(const [key,item] of Object.entries(lab)){
+    const button=document.createElement("button");button.type="button";button.textContent=item.name;
+    button.onclick=()=>selectLab(key,true);
+    $("lab-buttons").append(button);labButtons[key]=button;
+}
+$("restore").onclick=()=>{
+    Object.assign(settings[active],Object.fromEntries(lab[active].fields.map(f=>[f.id,f.value])));
+    selectLab(active,true);
+};
+function tab(id){
+    for(const section of document.querySelectorAll("main > section"))section.hidden=section.id!==id;
+    for(const button of document.querySelectorAll("[data-tab]"))button.setAttribute("aria-pressed",String(button.dataset.tab===id));
+}
+for(const button of document.querySelectorAll("[data-tab]"))button.onclick=()=>tab(button.dataset.tab);
+const missions=[
+ {name:"Dvakrat debelejša stena",key:"conduction",start:{L:20},q:"Steno naredimo dvakrat debelejšo, temperaturi površin pa ostaneta isti. Kaj se zgodi s toplotnim tokom?",a:["Podvoji se","Prepolovi se","Ostane isti"],i:1,why:"Upor ravne plasti je sorazmeren z debelino. Pri istem ΔT velja P ∝ 1/L."},
+ {name:"Največji temperaturni padec",key:"stationary",start:{m1:"brick",m2:"wool",L1:12,L2:8},q:"Zakaj je padec temperature v izolaciji večji, čeprav skozi obe plasti teče isti tok?",a:["V izolaciji toplota nastaja","Izolacija ima večji toplotni upor","V izolaciji je ploščina nujno večja"],i:1,why:"Pri istem toku velja ΔTᵢ = PRᵢ; večji upor pomeni večji padec."},
+ {name:"Fluid segreva telo",key:"transfer",start:{Ts:20,Tf:50},q:"Tekočina je toplejša od površine. Kakšen je predznak Pₛ→f?",a:["Pozitiven","Negativen","Nič"],i:1,why:"Tₛ−T∞ je negativen. Dejanski tok je od tekočine proti površini."},
+ {name:"Večji prestopni koeficient",key:"transient",start:{h:120},q:"Kako se spremeni časovna konstanta ohlajanja, če podvojimo h in je približek enotne temperature še veljaven?",a:["Podvoji se","Prepolovi se","Ostane enaka"],i:1,why:"Pri istem telesu in površini je τ = mc/(hA)."},
+ {name:"Nižji tlak v plinski reži",key:"gas",start:{lp:1},q:"Kaj se ob znižanju tlaka pri nespremenjeni temperaturi in širini reže zgodi s Kn?",a:["Zmanjša se","Poveča se","Ostane enak"],i:1,why:"Molekule redkeje trkajo, srednja prosta pot se podaljša, zato Kn naraste."}
+];
+fillSelect($("mission"),missions.map((m,i)=>[i,m.name]));
+function currentMission(){return missions[Number($("mission").value||0)];}
+function renderMission(){
+    const m=currentMission(), p=document.createElement("p"), group=document.createElement("div");
+    p.className="question";p.textContent=m.q;group.className="row";
+    $("mission-body").replaceChildren(p,group);$("mission-feedback").textContent="";
+    m.a.forEach((answer,i)=>{
+        const button=document.createElement("button");button.type="button";button.textContent=answer;button.setAttribute("aria-pressed","false");
+        button.onclick=()=>{
+            for(const other of group.children)other.setAttribute("aria-pressed",String(other===button));
+            $("mission-feedback").textContent=i===m.i?"Pravilno. "+m.why:"Poskusi še enkrat ali preveri v poskusu.";
+        };
+        group.append(button);
+    });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{
+    const m=currentMission();Object.assign(settings[m.key],Object.fromEntries(lab[m.key].fields.map(f=>[f.id,f.value])),m.start);tab("lab");selectLab(m.key,true);
+};
+
+
+
+
+
+const topics={conduction:"Fourierov zakon",stationary:"Stacionarni tok skozi plasti",transfer:"Prestop med površino in fluidom",transient:"Segrevanje in ohlajanje",gas:"Prevajanje v plinih"};
+fillSelect($("topic"),[["all","Mešano"],...Object.entries(topics)]);
+function makeTask(key,level){
+ const hard=level===2,A=integer(2,30)/10,L=integer(5,35),dt=integer(5,50),h=integer(2,40)*5,
+       k=integer(2,18)/10,t=integer(2,18)*5;
+ const q=(prompt,answer,unit,hint,steps)=>({key,prompt,answer,unit,hint,steps:steps+" ≈ "+fmt(answer)+" "+unit+"."});
+ switch(key){
+  case "conduction":{
+   const P=plane(k,L/100,A,dt,0).P;
+   return hard
+    ? q("Ravna stena ima ploščino "+fmt(A)+" m², debelino "+L+" cm in λ = "+fmt(k)+" W/(m·K). Razlika temperatur površin je "+dt+" K. Koliko kJ toplote preide v "+t+" minutah pri stacionarnem toku?",P*t*60/1000,"kJ","Izračunaj P, minute pretvori v sekunde in joule v kilojoule.","Q = ["+fmt(k)+" · "+fmt(A)+" · "+dt+"/("+L+"/100)] · "+t+" · 60/1000")
+    : q("Skozi steno debeline "+L+" cm in ploščine "+fmt(A)+" m² poteka stacionarno prevajanje. λ = "+fmt(k)+" W/(m·K), razlika temperatur površin je "+dt+" K. Izračunaj velikost toplotnega toka.",P,"W","Debelino pretvori v metre in uporabi P = λAΔT/L.","P = "+fmt(k)+" · "+fmt(A)+" · "+dt+"/("+L+"/100)");
+  }
+  case "stationary":{
+   const L2=integer(3,16),k2=integer(3,8)/100,h1=integer(5,14),h2=integer(12,40),p=wall(k,k2,L/100,L2/100,h1,h2,0,A,dt,0);
+   return hard
+    ? q("Dve plasti imata R″₁ = "+fmt(p.R[1])+" in R″₂ = "+fmt(p.R[3])+" m²·K/W. Oba fluida se razlikujeta za "+dt+" K, h₁ = "+h1+" in h₂ = "+h2+" W/(m²·K). Izračunaj velikost q″ v W/m². Upor stika zanemari.",dt/(p.R[0]+Number(p.R[1].toFixed(4))+Number(p.R[3].toFixed(4))+p.R[4]),"W/m²","Podanima uporoma na ploščino prištej oba prestopna upora 1/h.","q″ = "+dt+"/(1/"+h1+" + "+fmt(p.R[1])+" + "+fmt(p.R[3])+" + 1/"+h2+")")
+    : q("Stena ima dve zaporedni plasti: "+L+" cm pri λ₁ = "+fmt(k)+" in "+L2+" cm pri λ₂ = "+fmt(k2)+" W/(m·K). Ploščina je "+fmt(A)+" m². Izračunaj skupni upor stene v K/W. Prestopa in kontaktni upor zanemari.",(p.R[1]+p.R[3])/A,"K/W","Seštej L₁/(λ₁A) in L₂/(λ₂A).","R = [("+L+"/100)/"+fmt(k)+" + ("+L2+"/100)/"+fmt(k2)+"]/"+fmt(A));
+  }
+  case "transfer":{
+   const s=integer(0,1)?1:-1,Ts=integer(25,65),Tf=Ts-s*dt,P=convection(h,A,Ts,Tf);
+   return hard
+    ? q("Površina pri "+Ts+" °C je v fluidu pri "+Tf+" °C. Ploščina je "+fmt(A)+" m². Izmerjeni tok s predznakom od telesa proti fluidu je "+fmt(P)+" W. Izračunaj h.",h,"W/(m²·K)","Uporabi enaka predznaka za P in Tₛ−T∞.","h = "+fmt(P)+"/["+fmt(A)+" · ("+Ts+" − ("+Tf+"))]")
+    : q("Površina ima "+Ts+" °C, fluid pa "+Tf+" °C. h = "+h+" W/(m²·K), A = "+fmt(A)+" m². Kolikšen je tok od površine proti fluidu s predznakom?",P,"W","Izračunaj hA(Tₛ−T∞). Negativen rezultat pomeni tok proti površini.","P = "+h+" · "+fmt(A)+" · ("+Ts+" − ("+Tf+"))");
+  }
+  case "transient":{
+   const mass=integer(5,35)/10,c=integer(4,10)*100,T0=integer(45,95),Tf=integer(5,30),tau=mass*c/(h*A);
+   return hard
+    ? q("V približku enotne temperature se telo ohlaja od "+T0+" °C v okolici pri "+Tf+" °C. Časovna konstanta je "+t+" min. Kolikšna je temperatura po "+2*t+" min?",Tf+(T0-Tf)*Math.exp(-2),"°C","Po dveh časovnih konstantah pomnoži začetno temperaturno razliko z e⁻².","T = "+Tf+" + ("+T0+"−"+Tf+")e⁻²")
+    : q("V približku enotne temperature ima telo m = "+fmt(mass)+" kg, c = "+c+" J/(kg·K), h = "+h+" W/(m²·K) in A = "+fmt(A)+" m². Izračunaj τ v sekundah.",tau,"s","Časovna konstanta je razmerje med toplotno kapaciteto telesa in hA.","τ = "+fmt(mass)+" · "+c+"/("+h+" · "+fmt(A)+")");
+  }
+  case "gas":{
+   const gas=Object.values(gases)[integer(0,2)],Lmm=integer(2,20),mf=integer(2,20);
+   return hard
+    ? q("V mirujočem plinu ima srednja prosta pot vrednost "+mf+" µm, reža pa je široka "+Lmm+" mm. Izračunaj Kn v tisočinkah, torej 1000·Kn.",mf/Lmm,"brez enote","Pretvori dolžini v isto enoto, nato izračunaj 1000·ℓ/L.","1000·Kn = 1000 · "+mf+"/("+Lmm+" · 1000)")
+    : q("Mirujoči plin v kontinuumskem režimu ima λ = "+fmt(gas.k)+" W/(m·K). Debelina je "+Lmm+" mm, razlika temperatur sten "+dt+" K, ploščina pa "+fmt(A)+" m². Izračunaj velikost moči prevajanja.",plane(gas.k,Lmm/1000,A,dt,0).P,"W","Uporabi Fourierov zakon in milimetre pretvori v metre.","P = "+fmt(gas.k)+" · "+fmt(A)+" · "+dt+"/("+Lmm+"/1000)");
+  }
+  default:throw new Error("Neznana tema.");
+ }
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti. Dovoljeno je manjše odstopanje zaradi zaokroževanja konstant.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001 + Math.abs(task.answer)*0.00006){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Prevajanje toplote · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+selectLab("conduction");
+renderMission();
+generate();
+</script>
+</body>
+</html>
