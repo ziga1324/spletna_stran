@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivna fizika: dinamična in kinematična viskoznost, Poiseuilleova enačba in dinamika kapilarnega dviga.">
+<title>Viskoznost – Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.vz{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.vz *{box-sizing:border-box}.vz [hidden]{display:none!important}
+.vz .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.vz header.wrap{padding:25px 0 22px}.vz a{color:var(--accent);font-weight:750}
+.vz .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.vz .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.vz h1,.vz h2,.vz h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.vz h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.vz h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.vz h3{font-size:1.15rem;margin:0 0 9px}.vz p{margin:0 0 13px}.vz .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.vz .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.vz svg{display:block;width:100%;height:auto;overflow:visible}
+.vz nav,.vz .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.vz nav{margin:12px 0 24px}
+.vz button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.vz button:hover{background:var(--purple)}.vz button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.vz button[aria-pressed=true],.vz .primary{background:var(--yellow)}
+.vz button:disabled{opacity:.55;cursor:default}.vz :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.vz .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.vz .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.vz .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.vz .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.vz label{display:block;font-weight:700;margin:12px 0 4px}.vz label:first-child{margin-top:0}
+.vz input:not([type=checkbox]),.vz select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.vz input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.vz input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.vz output{color:var(--accent);font-weight:800}
+.vz .fine{font-size:.88rem;color:#4d5871}.vz .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.vz .lab-visual,.vz .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.vz .graph{cursor:crosshair}.vz .graph-label{font-weight:800;margin:7px 0 0}
+.vz .graph-group{min-width:0}.vz .graph-group p{margin:7px 0 0}
+.vz .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.vz .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.vz .metric:nth-child(2n){background:var(--mint)}.vz .metric strong{display:block;font-size:1.06rem}
+.vz .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.vz .lav{background:var(--purple)}.vz .accent-card{background:var(--yellow)}.vz .question{font-weight:700;font-size:1.06rem}
+.vz .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.vz details{margin:10px 0}.vz summary{cursor:pointer;font-weight:750}
+.vz .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.vz .question-card .row{margin-top:9px}.vz .question-card label{margin-top:9px}
+.vz .lesson{scroll-margin:15px}.vz .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.vz footer{padding:8px 0 28px}.vz .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.vz .grid,.vz .hero{grid-template-columns:1fr}.vz .hero-art{display:none}.vz .three{grid-template-columns:1fr}.vz .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.vz .wrap{width:calc(100% - 24px)}.vz .two{grid-template-columns:1fr}.vz nav button{flex:1 1 40%}.vz .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.vz{background:#fff;color:#000}body.vz.print-sheet > :not(#paper){display:none!important}body.vz.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.vz .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.vz .graph{cursor:default}
+.vz .subnote{margin-top:12px}
+.vz .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.vz .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.vz .graph-row{grid-template-columns:1fr}.vz .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.vz h1{font-size:clamp(44px,7vw,78px)}
+.vz .lab-visual{margin:10px 0 14px}
+.vz .lab-grid{align-items:start}
+.vz .plot-note{margin-top:10px}
+.vz .topic-buttons{margin:12px 0 24px}
+.vz .theory-grid .note{margin:0}
+.vz .theory-grid{margin:14px 0}
+.vz .mono{font-variant-numeric:tabular-nums}
+.vz .unit-table{border-collapse:collapse;width:100%;margin:12px 0}
+.vz .unit-table th,.vz .unit-table td{text-align:left;border-bottom:1px solid #bbc7ce;padding:6px}
+.vz .focus-box{margin-top:12px}
+.vz .hero h1{font-size:clamp(39px,6.4vw,76px);text-wrap:balance}
+</style>
+</head>
+<body class="vz">
+<header class="wrap">
+    <a href="../index.html">← Vsa orodja</a>
+    <div class="hero">
+        <div><span class="badge">SIDEBIT · FIZIKA</span><h1>Viskoznost</h1>
+        <p class="lead">Premakni ploščo nad plastjo tekočine, segrej vodo in zrak ter preveri, zakaj majhna sprememba polmera cevi močno spremeni pretok. Nato spremljaj, kako hitro se kapilara polni.</p></div>
+        <svg class="hero-art" viewBox="0 0 330 145" role="img" aria-label="Parabolični profil hitrosti v cevi">
+            <path d="M34 25H300V121H34Z" fill="#c5f0e2" stroke="#22253a" stroke-width="3"/>
+            <path d="M125 25Q320 73 125 121" fill="none" stroke="#5634aa" stroke-width="4"/>
+            <path d="M58 43h119m-9-5 9 5-9 5M58 73h158m-9-5 9 5-9 5M58 103h119m-9-5 9 5-9 5" fill="none" stroke="#5634aa" stroke-width="3"/>
+        </svg>
+    </div>
+    <nav aria-label="Poglavja">
+        <button type="button" data-tab="lab" aria-pressed="true">Laboratorij</button>
+        <button type="button" data-tab="challenge" aria-pressed="false">Učni izzivi</button>
+        <button type="button" data-tab="practice" aria-pressed="false">Generator nalog</button>
+        <button type="button" data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+    </nav>
+</header>
+<main class="wrap">
+<section id="lab">
+    <div class="card lav">
+        <span class="chip">Štirje interaktivni poskusi</span><h2>Izberi poskus</h2>
+        <div id="lab-buttons" class="row topic-buttons"></div>
+    </div>
+    <div class="grid lab-grid">
+        <div class="card">
+            <span class="chip">01 · Nastavi</span><h2 id="lab-title"></h2>
+            <p id="lab-intro"></p><div id="controls"></div>
+            <div class="row small-gap"><button type="button" id="restore">Ponastavi poskus</button></div>
+        </div>
+        <div class="card">
+            <span class="chip">02 · Opazuj</span><h2 id="plot-title"></h2>
+            <svg id="plot" class="lab-visual" viewBox="0 0 550 285" role="img" aria-label="Vizualni prikaz poskusa"></svg>
+            <p id="plot-note" class="fine plot-note"></p>
+            <div id="values" class="readouts mono"></div><p id="conclusion" class="focus-box"></p>
+        </div>
+    </div>
+</section>
+<section id="challenge" hidden>
+    <div class="card lav">
+        <span class="chip">Najprej napovej</span><h2>Učni izzivi</h2>
+        <label for="mission">Izberi izziv</label><select id="mission"></select>
+        <div id="mission-body" class="small-gap"></div>
+        <p id="mission-feedback" class="feedback" role="status"></p>
+        <button type="button" id="mission-open">Odpri poskus</button>
+    </div>
+</section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden>
+ <div class="card">
+  <h2>Kako tekočina prenaša gibalno količino?</h2>
+  <p>Plasti tekočine lahko tečejo z različnimi hitrostmi. Viskoznost opisuje, kako močno hitrejša plast vleče počasnejšo za seboj in kako močno počasnejša zavira hitrejšo. V tem poglavju beseda <em>tekočina</em> zajema kapljevine in pline.</p>
+  <div class="two theory-grid">
+   <article class="note"><h3>1 · Dinamična in kinematična viskoznost</h3>
+    <p class="formula">τ = η du/dy &nbsp; · &nbsp; F = |τ|A &nbsp; · &nbsp; ν = η/ρ</p>
+    <p>V preprostem strigu je τ strižna napetost, u hitrost vzdolž plasti, y razdalja pravokotno na plasti. Gradient du/dy ima enoto s⁻¹. Dinamična viskoznost η se meri v Pa·s, pri čemer 1 mPa·s = 10⁻³ Pa·s. Kinematična viskoznost ν se meri v m²/s in opisuje razširjanje gibalne količine v tekočini.</p>
+    <p>Med vzporednima ploščama ob pogoju brez zdrsa tekočina ob mirujoči plošči miruje, ob gibajoči pa ima njeno hitrost U. Če je razmik d in ni tlačnega gradienta, je stacionarni laminarni profil linearen: u = Uy/d. Potrebna zunanja sila za vzdrževanje gibanja je ηAU/d. Moč F·U se pretvarja v notranjo energijo zaradi viskoznega trenja.</p>
+   </article>
+   <article class="note lav"><h3>2 · Kapljevine, plini in temperatura</h3>
+    <p>Pri večini običajnih kapljevin segrevanje zmanjša dinamično viskoznost. Molekulam je lažje drseti in se prerazporejati. V razredčenem plinu hitrejše molekule pri višji temperaturi učinkoviteje prenašajo gibalno količino med plastmi, zato η običajno narašča.</p>
+    <p>V zveznem režimu razredčenega plina je η pri stalni temperaturi približno neodvisna od tlaka. Manj molekul na prostornino približno odtehta daljša prosta pot. V zelo redkem plinu ali izredno ozki reži lahko odpove pogoj brez zdrsa. Gostota plina je močno odvisna od tlaka, zato njegova ν ni približno neodvisna od tlaka.</p>
+    <p>Newtonova tekočina ima pri danih pogojih η neodvisno od strižne hitrosti. Voda in zrak se v običajnih učnih primerih obnašata kot Newtonovi tekočini. Pri kečapu ali suspenziji škroba lahko navidezna viskoznost odvisna od hitrosti striga. Modeli te strani takih tekočin ne opisujejo.</p>
+   </article>
+   <article class="note lav"><h3>3 · Hagen–Poiseuilleova enačba</h3>
+    <p class="formula">u(s) = Δp(r²−s²)/(4ηL) &nbsp; · &nbsp; Q = πr⁴Δp/(8ηL)</p>
+    <p>V ravni okrogli cevi dolžine L ima tekočina ob steni hitrost nič, v osi pa največjo. Tu je r notranji polmer cevi in s radialna oddaljenost od osi. Integracija paraboličnega profila po preseku da volumenski pretok Q v m³/s. Povprečna hitrost je Q/(πr²) in je polovica hitrosti v osi.</p>
+    <p class="formula">Rₕ = Δp/Q = 8ηL/(πr⁴) &nbsp; · &nbsp; Re = ρv̄(2r)/η</p>
+    <p>Model predpostavlja stacionaren, razvit laminarni tok Newtonove, praktično nestisljive tekočine, brez zdrsa na steni. Δp tu pomeni pogonsko razliko v vodoravni cevi; pri nagnjeni cevi je treba vključiti še težnostni člen. Podvojitev polmera pri isti pogonski razliki da 16-kratni <em>modelni</em> pretok, če režim ostane laminaren. Okrog Re ≈ 2300 je možen prehod; dejanska meja je odvisna od motenj in razmer. Pri večjih razlikah tlaka v plinu je lahko pomembna tudi stisljivost.</p>
+   </article>
+   <article class="note"><h3>4 · Dinamika kapilarnega dviga</h3>
+    <p class="formula">Δpₖ = 2γ cos θ/r &nbsp; · &nbsp; (8ηh/r²) dh/dt = Δpₖ − ρgh</p>
+    <p>Za omočljivo kapilaro (θ &lt; 90°) ukrivljen meniskus vleče kapljevino v cev. Med dviganjem je stolpec daljši: več je viskoznega upora in večji je hidrostatski protitlak. Enačbo dobimo, če Poiseuilleov tok zapišemo za trenutno dolžino stolpca h in uporabimo Q = πr² dh/dt. Zanemarimo vztrajnost, gostoto plina ter vstopne izgube.</p>
+    <p class="formula">h² ≈ (rγ cos θ/2η)t &nbsp; · &nbsp; hₑ = 2γ cos θ/(ρgr)</p>
+    <p>Če je hidrostatski člen zanemarljiv, dobimo Lucas–Washburnov zakon: razdalja narašča kot √t. Za navpično cev je to približek pri h ≪ hₑ, po najzgodnejši fazi, v kateri je pomembna vztrajnost. Z upoštevanjem težnosti se h približuje Jurinovi ravnovesni višini hₑ. Večja η upočasni dvig, ne spremeni pa hₑ. Na potek lahko vplivajo tudi dinamični kontaktni kot, ujeti zrak in geometrija por.</p>
+    <p>Za rešitev s težnostjo vpeljemo z = h/hₑ in τ = 4ηhₑ²/(rγ cos θ). Tedaj je t/τ = −z − ln(1−z). Laboratorij iz te zveze numerično poišče višino. Teorija v tem modelu do ravnovesne višine pride asimptotično, zato kot praktično merilo izpišemo čas do 90 % hₑ.</p>
+   </article>
+  </div>
+  <details><summary>Rešen primer: sila za premikanje plošče</summary><p>Pri η = 0,10 Pa·s, U = 0,20 m/s in d = 2 mm je strižna hitrost 100 s⁻¹. Strižna napetost znaša 10 Pa. Na ploščo s ploščino 0,030 m² moramo zato delovati s silo 0,30 N.</p></details>
+  <details><summary>Rešen primer: meritev viskoznosti s kapilaro</summary><p>Pri r = 0,50 mm, L = 0,20 m, Δp = 2000 Pa in Q = 0,20 mL/s je η = πr⁴Δp/(8LQ) ≈ 0,00123 Pa·s. Najprej pretvorimo Q = 2,0 · 10⁻⁷ m³/s in r = 5,0 · 10⁻⁴ m. Preverimo tudi Reynoldsovo število, preden formulo uporabimo za meritev.</p></details>
+  <details><summary>Rešen primer: vpliv viskoznosti na dvig</summary><p>Pri nespremenjenih r, γ in θ v območju Lucas–Washburnovega zakona podvojitev η pomeni, da do iste višine potrebujemo dvakrat toliko časa. Po istem času je višina manjša za faktor √2. Končna višina v navpični kapilari se ne spremeni.</p></details>
+  <p class="fine small-gap">Viri: <a href="https://openstax.org/books/college-physics/pages/12-4-viscosity-and-laminar-flow-poiseuilles-law">OpenStax: viskoznost in Poiseuilleov tok</a>, <a href="https://www.iapws.org/relguide/viscosity.html">IAPWS: viskoznost vode</a> <a href="https://ntrs.nasa.gov/api/citations/20060053240/downloads/20060053240.pdf">NASA: Sutherlandov približek za zrak</a> in <a href="https://pubmed.ncbi.nlm.nih.gov/18255086/">kapilarni dvig z upoštevanjem težnosti</a>.</p>
+ </div>
+</section>
+</main>
+<footer class="wrap"><p>Sidebit · Fizika · Viskoznost</p></footer>
+<div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id), G=9.81;
+const format=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:4,useGrouping:false});
+const fmt=x=>format.format(Math.abs(x)<1e-10?0:x);
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const C="#5634aa", B="#00806a", Y="#ffe38b", INK="#22253a";
+const line=(x,y,X,Y,color=INK,width=2,dash="")=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${color}" stroke-width="${width}" ${dash?'stroke-dasharray="'+dash+'"':""}/>`;
+const text=(x,y,s,anchor="middle")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="#364058" font-size="14" font-weight="650">${s}</text>`;
+const disk=(x,y,r=5,fill=Y)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${INK}" stroke-width="2"/>`;
+const rect=(x,y,w,h,fill,stroke=INK)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const series=(a,b,fn)=>Array.from({length:121},(_,i)=>{const x=a+(b-a)*i/120;return [x,fn(x)];});
+const axisFormat=new Intl.NumberFormat("sl-SI",{maximumSignificantDigits:4,useGrouping:false});
+const number=x=>axisFormat.format(x);
+function chart({xmin=0,xmax,ymin=0,ymax,xLabel,yLabel,curves,dots=[],shade=null,markers=[]}){
+    const left=72,right=521,top=35,bottom=222;
+    const X=x=>left+(right-left)*(x-xmin)/(xmax-xmin), Z=y=>bottom-(bottom-top)*(y-ymin)/(ymax-ymin);
+    const path=points=>points.map(([x,y],i)=>(i?"L":"M")+X(x)+" "+Z(y)).join(" ");
+    let svg='<defs><clipPath id="visc-plot-clip"><rect x="72" y="35" width="449" height="187"/></clipPath></defs>'+text(left,22,yLabel,"start")+text(right,275,xLabel,"end");
+    for(let i=0;i<=4;i++){
+        const x=xmin+(xmax-xmin)*i/4,y=ymin+(ymax-ymin)*i/4;
+        svg+=line(X(x),top,X(x),bottom,"#dce3ef",1)+line(left,Z(y),right,Z(y),"#dce3ef",1);
+        svg+=text(X(x),246,number(x))+text(left-9,Z(y)+5,number(y),"end");
+    }
+    svg+='<g clip-path="url(#visc-plot-clip)">';
+    if(shade?.length){
+        const [start]=shade,[end]=shade.slice(-1);
+        svg+=`<path d="${path(shade)} L${X(end[0])} ${Z(0)} L${X(start[0])} ${Z(0)} Z" fill="#ffe38b" opacity=".65"/>`;
+    }
+    svg+=line(left,top,left,bottom)+line(left,bottom,right,bottom);
+    for(const x of markers)svg+=line(X(x),top,X(x),bottom,"#a76b0d",1.5,"5 4");
+    for(const {points,color=C,dash=false} of curves)svg+=`<path d="${path(points)}" stroke="${color}" stroke-width="3.5" fill="none" ${dash?'stroke-dasharray="8 5"':""}/>`;
+    for(const [x,y] of dots)svg+=disk(X(x),Z(y));
+    return svg+"</g>";
+}
+function bars(data,unit){
+    const max=Math.max(1,...data.map(([,v])=>v));
+    return data.map(([label,value,color],i)=>{
+        const y=41+i*73;
+        return text(45,y,label+" · "+fmt(value)+" "+unit,"start")+rect(45,y+12,460,18,"#e9edf4","#dce3ef")+
+            (value>0 ? rect(45,y+12,460*value/max,18,color) : "");
+    }).join("");
+}
+const metric=(name,v,unit)=>[name,fmt(v)+(unit?" "+unit:"")];
+const slider=(id,label,min,max,step,value,unit="")=>({id,label,min,max,step,value,unit});
+const select=(id,label,value,options)=>({id,label,value,options});
+
+
+
+
+
+const pair=(label,value,unit="")=>metric(label,value,unit);
+const cosine=theta=>Math.cos(theta*Math.PI/180);
+function shear(eta,U,d,A){
+    const gradient=U/d,tau=eta*gradient,F=tau*A;
+    return {gradient,tau,F,P:F*U};
+}
+const waterData=[1.307,1.002,.797,.653,.547,.466,.404,.354,.315];
+function waterViscosity(t){
+    const i=Math.min(7,Math.max(0,Math.floor((t-10)/10)));
+    return waterData[i]+(waterData[i+1]-waterData[i])*((t-10)/10-i);
+}
+function airViscosity(t){
+    const T=t+273.15;
+    return 1000*1.458e-6*T**1.5/(T+110.4);
+}
+function pipe(eta,r,L,dp,rho){
+    const Q=Math.PI*r**4*dp/(8*eta*L),v=Q/(Math.PI*r*r),Re=rho*v*2*r/eta;
+    return {Q,v,Re,R:8*eta*L/(Math.PI*r**4),tau:dp*r/(2*L),entrance:.05*Re*2*r};
+}
+function capillary(eta,r,gamma,theta,rho){
+    const drive=gamma*cosine(theta),coef=r*drive/(4*eta),he=2*drive/(rho*G*r);
+    return {coef,he,tau:he*he/coef,dp:2*drive/r};
+}
+const capTime=z=>-z-Math.log1p(-z);
+function capHeight(t){
+    if(t===0)return 0;
+    let lo=0,hi=1;
+    for(let i=0;i<55;i++){
+        const x=(lo+hi)/2;
+        if(capTime(x)>t)hi=x;else lo=x;
+    }
+    return (lo+hi)/2;
+}
+function arrow(x,y,X,Y,col=C){
+    const a=Math.atan2(Y-y,X-x),h=9;
+    return line(x,y,X,Y,col,3)+line(X,Y,X-h*Math.cos(a-.5),Y-h*Math.sin(a-.5),col,3)+line(X,Y,X-h*Math.cos(a+.5),Y-h*Math.sin(a+.5),col,3);
+}
+const etaField=(value=10)=>slider("eta","Dinamična viskoznost η",1,100,1,value,"mPa·s");
+const rhoField=(value=1000)=>slider("rho","Gostota ρ",700,1350,10,value,"kg/m³");
+const lab={
+ shear:{
+    name:"Koeficient viskoznosti",intro:"Spodnja plošča miruje, zgornja se premika. Nastavi η, razmik in hitrost plošče ter opazuj strig.",
+    fields:[etaField(25),slider("U","Hitrost zgornje plošče",0,50,1,20,"cm/s"),slider("d","Razmik plošč",.5,10,.5,2,"mm"),slider("A","Ploščina zgornje plošče",10,500,5,300,"cm²"),rhoField()],
+    title:"Laminarni strig med ploščama",
+    show({eta,U,d,A,rho}){
+        const r=shear(eta/1000,U/100,d/1000,A/10000), y=180-(36+d*7);
+        let svg=rect(84,y,350,180-y,"#e2f6f1","#d0dfed")+line(75,180,445,180,INK,6)+line(75,y,445,y,INK,6)+
+            text(260,214,"Spodnja plošča miruje")+text(260,242,"Razmik na skici je povečan.");
+        for(let i=1;i<=5;i++){
+            const yy=180-(180-y)*i/6,dist=U*4*i/6;
+            if(dist>3)svg+=arrow(126,yy,126+dist,yy);
+        }
+        if(U>0)svg+=arrow(126,y-15,126+U*4,y-15,B);
+        return {svg,note:"Puščice kažejo hitrosti plasti. Pri Newtonovi tekočini je profil v tem modelu linearen, sila tekočine na zgornjo ploščo pa je usmerjena nazaj.",
+            values:[pair("Strižna hitrost U/d",r.gradient,"s⁻¹"),pair("Velikost strižne napetosti",r.tau,"Pa"),pair("Potrebna vlečna sila",r.F,"N"),pair("Moč vlečenja",r.P,"W"),pair("Kinematična viskoznost",1000*eta/rho,"mm²/s")],
+            conclusion:U===0?"Plošči mirujeta. Brez tlačnega gradienta ni striga.":"Pri isti hitrosti manjši razmik poveča gradient in potrebno silo."};
+    }
+ },
+ temperature:{
+    name:"Viskoznost plinov in kapljevin",intro:"Primerjaj vodo in zrak med 10 in 90 °C. Izberi absolutno primerjavo ali opazuj, kako se η spreminja glede na vrednost pri 20 °C.",
+    fields:[slider("t","Temperatura",10,90,1,20,"°C"),select("view","Navpična os","relative",[["relative","Razmerje η(T)/η(20 °C)"],["absolute","Dinamična viskoznost · mPa·s"]])],title:"Pri segrevanju se voda in zrak odzoveta različno",
+    show({t,view}){
+        const a=waterViscosity(t),b=airViscosity(t),rw=waterViscosity(20),ra=airViscosity(20),relative=view==="relative",
+         w=x=>waterViscosity(x)/(relative?rw:1),g=x=>airViscosity(x)/(relative?ra:1);
+        const rhoAir=101325/(287.05*(t+273.15));
+        return {svg:chart({xmin:10,xmax:90,ymax:1.48,xLabel:"Temperatura (°C)",yLabel:relative?"η(T)/η(20 °C)":"η (mPa·s)",
+            curves:[{points:series(10,90,w)},{points:series(10,90,g),color:B,dash:true}],dots:[[t,w(t)],[t,g(t)]]}),
+            note:"Vijolično: interpolacija za vodo blizu 1 bar. Zeleno: Sutherlandov približek za zrak. Gostota vode v izračunu ν je vzeta približno 1000 kg/m³, za zrak uporabimo idealni plin pri 101 325 Pa.",
+            values:[pair("η vode",a,"mPa·s"),pair("η zraka",b,"mPa·s"),pair("ν vode (približek)",a,"mm²/s"),pair("ν zraka",1000*b/rhoAir,"mm²/s")],
+            conclusion:"V tem območju z višjo temperaturo η vode pada, η zraka pa narašča. Primerjaj še ν: zaradi različne gostote vrstni red ni nujno isti."};
+    }
+ },
+ poiseuille:{
+    name:"Poiseuilleov tok",intro:"Nastavi notranji polmer in tlačno razliko. Na grafu preberi hitrost ob steni in v osi ter preveri, ali je laminarni model še primeren.",
+    fields:[slider("r","Notranji polmer",.1,3,.05,.5,"mm"),slider("L","Dolžina cevi",.05,2,.05,.5,"m"),slider("dp","Tlačna razlika",0,6000,25,1000,"Pa"),etaField(1),rhoField()],
+    title:"Parabolični profil v okrogli cevi",
+    show({r,L,dp,eta,rho}){
+        const p=pipe(eta/1000,r/1000,L,dp,rho),valid=p.Re<2300,fit=p.entrance<=L;
+        const f=x=>2*p.v*(1-(x/r)**2), ymax=Math.max(.001,2.25*p.v);
+        return {svg:chart({xmin:-r,xmax:r,ymax,xLabel:"Lega čez premer (mm)",yLabel:"Hitrost (m/s)",curves:[{points:series(-r,r,f),dash:!valid||!fit}],dots:[[-r,0],[0,2*p.v],[r,0]]}),
+            note:!valid?"Črtkano je le laminarni model. Ocenjeni Re je ≥ 2300, zato izračun ni zanesljiva napoved dejanskega toka.":!fit?"Črtkano je le model razvitega toka. Ocenjena vstopna dolžina je daljša od cevi.":"Učni model za stacionarni, razvit laminarni tok. Vstopno dolžino ocenimo z Lᵥ ≈ 0,05 Re·D.",
+            values:[pair("Modelni pretok",p.Q*1e6,"mL/s"),pair("Povprečna hitrost",p.v,"m/s"),pair("Hitrost v osi",2*p.v,"m/s"),pair("Ocenjeni Re",p.Re),pair("Modelna strižna napetost ob steni",p.tau,"Pa"),pair("Ocenjena vstopna dolžina",100*p.entrance,"cm")],
+            conclusion:valid&&fit?"Pri isti Δp, L in η je pretok sorazmeren s četrto potenco polmera.":"Zmanjšaj tlačno razliko ali polmer oziroma povečaj viskoznost, da bo ocenjeni Reynolds manjši."};
+    }
+ },
+ capillary:{
+    name:"Dinamika kapilarnega dviga",intro:"Primerjaj polnjenje navpične in vodoravne kapilare. Drsnik določa brezdimenzijski čas, dejanski čas je izpisan pod grafom.",
+    fields:[slider("r","Polmer kapilare",.1,.8,.05,.3,"mm"),etaField(20),rhoField(),slider("gamma","Površinska napetost γ",20,85,1,72,"mN/m"),
+        slider("theta","Kontaktni kot θ",0,80,1,25,"°"),slider("u","Čas t/τ",0,3,.01,.4)],
+    title:"Vodoravna kapilara in navpični dvig",
+    show({r,eta,rho,gamma,theta,u}){
+        const p=capillary(eta/1000,r/1000,gamma/1000,theta,rho),vert=x=>capHeight(x),horiz=x=>Math.sqrt(2*x);
+        return {svg:chart({xmax:3,ymax:2.65,xLabel:"Brezdimenzijski čas t/τ",yLabel:"Pot / Jurinova višina",curves:[{points:series(0,3,vert)},{points:series(0,3,horiz),color:B,dash:true},{points:[[0,1],[3,1]],color:"#7c879b",dash:true}],dots:[[u,vert(u)],[u,horiz(u)]]}),
+            note:"Vijolično: navpična kapilara s težnostjo. Zeleno: vodoravna kapilara brez hidrostatskega člena. Na začetku je zanemarjena vztrajnost; skala τ in hₑ izhajata iz navpičnega modela.",
+            values:[pair("Dejanski čas",u*p.tau,"s"),pair("Navpični dvig",100*p.he*vert(u),"cm"),pair("Pot v vodoravni cevki",100*p.he*horiz(u),"cm"),pair("Jurinova ravnovesna višina",100*p.he,"cm"),pair("Čas do 90 % višine",p.tau*capTime(.9),"s"),pair("Kapilarna tlačna razlika",p.dp,"Pa")],
+            conclusion:"Če spremeniš samo η, normirana grafa ostaneta enaka, dejanski čas pa se spremeni. Ravnovesna višina ni odvisna od η."};
+    }
+ }
+};
+const settings=Object.fromEntries(Object.entries(lab).map(([key,s])=>[key,Object.fromEntries(s.fields.map(f=>[f.id,f.value]))]));
+const labButtons={};
+let active="temperature";
+function renderLab(){
+    const l=lab[active], s=settings[active], r=l.show(s);
+    for(const f of l.fields){
+        if(f.hide)$("field-"+f.id).hidden=f.hide(s);
+        if(!f.options)$("out-"+f.id).textContent=fmt(s[f.id])+(f.unit?" "+f.unit:"");
+    }
+    $("plot-title").textContent=l.title;
+    $("plot").setAttribute("aria-label",l.title);
+    $("plot").innerHTML=r.svg;
+    $("plot-note").textContent=r.note;
+    $("conclusion").textContent=r.conclusion;
+    $("values").innerHTML=r.values.map(([name,value])=>`<div class="metric">${name}<strong>${value}</strong></div>`).join("");
+}
+function fillSelect(el,options){
+    el.replaceChildren(...options.map(([id,name])=>{const o=document.createElement("option");o.value=id;o.textContent=name;return o;}));
+}
+function selectLab(key,focus=false){
+    active=key;
+    for(const [id,button] of Object.entries(labButtons))button.setAttribute("aria-pressed",String(id===key));
+    const l=lab[key],s=settings[key],controls=$("controls");
+    $("lab-title").textContent=l.name;
+    $("lab-intro").textContent=l.intro;
+    controls.replaceChildren();
+    for(const f of l.fields){
+        const row=document.createElement("div"), label=document.createElement("label");
+        const input=document.createElement(f.options?"select":"input");
+        row.id="field-"+f.id;input.id="control-"+f.id;label.htmlFor=input.id;label.textContent=f.label;
+        if(f.options)fillSelect(input,f.options);
+        else{
+            input.type="range";input.min=f.min;input.max=f.max;input.step=f.step;
+            const out=document.createElement("output");out.id="out-"+f.id;label.append(": ",out);
+        }
+        input.value=s[f.id];
+        input.oninput=()=>{s[f.id]=f.options?input.value:Number(input.value);renderLab();};
+        row.append(label,input);controls.append(row);
+    }
+    renderLab();
+    if(focus)$("control-"+l.fields[0].id).focus();
+}
+for(const [key,item] of Object.entries(lab)){
+    const button=document.createElement("button");button.type="button";button.textContent=item.name;
+    button.onclick=()=>selectLab(key,true);
+    $("lab-buttons").append(button);labButtons[key]=button;
+}
+$("restore").onclick=()=>{
+    Object.assign(settings[active],Object.fromEntries(lab[active].fields.map(f=>[f.id,f.value])));
+    selectLab(active,true);
+};
+function tab(id){
+    for(const section of document.querySelectorAll("main > section"))section.hidden=section.id!==id;
+    for(const button of document.querySelectorAll("[data-tab]"))button.setAttribute("aria-pressed",String(button.dataset.tab===id));
+}
+for(const button of document.querySelectorAll("[data-tab]"))button.onclick=()=>tab(button.dataset.tab);
+const missions=[
+ {name:"Večja strižna hitrost",key:"shear",start:{d:1},q:"Pri isti hitrosti plošče in isti viskoznosti razmik prepolovimo. Kako se spremeni potrebna vlečna sila?",a:["Prepolovi se","Podvoji se","Ostane ista"],i:1,why:"Hitrostni gradient U/d se podvoji, zato se podvojita napetost in sila."},
+ {name:"Segrevanje vode in zraka",key:"temperature",start:{t:70},q:"Kako se pri segrevanju v prikazanem območju spremeni dinamična viskoznost?",a:["Pri vodi pade, pri zraku naraste","Pri obeh pade","Pri obeh naraste"],i:0,why:"Pri kapljevini je odločilno prerazporejanje molekul, v plinu pa prenos gibalne količine pri trkih."},
+ {name:"Dvojni polmer",key:"poiseuille",start:{r:1,L:1,dp:100,eta:10},q:"Če podvojimo polmer in ostane tok razvit ter laminaren, kolikokrat večji je pretok?",a:["2-krat","4-krat","16-krat"],i:2,why:"Q je pri isti tlačni razliki in dolžini sorazmeren z r⁴."},
+ {name:"Viskoznost in končna višina",key:"capillary",start:{eta:40},q:"Če viskoznost podvojimo, druge količine pa ohranimo, kaj se zgodi v navpični kapilari?",a:["Dvig je počasnejši, končna višina je enaka","Dvig in končna višina se podvojita","Končna višina se prepolovi"],i:0,why:"Viskoznost vpliva na upor med gibanjem. V ravnovesju kapilarni tlak uravnovesi težnost."}
+];
+fillSelect($("mission"),missions.map((m,i)=>[i,m.name]));
+function currentMission(){return missions[Number($("mission").value||0)];}
+function renderMission(){
+    const m=currentMission(), p=document.createElement("p"), group=document.createElement("div");
+    p.className="question";p.textContent=m.q;group.className="row";
+    $("mission-body").replaceChildren(p,group);$("mission-feedback").textContent="";
+    m.a.forEach((answer,i)=>{
+        const button=document.createElement("button");button.type="button";button.textContent=answer;button.setAttribute("aria-pressed","false");
+        button.onclick=()=>{
+            for(const other of group.children)other.setAttribute("aria-pressed",String(other===button));
+            $("mission-feedback").textContent=i===m.i?"Pravilno. "+m.why:"Poskusi še enkrat ali preveri v poskusu.";
+        };
+        group.append(button);
+    });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{
+    const m=currentMission();Object.assign(settings[m.key],Object.fromEntries(lab[m.key].fields.map(f=>[f.id,f.value])),m.start);tab("lab");selectLab(m.key,true);
+};
+
+
+
+
+
+
+const topics={shear:"Koeficient viskoznosti",temperature:"Viskoznost plinov in kapljevin",poiseuille:"Poiseuilleova enačba",capillary:"Dinamika kapilarnega dviga"};
+fillSelect($("topic"),[["all","Mešano"],...Object.entries(topics)]);
+function makeTask(key,level){
+ const hard=level===2,eta=integer(5,70),d=integer(1,10),U=integer(5,45),A=integer(10,40)*10;
+ const r=integer(3,8)/10,L=integer(10,60)/100,dp=integer(2,20)*50,t=integer(2,35)/10;
+ const q=(prompt,answer,unit,hint,steps)=>({key,prompt,answer,unit,hint,steps:steps+" ≈ "+fmt(answer)+" "+unit+"."});
+ switch(key){
+  case "shear":{
+    const s=shear(eta/1000,U/100,d/1000,A/10000);
+    return hard
+     ?q("Zgornja plošča s ploščino "+A+" cm² drsi s hitrostjo "+U+" cm/s. Razmik je "+d+" mm, viskoznost pa "+eta+" mPa·s. Kolikšna zunanja sila v mN vzdržuje gibanje?",1000*s.F,"mN","Pretvori A, U, d in η v SI. Nato uporabi F = ηAU/d.","F = ("+eta+"/1000)·("+A+"/10000)·("+U+"/100)/("+d+"/1000); iz N v mN")
+     :q("Zgornja plošča se giblje z "+U+" cm/s, spodnja miruje. Razmik med ploščama je "+d+" mm. Izračunaj strižno hitrost.",s.gradient,"s⁻¹","Pretvori hitrost v m/s in razmik v m ter izračunaj U/d.","U/d = ("+U+"/100)/("+d+"/1000)");
+  }
+  case "temperature":{
+    const rho=integer(75,135)*10,v=integer(1,15)/10;
+    return hard
+     ?q("Pri isti temperaturi ima zrak η = "+fmt(v/10)+" mPa·s in ρ = "+fmt(rho/1000)+" kg/m³. Izračunaj kinematično viskoznost v mm²/s.",100*v/(rho/1000),"mm²/s","Uporabi ν = η/ρ. Viskoznost najprej pretvori v Pa·s, nato m²/s v mm²/s.","ν = 1000·"+fmt(v/10)+"/"+fmt(rho/1000))
+     :q("Kapljevina ima η = "+eta+" mPa·s in ρ = "+rho+" kg/m³. Kolikšna je kinematična viskoznost v mm²/s?",1000*eta/rho,"mm²/s","η deli z gostoto in ustrezno pretvori enote.","ν = 1000·"+eta+"/"+rho);
+  }
+  case "poiseuille":{
+    const p=pipe(eta/1000,r/1000,L,dp,1000),Q=p.Q*1e6,shownQ=Number((Q*1000).toFixed(4));
+    return hard
+     ?q("Pri stacionarnem laminarnem toku po okrogli cevi je L = "+fmt(L)+" m, r = "+fmt(r)+" mm in Δp = "+dp+" Pa. Izmerimo Q = "+fmt(shownQ)+" µL/s. Izračunaj dinamično viskoznost v mPa·s.",1000*Math.PI*(r/1000)**4*dp/(8*L*(shownQ*1e-9)),"mPa·s","Izrazi η iz Poiseuilleove enačbe. Upoštevaj 1 µL = 10⁻⁹ m³.","η = 1000·π·("+fmt(r)+"/1000)⁴·"+dp+"/[8·"+fmt(L)+"·"+fmt(shownQ)+"·10⁻⁹]")
+     :q("V okrogli cevi je razvit laminarni tok. Polmer je "+fmt(r)+" mm, dolžina "+fmt(L)+" m, Δp = "+dp+" Pa, η = "+eta+" mPa·s. Izračunaj Q v mL/s.",Q,"mL/s","Uporabi Q = πr⁴Δp/(8ηL). Po računu v SI pomnoži z 10⁶.","Q = 10⁶·π·("+fmt(r)+"/1000)⁴·"+dp+"/[8·("+eta+"/1000)·"+fmt(L)+"]");
+  }
+  case "capillary":{
+    const gamma=integer(30,80),theta=integer(0,6)*10,rho=integer(8,13)*100;
+    const p=capillary(eta/1000,r/1000,gamma/1000,theta,rho);
+    return hard
+     ?q("Navpična omočljiva kapilara ima r = "+fmt(r)+" mm, γ = "+gamma+" mN/m, θ = "+theta+"°, ρ = "+rho+" kg/m³ in η = "+eta+" mPa·s. Izračunaj čas do 90 % ravnovesne višine v sekundah. Uporabi g = 9,81 m/s² in zanemari vztrajnost.",p.tau*capTime(.9),"s","Najprej izračunaj hₑ, nato τ = 4ηhₑ²/(rγ cos θ). Pomnoži z −0,9 − ln(0,1).","t₉₀ = τ(−0,9 − ln 0,1), pri τ ≈ "+fmt(p.tau)+" s")
+     :q("V vodoravni omočljivi kapilari je r = "+fmt(r)+" mm, γ = "+gamma+" mN/m, θ = "+theta+"° in η = "+eta+" mPa·s. Za koliko cm se pomakne meniskus po "+fmt(t)+" s? Uporabi Lucas–Washburnov zakon brez vztrajnosti.",100*Math.sqrt(2*p.coef*t),"cm","Uporabi h² = rγ cos θ · t/(2η) in pretvori rezultat v cm.","h = 100√[("+fmt(r)+"/1000)·("+gamma+"/1000)·cos("+theta+"°)·"+fmt(t)+"/(2·"+eta+"/1000)]");
+  }
+  default:throw new Error("Neznana tema.");
+ }
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti. Dovoljeno je manjše odstopanje zaradi zaokroževanja konstant.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001 + Math.abs(task.answer)*0.00006){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Viskoznost · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+selectLab("shear");
+renderMission();
+generate();
+</script>
+</body>
+</html>
