@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivna razlaga navora, ravnovesja, vrtenja in kotaljenja togega telesa. Simulacije, izzivi in generator nalog.">
+<title>Navor in gibanje togega telesa – Sidebit | Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.nt{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.nt *{box-sizing:border-box}.nt [hidden]{display:none!important}
+.nt .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.nt header.wrap{padding:25px 0 22px}.nt a{color:var(--accent);font-weight:750}
+.nt .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.nt .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.nt h1,.nt h2,.nt h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.nt h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.nt h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.nt h3{font-size:1.15rem;margin:0 0 9px}.nt p{margin:0 0 13px}.nt .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.nt .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.nt svg{display:block;width:100%;height:auto;overflow:visible}
+.nt nav,.nt .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.nt nav{margin:12px 0 24px}
+.nt button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.nt button:hover{background:var(--purple)}.nt button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.nt button[aria-pressed=true],.nt .primary{background:var(--yellow)}
+.nt button:disabled{opacity:.55;cursor:default}.nt :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.nt .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.nt .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.nt .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.nt .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.nt label{display:block;font-weight:700;margin:12px 0 4px}.nt label:first-child{margin-top:0}
+.nt input:not([type=checkbox]),.nt select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.nt input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.nt input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.nt output{color:var(--accent);font-weight:800}
+.nt .fine{font-size:.88rem;color:#4d5871}.nt .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.nt .lab-visual,.nt .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.nt .graph{cursor:crosshair}.nt .graph-label{font-weight:800;margin:7px 0 0}
+.nt .graph-group{min-width:0}.nt .graph-group p{margin:7px 0 0}
+.nt .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.nt .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.nt .metric:nth-child(2n){background:var(--mint)}.nt .metric strong{display:block;font-size:1.06rem}
+.nt .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.nt .lav{background:var(--purple)}.nt .accent-card{background:var(--yellow)}.nt .question{font-weight:700;font-size:1.06rem}
+.nt .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.nt details{margin:10px 0}.nt summary{cursor:pointer;font-weight:750}
+.nt .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.nt .question-card .row{margin-top:9px}.nt .question-card label{margin-top:9px}
+.nt .lesson{scroll-margin:15px}.nt .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.nt footer{padding:8px 0 28px}.nt .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.nt .grid,.nt .hero{grid-template-columns:1fr}.nt .hero-art{display:none}.nt .three{grid-template-columns:1fr}.nt .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.nt .wrap{width:calc(100% - 24px)}.nt .two{grid-template-columns:1fr}.nt nav button{flex:1 1 40%}.nt .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.nt{background:#fff;color:#000}body.nt.print-sheet > :not(#paper){display:none!important}body.nt.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.nt .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}.nt .graph{cursor:default}.nt .axis-note{margin-top:9px}.nt .field output{display:inline-block}.nt .key{font-size:.88rem;color:#424c64}
+.nt .warm{background:#fff2c4}.nt .legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.9rem}.nt .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}.nt .outcome{font-weight:750;color:#433186}.nt .lesson h3{margin-bottom:9px}
+@media(max-width:520px){.nt .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body class="nt">
+<header class="wrap">
+<a href="../index.html">← Vsa orodja</a>
+<div class="hero"><div><span class="badge">SIDEBIT · FIZIKA</span><h1>Navor in gibanje togega telesa</h1><p class="lead">Zakaj vrata lažje odpreš pri kljuki? Zakaj se obroč in krogla po istem klancu ne kotalita enako hitro? Najprej napovej, nato preveri v poskusu.</p></div>
+<svg class="hero-art" viewBox="0 0 310 140" role="img" aria-label="Vzvod, opora in dve sili"><path d="M130 118l25-39 25 39z" fill="#c5f0e2" stroke="#22253a" stroke-width="3"/><rect x="31" y="68" width="247" height="14" rx="7" fill="#ffe38b" stroke="#22253a" stroke-width="3"/><path d="M69 22v42m-7-9 7 9 7-9m161-33v42m-7-9 7 9 7-9" fill="none" stroke="#5634aa" stroke-width="4"/><circle cx="155" cy="75" r="7" fill="#fff" stroke="#22253a" stroke-width="3"/><text x="81" y="37" font-size="15">F₁</text><text x="249" y="37" font-size="15">F₂</text></svg></div>
+<nav aria-label="Poglavja navora in vrtenja">
+<button data-tab="lever" aria-pressed="true">Vzvod in navor</button><button data-tab="rotation" aria-pressed="false">Vrtenje telesa</button><button data-tab="rolling" aria-pressed="false">Kotaljenje</button><button data-tab="challenge" aria-pressed="false">Učni izzivi</button><button data-tab="practice" aria-pressed="false">Generator nalog</button><button data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+</nav></header>
+<main class="wrap">
+<section id="lever">
+<div class="grid"><div class="card"><span class="chip">01 · Preizkusi vzvod</span><h2>Sila, razdalja in kot</h2><div id="lever-controls"></div>
+<div class="row small-gap"><button id="balance" class="primary">Uravnoteži vzvod</button><button id="lever-reset">Ponastavi</button></div><p id="lever-feedback" class="feedback" role="status"></p></div>
+<div class="card"><span class="chip">02 · Poišči pravokotno ročico</span><h2>Katera sila zavrti vzvod?</h2><svg id="lever-scene" class="lab-visual" viewBox="0 0 680 275" role="img" aria-label="Vzvod, dve sili in pravokotna ročica leve sile"></svg>
+<p class="fine axis-note">Črtkana vijolična črta je nosilka leve sile. Turkizna črta je njena pravokotna ročica, torej najkrajša razdalja od osi do nosilke. Dolžini puščic sta ponazoritveni.</p>
+<div id="lever-values" class="readouts"></div><p id="lever-note" class="focus-box"></p>
+<p class="fine">Prikaz je trenutni posnetek. Vzvod je idealen in vpet v osi; opora lahko zagotovi silo, ne pa navora okoli osi. Pozitiven navor vrti v nasprotni smeri urinega kazalca.</p>
+</div></div>
+<div class="card warm"><h2>Kako izračunaš navor?</h2><p><strong>1.</strong> Izberi os vrtenja. <strong>2.</strong> Poišči pravokotno razdaljo od osi do nosilke sile. <strong>3.</strong> Pomnoži silo z ročico in določi predznak.</p><p class="formula">|τ| = rF sin φ = Fd⊥</p><p>Tu je φ kot med vektorjem od osi do prijemališča in silo. Pri levem koncu je kot v tej skici lahko suplement nastavljenega kota, vendar imata oba isti sinus. Sila vzdolž vzvoda nima navora, če njena nosilka poteka skozi os.</p></div>
+</section>
+<section id="rotation" hidden><div class="grid"><div class="card lav"><span class="chip">Poskus okoli nepremične osi</span><h2>Enak navor, različen pospešek</h2><label for="shape">Oblika telesa</label><select id="shape"><option value="disk">Homogen disk</option><option value="ring">Tanek obroč</option><option value="sphere">Polna homogena krogla</option></select><div id="rotation-controls"></div><p class="fine small-gap">Os gre skozi središče telesa. Pri disku in obroču je pravokotna na njuno ravnino. Navor je stalen, trenje v ležaju zanemarimo.</p></div>
+<div class="card"><h2>Vrtenje v živo</h2><svg id="rotation-scene" class="lab-visual" viewBox="0 0 680 245" role="img" aria-label="Vrtenje telesa okoli osi in graf kotne hitrosti"></svg><div id="rotation-player"></div><div id="rotation-values" class="readouts"></div><p id="rotation-note" class="focus-box"></p></div></div></section>
+<section id="rolling" hidden><div class="grid"><div class="card"><span class="chip">S kotaljenjem združiš dve gibanji</span><h2>Dirka po klancu</h2><div id="rolling-controls"></div><p class="fine small-gap">Telesa začnejo iz mirovanja, imajo enako maso in polmer ter se kotalijo brez drsenja. Ne upoštevamo zračnega upora in kotalnega upora.</p></div>
+<div class="card"><h2>Kdo prispe prvi?</h2><svg id="rolling-scene" class="lab-visual" viewBox="0 0 680 265" role="img" aria-label="Krogla, disk in obroč na treh vzporednih klancih"></svg><div id="rolling-player"></div><div id="rolling-values" class="readouts"></div><p id="rolling-note" class="focus-box"></p><p class="fine">Čas do cilja je prikazan za vsako telo. Telo po prečkanju ciljne črte v prikazu ostane tam. Pozi in naklon prog sta shematska.</p></div></div></section>
+<section id="challenge" hidden><div class="card lav"><span class="chip">Najprej napovej</span><h2>Učni izzivi</h2><label for="mission">Izberi izziv</label><select id="mission"><option value="0">Sila skozi os</option><option value="1">Ravnovesje vzvoda</option><option value="2">Disk ali obroč?</option><option value="3">Dirka po klancu</option></select><div id="mission-body" class="small-gap"></div><p id="mission-feedback" class="feedback" role="status"></p><button id="mission-open">Odpri poskus</button></div></section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali sestavi delovni list za tisk.</p>
+<div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option><option value="torque">Navor in ročica</option><option value="balance">Ravnovesje</option><option value="inertia">Vztrajnostni moment</option><option value="axis">Steinerjev izrek</option><option value="angular">Kotna hitrost in pospešek</option><option value="momentum">Vrtilna količina</option><option value="energy">Delo in energija vrtenja</option><option value="rolling">Kotaljenje</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div>
+<div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden><div class="card"><h2>Od sile do vrtenja</h2><p>Togo telo je idealizacija: razdalje med njegovimi delci se ne spreminjajo. Gibanje opišemo s premikanjem masnega središča in vrtenjem telesa okoli njega.</p>
+<div class="two">
+<div class="note lesson"><h3>Navor in ravnovesje</h3><p class="formula">τ⃗ = r⃗ × F⃗ · |τ| = Fd⊥</p><p>Navor pove, kako sila zavrti telo okoli izbrane osi. Za statično ravnovesje morata biti vsota sil in vsota navorov nič, telo pa mora sprva mirovati. Pri vpetem vzvodu silo opore vključi v bilanco sil, četudi okoli osi nima navora.</p></div>
+<div class="note lav lesson"><h3>Vztrajnostni moment</h3><p class="formula">I = Σmᵢrᵢ² · I = I꜀ + Md²</p><p>Masa dlje od osi prispeva več. Pri isti masi in polmeru ima obroč I = MR², disk I = ½MR², polna krogla pa I = ⅖MR². Steinerjev izrek velja za vzporedni osi, od katerih ena poteka skozi masno središče; d je njuna razdalja.</p></div>
+<div class="note lav lesson"><h3>Kinematika vrtenja</h3><p class="formula">ω = Δφ/Δt pri enakomernem vrtenju · v = ωr po velikosti, če uporabiš |ω|</p><p>En obrat je 2π rad. Pri stalnem kotnem pospešku velja ω = ω₀ + αt, kotni premik pa Δφ = ω₀t + ½αt².</p></div>
+<div class="note lesson"><h3>Zakon vrtenja in vrtilna količina</h3><p class="formula">Στ = Iα · L = Iω</p><p>Enačbi veljata za komponento okoli izbrane nepremične osi pri stalnem I. Zunanji navor spremeni vrtilno količino: ΔL = ΣτΔt pri stalnem navoru. Če je zunanji navor okoli osi nič, se ta komponenta L ohrani.</p></div>
+<div class="note lesson"><h3>Delo in energija</h3><p class="formula">W = τΔφ pri stalnem navoru · Eᵥ = ½Iω²</p><p>Za spremembo kinetične energije uporabi delo rezultantnega navora. Kot vstavi v radianih. Navor izrazimo v N·m, energijo pa v J, čeprav imata enoti enake osnovne razsežnosti.</p></div>
+<div class="note lav lesson"><h3>Kotaljenje brez drsenja</h3><p class="formula">v꜀ = R|ω| · Eₖ = ½Mv꜀² + ½I꜀ω²</p><p>Pri kotaljenju po klancu se potencialna energija porazdeli med premikanje središča in vrtenje. Za β = I꜀/(MR²) velja a꜀ = g sin θ/(1 + β). Manjši β pri istem klancu pomeni večji pospešek.</p></div>
+</div>
+<details><summary>Zakaj telo brez trenja ne začne kotaliti?</summary><p>Na idealnem gladkem klancu težnost deluje skozi masno središče. Tudi normala ima pri krožnem telesu nosilko skozi središče. Zato telo, spuščeno brez začetnega vrtenja, po klancu drsi. Za kotaljenje iz mirovanja mora statično trenje zagotoviti navor.</p></details>
+<details><summary>Hiter rešen primer: vzvod</summary><p>Na levi deluje 30 N pravokotno na vzvod, 0,4 m od osi. Na desni deluje 20 N pravokotno na vzvod, 0,6 m od osi. Navora sta +12 in −12 N·m. Njuna vsota je nič. Opora zagotovi še silo, ki uravnoteži obe sili navzdol.</p></details>
+</div></section>
+</main><footer class="wrap fine">Sidebit · Navor in gibanje togega telesa</footer><div id="paper"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const nf=new Intl.NumberFormat("sl-SI",{maximumFractionDigits:3});
+const fmt=x=>nf.format(Math.abs(x)<.0005?0:x);
+const rad=x=>x*Math.PI/180;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const g=9.81;
+const forms={disk:{name:"Disk",b:.5,c:"#e8ddff"},ring:{name:"Obroč",b:1,c:"#ffe38b"},sphere:{name:"Krogla",b:.4,c:"#c5f0e2"}};
+const leverDefaults={l:.4,r:.6,f:30,h:15,a:90,b:90};
+let lever={...leverDefaults},rotation={m:4,r:.6,n:2,w:0},rolling={angle:20,len:4,r:.25};
+const leverFields=[["l","Oddaljenost leve sile","m",.1,1,.05],["r","Oddaljenost desne sile","m",.1,1,.05],["f","Leva sila","N",0,80,1],["h","Desna sila","N",0,80,"any"],["a","Kot leve sile pod vodoravnico","°",0,180,1],["b","Kot desne sile pod vodoravnico","°",0,180,1]];
+const rotFields=[["m","Masa","kg",1,10,.5],["r","Polmer","m",.2,1,.05],["n","Rezultantni navor","N·m",-6,6,.25],["w","Začetna kotna hitrost","rad/s",-6,6,.5]];
+const rollFields=[["angle","Naklon klanca","°",5,40,1],["len","Dolžina klanca","m",2,10,.5],["r","Polmer vseh teles","m",.1,.5,.05]];
+function fields(root,defs,p,change){
+  $(root).replaceChildren();
+  for(const [k,name,unit,min,max,step] of defs){
+    const label=document.createElement("label"),input=document.createElement("input"),out=document.createElement("output");
+    input.type="range";input.id=root+"-"+k;input.min=min;input.max=max;input.step=step;input.value=p[k];
+    label.htmlFor=input.id;label.append(name+": ",out);
+    const show=()=>{out.textContent=fmt(p[k])+" "+unit;};
+    show();input.oninput=()=>{p[k]=Number(input.value);show();change();};
+    input.sync=()=>{input.value=p[k];show();};$(root).append(label,input);
+  }
+}
+function metrics(id,items){
+  $(id).innerHTML=items.map(([name,val])=>`<div class="metric">${name}<strong>${val}</strong></div>`).join("");
+}
+const line=(x,y,X,Y,stroke,w=2,extra="")=>`<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${stroke}" stroke-width="${w}" ${extra}/>`;
+const text=(x,y,s,anchor="start")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" font-size="14" font-weight="650" fill="#364058">${s}</text>`;
+const disk=(x,y,r,c)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" stroke="#22253a" stroke-width="2.5"/>`;
+function arrow(x,y,u,v,c){
+  const n=Math.hypot(u,v);if(n<1e-8)return "";
+  const a=u/n,b=v/n,X=x+u,Y=y+v;
+  return line(x,y,X,Y,c,3)+`<path d="M${X-9*a+4*b} ${Y-9*b-4*a} L${X} ${Y} L${X-9*a-4*b} ${Y-9*b+4*a}" fill="none" stroke="${c}" stroke-width="3"/>`;
+}
+function leverPhysics(p){
+  const left=p.l*Math.sin(rad(p.a)),right=p.r*Math.sin(rad(p.b));
+  const A=p.f*left,B=-p.h*right;
+  return {left,right,A,B,sum:A+B};
+}
+function rotationPhysics(p,shape,t){
+  const I=forms[shape].b*p.m*p.r*p.r,a=p.n/I,w=p.w+a*t,phi=p.w*t+a*t*t/2;
+  return {I,a,w,phi,L:I*w,E:I*w*w/2,W:p.n*phi};
+}
+function rollingPhysics(p,shape,t){
+  const b=forms[shape].b,a=g*Math.sin(rad(p.angle))/(1+b),finish=Math.sqrt(2*p.len/a);
+  const elapsed=Math.min(t,finish),s=a*elapsed*elapsed/2,v=a*elapsed;
+  return {a,finish,s,v,w:v/p.r,mu:b/(1+b)*Math.tan(rad(p.angle)),share:b/(1+b)};
+}
+function renderLever(){
+  const p=lever,k=leverPhysics(p),x=340,y=132,L=x-224*p.l,R=x+224*p.r;
+  let svg=`<path d="M${x-27} 193l27-58 27 58Z" fill="#c5f0e2" stroke="#22253a" stroke-width="3"/><rect x="70" y="125" width="540" height="14" rx="7" fill="#ffe38b" stroke="#22253a" stroke-width="3"/>`;
+  const vector=(X,a,F,c)=>{const len=F?17+F*.75:0;return arrow(X,y,len*Math.cos(rad(a)),len*Math.sin(rad(a)),c);};
+  if(p.f>0){
+    const ca=Math.cos(rad(p.a)),sa=Math.sin(rad(p.a)),d=(x-L)*ca,X=L+d*ca,Y=y+d*sa;
+    svg+=line(L-76*ca,y-76*sa,X+32*ca,Y+32*sa,"#9784c1",1.5,'stroke-dasharray="5 5"');
+    if(k.left>.001)svg+=line(x,y,X,Y,"#087b70",3)+disk(X,Y,4,"#c5f0e2");
+  }
+  svg+=vector(L,p.a,p.f,"#5634aa")+vector(R,p.b,p.h,"#a0446c")+disk(x,y,6,"#fff")+disk(L,y,4,"#e8ddff")+disk(R,y,4,"#ffd5e4");
+  svg+=text(L,108,"F₁","middle")+text(R,108,"F₂","middle")+text(x,217,"os","middle");
+  svg+=text(30,254,"Pozitivna smer navora: nasprotno smeri urinega kazalca");
+  $("lever-scene").innerHTML=svg;
+  metrics("lever-values",[["Leva ročica",fmt(k.left)+" m"],["Desna ročica",fmt(k.right)+" m"],["Skupni navor",fmt(k.sum)+" N·m"],["Levi navor",fmt(k.A)+" N·m"],["Desni navor",fmt(k.B)+" N·m"]]);
+  $("lever-note").textContent=`Στ = (${fmt(k.A)}) + (${fmt(k.B)}) = ${fmt(k.sum)} N·m. `+(Math.abs(k.sum)<1e-8?"Navora se uravnotežita.":k.sum>0?"Pospešek vrtenja je v nasprotni smeri urinega kazalca.":"Pospešek vrtenja je v smeri urinega kazalca.");
+}
+function setupLever(){
+  fields("lever-controls",leverFields,lever,()=>{$("lever-feedback").textContent="";renderLever();});
+  $("lever-feedback").textContent="";renderLever();
+}
+$("lever-reset").onclick=()=>{Object.assign(lever,leverDefaults);setupLever();};
+$("balance").onclick=()=>{
+  const p=lever,k=leverPhysics(p);
+  if(k.right<1e-9){$("lever-feedback").textContent=Math.abs(k.sum)<1e-8?"Vzvod je že uravnotežen.":"Desna ročica je nič. Spremeni kot desne sile.";return;}
+  const needed=k.A/k.right;
+  if(needed>80){$("lever-feedback").textContent="Potrebna sila presega 80 N. Povečaj desno ročico ali zmanjšaj levo silo.";return;}
+  p.h=needed;$("lever-controls-h").sync();renderLever();
+  $("lever-feedback").textContent="Uravnoteženo: desna sila je "+fmt(needed)+" N.";
+};
+let times={rotation:0,rolling:0},running=null,last=null,frame=0;
+function duration(id){return id==="rotation"?4:rollingPhysics(rolling,"ring",0).finish;}
+function pause(){
+  running=null;last=null;cancelAnimationFrame(frame);
+  for(const id of Object.keys(times))$(id+"-play").textContent="Predvajaj";
+}
+function render(id){if(id==="rotation")renderRotation();else renderRolling();}
+function seek(id,t){pause();times[id]=clamp(t,0,duration(id));render(id);}
+function animate(stamp){
+  if(!running)return;
+  const id=running,T=duration(id);
+  if(last!==null)times[id]=Math.min(T,times[id]+Math.min(.06,(stamp-last)/1000)*T/6);
+  last=stamp;render(id);if(times[id]>=T)pause();else frame=requestAnimationFrame(animate);
+}
+function player(id){
+  $(id+"-player").innerHTML=`<label for="${id}-time">Čas: <output id="${id}-clock"></output></label><input id="${id}-time" type="range" min="0" max="1000" value="0"><div class="row"><button id="${id}-play" class="primary">Predvajaj</button><button id="${id}-reset">Na začetek</button><button id="${id}-end">Na konec</button></div>`;
+  $(id+"-play").onclick=()=>{
+    const same=running===id;pause();if(same)return;
+    if(times[id]>=duration(id))times[id]=0;
+    running=id;$(id+"-play").textContent="Premor";frame=requestAnimationFrame(animate);
+  };
+  $(id+"-reset").onclick=()=>seek(id,0);
+  $(id+"-end").onclick=()=>seek(id,duration(id));
+  $(id+"-time").oninput=()=>seek(id,Number($(id+"-time").value)*duration(id)/1000);
+}
+function clock(id){
+  $(id+"-clock").textContent=fmt(times[id])+" / "+fmt(duration(id))+" s";
+  $(id+"-time").value=times[id]/duration(id)*1000;
+}
+function renderRotation(){
+  const key=$("shape").value,shape=forms[key],t=times.rotation,p=rotation,s=rotationPhysics(p,key,t),end=rotationPhysics(p,key,4);
+  const min=Math.min(0,p.w,end.w),max=Math.max(0,p.w,end.w),span=Math.max(1,max-min),X=t=>352+t*65,Y=w=>198-(w-min+.13*span)/(max-min+.26*span)*135;
+  const x=145,y=122,r=70,px=x+r*.82*Math.cos(s.phi),py=y-r*.82*Math.sin(s.phi);
+  let svg=disk(x,y,r,shape.c);
+  if(key==="ring")svg+=disk(x,y,49,"#fbfcff");
+  if(key==="sphere")svg+=`<ellipse cx="${x}" cy="${y}" rx="32" ry="68" fill="none" stroke="#6a9c92" stroke-dasharray="4 4"/>`;
+  svg+=line(x,y,px,py,"#5634aa",3,'stroke-dasharray="5 4"')+disk(px,py,7,"#ffe38b")+disk(x,y,4,"#22253a");
+  svg+=text(x,225,shape.name+" · smer označuje pika","middle");
+  svg+=line(352,57,352,200,"#8794a8")+line(352,Y(0),627,Y(0),"#8794a8")+text(344,Y(0)+5,"0","end")+text(352,36,"ω (rad/s)");
+  for(let j=0;j<=4;j++)svg+=line(X(j),62,X(j),198,"#dce2ee",1)+text(X(j),222,j+" s","middle");
+  svg+=line(X(0),Y(p.w),X(4),Y(end.w),"#5634aa",3)+line(X(t),60,X(t),198,"#b47019")+disk(X(t),Y(s.w),5,"#ffe38b");
+  $("rotation-scene").innerHTML=svg;clock("rotation");
+  metrics("rotation-values",[["Vztrajnostni moment",fmt(s.I)+" kg·m²"],["Kotni pospešek",fmt(s.a)+" rad/s²"],["Kotna hitrost",fmt(s.w)+" rad/s"],["Kotni premik",fmt(s.phi)+" rad"],["Vrtilna količina",fmt(s.L)+" kg·m²/s"],["Energija vrtenja",fmt(s.E)+" J"]]);
+  $("rotation-note").textContent=`α = τ/I = ${fmt(s.a)} rad/s². Delo rezultantnega navora W = τΔφ = ${fmt(s.W)} J; za toliko se spremeni energija vrtenja.`;
+}
+function renderRolling(){
+  const p=rolling,t=times.rolling,keys=["sphere","disk","ring"];
+  let svg="";
+  const drop=21+p.angle*.65;
+  for(let j=0;j<keys.length;j++){
+    const key=keys[j],shape=forms[key],s=rollingPhysics(p,key,t),y=52+75*j,x=120+500*clamp(s.s/p.len,0,1),h=y+drop*clamp(s.s/p.len,0,1);
+    svg+=text(12,y+4,shape.name)+line(120,y+17,620,y+17+drop,"#8794a8",3)+line(620,y+drop-20,620,y+drop+18,"#a0446c",2,'stroke-dasharray="4 4"');
+    svg+=disk(x,h,16,shape.c);
+    if(key==="ring")svg+=disk(x,h,9,"#fbfcff");
+    svg+=disk(x+10*Math.cos(s.s/p.r),h+10*Math.sin(s.s/p.r),3,"#5634aa");
+    if(t>=s.finish)svg+=text(650,y+drop-11,fmt(s.finish)+" s","end");
+  }
+  $("rolling-scene").innerHTML=svg;clock("rolling");
+  metrics("rolling-values",keys.map(key=>[forms[key].name+" · čas do cilja",fmt(rollingPhysics(p,key,t).finish)+" s"]));
+  const a=rollingPhysics(p,"sphere",t),b=rollingPhysics(p,"ring",t);
+  $("rolling-note").textContent=`Na tem klancu ima krogla pospešek ${fmt(a.a)} m/s², obroč pa ${fmt(b.a)} m/s². Da se lahko v tem idealnem modelu vsa tri telesa kotalijo brez drsenja, mora biti koeficient statičnega trenja vsaj ${fmt(b.mu)}.`;
+}
+function setupRotation(){fields("rotation-controls",rotFields,rotation,()=>seek("rotation",0));seek("rotation",0);}
+function setupRolling(){fields("rolling-controls",rollFields,rolling,()=>seek("rolling",0));seek("rolling",0);}
+$("shape").onchange=()=>renderRotation();
+function tab(id){
+  pause();for(const s of document.querySelectorAll("main > section"))s.hidden=s.id!==id;
+  for(const b of document.querySelectorAll("[data-tab]"))b.setAttribute("aria-pressed",String(b.dataset.tab===id));
+}
+for(const b of document.querySelectorAll("[data-tab]"))b.onclick=()=>tab(b.dataset.tab);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();});
+</script>
+<script>
+const missions=[
+ {tab:"lever",p:{a:0},q:"Zelo močna sila deluje vzdolž vzvoda in njena nosilka gre skozi os. Kolikšen navor povzroča okoli te osi?",options:["Nič.","Največji možni navor.","Navor je odvisen samo od mase vzvoda."],correct:0,why:"Pravokotna ročica je nič. Zato je tudi navor nič, ne glede na velikost sile."},
+ {tab:"lever",p:{h:20},q:"Na levi deluje 30 N pravokotno na vzvod pri 0,4 m. Na desni je prijemališče pri 0,6 m. Kolikšna pravokotna sila navzdol ga uravnoteži?",options:["30 N","20 N","45 N"],correct:1,why:"Levi navor je 12 N·m. Za enako velik nasprotni navor na desni potrebuješ 12/0,6 = 20 N."},
+ {tab:"rotation",q:"Disk in tanek obroč imata enako maso, polmer in rezultantni navor. Katero telo ima večji kotni pospešek po velikosti?",options:["Obroč.","Oba imata enak pospešek.","Disk."],correct:2,why:"Disk ima polovico vztrajnostnega momenta obroča. Pri enakem navoru je njegov kotni pospešek dvakrat večji."},
+ {tab:"rolling",q:"Krogla, disk in obroč imajo enako maso in polmer. Hkrati se začnejo kotaliti brez drsenja. Kdo prvi doseže cilj?",options:["Polna krogla.","Tanek obroč.","Vsi hkrati."],correct:0,why:"Polna krogla ima najmanjši I/(MR²). Pri istem naklonu ima zato največji pospešek središča."}
+];
+function currentMission(){return missions[Number($("mission").value)];}
+function renderMission(){
+  const m=currentMission(),body=$("mission-body"),p=document.createElement("p"),choices=document.createElement("div");
+  p.className="question";p.textContent=m.q;choices.className="row";body.replaceChildren(p,choices);$("mission-feedback").textContent="";
+  m.options.forEach((op,i)=>{
+    const b=document.createElement("button");b.textContent=op;b.setAttribute("aria-pressed","false");
+    b.onclick=()=>{for(const other of choices.children)other.setAttribute("aria-pressed",String(other===b));$("mission-feedback").textContent=(i===m.correct?"Pravilno. ":"Ni čisto tako. ")+m.why;};
+    choices.append(b);
+  });
+}
+$("mission").onchange=renderMission;
+$("mission-open").onclick=()=>{
+  const m=currentMission();tab(m.tab);
+  if(m.tab==="lever"){Object.assign(lever,leverDefaults,m.p);setupLever();}
+  if(m.tab==="rotation"){Object.assign(rotation,{m:4,r:.6,n:2,w:0});$("shape").value="disk";setupRotation();seek("rotation",2);}
+  if(m.tab==="rolling"){Object.assign(rolling,{angle:20,len:4,r:.25});setupRolling();seek("rolling",duration("rolling"));}
+};
+const topics={torque:"Navor in ročica",balance:"Ravnovesje",inertia:"Vztrajnostni moment",axis:"Steinerjev izrek",angular:"Kotna hitrost in pospešek",momentum:"Vrtilna količina",energy:"Delo in energija vrtenja",rolling:"Kotaljenje"};
+const integer=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function makeTask(key,level){
+  const hard=level===2,m=integer(2,12),r=integer(2,10)/10,F=integer(10,60),t=integer(2,9),n=integer(2,12),w=integer(2,10);
+  let prompt,answer,unit,hint,steps;
+  if(key==="torque"){
+    const a=hard?[30,45,60][integer(0,2)]:90;
+    prompt=`Sila ${F} N deluje ${fmt(r)} m od osi. Kot med položajnim vektorjem in silo je ${a}°. Kolikšna je velikost navora?`;
+    answer=r*F*Math.sin(rad(a));unit="N·m";hint="Pravokotna ročica je r sin φ. Pomnoži jo s silo.";
+    steps=`|τ| = rF sin φ = ${fmt(r)} · ${F} · sin ${a}° ≈ ${fmt(answer)} N·m.`;
+  }else if(key==="balance"){
+    const R=integer(2,10)/10,a=hard?30:90;
+    prompt=`Leva sila ${F} N deluje pravokotno na vzvod pri razdalji ${fmt(r)} m. Desna sila pri razdalji ${fmt(R)} m tvori kot ${a}° z vzvodom in ima nasproten navor. Kolikšna mora biti desna sila za ravnovesje?`;
+    answer=F*r/(R*Math.sin(rad(a)));unit="N";hint="Izenači velikosti levega in desnega navora.";
+    steps=`F₂ = F₁r₁/(r₂ sin φ₂) = (${F} · ${fmt(r)})/(${fmt(R)} · sin ${a}°) ≈ ${fmt(answer)} N.`;
+  }else if(key==="inertia"){
+    const b=hard?.4:.5,shape=hard?"Polna homogena krogla":"Homogen disk";
+    prompt=`${shape} ima maso ${m} kg in polmer ${fmt(r)} m. Kolikšen je vztrajnostni moment okoli osi skozi središče${hard?"":", pravokotne na disk"}?`;
+    answer=b*m*r*r;unit="kg·m²";hint="Uporabi I = "+(hard?"⅖":"½")+"MR².";
+    steps=`I = ${fmt(b)} · ${m} · ${fmt(r)}² = ${fmt(answer)} kg·m².`;
+  }else if(key==="axis"){
+    const I=n/5,d=hard?r:r/2;
+    prompt=`Telo ima maso ${m} kg in vztrajnostni moment ${fmt(I)} kg·m² okoli osi skozi masno središče. Nova vzporedna os je oddaljena ${fmt(d)} m. Kolikšen je vztrajnostni moment okoli nove osi?`;
+    answer=I+m*d*d;unit="kg·m²";hint="Steinerjev izrek: novemu momentu prispeva še Md².";
+    steps=`I = I꜀ + Md² = ${fmt(I)} + ${m} · ${fmt(d)}² ≈ ${fmt(answer)} kg·m².`;
+  }else if(key==="angular"){
+    const I=m/2,torque=hard?-n:n;
+    prompt=`Telo z vztrajnostnim momentom ${fmt(I)} kg·m² ima začetno kotno hitrost +${w} rad/s. Nanj deluje stalen rezultantni navor ${torque} N·m. ${hard?`Kolikšna je predznačena kotna hitrost po ${t} s?`:"Kolikšen je kotni pospešek?"}`;
+    answer=hard?w+torque/I*t:torque/I;unit=hard?"rad/s":"rad/s²";hint="Najprej izračunaj α = τ/I."+(hard?" Nato uporabi ω = ω₀ + αt.":"");
+    steps=`α = ${torque}/${fmt(I)} ≈ ${fmt(torque/I)} rad/s².`+(hard?` ω = ${w} + (${torque}/${fmt(I)}) · ${t} ≈ ${fmt(answer)} rad/s.`:"");
+  }else if(key==="momentum"){
+    const I=m/2;
+    prompt=`Telo z vztrajnostnim momentom ${fmt(I)} kg·m² se vrti s kotno hitrostjo +${w} rad/s. ${hard?`Stalen zunanji navor −${n} N·m deluje ${t} s. Kolikšna je končna predznačena vrtilna količina?`:"Kolikšna je vrtilna količina okoli osi?"}`;
+    answer=I*w-(hard?n*t:0);unit="kg·m²/s";hint="Uporabi L₀ = Iω₀."+(hard?" Dodaj spremembo ΔL = τΔt.":"");
+    steps=`L₀ = ${fmt(I)} · ${w} = ${fmt(I*w)} kg·m²/s.`+(hard?` L = L₀ − ${n} · ${t} = ${fmt(answer)} kg·m²/s.`:"");
+  }else if(key==="energy"){
+    const I=m/2;
+    prompt=hard?`Stalen rezultantni navor ${n} N·m zavrti telo v smeri navora za ${t} rad. Kolikšno delo opravi?`:`Telo z vztrajnostnim momentom ${fmt(I)} kg·m² se vrti s kotno hitrostjo ${w} rad/s. Kolikšna je kinetična energija vrtenja?`;
+    answer=hard?n*t:I*w*w/2;unit="J";hint=hard?"Pri stalnem navoru uporabi W = τΔφ.":"Uporabi E = ½Iω².";
+    steps=hard?`W = ${n} · ${t} = ${answer} J.`:`E = ½ · ${fmt(I)} · ${w}² = ${fmt(answer)} J.`;
+  }else{
+    const a=integer(10,35);
+    prompt=hard?`Homogen disk se kotali brez drsenja po klancu z naklonom ${a}°. Kolikšna je velikost pospeška masnega središča? Vzemi g = 9,81 m/s².`:`Kolo s polmerom ${fmt(r)} m se kotali brez drsenja s kotno hitrostjo velikosti ${w} rad/s. Kolikšna je hitrost središča po velikosti?`;
+    answer=hard?g*Math.sin(rad(a))/1.5:r*w;unit=hard?"m/s²":"m/s";hint=hard?"Za disk je I/(MR²) = ½. Uporabi a = g sin θ/(1 + ½).":"Pri kotaljenju brez drsenja velja v꜀ = R|ω|.";
+    steps=hard?`a = (9,81 sin ${a}°)/1,5 ≈ ${fmt(answer)} m/s².`:`v꜀ = ${fmt(r)} · ${w} = ${fmt(answer)} m/s.`;
+  }
+  return {key,prompt,answer,unit,hint,steps};
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Navor in gibanje togega telesa · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+player("rotation");player("rolling");setupLever();setupRotation();setupRolling();renderMission();generate();
+</script>
+</body>
+</html>
