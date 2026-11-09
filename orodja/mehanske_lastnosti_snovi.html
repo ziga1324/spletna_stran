@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktivni natezni preizkus, Hookov zakon, Youngov modul, strig in stisljivost. Razlage, izzivi in generator nalog.">
+<title>Mehanske lastnosti snovi – Sidebit</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body.ml{--ink:#22253a;--paper:#fff9ee;--yellow:#ffe38b;--purple:#e8ddff;--mint:#c5f0e2;--blue:#d8ecff;--accent:#5634aa;margin:0;color:var(--ink);font:16px/1.55 system-ui,Arial,sans-serif;background:radial-gradient(circle at 96% 6%,#ece0ff 0,transparent 28%),radial-gradient(circle at 0 64%,#d8f3e8 0,transparent 35%),radial-gradient(#cfc8be 1px,transparent 1px) 0 0/20px 20px,var(--paper)}
+.ml *{box-sizing:border-box}.ml [hidden]{display:none!important}
+.ml .wrap{max-width:1210px;width:calc(100% - 36px);margin:auto}
+.ml header.wrap{padding:25px 0 22px}.ml a{color:var(--accent);font-weight:750}
+.ml .hero{display:grid;grid-template-columns:1.5fr .75fr;align-items:center;gap:32px;margin:26px 0 6px}
+.ml .badge{display:inline-block;padding:5px 12px;background:var(--yellow);border:2px solid var(--ink);border-radius:8px;font-weight:800;font-size:.8rem;transform:rotate(-2deg)}
+.ml h1,.ml h2,.ml h3{color:var(--ink);background:none;-webkit-text-fill-color:currentColor;line-height:1.15}
+.ml h1{font-size:clamp(41px,7vw,78px);letter-spacing:-.065em;margin:13px 0 10px}
+.ml h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em;margin:0 0 12px}
+.ml h3{font-size:1.15rem;margin:0 0 9px}.ml p{margin:0 0 13px}.ml .lead{font-size:1.1rem;max-width:63ch;color:#424c64}
+.ml .hero-art{border:3px solid var(--ink);border-radius:22px;background:var(--purple);box-shadow:6px 6px var(--ink);padding:14px;transform:rotate(2deg)}
+.ml svg{display:block;width:100%;height:auto;overflow:visible}
+.ml nav,.ml .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.ml nav{margin:12px 0 24px}
+.ml button{min-height:44px;padding:8px 14px;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px var(--ink);background:#fff;color:var(--ink);font:inherit;font-weight:750;cursor:pointer}
+.ml button:hover{background:var(--purple)}.ml button:active{transform:translate(2px,2px);box-shadow:1px 1px var(--ink)}
+.ml button[aria-pressed=true],.ml .primary{background:var(--yellow)}
+.ml button:disabled{opacity:.55;cursor:default}.ml :focus-visible{outline:3px solid #7953d4;outline-offset:4px}
+.ml .card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px var(--ink);padding:clamp(14px,2.2vw,24px);min-width:0;margin-bottom:20px}
+.ml .grid{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,2fr);gap:20px}
+.ml .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.ml .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.ml label{display:block;font-weight:700;margin:12px 0 4px}.ml label:first-child{margin-top:0}
+.ml input:not([type=checkbox]),.ml select{display:block;width:100%;min-width:0;font:inherit;color:var(--ink);padding:8px;border:2px solid #8790a4;border-radius:8px;background:#fff}
+.ml input[type=range]{padding:0;accent-color:var(--accent);border:0;min-height:30px}
+.ml input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.ml output{color:var(--accent);font-weight:800}
+.ml .fine{font-size:.88rem;color:#4d5871}.ml .formula{font-weight:750;color:#433186;overflow-wrap:anywhere}
+.ml .lab-visual,.ml .graph{border:2px solid #d6dce8;border-radius:13px;background:#fbfcff}
+.ml .graph{cursor:crosshair}.ml .graph-label{font-weight:800;margin:7px 0 0}
+.ml .graph-group{min-width:0}.ml .graph-group p{margin:7px 0 0}
+.ml .readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.ml .metric{padding:9px;border:2px solid var(--ink);border-radius:10px;background:var(--purple);font-size:.8rem;overflow-wrap:anywhere}
+.ml .metric:nth-child(2n){background:var(--mint)}.ml .metric strong{display:block;font-size:1.06rem}
+.ml .note{padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--mint);margin:12px 0}
+.ml .lav{background:var(--purple)}.ml .accent-card{background:var(--yellow)}.ml .question{font-weight:700;font-size:1.06rem}
+.ml .feedback{min-height:1.6em;font-weight:750;color:#45317e;margin-top:9px}
+.ml details{margin:10px 0}.ml summary{cursor:pointer;font-weight:750}
+.ml .question-card{border:2px solid #ccd2df;border-radius:12px;padding:15px;margin:12px 0}
+.ml .question-card .row{margin-top:9px}.ml .question-card label{margin-top:9px}
+.ml .lesson{scroll-margin:15px}.ml .chip{display:inline-block;background:var(--blue);padding:4px 9px;border-radius:7px;font-size:.8rem;font-weight:800;margin-bottom:9px}
+.ml footer{padding:8px 0 28px}.ml .small-gap{margin-top:12px}
+#paper{display:none}
+@media(max-width:850px){.ml .grid,.ml .hero{grid-template-columns:1fr}.ml .hero-art{display:none}.ml .three{grid-template-columns:1fr}.ml .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.ml .wrap{width:calc(100% - 24px)}.ml .two{grid-template-columns:1fr}.ml nav button{flex:1 1 40%}.ml .card{box-shadow:3px 3px var(--ink)}}
+@media print{body.ml{background:#fff;color:#000}body.ml.print-sheet > :not(#paper){display:none!important}body.ml.print-sheet #paper{display:block}#paper h1{font-size:24pt;letter-spacing:0}#paper h2{font-size:15pt;letter-spacing:0}#paper article{break-inside:avoid;margin:0 0 12pt}#paper .solutions{break-before:page}}
+.ml .focus-box{background:var(--mint);border:2px solid var(--ink);padding:12px;border-radius:10px}
+.ml .graph{cursor:default}
+.ml .subnote{margin-top:12px}
+.ml .readouts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ml .graph-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:650px){.ml .graph-row{grid-template-columns:1fr}.ml .readouts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ml .curve-key{display:flex;flex-wrap:wrap;gap:6px 18px;margin:12px 0}
+.ml .curve-key span::before{content:"";display:inline-block;width:1.25em;border-top:3px solid var(--swatch);margin-right:.4em;vertical-align:middle}
+.ml .curve-key span:nth-child(2)::before{border-top-style:dashed}
+.ml .lab-visual{margin:8px 0 14px}
+.ml .specimen-title{margin-top:16px}
+.ml .chapter-note{margin-top:10px}
+.ml #graph{max-width:850px;margin-inline:auto}
+</style>
+</head>
+<body class="ml">
+<header class="wrap">
+    <a href="../index.html">← Vsa orodja</a>
+    <div class="hero">
+        <div>
+            <span class="badge">SIDEBIT · FIZIKA</span>
+            <h1>Mehanske lastnosti snovi</h1>
+            <p class="lead">Raztegni vzorec, spusti obremenitev in poglej, ali se vrne v prvotno obliko. Odkrij, zakaj togost, trdnost in krhkost pomenijo različne stvari.</p>
+        </div>
+        <svg class="hero-art" viewBox="0 0 330 145" role="img" aria-label="Vzorec med čeljustma in krivulja nateznega preizkusa">
+            <path d="M61 44H104L122 57H165L182 44H217V96H182L165 83H122L104 96H61Z" fill="#ffe38b" stroke="#22253a" stroke-width="3"/>
+            <path d="M59 70H17m0 0 11-9m-11 9 11 9M219 70h36m0 0-11-9m11 9-11 9" fill="none" stroke="#5634aa" stroke-width="3"/>
+            <path d="M256 122h63m-63 0V24m2 96 17-58q17-22 35-8l8 7" fill="none" stroke="#5634aa" stroke-width="3"/>
+        </svg>
+    </div>
+    <nav aria-label="Poglavja">
+        <button type="button" data-tab="lab" aria-pressed="true">Laboratorij</button>
+        <button type="button" data-tab="challenge" aria-pressed="false">Učni izzivi</button>
+        <button type="button" data-tab="practice" aria-pressed="false">Generator nalog</button>
+        <button type="button" data-tab="theory" aria-pressed="false">Razlaga in formule</button>
+    </nav>
+</header>
+<main class="wrap">
+<section id="lab">
+    <div class="grid">
+        <div class="card">
+            <span class="chip">01 · Izberi vzorec</span>
+            <h2>Natezni preizkus</h2>
+            <label for="material">Učni model materiala</label>
+            <select id="material">
+                <option value="steel">Duktilni model · jeklo</option>
+                <option value="aluminium">Duktilni model · aluminijeva zlitina</option>
+                <option value="glass">Krhki model · steklo</option>
+            </select>
+            <label for="length">Začetna dolžina: <output id="length-out"></output></label>
+            <input id="length" type="range" min="50" max="300" step="10" value="100">
+            <label for="area">Začetni presek: <output id="area-out"></output></label>
+            <input id="area" type="range" min="10" max="200" step="5" value="50">
+            <p class="fine chapter-note">Krivulje so poenostavljeni učni modeli. Prikazane vrednosti niso podatki za načrtovanje izdelkov.</p>
+            <details><summary>Kaj ostane enako, če povečam presek?</summary><p>Pri istem materialu in isti relativni deformaciji se napetost ne spremeni, za večji presek pa potrebuješ večjo silo: F = σA₀.</p></details>
+        </div>
+        <div class="card">
+            <span class="chip">02 · Raztegni in razbremeni</span>
+            <h2>Vzorec med čeljustma</h2>
+            <svg id="specimen" class="lab-visual" viewBox="0 0 580 153" role="img" aria-label="Natezni vzorec"></svg>
+            <p class="fine">Raztezek je na skici povečan, da ga lažje vidiš.</p>
+            <label id="travel-label" for="travel">Napredovanje preizkusa</label>
+            <input id="travel" type="range" min="0" max="1000" step="1" value="0">
+            <div class="row">
+                <button type="button" id="unload" class="primary">Začni razbremenitev</button>
+                <button type="button" id="reset">Nov vzorec</button>
+            </div>
+            <div id="values" class="readouts"></div>
+            <p id="state" class="focus-box" role="status"></p>
+        </div>
+    </div>
+    <div class="card">
+        <h2>Diagram napetost–deformacija</h2>
+        <svg id="graph" class="graph" viewBox="0 0 560 320" role="img" aria-label="Diagram napetosti in relativne deformacije"></svg>
+        <div class="curve-key">
+            <span style="--swatch:#5634aa">Natezna krivulja</span>
+            <span style="--swatch:#ac4b26">Pot razbremenitve</span>
+        </div>
+        <p class="fine">Rumena pika označuje trenutno stanje. Merilo vodoravne osi se prilagodi materialu. Pri pretrgu pika označi zadnjo točko krivulje tik pred zlomom; izmerjena sila po pretrgu pade na nič.</p>
+    </div>
+    <div class="card">
+        <span class="chip">03 · Drugi načini deformacije</span>
+        <h2>Strig ali stiskanje z vseh strani?</h2>
+        <div class="two">
+            <div>
+                <label for="deformation">Vrsta obremenitve</label>
+                <select id="deformation">
+                    <option value="shear">Strig · tangencialna sila</option>
+                    <option value="bulk">Prostorninsko stiskanje · tlak</option>
+                </select>
+                <label for="load">Obremenitev: <output id="load-out"></output></label>
+                <input type="range" id="load" min="0" max="20" value="9">
+                <label for="modulus">Modul: <output id="modulus-out"></output></label>
+                <input type="range" id="modulus" min="1" max="10" value="3">
+            </div>
+            <div>
+                <svg id="shape" class="lab-visual" viewBox="0 0 360 175" role="img" aria-label="Skica deformacije telesa"></svg>
+                <p id="shape-result" class="focus-box"></p>
+                <p class="fine">Skica prikazuje povečano spremembo oblike oziroma prostornine. Model velja pri majhnih elastičnih deformacijah.</p>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="challenge" hidden>
+    <div class="card lav">
+        <span class="chip">Najprej napovej</span>
+        <h2>Učni izzivi</h2>
+        <label for="mission">Izberi izziv</label>
+        <select id="mission">
+            <option value="0">Kdaj ostane raztezek?</option>
+            <option value="1">Krhek zlom</option>
+            <option value="2">Dvakrat večji presek</option>
+            <option value="3">Razbremenitev pred mejo elastičnosti</option>
+        </select>
+        <div id="mission-body" class="small-gap"></div>
+        <p id="mission-feedback" class="feedback" role="status"></p>
+        <button type="button" id="mission-open">Odpri poskus</button>
+    </div>
+</section>
+<section id="practice" hidden><div class="card accent-card"><span class="chip">Vadi po svoje</span><h2>Generator nalog</h2><p>Izberi temo in težavnost. Odgovore preveri sproti ali pripravi delovni list.</p><div class="three"><div><label for="topic">Tema</label><select id="topic"><option value="all">Mešano</option><option value="stress">Napetost in sila</option><option value="strain">Relativna deformacija</option><option value="young">Youngov modul in Hookov zakon</option><option value="shear">Strig</option><option value="bulk">Stisljivost</option><option value="spring">Vzmet in prožnostna energija</option><option value="safety">Trdnost in dovoljena obremenitev</option></select></div><div><label for="level">Težavnost</label><select id="level"><option value="1">Osnovna</option><option value="2">Zahtevnejša</option></select></div><div><label for="count">Število nalog</label><input id="count" type="number" min="1" max="20" value="5"></div></div><div class="row small-gap"><button id="generate" class="primary">Ustvari naloge</button><button id="print">Natisni / shrani PDF</button><label for="print-sol"><input id="print-sol" type="checkbox" checked> Vključi rešitve v izpis</label></div><p id="practice-status" class="feedback" role="status"></p></div><div id="tasks" class="card"></div></section>
+<section id="theory" hidden>
+    <div class="card">
+        <h2>Kako se snovi odzovejo na obremenitev?</h2>
+        <div class="two">
+            <article class="note"><h3>Napetost in relativna deformacija</h3><p class="formula">σ = F/A₀ &nbsp; · &nbsp; ε = ΔL/L₀</p><p>Natezna sila vleče pravokotno na presek. Inženirsko napetost računamo z začetnim presekom. Relativna deformacija pove, za kolikšen delež prvotne dolžine se vzorec podaljša. Velja 1 N/mm² = 1 MPa.</p></article>
+            <article class="note lav"><h3>Youngov modul in Hookov zakon</h3><p class="formula">σ = Eε &nbsp; · &nbsp; ΔL = FL₀/(EA₀)</p><p>V linearnem elastičnem območju je Youngov modul E naklon grafa σ(ε). Večji E pomeni, da ista napetost povzroči manjšo deformacijo. Vzmetni zakon F = kΔL je podoben, vendar k opisuje togost določenega predmeta in se meri v N/m.</p></article>
+            <article class="note lav"><h3>Elastičnost, plastičnost in pretrg</h3><p>Po razbremenitvi v elastičnem območju se vzorec vrne v prvotno obliko. Če se je plastično deformiral, del raztezka ostane. Duktilen material lahko pred zlomom prenese precej plastične deformacije, krhek pa poči z malo ali brez nje. Natezna trdnost je največja dosežena inženirska napetost, ki ni nujno napetost tik pred pretrgom.</p></article>
+            <article class="note"><h3>Togost, trdota in žilavost</h3><p><strong>Togost</strong> opisuje upor proti deformaciji, <strong>trdota</strong> proti vtiskovanju ali praskanju, <strong>žilavost</strong> pa zmožnost absorbiranja energije pred zlomom. Večji Youngov modul sam po sebi ne pomeni večje natezne trdnosti ali žilavosti. Ploščina pod natezno krivuljo do pretrga predstavlja delo na začetno prostornino vzorca.</p></article>
+            <article class="note"><h3>Strig</h3><p class="formula">τ = F∥/A &nbsp; · &nbsp; τ = Gγ &nbsp; · &nbsp; γ ≈ Δx/h</p><p>Sila deluje vzporedno s ploskvijo. Plasti se premaknejo druga glede na drugo. Večji strižni modul G pomeni manjšo strižno deformacijo pri isti napetosti.</p></article>
+            <article class="note lav"><h3>Prostorninsko stiskanje</h3><p class="formula">ΔV/V₀ = −Δp/K</p><p>Ob povečanju tlaka z vseh strani se prostornina zmanjša. Prostorninski modul K opisuje upor proti tej spremembi. Večji K pomeni manjšo stisljivost.</p></article>
+            <article class="note"><h3>Poissonovo razmerje</h3><p class="formula">ν = −ε<sub>prečna</sub>/ε<sub>vzdolžna</sub></p><p>Pri natezni obremenitvi se večina materialov vzdolžno podaljša in prečno zoži. Poissonovo razmerje primerja obe relativni deformaciji v elastičnem območju.</p></article>
+            <article class="note lav"><h3>Utrujanje in lezenje</h3><p>Ponavljajoče obremenitve lahko sčasoma povzročijo razpoke in zlom. Temu rečemo utrujanje. Pri lezenju se deformacija s časom povečuje pod stalno obremenitvijo. En sam natezni preizkus teh dveh pojavov ne pokaže.</p></article>
+        </div>
+        <details><summary>Rešen primer: raztezek palice</summary><p>Palica z začetno dolžino 200 mm, presekom 40 mm² in E = 200 GPa je v linearnem območju obremenjena s silo 4000 N. Napetost je 100 MPa. Ker je E = 200 000 MPa, je ε = 0,0005 in raztezek ΔL = 0,10 mm.</p></details>
+        <details><summary>Rešen primer: energija vzmeti</summary><p>Pri raztegu 0,10 m in k = 200 N/m je sila na koncu 20 N. Ker narašča od nič do 20 N linearno, je delo oziroma shranjena prožnostna energija ½k(ΔL)² = 1 J.</p></details>
+    </div>
+</section>
+</main>
+<footer class="wrap"><p>Sidebit · Fizika · Mehanske lastnosti snovi</p></footer>
+<div id="paper"></div>
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+const numberFormat = new Intl.NumberFormat("sl-SI", { maximumFractionDigits: 4, useGrouping: false });
+const fmt = n => numberFormat.format(n);
+const integer = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const lerp = (a, b, f) => a + (b - a) * f;
+
+// Modeli uporabljajo MPa, N in mm. Deformacija je brez enote.
+const models = {
+    steel: { E: 200000, yield: 250, peak: 435, peakAt: .115, end: .22, endStress: 330 },
+    aluminium: { E: 70000, yield: 170, peak: 260, peakAt: .09, end: .16, endStress: 195 },
+    glass: { E: 70000, yield: null, end: .00085, endStress: 59.5 }
+};
+
+function stressAt(material, strain) {
+    if (!material.yield) return material.E * strain;
+    const elasticLimit = material.yield / material.E;
+    if (strain <= elasticLimit) return material.E * strain;
+    if (strain <= material.peakAt) {
+        return lerp(material.yield, material.peak, (strain - elasticLimit) / (material.peakAt - elasticLimit));
+    }
+    return lerp(material.peak, material.endStress, (strain - material.peakAt) / (material.end - material.peakAt));
+}
+
+function unloading(material, from, progress) {
+    const startStress = stressAt(material, from);
+    const remaining = Math.max(0, from - startStress / material.E);
+    return { strain: lerp(from, remaining, progress), stress: startStress * (1 - progress), remaining };
+}
+
+// Prvi del drsnika poveča prikaz majhnih elastičnih deformacij.
+function loadingStrain(material, progress) {
+    if (!material.yield) return material.end * progress;
+    const elasticLimit = material.yield / material.E;
+    return progress <= .3 ? elasticLimit * progress / .3
+        : lerp(elasticLimit, material.end, (progress - .3) / .7);
+}
+
+const segment = (x, y, X, Y, color, width = 2, extra = "") =>
+    `<line x1="${x}" y1="${y}" x2="${X}" y2="${Y}" stroke="${color}" stroke-width="${width}" ${extra}/>`;
+const label = (x, y, text, align = "start") =>
+    `<text x="${x}" y="${y}" text-anchor="${align}" fill="#364058" font-size="15" font-weight="650">${text}</text>`;
+const circle = (x, y, r, color) =>
+    `<circle cx="${x}" cy="${y}" r="${r}" fill="${color}" stroke="#22253a" stroke-width="2"/>`;
+
+let phase = "loading";
+let unloadFrom = 0;
+
+function renderGraph(material, strain, stress) {
+    const maxX = material.end * 1.08;
+    const maxY = (material.peak || material.endStress) * 1.15;
+    const X = v => 62 + 472 * v / maxX;
+    const Y = v => 254 - 213 * v / maxY;
+    let svg = label(62, 25, "Napetost σ (MPa)") + label(535, 308, "Relativna deformacija ε (%)", "end");
+    for (let i = 0; i <= 4; i++) {
+        const sx = i * maxX / 4, sy = i * maxY / 4;
+        svg += segment(X(sx), 40, X(sx), 254, "#dfe4ef", 1);
+        svg += segment(62, Y(sy), 534, Y(sy), "#dfe4ef", 1);
+        svg += label(X(sx), 278, fmt(sx * 100), "middle") + label(52, Y(sy) + 5, fmt(Math.round(sy)), "end");
+    }
+    svg += segment(62, 40, 62, 254, "#59657b") + segment(62, 254, 534, 254, "#59657b");
+    const nodes = material.yield ? [0, material.yield / material.E, material.peakAt, material.end] : [0, material.end];
+    const curve = nodes.map((v, i) => (i ? "L" : "M") + X(v) + " " + Y(stressAt(material, v))).join(" ");
+    svg += `<path d="${curve}" fill="none" stroke="#5634aa" stroke-width="3.5"/>`;
+    if (material.yield) {
+        svg += circle(X(material.peakAt), Y(material.peak), 4, "#c5f0e2") + label(X(material.peakAt), Y(material.peak) - 10, "Natezna trdnost", "middle");
+    }
+    if (phase === "unloading") {
+        const rest = unloading(material, unloadFrom, 1);
+        svg += segment(X(unloadFrom), Y(stressAt(material, unloadFrom)), X(rest.remaining), Y(0), "#ac4b26", 3, 'stroke-dasharray="6 4"');
+    }
+    svg += circle(X(strain), Y(stress), 6, "#ffe38b");
+    $("graph").innerHTML = svg;
+}
+
+function renderSpecimen(material, strain, broken) {
+    const spread = material.yield
+        ? 28 * Math.min(1, strain / (material.yield / material.E)) + 35 * strain / material.end
+        : 45 * strain / material.end;
+    const left = 156 - spread, right = 424 + spread;
+    const ends = `<rect x="${left - 22}" y="35" width="44" height="74" rx="8" fill="#e8ddff" stroke="#22253a" stroke-width="3"/>
+    <rect x="${right - 22}" y="35" width="44" height="74" rx="8" fill="#e8ddff" stroke="#22253a" stroke-width="3"/>`;
+    const outline = broken ? `M${left} 59H276l-10 11 10 15H${left}Z M${right} 59H306l10 11-10 15H${right}Z` : `M${left} 59H${right}V85H${left}Z`;
+    $("specimen").innerHTML = `<path d="${outline}" fill="#ffe38b" stroke="#22253a" stroke-width="3"/>` +
+        ends + label(290, 134, broken ? "Pretrg · vzorec ne prenaša več sile" : "Merilni del vzorca med čeljustma", "middle");
+}
+
+function renderTension() {
+    const m = models[$("material").value], length = Number($("length").value), area = Number($("area").value);
+    const progress = Number($("travel").value) / 1000;
+    const broken = phase === "broken";
+    const strain = broken ? m.end : loadingStrain(m, progress);
+    const result = phase === "unloading" ? unloading(m, unloadFrom, progress) : { strain, stress: stressAt(m, strain) };
+    const elastic = !m.yield || result.strain <= m.yield / m.E + 1e-12;
+    $("travel-label").textContent = phase === "unloading" ? "Napredovanje razbremenitve (do ničelne sile)" : "Napredovanje raztezanja (do pretrga)";
+    $("travel").disabled = broken;
+    $("unload").disabled = broken || phase === "unloading" || strain === 0;
+    $("length-out").textContent = length + " mm";
+    $("area-out").textContent = area + " mm²";
+    const stress = broken ? 0 : result.stress;
+    const readouts = [
+        ["Sila F", fmt(stress * area) + " N"], ["Napetost σ", fmt(stress) + " MPa"],
+        ["Deformacija ε", broken ? "—" : fmt(result.strain * 100) + " %"], ["Raztezek ΔL", broken ? "—" : fmt(result.strain * length) + " mm"],
+        ["Youngov modul E", fmt(m.E / 1000) + " GPa"], ["Trajni raztezek", phase === "unloading" && progress === 1 ? fmt(result.remaining * length) + " mm" : "—"]
+    ];
+    $("values").innerHTML = readouts.map(([key, value]) => `<div class="metric">${key}<strong>${value}</strong></div>`).join("");
+    let message;
+    if (broken) message = "Vzorec se je pretrgal. Izberi »Nov vzorec« za ponovitev.";
+    else if (phase === "unloading") {
+        if (progress < 1) message = "Premakni drsnik do konca, da sila pade na nič.";
+        else if (result.remaining < 1e-10) message = "Sila je nič in vzorec je spet prvotne dolžine.";
+        else message = "Sila je nič, vzorec pa je trajno daljši za " + fmt(result.remaining * length) + " mm.";
+    } else message = elastic ? "Elastično območje. Ob razbremenitvi se vzorec vrne v prvotno obliko."
+        : "Plastično območje. Ob popolni razbremenitvi bo del raztezka ostal.";
+    if ($("state").textContent !== message) $("state").textContent = message;
+    $("travel").setAttribute("aria-valuetext", broken ? "Pretrg" : fmt(progress * 100) + " % poteka; deformacija " + fmt(result.strain * 100) + " %");
+    renderSpecimen(m, result.strain, broken);
+    renderGraph(m, result.strain, result.stress);
+}
+
+function resetTension(value = 0) {
+    phase = "loading";
+    unloadFrom = 0;
+    $("travel").value = value;
+    renderTension();
+}
+$("material").addEventListener("change", () => resetTension());
+$("length").oninput = $("area").oninput = renderTension;
+$("reset").onclick = () => resetTension();
+$("travel").oninput = () => {
+    if (phase === "loading" && Number($("travel").value) === 1000) phase = "broken";
+    renderTension();
+};
+$("unload").onclick = () => {
+    unloadFrom = loadingStrain(models[$("material").value], Number($("travel").value) / 1000);
+    if (phase !== "loading" || unloadFrom === 0) return;
+    phase = "unloading";
+    $("travel").value = 0;
+    renderTension();
+    $("travel").focus();
+};
+
+function renderShape() {
+    const bulk = $("deformation").value === "bulk";
+    const load = Number($("load").value), modulus = Number($("modulus").value);
+    const ratio = load / (modulus * 1000);
+    $("load-out").textContent = load + " MPa";
+    $("modulus-out").textContent = modulus + " GPa";
+    const shift = ratio * 2200;
+    const center = 180, side = 92;
+    const smaller = side * (1 - ratio) ** 24;
+    const shape = bulk
+        ? `<rect x="${center - smaller / 2}" y="${78 - smaller / 2}" width="${smaller}" height="${smaller}" rx="4" fill="#c5f0e2" stroke="#5634aa" stroke-width="3"/>`
+        : `<polygon points="${134+shift},32 ${226+shift},32 226,124 134,124" fill="#c5f0e2" stroke="#5634aa" stroke-width="3"/>`;
+    $("shape").innerHTML = shape + '<rect x="134" y="32" width="92" height="92" fill="none" stroke="#68758e" stroke-width="2" stroke-dasharray="5 4"/>' +
+        label(180, 153, "Črtkano: začetna oblika", "middle");
+    $("shape-result").textContent = bulk ? "Relativna sprememba prostornine: " + fmt(ratio ? -ratio * 100 : 0) + " %."
+        : "Strižna deformacija γ: " + fmt(ratio * 100) + " %.";
+}
+for (const id of ["deformation", "load", "modulus"]) $(id).addEventListener("input", renderShape);
+
+function tab(id) {
+    for (const section of document.querySelectorAll("main > section")) section.hidden = section.id !== id;
+    for (const button of document.querySelectorAll("[data-tab]")) {
+        button.setAttribute("aria-pressed", String(button.dataset.tab === id));
+    }
+}
+for (const button of document.querySelectorAll("[data-tab]")) button.onclick = () => tab(button.dataset.tab);
+
+const missions = [
+    { material: "steel", position: 650, question: "Jekleni vzorec raztegnemo čez mejo elastičnosti. Kaj se zgodi, ko sila spet pade na nič?", answers: ["Vrne se na prvotno dolžino", "Del raztezka ostane", "Ves raztezek ostane"], correct: 1, why: "Elastični del raztezka izgine, plastični ostane. V poskusu začni razbremenitev in premakni drsnik do konca." },
+    { material: "glass", position: 920, question: "Kaj pokaže model stekla, če ga raztezaš vse do pretrga?", answers: ["Poči brez prikazanega plastičnega območja", "Pred zlomom se raztegne bolj od jekla", "Po zlomljenem vzorcu še vedno deluje natezna sila"], correct: 0, why: "V krhkem modelu natezna krivulja ostane linearna vse do pretrga. Premakni drsnik do konca in poglej, kaj se zgodi s silo." },
+    { material: "aluminium", position: 230, question: "Kaj se pri istem materialu in istem odstotku raztezka zgodi s silo, če začetni presek povečamo s 50 na 100 mm²?", answers: ["Prepolovi se", "Ostane enaka", "Podvoji se"], correct: 2, why: "Relativna deformacija in napetost sta isti, sila F = σA₀ pa je sorazmerna preseku. V poskusu spremeni samo presek." },
+    { material: "steel", position: 240, question: "Vzorec razbremenimo še v linearnem elastičnem območju. Kolikšen je trajni raztezek?", answers: ["Nič", "Enak celotnemu raztezku", "Odvisen je od časa razbremenjevanja v tem modelu"], correct: 0, why: "Elastična deformacija je povratna. Po popolni razbremenitvi se vzorec vrne na prvotno dolžino." }
+];
+const currentMission = () => missions[Number($("mission").value)];
+function renderMission() {
+    const mission = currentMission(), prompt = document.createElement("p"), choices = document.createElement("div");
+    prompt.className = "question";
+    prompt.textContent = mission.question;
+    choices.className = "row";
+    $("mission-body").replaceChildren(prompt, choices);
+    $("mission-feedback").textContent = "";
+    mission.answers.forEach((answer, i) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = answer;
+        button.setAttribute("aria-pressed", "false");
+        button.onclick = () => {
+            for (const other of choices.children) other.setAttribute("aria-pressed", String(other === button));
+            $("mission-feedback").textContent = i === mission.correct ? "Pravilno. " + mission.why : "Poskusi še enkrat ali preveri svojo napoved v poskusu.";
+        };
+        choices.append(button);
+    });
+}
+$("mission").onchange = renderMission;
+$("mission-open").onclick = () => {
+    const mission = currentMission();
+    $("material").value = mission.material;
+    $("area").value = 50;
+    $("length").value = 100;
+    tab("lab");
+    resetTension(mission.position);
+    $("travel").focus();
+};
+
+const topics = {
+    stress: "Napetost in sila", strain: "Relativna deformacija", young: "Youngov modul in Hookov zakon",
+    shear: "Strig", bulk: "Stisljivost", spring: "Vzmet in prožnostna energija", safety: "Trdnost in dovoljena obremenitev"
+};
+
+function makeTask(key, level) {
+    const hard = level === 2;
+    const area = integer(2, 22) * 5, force = integer(2, 30) * 150;
+    const L = integer(8, 30) * 10, elongation = integer(4, 45) / 10, percent = integer(4, 32) / 10;
+    const microstrain = integer(4, 14) / 100;
+    const E = integer(6, 21) * 10, G = integer(1, 8) * 10, K = integer(2, 20) * 5, p = integer(4, 24) * 5;
+    const k = integer(5, 30) * 10, x = integer(5, 35) / 100;
+    const strength = integer(12, 40) * 10, safety = integer(2, 6);
+    const q = (prompt, answer, unit, hint, steps) => ({ key, prompt, answer, unit, hint, steps: steps + " ≈ " + fmt(answer) + " " + unit + "." });
+    switch (key) {
+        case "stress": return hard
+            ? q("Presek palice je " + area + " mm², natezna napetost pa " + p + " MPa. Izračunaj silo.", p * area, "N", "1 MPa = 1 N/mm².", "F = σA₀ = " + p + " · " + area)
+            : q("Sila " + force + " N deluje na palico s presekom " + area + " mm². Izračunaj natezno napetost.", force / area, "MPa", "Deli silo s presekom. N/mm² je isto kot MPa.", "σ = F/A₀ = " + force + "/" + area);
+        case "strain": return hard
+            ? q("Palica je bila dolga " + L + " mm. Pri raztegu znaša relativna deformacija " + fmt(percent) + " %. Koliko milimetrov je zdaj dolga?", L * (1 + percent / 100), "mm", "Najprej pretvori odstotek v decimalno število.", "L = L₀(1 + ε) = " + L + " · (1 + " + fmt(percent) + "/100)")
+            : q("Vzorec začetne dolžine " + L + " mm se podaljša za " + fmt(elongation) + " mm. Izrazi relativno deformacijo v odstotkih.", 100 * elongation / L, "%", "Raztezek deli z začetno dolžino in pomnoži s 100.", "ε v odstotkih = 100 · " + fmt(elongation) + "/" + L);
+        case "young": return hard
+            ? q("Palica dolžine " + L + " mm s presekom " + area + " mm² ima Youngov modul " + E + " GPa. V linearnem elastičnem območju nanjo deluje natezna sila " + force + " N. Kolikšen je raztezek v mikrometrih (1 mm = 1000 µm)?", force * L / (area * E), "µm", "Uporabi ΔL = FL₀/(EA₀). Pretvori E v MPa, rezultat v mm pa v µm.", "ΔL = " + force + " · " + L + "/(" + E + " · 1000 · " + area + ") mm; pomnožimo s 1000")
+            : q("V linearnem elastičnem območju sta napetost " + p + " MPa in deformacija " + fmt(microstrain) + " %. Kolikšen je Youngov modul v GPa?", p / (10 * microstrain), "GPa", "Deformacijo deli s 100. Na koncu MPa pretvori v GPa.", "E = σ/ε = " + p + "/(" + fmt(microstrain) + "/100) MPa; v GPa delimo s 1000");
+        case "shear": return hard
+            ? q("Blok višine " + L + " mm ima strižni modul " + G + " GPa. Strižna napetost je " + p + " MPa. Za koliko milimetrov se premakne zgornja ploskev v linearnem modelu?", p * L / (1000 * G), "mm", "Najprej izračunaj γ = τ/G. Nato uporabi Δx ≈ γh.", "Δx ≈ " + p + "/(" + G + " · 1000) · " + L)
+            : q("Vzporedno s ploskvijo preseka " + area + " mm² deluje strižna sila " + force + " N. Izračunaj strižno napetost.", force / area, "MPa", "Deli vzporedno silo s presekom.", "τ = F∥/A = " + force + "/" + area);
+        case "bulk": {
+            const volume = integer(10, 30) * 200;
+            return hard
+                ? q("Telo ima začetno prostornino " + volume + " cm³ in prostorninski modul " + K + " GPa. Tlak povečamo za " + p + " MPa. Za koliko cm³ se prostornina zmanjša?", volume * p / (K * 1000), "cm³", "Vprašanje zahteva velikost zmanjšanja, zato vnesi pozitivno število.", "|ΔV| = V₀Δp/K = " + volume + " · " + p + "/(" + K + " · 1000)")
+                : q("Prostorninski modul je " + K + " GPa, tlak z vseh strani se poveča za " + p + " MPa. Za koliko odstotkov se prostornina zmanjša?", 100 * p / (K * 1000), "%", "Uporabi velikost spremembe Δp/K in pretvori v odstotke.", "100 · Δp/K = 100 · " + p + "/(" + K + " · 1000)");
+        }
+        case "spring": return hard
+            ? q("Vzmet s konstanto " + k + " N/m raztegnemo za " + fmt(x * 100) + " cm. Kolikšna prožnostna energija se shrani?", k * x * x / 2, "J", "Pretvori centimetre v metre, nato uporabi ½kx².", "Eₚ = ½ · " + k + " · " + fmt(x) + "²")
+            : q("Vzmet s konstanto " + k + " N/m raztegnemo za " + fmt(x * 100) + " cm. Kolikšna je velikost sile vzmeti?", k * x, "N", "Pretvori centimetre v metre. Za velikost sile velja F = kx.", "F = " + k + " · " + fmt(x));
+        case "safety": return hard
+            ? q("V poenostavljenem računu ima palica natezno trdnost " + strength + " MPa, presek " + area + " mm² in varnostni faktor " + safety + ". Kolikšna je dovoljena natezna sila po pravilu σ₍dop₎ = σ₍trd₎/n?", strength * area / safety, "N", "Izračunaj dovoljeno napetost in jo pomnoži s presekom.", "F₍dop₎ = (" + strength + "/" + safety + ") · " + area)
+            : q("Natezna trdnost v učnem primeru je " + strength + " MPa. Pri računu jo delimo z varnostnim faktorjem " + safety + ". Kolikšna je dovoljena napetost?", strength / safety, "MPa", "Dovoljena napetost je manjša od natezne trdnosti.", "σ₍dop₎ = " + strength + "/" + safety);
+        default: throw new Error("Neznana tema.");
+    }
+}
+let tasks=[],solved=new Set();
+function status(){ $("practice-status").textContent=solved.size+" / "+tasks.length+" pravilno rešenih nalog v tem sklopu."; }
+function numericAnswer(s){
+  const normalized=s.trim().replace("−","-").replace(",",".");
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+}
+function generate(){
+  const count=$("count").valueAsNumber;
+  if(!Number.isInteger(count)||count<1||count>20){$("practice-status").textContent="Vnesi celo število od 1 do 20.";return;}
+  const list=Object.keys(topics);
+  for(let i=list.length-1;i>0;i--){const j=integer(0,i);[list[i],list[j]]=[list[j],list[i]];}
+  const selected=$("topic").value,level=Number($("level").value);
+  tasks=[];solved=new Set();$("tasks").replaceChildren();
+  for(let i=0;i<count;i++){
+    const key=selected==="all"?list[i%list.length]:selected;
+    let task=makeTask(key,level);
+    for(let tries=0;tries<30&&tasks.some(q=>q.prompt===task.prompt);tries++)task=makeTask(key,level);
+    tasks.push(task);addTask(task,i);
+  }
+  status();
+}
+function addTask(task,i){
+  const card=document.createElement("article");card.className="question-card";
+  card.innerHTML=`<h3>${i+1}. ${topics[task.key]}</h3><p class="question"></p>
+  <form><label for="ans-${i}">Tvoj odgovor (${task.unit})</label><input type="text" id="ans-${i}" inputmode="decimal" placeholder="Na primer 3,14" autocomplete="off">
+  <div class="row"><button type="submit" class="primary">Preveri</button></div></form>
+  <p class="fine small-gap">Po potrebi zaokroži na dve decimalni mesti.</p>
+  <p class="feedback" role="status"></p><details><summary>Namig</summary><p></p></details><details><summary>Rešitev s postopkom</summary><p></p></details>`;
+  card.querySelector(".question").textContent=task.prompt;
+  const [hint,steps]=card.querySelectorAll("details p");
+  hint.textContent=task.hint;steps.textContent=task.steps;
+  card.querySelector("form").onsubmit=e=>{
+    e.preventDefault();const field=$("ans-"+i),value=numericAnswer(field.value),feedback=card.querySelector(".feedback");
+    if(!Number.isFinite(value)){feedback.textContent="Vnesi število. Dovoljena je decimalna vejica ali pika.";return;}
+    if(Math.abs(value-task.answer)<=0.00500001){
+      feedback.textContent="Pravilno: "+fmt(task.answer)+" "+task.unit+".";
+      solved.add(i);status();
+    }else{
+      feedback.textContent="Še ni pravilno. Preveri predznak, enote in formulo ali odpri namig.";
+    }
+  };
+  $("tasks").append(card);
+}
+$("generate").onclick=generate;
+$("print").onclick=()=>{
+  if(!tasks.length)return;
+  const paper=$("paper");paper.innerHTML="<h1>Mehanske lastnosti snovi · Delovni list</h1><p>Ime: ____________________ &nbsp; Datum: __________</p>";
+  tasks.forEach((q,i)=>{
+    const article=document.createElement("article");
+    article.innerHTML=`<h2>${i+1}. ${topics[q.key]}</h2><p></p><p>Odgovor (${q.unit}): ____________________</p>`;
+    article.querySelector("p").textContent=q.prompt;paper.append(article);
+  });
+  if($("print-sol").checked){
+    const solutions=document.createElement("section");solutions.className="solutions";solutions.innerHTML="<h2>Rešitve</h2>";
+    tasks.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.steps;solutions.append(p);});paper.append(solutions);
+  }
+  document.body.classList.add("print-sheet");window.print();
+};
+window.addEventListener("afterprint",()=>document.body.classList.remove("print-sheet"));
+resetTension();
+renderShape();
+renderMission();
+generate();
+</script>
+</body>
+</html>
